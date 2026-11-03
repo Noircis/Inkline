@@ -127,6 +127,8 @@ svg .selbg{fill:var(--sel);opacity:.14}
 .pal-row{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:5px}
 .pal-row button{min-height:46px;border:1px solid var(--rule);background:var(--bg);border-radius:8px;font-size:15px;padding:0;display:flex;align-items:center;justify-content:center;min-width:0}
 .pal-row button.mus{font-family:var(--f-music);font-size:26px;line-height:1}
+.pal-row button.restmode{color:var(--accent)}
+.pal-row button.restmode[aria-pressed=true]{color:var(--surface)}
 .pal-row button.accb{font-size:22px}
 .pal-row button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
 .pal-row .sep{border-left:2px solid var(--rule)}
@@ -628,12 +630,15 @@ function updatePalette(){
   const b=activeId&&blockById(activeId);if(!b||b.type!=='staff')return;
   const rh=b.clef==='rhythm';const it=sel!=null?b.items[sel]:null;
   const d=it?it.d:input.d,dot=it?!!it.dot:input.dot,rest=it?!!it.r:input.rest,acc=it?(it.a??null):input.acc;
-  pal.querySelectorAll('[data-dur]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.dur===d));
+  const GL=rest?{w:'\u{1D13B}',h:'\u{1D13C}',q:'\u{1D13D}','8':'\u{1D13E}','16':'\u{1D13F}'}:{w:'\u{1D15D}',h:'\u{1D15E}',q:'\u{1D15F}','8':'\u{1D160}','16':'\u{1D161}'};
+  const LB=rest?{w:'Pause',h:'Demi-pause',q:'Soupir','8':'Demi-soupir','16':'Quart de soupir'}:{w:'Ronde',h:'Blanche',q:'Noire','8':'Croche','16':'Double croche'};
+  pal.querySelectorAll('[data-dur]').forEach(x=>{x.setAttribute('aria-pressed',x.dataset.dur===d);x.textContent=GL[x.dataset.dur];x.setAttribute('aria-label',LB[x.dataset.dur]);x.classList.toggle('restmode',rest);});
   pal.querySelector('[data-act=dot]').setAttribute('aria-pressed',dot);
   pal.querySelector('[data-act=rest]').setAttribute('aria-pressed',rest);
   pal.querySelectorAll('[data-acc]').forEach(x=>{x.hidden=rh;x.setAttribute('aria-pressed',acc!=null&&String(acc)===x.dataset.acc);});
   const info=document.getElementById('palInfo');
   if(it){info.textContent=it.r?'Silence sélectionné':(rh?'Note sélectionnée':pitchName(b.clef,it.s,it.a)+' · touchez plus haut ou plus bas pour la déplacer');}
+  else if(rest)info.textContent='Mode silence ('+LB[d].toLowerCase()+') · touchez la zone bleue pour l\'ajouter';
   else info.textContent=rh?'Touchez la zone bleue pour ajouter':'Touchez la portée dans la zone bleue pour ajouter';
   document.documentElement.style.setProperty('--pal-h',(pal.offsetHeight||170)+'px');
 }
