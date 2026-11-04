@@ -295,9 +295,12 @@ function layout(b,W,active){
   newSys();
   measures.forEach(m=>{const w=PADL+(m.rs?16:0)+m.idx.reduce((s,i)=>s+widths[i],0)+PADR+(EXTRA[m.type]||0);const avail=W-sys.start-4;if(sys.ms.length&&sys.used+w>avail)newSys();sys.ms.push({m,w});sys.used+=w;});
   const pos2=[],bars=[],starts=[];let mcount=0;
+  const endedFinal=items.length>0&&items[items.length-1].bar==='final';
   systems.forEach((s,si)=>{
     const avail=W-s.start-4,last=si===systems.length-1;
-    let sc=1;if(s.used>avail)sc=avail/s.used;else if(!last&&s.used>0)sc=Math.min(avail/s.used,2.4);
+    let sc=1;if(s.used>avail)sc=avail/s.used;
+    else if(!last&&s.used>0)sc=Math.min(avail/s.used,2.4);
+    else if(last&&endedFinal&&s.used>avail*.5)sc=avail/s.used;
     s.firstMeasure=mcount+1;let x=s.start;
     s.ms.forEach(({m})=>{mcount++;const mx=x;x+=PADL*sc;
       if(m.rs){starts.push({sys:si,x:mx+2});x+=16*sc;}
@@ -306,7 +309,7 @@ function layout(b,W,active){
     s.end=x;
   });
   let ls=systems[systems.length-1];
-  const ended=items.length>0&&items[items.length-1].bar==='final';
+  const ended=endedFinal;
   if(active&&!ended&&W-ls.end<48){newSys();sys.end=sys.start;sys.firstMeasure=mcount+1;ls=sys;}
   const appendSys=systems.length-1,appendX=ended?null:(ls.ms.length?ls.end+8:ls.start+6);
   const SH=rh?92:124;
@@ -355,10 +358,11 @@ function staffSvg(b,W,opt){
   // staff lines, clef, time
   for(let si=0;si<sysCount;si++){
     const g=geom(L,si),s=L.systems[si];
-    if(L.rh){out+=`<line class="l" x1="0" x2="${W}" y1="${g.line}" y2="${g.line}"/>`;
+    const xe=(L.ended&&si===L.systems.length-1)?s.end:W;
+    if(L.rh){out+=`<line class="l" x1="0" x2="${xe}" y1="${g.line}" y2="${g.line}"/>`;
       out+=`<rect class="f" x="9" y="${g.line-10}" width="3.2" height="20"/><rect class="f" x="15" y="${g.line-10}" width="3.2" height="20"/>`;
     }else{
-      for(let k=0;k<5;k++){const y=g.staffTop+k*10;out+=`<line class="l" x1="0" x2="${W}" y1="${y}" y2="${y}"/>`;}
+      for(let k=0;k<5;k++){const y=g.staffTop+k*10;out+=`<line class="l" x1="0" x2="${xe}" y1="${y}" y2="${y}"/>`;}
       out+=`<line class="bar" x1="0.6" x2="0.6" y1="${g.staffTop}" y2="${g.staffBottom}"/>`;
       if(b.clef==='bass')out+=`<text class="clef" x="4" y="${g.staffTop+30}" font-size="38">\u{1D122}</text>`;
       else out+=`<text class="clef" x="3" y="${g.staffTop+30}" font-size="38">\u{1D11E}</text>`;
