@@ -23,6 +23,7 @@ import { chordOk } from '../chords.js';
 import { STYLES, KEYS, SECTIONS, keyLabel, gridTokens, measureText, gridHtml } from '../grid.js';
 import { toIRealLink, parseIRealAll } from '../ireal.js';
 import { pushSnapshot } from '../history.js';
+import { sanitizeBlock } from '../sanitize.js';
 import * as audio from '../audio.js';
 import { toolsHtml, renderNote, setActive, syncPaletteSpace, undo, updatePlayBtn, playCallbacks, readFile } from './views.js';
 
@@ -45,15 +46,15 @@ export function gridBlockEl(n, b, el) {
     <select data-f="style" aria-label="Style">${styles.map((s) => `<option>${esc(s)}</option>`).join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" aria-label="Tempo"></label>
     <button type="button" class="chip" data-f="ireal" aria-expanded="false">iReal</button>
-    <button type="button" class="playbtn" data-play="${b.id}">&#9654; Écouter</button></div>
+    <button type="button" class="playbtn" data-play="${esc(b.id)}">&#9654; Écouter</button></div>
     <div class="irealbox" hidden>
       <div class="ir-actions"><a class="btn" data-ir="open" href="#">Ouvrir dans iReal Pro</a><button class="btn" type="button" data-ir="copy">Copier le lien</button></div>
-      <label class="ir-lbl" for="ir_${b.id}">Importer depuis iReal Pro : colle un lien <code>irealb://</code> (Partager &gt; iReal Pro format)</label>
-      <textarea id="ir_${b.id}" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
-      <div class="ir-actions"><button class="btn primary" type="button" data-ir="import">Remplacer cette grille</button><label class="btn" for="irf_${b.id}">Ouvrir un fichier</label><input type="file" id="irf_${b.id}" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
+      <label class="ir-lbl" for="ir_${esc(b.id)}">Importer depuis iReal Pro : colle un lien <code>irealb://</code> (Partager &gt; iReal Pro format)</label>
+      <textarea id="ir_${esc(b.id)}" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
+      <div class="ir-actions"><button class="btn primary" type="button" data-ir="import">Remplacer cette grille</button><label class="btn" for="irf_${esc(b.id)}">Ouvrir un fichier</label><input type="file" id="irf_${esc(b.id)}" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
       <div class="status ir-msg"></div>
     </div>
-    <div class="gridwrap" data-grid="${b.id}"></div>` + toolsHtml();
+    <div class="gridwrap" data-grid="${esc(b.id)}"></div>` + toolsHtml();
 
   /** @param {string} k */
   const f = (k) => /** @type {HTMLInputElement} */ (el.querySelector(`[data-f=${k}]`));
@@ -96,12 +97,15 @@ export function gridBlockEl(n, b, el) {
     if (!songs.length) { msg.textContent = 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb:// ou irealbook://.'; return; }
     const s = songs[0];
     pushSnapshot(n);
-    Object.assign(b, { time: s.time, key: s.key, style: s.style, tempo: s.tempo || b.tempo, measures: s.measures });
-    if (!n.title.trim()) n.title = s.title;
+    // Le morceau passe par la validation comme toute donnée importée.
+    const clean = sanitizeBlock({ ...b, type: 'grid', time: s.time, key: s.key, style: s.style, tempo: s.tempo || b.tempo, measures: s.measures });
+    Object.assign(b, { time: clean.time, key: clean.key, style: clean.style, tempo: clean.tempo, measures: clean.measures });
+    n.title = n.title.slice(0, 200);
+    if (!n.title.trim()) n.title = s.title.slice(0, 200);
     touch(n);
     state.sel = null;
     renderNote(true);
-    const nb = app.querySelector(`[data-block="${b.id}"] .ir-msg`);
+    const nb = app.querySelector(`[data-block="${CSS.escape(b.id)}"] .ir-msg`);
     if (nb) {
       nb.textContent = `« ${s.title} » importé (${s.measures.length} mesures)`
         + (songs.length > 1 ? `. ${songs.length - 1} autre(s) morceau(x) ignoré(s) : importe la playlist depuis l'écran d'accueil.` : '.');
@@ -130,7 +134,7 @@ export function gridBlockEl(n, b, el) {
 export function redrawGrid(id) {
   const b = blockById(id);
   if (!b || b.type !== 'grid') return;
-  const w = app.querySelector(`[data-grid="${id}"]`);
+  const w = app.querySelector(`[data-grid="${CSS.escape(id)}"]`);
   if (!w) return;
   w.innerHTML = gridHtml(b, state.activeId === id ? state.sel : null, audio.isPlaying(id) ? state.playIdx : null);
   if (state.activeId === id) updateGridPalette();
@@ -227,7 +231,7 @@ function nextMeasure() {
   state.sel++;
   loadInput(b);
   redrawGrid(b.id);
-  const c = app.querySelector(`[data-grid="${b.id}"] [data-gm="${state.sel}"]`);
+  const c = app.querySelector(`[data-grid="${CSS.escape(b.id)}"] [data-gm="${state.sel}"]`);
   if (c) c.scrollIntoView({ block: 'nearest' });
 }
 

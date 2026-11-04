@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>sanitize.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordParts">chordParts</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-export.html">export</a><ul class='methods'><li data-type='method'><a href="module-export.html#.download">download</a></li><li data-type='method'><a href="module-export.html#.noteToInkline">noteToInkline</a></li><li data-type='method'><a href="module-export.html#.noteToPdf">noteToPdf</a></li><li data-type='method'><a href="module-export.html#.noteToPng">noteToPng</a></li><li data-type='method'><a href="module-export.html#.noteToSvg">noteToSvg</a></li><li data-type='method'><a href="module-export.html#.paginate">paginate</a></li><li data-type='method'><a href="module-export.html#.shareOrDownload">shareOrDownload</a></li><li data-type='method'><a href="module-export.html#.slug">slug</a></li><li data-type='method'><a href="module-export.html#~caption">caption</a></li><li data-type='method'><a href="module-export.html#~embeddedFontCss">embeddedFontCss</a></li><li data-type='method'><a href="module-export.html#~rasterize">rasterize</a></li><li data-type='method'><a href="module-export.html#~toBlob">toBlob</a></li><li data-type='method'><a href="module-export.html#~wrap">wrap</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridSvg">gridSvg</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pdf.html">pdf</a><ul class='members'><li data-type='member'><a href="module-pdf.html#.A4">A4</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pdf.html#.buildPdf">buildPdf</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-sanitize.html">sanitize</a><ul class='methods'><li data-type='method'><a href="module-sanitize.html#.sanitizeBlock">sanitizeBlock</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNote">sanitizeNote</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a></li><li data-type='method'><a href="module-sanitize.html#~item">item</a></li><li data-type='method'><a href="module-sanitize.html#~measure">measure</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li><li data-type='member'><a href="module-storage.html#~NOTE_APP">NOTE_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.importFile">importFile</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.noteFileJson">noteFileJson</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~bindShare">bindShare</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">sanitize.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module sanitize
+ * @description
+ * **Validation des données venant de l'extérieur** : fichiers `.inkline`
+ * reçus, sauvegardes importées, contenu du stockage local.
+ *
+ * ## Pourquoi
+ *
+ * Une donnée importée peut avoir été fabriquée par n'importe qui. Si elle
+ * était insérée telle quelle dans le HTML, un champ piégé
+ * (`id: '">&lt;img src=x onerror=…>'`) exécuterait du code dans l'app : c'est
+ * une injection (XSS). L'équivalent en C++ : un parseur de fichier qui ferait
+ * confiance aux tailles annoncées dans l'en-tête.
+ *
+ * ## Principe : liste blanche
+ *
+ * On ne « nettoie » pas l'objet reçu : on en **reconstruit un neuf** en ne
+ * recopiant que les champs connus, après vérification de leur type et de leur
+ * valeur (énumérations, bornes, longueurs). Tout le reste est ignoré. Les
+ * identifiants invalides sont régénérés.
+ *
+ * C'est la première ligne de défense. La deuxième est l'échappement
+ * systématique au rendu ({@link module:util.esc|esc}), la troisième la
+ * Content Security Policy d'`index.html`, qui interdit tout script non issu
+ * des fichiers de l'app.
+ */
+
+import { uid, clamp } from './util.js';
+import { DUR, TIME_SIGNATURES } from './model.js';
+
+/** Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères. */
+const ID_RE = /^[a-z0-9]{1,32}$/;
+
+/** Tonalité iReal : lettre, altération éventuelle, `-` pour mineur. */
+const KEY_RE = /^[A-G][b#]?-?$/;
+
+/** Section de grille : quelques lettres (A, B, Intro, Verse…). */
+const SECTION_RE = /^[A-Za-z]{1,6}$/;
+
+/** Limites de taille : protègent contre des fichiers énormes qui gèleraient l'app. */
+const LIMITS = { title: 200, text: 20000, chord: 16, style: 40, blocks: 200, items: 5000, measures: 1000, notes: 5000 };
+
+const isStr = (v) => typeof v === 'string';
+const isNum = (v) => typeof v === 'number' &amp;&amp; Number.isFinite(v);
+const str = (v, max) => (isStr(v) ? v.slice(0, max) : '');
+const id = (v) => (isStr(v) &amp;&amp; ID_RE.test(v) ? v : uid());
+
+/**
+ * Valide un élément de portée.
+ * @param {*} r Valeur brute.
+ * @param {boolean} rhythm Ligne rythmique (pas de hauteur).
+ * @returns {module:model~StaffItem|null} `null` si l'élément est inutilisable.
+ */
+function item(r, rhythm) {
+  if (!r || !Object.prototype.hasOwnProperty.call(DUR, r.d)) return null;
+  /** @type {module:model~StaffItem} */
+  const it = { d: r.d };
+  if (r.dot === true) it.dot = true;
+  if (r.r === true) it.r = true;
+  else if (!rhythm) it.s = isNum(r.s) ? clamp(Math.round(r.s), -6, 14) : 4;
+  if (!it.r &amp;&amp; (r.a === -1 || r.a === 0 || r.a === 1)) it.a = r.a;
+  if (isStr(r.c) &amp;&amp; r.c.trim()) it.c = str(r.c, LIMITS.chord);
+  if (['single', 'double', 'final', 'rep'].includes(r.bar)) it.bar = r.bar;
+  if (r.rs === true) it.rs = true;
+  if (r.tie === true &amp;&amp; !it.r) it.tie = true;
+  if (r.tup === 3) it.tup = 3;
+  return it;
+}
+
+/**
+ * Valide une mesure de grille.
+ * @param {*} r
+ * @returns {module:model~GridMeasure|null}
+ */
+function measure(r) {
+  if (!r || !Array.isArray(r.ch)) return null;
+  /** @type {module:model~GridMeasure} */
+  const m = { ch: r.ch.slice(0, 4).filter(isStr).map((c) => c.slice(0, LIMITS.chord)) };
+  if (isStr(r.sec) &amp;&amp; SECTION_RE.test(r.sec)) m.sec = r.sec;
+  if (r.rs === true) m.rs = true;
+  if (r.re === true) m.re = true;
+  if (r.dbl === true) m.dbl = true;
+  if (r.fin === true) m.fin = true;
+  if (r.ending === 1 || r.ending === 2 || r.ending === 3) m.ending = r.ending;
+  return m;
+}
+
+/**
+ * Valide un bloc.
+ * @param {*} r
+ * @returns {module:model~Block|null}
+ */
+export function sanitizeBlock(r) {
+  if (!r) return null;
+  const time = TIME_SIGNATURES.includes(r.time) ? r.time : '4/4';
+  const tempo = isNum(r.tempo) ? clamp(Math.round(r.tempo), 30, 300) : 100;
+  if (r.type === 'text') return { id: id(r.id), type: 'text', text: str(r.text, LIMITS.text) };
+  if (r.type === 'staff') {
+    const clef = ['treble', 'bass', 'rhythm'].includes(r.clef) ? r.clef : 'treble';
+    const items = Array.isArray(r.items) ? r.items.slice(0, LIMITS.items).map((x) => item(x, clef === 'rhythm')).filter(Boolean) : [];
+    return { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
+  }
+  if (r.type === 'grid') {
+    const measures = Array.isArray(r.measures) ? r.measures.slice(0, LIMITS.measures).map(measure).filter(Boolean) : [];
+    return {
+      id: id(r.id), type: 'grid', time, tempo,
+      key: isStr(r.key) &amp;&amp; KEY_RE.test(r.key) ? r.key : 'C',
+      style: isStr(r.style) &amp;&amp; r.style.trim() ? str(r.style, LIMITS.style) : 'Medium Swing',
+      measures: measures.length ? measures : [{ ch: [] }],
+    };
+  }
+  return null;
+}
+
+/**
+ * Valide une note complète.
+ *
+ * @param {*} r Valeur brute (issue de `JSON.parse`).
+ * @param {{freshIds: boolean}} [opt] `freshIds: true` régénère **tous** les
+ *   identifiants : à utiliser pour une note reçue, qui devient une nouvelle
+ *   note du carnet au lieu d'écraser une note existante de même id.
+ * @returns {module:model~Note|null} `null` si ce n'est pas une note.
+ */
+export function sanitizeNote(r, opt = {}) {
+  if (!r || typeof r !== 'object' || !Array.isArray(r.blocks)) return null;
+  const blocks = r.blocks.slice(0, LIMITS.blocks).map(sanitizeBlock).filter(Boolean);
+  if (opt.freshIds) blocks.forEach((b) => { b.id = uid(); });
+  return {
+    id: opt.freshIds ? uid() : id(r.id),
+    title: str(r.title, LIMITS.title).replace(/\n/g, ' '),
+    updated: isNum(r.updated) ? r.updated : Date.now(),
+    blocks: blocks.length ? blocks : [{ id: uid(), type: 'text', text: '' }],
+  };
+}
+
+/**
+ * Valide un carnet entier (stockage local ou sauvegarde).
+ * Les clés du dictionnaire sont réalignées sur l'id de chaque note.
+ *
+ * @param {*} r
+ * @returns {Object.&lt;string, module:model~Note>}
+ */
+export function sanitizeNotes(r) {
+  /** @type {Object.&lt;string, module:model~Note>} */
+  const out = {};
+  if (!r || typeof r !== 'object') return out;
+  Object.values(r).slice(0, LIMITS.notes).forEach((x) => {
+    const n = sanitizeNote(x);
+    if (n) out[n.id] = n;
+  });
+  return out;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

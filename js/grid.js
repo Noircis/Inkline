@@ -25,7 +25,7 @@
 
 import { esc } from './util.js';
 import { mlen } from './model.js';
-import { chordHtml } from './chords.js';
+import { chordHtml, chordParts } from './chords.js';
 
 /** Styles iReal Pro proposés (le style d'un morceau importé est ajouté s'il manque). */
 export const STYLES = ['Medium Swing', 'Medium Up Swing', 'Up Tempo Swing', 'Slow Swing', 'Ballad', 'Jazz Waltz', 'Bossa Nova', 'Samba', 'Latin', 'Afro Cuban', 'Funk', 'Even 8ths', 'Rock', 'Pop', 'Blues', 'Gospel', 'Waltz'];
@@ -178,9 +178,89 @@ export function gridHtml(b, selI, playI) {
       : m.ch.map((x) => `<span class="gc">${chordHtml(x)}</span>`).join('');
     h += `<button type="button" class="${c.join(' ')}" data-gm="${i}">`
       + (m.sec ? `<span class="sec">${esc(m.sec)}</span>` : '')
-      + (m.ending ? `<span class="volta">${m.ending}.</span>` : '')
+      + (m.ending ? `<span class="volta">${esc(String(m.ending))}.</span>` : '')
       + `<span class="gcs">${inner}</span></button>`;
   });
   if (!ended) h += '<button type="button" class="gm add" data-gm="add" aria-label="Ajouter une mesure">+</button>';
   return h + '</div>';
+}
+
+/**
+ * Rendu SVG d'une grille, pour l'export en image ou en PDF.
+ *
+ * Même logique que {@link module:grid.gridHtml|gridHtml}, mais les barres sont
+ * de vrais traits (pas des bordures CSS) et les accords des `<text>` :
+ * le résultat est autonome et peut être rasterisé.
+ *
+ * Mise en page : 4 mesures par ligne, cellules de `W / 4` de large. Les
+ * repères de section et de volta débordent au-dessus de chaque ligne, d'où
+ * l'espace réservé en haut.
+ *
+ * @param {module:model~GridBlock} b
+ * @param {number} W Largeur en px.
+ * @returns {{svg: string, height: number}} Fragment SVG (sans balise `<svg>` englobante) et hauteur.
+ */
+export function gridSvg(b, W) {
+  const M = b.measures;
+  const cw = W / 4;
+  const ROW = 58;
+  const GAP = 18;
+  const TOP = 14;
+  const rowY = (i) => TOP + Math.floor(i / 4) * (ROW + GAP);
+  let out = '';
+  const vline = (x, y, w = 1.4) => `<rect class="f" x="${x}" y="${y}" width="${w}" height="${ROW}"/>`;
+  const dots = (x, y) => `<circle class="f" cx="${x}" cy="${y + ROW / 2 - 6}" r="2.1"/><circle class="f" cx="${x}" cy="${y + ROW / 2 + 6}" r="2.1"/>`;
+  M.forEach((m, i) => {
+    const prev = M[i - 1];
+    const col = i % 4;
+    const x0 = col * cw;
+    const x1 = x0 + cw;
+    const y0 = rowY(i);
+    const special = prev && (prev.re || prev.fin || prev.dbl);
+    // Barre de gauche
+    if (m.rs) out += vline(x0, y0, 4) + vline(x0 + 6, y0) + dots(x0 + 11.5, y0);
+    else if (special && col !== 0) { /* déjà dessinée par la mesure précédente */ }
+    else if (m.sec || special) out += vline(x0, y0) + vline(x0 + 3.5, y0);
+    else out += vline(x0, y0);
+    // Barre de droite
+    if (m.re) out += dots(x1 - 11.5, y0) + vline(x1 - 7.4, y0) + vline(x1 - 4, y0, 4);
+    else if (m.fin) out += vline(x1 - 7.4, y0) + vline(x1 - 4, y0, 4);
+    else if (m.dbl) out += vline(x1 - 5, y0) + vline(x1 - 1.4, y0);
+    else if (col === 3 || i === M.length - 1) out += vline(x1 - 1.4, y0);
+    // Section (étiquette pleine) et volta (crochet)
+    let vx = x0 + 14;
+    if (m.sec) {
+      const w = m.sec.length * 7.5 + 9;
+      out += `<rect class="f" x="${x0 - 3}" y="${y0 - 12}" width="${w}" height="16" rx="3"/><text class="secl" x="${x0 - 3 + w / 2}" y="${y0 + 0.5}" text-anchor="middle">${esc(m.sec)}</text>`;
+      vx = x0 + w + 4;
+    }
+    if (m.ending) {
+      out += `<path class="s" stroke-width="1.4" d="M${vx} ${y0 + 2} V${y0 - 9} H${x1 - 3}"/><text class="volt" x="${vx + 4}" y="${y0 + 1}">${esc(String(m.ending))}.</text>`;
+    }
+    // Accords
+    const left = x0 + (m.rs ? 18 : 9);
+    const right = x1 - (m.re ? 16 : 6);
+    if (m.ch.length === 1 && m.ch[0] === '%') {
+      out += `<text class="simg" x="${(left + right) / 2}" y="${y0 + ROW / 2 + 9}" text-anchor="middle">\u{1D10E}</text>`;
+      return;
+    }
+    const k = m.ch.length;
+    const fs = k <= 1 ? 20 : k === 2 ? 17 : 13.5;
+    const cellW = (right - left) / (k <= 2 ? Math.max(1, k) : 2);
+    m.ch.forEach((c, j) => {
+      const cx = left + (k <= 2 ? j : j % 2) * cellW;
+      const cy = y0 + (k <= 2 ? ROW / 2 + fs * 0.35 : (j < 2 ? ROW * 0.42 : ROW * 0.82));
+      if (c === '') { out += `<text class="chm" x="${cx}" y="${cy}" font-size="${fs}">/</text>`; return; }
+      if (c === 'n') { out += `<text class="chg" x="${cx}" y="${cy}" font-size="${fs * 0.7}">N.C.</text>`; return; }
+      const p = chordParts(c);
+      if (!p) { out += `<text class="chg" x="${cx}" y="${cy}" font-size="${fs}">${esc(c)}</text>`; return; }
+      const up = (fs * 0.42).toFixed(1);
+      out += `<text class="chg" x="${cx}" y="${cy}" font-size="${fs}">${esc(p.root)}`
+        + (p.quality ? `<tspan font-size="${fs * 0.62}" dy="-${up}">${esc(p.quality)}</tspan>` : '')
+        + (p.bass ? `<tspan font-size="${fs * 0.72}" font-weight="500" dy="${p.quality ? up : 0}">${esc(p.bass)}</tspan>` : '')
+        + '</text>';
+    });
+  });
+  const rows = Math.max(1, Math.ceil(M.length / 4));
+  return { svg: out, height: TOP + rows * (ROW + GAP) - GAP + 4 };
 }

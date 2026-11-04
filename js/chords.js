@@ -69,6 +69,27 @@ function prettyQuality(q) {
 }
 
 /**
+ * Parties d'affichage d'un accord.
+ * @typedef {Object} ChordParts
+ * @property {string} root Fondamentale avec altération (« B♭ »).
+ * @property {string} quality Qualité mise en forme (« –7 », « Δ », « 7♭9 »), à afficher en exposant.
+ * @property {string} bass Basse (« /F ») ou chaîne vide.
+ */
+
+/**
+ * Découpe un accord pour l'affichage (utilisé par le HTML de la grille et
+ * par l'export en image).
+ * @param {string} c
+ * @returns {ChordParts|null} `null` si l'accord n'est pas reconnu.
+ */
+export function chordParts(c) {
+  const m = CHORD_RE.exec(c);
+  if (!m) return null;
+  const sym = (x) => x.replace('b', '♭').replace('#', '♯');
+  return { root: m[1] + sym(m[2]), quality: prettyQuality(m[3]), bass: m[4] ? '/' + sym(m[4]) : '' };
+}
+
+/**
  * HTML d'affichage d'une case de grille : fondamentale en gros, qualité en
  * exposant, basse en petit. Une case invalide est rendue telle quelle avec la
  * classe `bad` (soulignée en rouge par le CSS).
@@ -79,12 +100,9 @@ function prettyQuality(q) {
 export function chordHtml(c) {
   if (c === '') return '<span class="slash">/</span>';
   if (c === 'n') return '<span class="nc">N.C.</span>';
-  const m = CHORD_RE.exec(c);
-  if (!m) return `<span class="bad">${esc(c)}</span>`;
-  const q = prettyQuality(m[3]);
-  const acc = m[2].replace('b', '♭').replace('#', '♯');
-  const bass = m[4] ? '/' + m[4].replace('b', '♭').replace('#', '♯') : '';
-  return `<span class="cr">${m[1]}${acc}</span>${q ? `<sup>${esc(q)}</sup>` : ''}${bass ? `<span class="cb">${esc(bass)}</span>` : ''}`;
+  const p = chordParts(c);
+  if (!p) return `<span class="bad">${esc(c)}</span>`;
+  return `<span class="cr">${esc(p.root)}</span>${p.quality ? `<sup>${esc(p.quality)}</sup>` : ''}${p.bass ? `<span class="cb">${esc(p.bass)}</span>` : ''}`;
 }
 
 /**

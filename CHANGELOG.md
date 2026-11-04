@@ -3,6 +3,25 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [1.5.0] - 2026-11-04
+
+### Ajouté
+- **Partager une note** (bouton « Partager » en haut de chaque note) :
+  - **Fichier Inkline** (`.inkline`, par défaut) : la note reste modifiable et écoutable chez la personne qui la reçoit ;
+  - **Image PNG** : la note entière (titre, textes, portées, grilles), lisible sans l'app ;
+  - **PDF A4** : pages coupées entre deux blocs quand c'est possible.
+  - Sur Android, le menu de partage du téléphone s'ouvre (WhatsApp, Messages, mail…) ; sinon le fichier est téléchargé.
+- **Importer une note reçue** : le bouton « Importer un fichier » de l'accueil accepte les `.inkline` ; la note est ajoutée (jamais écrasée) puis ouverte.
+
+### Sécurité
+- Toute donnée importée (note reçue, sauvegarde, lien iReal) ou relue du stockage est **validée** champ par champ ; un fichier piégé ne peut plus injecter de code.
+- **Échappement systématique** de toutes les valeurs insérées dans le HTML et le SVG.
+- **Content Security Policy** : seuls les scripts de l'app peuvent s'exécuter.
+- Les **polices sont hébergées dans le dépôt** : l'app ne contacte plus Google Fonts (ni aucun autre serveur), et fonctionne entièrement hors ligne.
+
+### Modifié
+- « Exporter » sur l'accueil devient « Exporter le carnet » (sauvegarde complète), « Importer » devient « Importer un fichier ».
+
 ## [1.4.0] - 2026-11-04
 
 ### Ajouté

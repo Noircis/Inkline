@@ -22,7 +22,9 @@
 import { state, app, curNote, blockById, touch } from './state.js';
 import { esc } from '../util.js';
 import { newNote as makeNote, newTextBlock, newStaffBlock, newGridBlock, exampleNote } from '../model.js';
-import { flushSave, backupJson, mergeBackup } from '../storage.js';
+import { flushSave, backupJson, importFile } from '../storage.js';
+import { sanitizeBlock } from '../sanitize.js';
+import { noteToInkline, noteToPng, noteToPdf, shareOrDownload, slug } from '../export.js';
 import { pushSnapshot, popSnapshot } from '../history.js';
 import { parseIRealAll, songToGrid } from '../ireal.js';
 import { uid } from '../util.js';
@@ -32,7 +34,7 @@ import { staffBlockEl, redrawStaff, showStaffPalette } from './staff-ui.js';
 import { gridBlockEl, redrawGrid, showGridPalette } from './grid-ui.js';
 
 /** Version affichée en bas de l'accueil (à garder alignée sur CHANGELOG.md). */
-export const APP_VERSION = '1.4.0';
+export const APP_VERSION = '1.5.0';
 
 /**
  * Affiche l'écran courant.
@@ -74,7 +76,7 @@ function importIRealNotes(text) {
   songs.forEach((s, k) => {
     // Le compositeur iReal est au format « Nom Prénom » : on le remet dans l'ordre usuel.
     const composer = s.composer && s.composer !== 'Unknown' ? s.composer.split(' ').reverse().join(' ') : '';
-    const n = { id: uid(), title: s.title, updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer }, songToGrid(s)] };
+    const n = { id: uid(), title: s.title, updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer.slice(0, 200) }, sanitizeBlock(songToGrid(s))] };
     state.notes[n.id] = n;
   });
   if (songs.length) flushSave(state.notes);
@@ -129,7 +131,7 @@ export function renderList() {
 
   const bk = document.createElement('div');
   bk.className = 'backup';
-  bk.innerHTML = `<div class="eyebrow">Sauvegarde</div><p>Tes notes restent sur ce téléphone. Exporte un fichier de temps en temps pour ne rien perdre.</p><div class="actions"><button class="btn" id="exp" type="button">Exporter</button><label class="btn" for="impIn">Importer</label><input type="file" id="impIn" accept="application/json,.json" hidden></div><div class="status" id="bkMsg"></div>
+  bk.innerHTML = `<div class="eyebrow">Sauvegarde</div><p>Tes notes restent sur ce téléphone. Exporte tout le carnet de temps en temps pour ne rien perdre. « Importer » ouvre aussi une note reçue (fichier .inkline).</p><div class="actions"><button class="btn" id="exp" type="button">Exporter le carnet</button><label class="btn" for="impIn">Importer un fichier</label><input type="file" id="impIn" hidden></div><div class="status" id="bkMsg"></div>
   <div class="eyebrow" style="margin-top:18px">iReal Pro</div><p>Colle un lien <code>irealb://</code> (morceau ou playlist) pour créer une note par morceau.</p>
   <textarea id="irList" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
   <div class="actions" style="margin-top:8px"><button class="btn" id="irListGo" type="button">Importer d'iReal Pro</button><label class="btn" for="irListF">Ouvrir un fichier</label><input type="file" id="irListF" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
@@ -151,21 +153,24 @@ export function renderList() {
     const blob = new Blob([backupJson(state.notes)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'inkline-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = 'inkline-carnet-' + new Date().toISOString().slice(0, 10) + '.json';
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     bk.querySelector('#bkMsg').textContent = 'Fichier exporté dans tes téléchargements.';
   };
   bk.querySelector('#impIn').onchange = (e) => readFile(e, (text) => {
+    // Pas de filtre « accept » sur le champ fichier : Android grise les
+    // extensions qu'il ne connaît pas (.inkline). On vérifie le contenu ici.
     try {
-      const k = mergeBackup(state.notes, text);
+      const r = importFile(state.notes, text);
       flushSave(state.notes);
+      if (r.kind === 'note') { openNote(r.firstId); return; } // note reçue : on l'ouvre directement
       renderList();
       const m = app.querySelector('#bkMsg');
-      if (m) m.textContent = k + (k > 1 ? ' notes importées.' : ' note importée.');
+      if (m) m.textContent = r.count + (r.count > 1 ? ' notes importées.' : ' note importée.');
     } catch (err) {
-      bk.querySelector('#bkMsg').textContent = "Ce fichier n'est pas une sauvegarde Inkline.";
+      bk.querySelector('#bkMsg').textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
     }
   });
   app.querySelector('#newNote').onclick = newNote;
@@ -228,7 +233,13 @@ export function renderNote(keepScroll) {
   const n = curNote();
   if (!n) { state.view = { name: 'list', id: null }; renderList(); return; }
   const sy = window.scrollY;
-  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><span class="status">Enregistré sur ce téléphone</span></header>
+  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><button class="btn" id="shareBtn" type="button" aria-expanded="false">Partager</button></header>
+  <div class="sharebox" id="shareBox" hidden>
+    <button class="btn primary" type="button" data-share="inkline">Fichier Inkline<small>modifiable dans Inkline</small></button>
+    <button class="btn" type="button" data-share="png">Image<small>PNG</small></button>
+    <button class="btn" type="button" data-share="pdf">PDF<small>A4</small></button>
+    <div class="status" id="shareMsg"></div>
+  </div>
   <textarea class="title-in" id="titleIn" rows="1" placeholder="Titre de la note"></textarea>
   <div class="blocks" id="blocks"></div>
   <div class="addbar"><button class="btn" data-add="text" type="button">+ Texte</button><button class="btn" data-add="staff" type="button">+ Portée</button><button class="btn" data-add="rhythm" type="button">+ Rythme</button><button class="btn" data-add="grid" type="button">+ Grille</button></div>
@@ -241,6 +252,7 @@ export function renderNote(keepScroll) {
   ti.addEventListener('input', () => { n.title = ti.value.replace(/\n/g, ' '); autosize(ti); touch(n); });
   ti.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ti.blur(); } });
   app.querySelector('#back').onclick = () => { state.view = { name: 'list', id: null }; renderList(); window.scrollTo(0, 0); };
+  bindShare(n);
 
   // Suppression en deux temps (les boîtes confirm() natives sont peu pratiques sur mobile).
   const dn = /** @type {HTMLButtonElement} */ (app.querySelector('#delNote'));
@@ -265,6 +277,56 @@ export function renderNote(keepScroll) {
 }
 
 /**
+ * Branche le panneau « Partager » d'une note.
+ *
+ * Le fichier est généré au clic, puis {@link module:export.shareOrDownload|shareOrDownload}
+ * ouvre le menu de partage d'Android ou télécharge le fichier. L'appel à
+ * `navigator.share` doit suivre de près le geste de l'utilisateur (quelques
+ * secondes) : la génération d'image est assez rapide pour ça.
+ *
+ * @param {module:model~Note} n
+ */
+function bindShare(n) {
+  const btn = app.querySelector('#shareBtn');
+  const box = /** @type {HTMLElement} */ (app.querySelector('#shareBox'));
+  const msg = app.querySelector('#shareMsg');
+  btn.onclick = () => {
+    box.hidden = !box.hidden;
+    btn.setAttribute('aria-expanded', String(!box.hidden));
+    msg.textContent = '';
+    if (!box.hidden) setActive(null);
+  };
+  box.querySelectorAll('[data-share]').forEach((b) => {
+    b.onclick = async () => {
+      const kind = b.dataset.share;
+      const name = slug(n.title);
+      const title = n.title || 'Note Inkline';
+      msg.textContent = kind === 'inkline' ? '' : 'Préparation…';
+      box.querySelectorAll('button').forEach((x) => { x.disabled = true; });
+      try {
+        let res;
+        if (kind === 'inkline') {
+          // .inkline d'abord ; si Android refuse ce type, variante .txt (même contenu).
+          res = await shareOrDownload(noteToInkline(n), [
+            { name: name + '.inkline', type: 'application/json' },
+            { name: name + '.inkline.txt', type: 'text/plain' },
+          ], title);
+        } else if (kind === 'png') {
+          res = await shareOrDownload(await noteToPng(n), [{ name: name + '.png', type: 'image/png' }], title);
+        } else {
+          res = await shareOrDownload(await noteToPdf(n), [{ name: name + '.pdf', type: 'application/pdf' }], title);
+        }
+        msg.textContent = res === 'downloaded' ? 'Fichier enregistré dans tes téléchargements.' : res === 'shared' ? 'Envoyé.' : '';
+      } catch (e) {
+        msg.textContent = "L'export a échoué. Réessaie ; si ça persiste, exporte le fichier Inkline.";
+      } finally {
+        box.querySelectorAll('button').forEach((x) => { x.disabled = false; });
+      }
+    };
+  });
+}
+
+/**
  * Ajoute un bloc en fin de note et l'active.
  * @param {module:model~Note} n
  * @param {'text'|'staff'|'rhythm'|'grid'} kind
@@ -277,7 +339,7 @@ export function addBlock(n, kind) {
   state.activeId = b.id;
   state.sel = kind === 'grid' ? 0 : null; // une grille s'ouvre sur sa 1re mesure
   renderNote(true);
-  const el = app.querySelector(`[data-block="${b.id}"]`);
+  const el = app.querySelector(`[data-block="${CSS.escape(b.id)}"]`);
   if (el) {
     el.scrollIntoView({ block: 'center', behavior: 'smooth' });
     if (kind === 'text') { const t = el.querySelector('textarea'); if (t) t.focus(); }
@@ -296,7 +358,7 @@ function blockEl(n, b, bi) {
   el.className = 'block ' + (b.type === 'text' ? 'text' : b.type === 'grid' ? 'gridblk' : 'staff');
   el.dataset.block = b.id;
   if (b.type === 'text') {
-    el.innerHTML = `<textarea rows="1" placeholder="${bi === 0 ? 'Écrivez ici…' : 'Texte'}" id="t_${b.id}"></textarea>` + toolsHtml();
+    el.innerHTML = `<textarea rows="1" placeholder="${bi === 0 ? 'Écrivez ici…' : 'Texte'}" id="t_${esc(b.id)}"></textarea>` + toolsHtml();
     const t = el.querySelector('textarea');
     t.value = b.text;
     t.addEventListener('focus', () => { pushSnapshot(n); setActive(b.id); });
@@ -332,7 +394,7 @@ function blockEl(n, b, bi) {
       n.blocks.splice(j, 0, b);
       touch(n);
       renderNote(true);
-      const nel = app.querySelector(`[data-block="${b.id}"]`);
+      const nel = app.querySelector(`[data-block="${CSS.escape(b.id)}"]`);
       if (nel) nel.scrollIntoView({ block: 'nearest' });
     };
   });
@@ -394,7 +456,7 @@ export function undo() {
  * @param {string} id
  */
 export function updatePlayBtn(id) {
-  const btn = document.querySelector(`[data-play="${id}"]`);
+  const btn = document.querySelector(`[data-play="${CSS.escape(id)}"]`);
   if (!btn) return;
   const on = audio.isPlaying(id);
   btn.classList.toggle('on', on);

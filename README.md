@@ -18,8 +18,10 @@ L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur stati
 ## Arborescence
 
 ```
-index.html            balisage des palettes, chargement de js/main.js
-css/app.css           feuille de style unique (thème clair/sombre par jetons)
+index.html            balisage des palettes, CSP, chargement de js/main.js
+css/app.css           feuille de style (thème clair/sombre par jetons)
+css/fonts.css         déclaration des polices hébergées
+fonts/                polices woff2 (licence SIL OFL)
 sw.js                 service worker (hors ligne)
 manifest.webmanifest  nom, icônes, mode « standalone »
 js/
@@ -34,7 +36,10 @@ js/
   grid.js             grilles d'accords : saisie, durées, ordre de lecture, rendu HTML
   ireal.js            import/export iReal Pro (irealb://)
   audio.js            synthé et séquenceur Web Audio
-  storage.js          localStorage, sauvegarde/restauration JSON
+  storage.js          localStorage, sauvegarde/restauration, fichiers .inkline
+  sanitize.js         validation des données importées (liste blanche)
+  export.js           partage d'une note : .inkline, PNG, PDF
+  pdf.js              générateur PDF minimal (images JPEG)
   history.js          annulation (instantanés)
   ui/
     state.js          état de l'interface
@@ -56,6 +61,16 @@ Le rendu suit un modèle *immediate mode* : l'état est modifié, puis la partie
 
 Le moteur de mise en page (`layout`) est utilisé **à la fois** par le rendu et par le hit-testing : ce que l'on voit et ce que l'on touche sont calculés par la même fonction.
 
+## Sécurité
+
+L'app n'a ni serveur ni compte : la seule entrée non fiable, ce sont les **fichiers importés** (note reçue, sauvegarde, lien iReal). Trois couches indépendantes :
+
+1. **Validation** (`sanitize`) : toute donnée importée ou chargée est reconstruite champ par champ à partir d'une liste blanche (types, énumérations, bornes, longueurs) ; les identifiants invalides sont régénérés.
+2. **Échappement** : toute valeur insérée dans du HTML ou du SVG passe par `esc()` ; les sélecteurs CSS par `CSS.escape()`.
+3. **Content Security Policy** (`index.html`) : seuls les fichiers `.js` de l'app peuvent s'exécuter ; aucune origine tierce n'est contactée.
+
+`tests/security-export.test.js` vérifie qu'un fichier piégé est neutralisé.
+
 ## Données
 
 Voir le module `model` pour le détail des types. En bref :
@@ -65,7 +80,9 @@ Voir le module `model` pour le détail des types. En bref :
 - les durées sont en **noires** (point ×1.5, triolet ×2/3) ;
 - les champs optionnels sont absents plutôt que `false`.
 
-Le format est rétrocompatible : une note créée en 1.0 s'ouvre en 1.4.
+Le format est rétrocompatible : une note créée en 1.0 s'ouvre en 1.5.
+
+Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 'note', version: 1, note }`.
 
 ## Publier une nouvelle version
 

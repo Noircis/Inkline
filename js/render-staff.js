@@ -175,7 +175,7 @@ export function staffSvg(b, W, opt = {}) {
         : `<text class="clef" x="3" y="${g.staffTop + 30}" font-size="38">\u{1D11E}</text>`;
     }
     if (si === 0) {
-      const [n, d] = b.time.split('/');
+      const [n, d] = b.time.split('/').map(esc);
       staff += L.rh
         ? `<text class="t" x="34" y="${g.line - 3}" font-size="15" text-anchor="middle">${n}</text><text class="t" x="34" y="${g.line + 14}" font-size="15" text-anchor="middle">${d}</text>`
         : `<text class="t" x="46" y="${g.staffTop + 17}" font-size="21" text-anchor="middle">${n}</text><text class="t" x="46" y="${g.staffTop + 37}" font-size="21" text-anchor="middle">${d}</text>`;

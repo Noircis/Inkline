@@ -19,6 +19,7 @@
  * suivie de `touch` (sauvegarde) puis d'un redessin du bloc.
  */
 
+import { esc } from '../util.js';
 import { state, app, curNote, blockById, touch } from './state.js';
 import { TIME_SIGNATURES } from '../model.js';
 import { pitchName } from '../pitch.js';
@@ -53,12 +54,12 @@ const LABELS = {
 export function staffBlockEl(n, b, el) {
   const rh = b.clef === 'rhythm';
   el.innerHTML = `<div class="shead"><span class="kind">${rh ? 'Rythme' : 'Portée'}</span>
-    ${rh ? '' : `<select data-f="clef" id="c_${b.id}" aria-label="Clé"><option value="treble">Sol</option><option value="bass">Fa</option></select>`}
-    <select data-f="time" id="m_${b.id}" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
-    <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${b.id}"></label>
+    ${rh ? '' : `<select data-f="clef" id="c_${esc(b.id)}" aria-label="Clé"><option value="treble">Sol</option><option value="bass">Fa</option></select>`}
+    <select data-f="time" id="m_${esc(b.id)}" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
+    <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${esc(b.id)}"></label>
     <button type="button" class="chip" data-f="swing" aria-pressed="${!!b.swing}">Swing</button>
-    <button type="button" class="playbtn" data-play="${b.id}">&#9654; Écouter</button></div>
-    <div class="staff-wrap" data-staff="${b.id}"></div>` + toolsHtml();
+    <button type="button" class="playbtn" data-play="${esc(b.id)}">&#9654; Écouter</button></div>
+    <div class="staff-wrap" data-staff="${esc(b.id)}"></div>` + toolsHtml();
 
   const cs = /** @type {HTMLSelectElement|null} */ (el.querySelector('[data-f=clef]'));
   if (cs) { cs.value = b.clef; cs.onchange = () => { pushSnapshot(n); b.clef = /** @type {any} */ (cs.value); touch(n); redrawStaff(b.id); }; }
@@ -87,7 +88,7 @@ export function staffBlockEl(n, b, el) {
 export function redrawStaff(id) {
   const b = blockById(id);
   if (!b || b.type !== 'staff') return;
-  const wrap = /** @type {HTMLElement} */ (app.querySelector(`[data-staff="${id}"]`));
+  const wrap = /** @type {HTMLElement} */ (app.querySelector(`[data-staff="${CSS.escape(id)}"]`));
   if (!wrap) return;
   const W = Math.max(220, wrap.clientWidth || 300);
   const isAct = state.activeId === id;

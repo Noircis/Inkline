@@ -6,13 +6,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#F2F4F8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1218" media="(prefers-color-scheme: dark)">
+<!--
+  Content Security Policy : ce que la page a le droit de charger et d'exécuter.
+  - script-src 'self' : uniquement les fichiers .js de l'app. Un script injecté
+    dans le HTML (onerror=…, <script> inline) est refusé par le navigateur :
+    c'est le filet de sécurité si un échappement était oublié.
+  - style-src 'unsafe-inline' : nécessaire pour les attributs style="…" et
+    element.style (ne permet pas d'exécuter du code).
+  - img-src data: blob: : images générées pour l'export ; font-src data: : polices embarquées.
+  - Aucune autre origine : l'app ne contacte aucun serveur tiers.
+-->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Inkline</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,700&family=Noto+Music&display=swap">
+<link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>

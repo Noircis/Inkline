@@ -25,23 +25,18 @@
  * vers IndexedDB.
  */
 
+import { sanitizeNote, sanitizeNotes } from './sanitize.js';
+
 /** Clé `localStorage` du carnet (historique : ne pas changer). */
 export const STORAGE_KEY = 'carnet-portees-v1';
 
 /** Identifiant écrit dans les fichiers de sauvegarde. */
 const BACKUP_APP = 'carnet-portees';
 
-let timer = null;
+/** Identifiant écrit dans les fichiers de note partagée (`.inkline`). */
+const NOTE_APP = 'inkline';
 
-/**
- * Vérifie grossièrement qu'un objet ressemble à une note (garde-fou contre
- * des données corrompues ou un fichier étranger).
- * @param {*} n
- * @returns {boolean}
- */
-function isNote(n) {
-  return !!n && typeof n.id === 'string' && Array.isArray(n.blocks);
-}
+let timer = null;
 
 /**
  * Charge le carnet. Retourne un objet vide si rien n'est stocké, si le JSON
@@ -51,8 +46,9 @@ function isNote(n) {
 export function loadNotes() {
   let data = {};
   try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch (e) { data = {}; }
-  Object.keys(data).forEach((k) => { if (!isNote(data[k])) delete data[k]; });
-  return data;
+  // Même le stockage local est validé : il a pu être écrit par une ancienne
+  // version, ou corrompu. Une donnée invalide ne doit jamais atteindre le rendu.
+  return sanitizeNotes(data);
 }
 
 /**
@@ -91,23 +87,54 @@ export function backupJson(notes) {
 }
 
 /**
- * Fusionne une sauvegarde dans le carnet. Pour chaque note, la version la
- * plus récente (`updated`) gagne : importer deux fois le même fichier est
- * sans effet, et une note modifiée depuis la sauvegarde n'est pas écrasée.
+ * Contenu d'un fichier `.inkline` : une seule note, pour l'envoyer à quelqu'un.
+ * @param {module:model~Note} note
+ * @returns {string}
+ */
+export function noteFileJson(note) {
+  return JSON.stringify({ app: NOTE_APP, kind: 'note', version: 1, note }, null, 1);
+}
+
+/**
+ * Résultat d'un import.
+ * @typedef {Object} ImportResult
+ * @property {'note'|'backup'} kind Type de fichier reconnu.
+ * @property {number} count Nombre de notes ajoutées ou mises à jour.
+ * @property {string|null} firstId Id de la note importée (pour l'ouvrir directement).
+ */
+
+/**
+ * Importe un fichier dans le carnet : note partagée (`.inkline`) ou sauvegarde complète.
+ *
+ * - **Note partagée** : elle est **ajoutée** avec de nouveaux identifiants,
+ *   sans jamais écraser une note existante (recevoir deux fois la même note
+ *   en crée deux copies, c'est voulu : on ne sait pas laquelle garder).
+ * - **Sauvegarde** : fusion par id, la version la plus récente (`updated`)
+ *   gagne. Importer deux fois la même sauvegarde est sans effet.
+ *
+ * Dans les deux cas, tout passe par {@link module:sanitize|sanitize}.
  *
  * @param {Object.<string, module:model~Note>} notes Carnet (modifié sur place).
  * @param {string} text Contenu du fichier.
- * @returns {number} Nombre de notes ajoutées ou mises à jour.
- * @throws {SyntaxError} Si le fichier n'est pas du JSON.
+ * @returns {ImportResult}
+ * @throws {Error} Si le fichier n'est ni du JSON ni un format Inkline.
  */
-export function mergeBackup(notes, text) {
+export function importFile(notes, text) {
   const d = JSON.parse(text);
-  const incoming = d.notes || d;
+  if (d && d.kind === 'note' && d.note) {
+    const n = sanitizeNote(d.note, { freshIds: true });
+    if (!n) throw new Error('note invalide');
+    n.updated = Date.now();
+    notes[n.id] = n;
+    return { kind: 'note', count: 1, firstId: n.id };
+  }
+  const incoming = sanitizeNotes(d && d.notes ? d.notes : d);
   let count = 0;
+  let firstId = null;
   Object.values(incoming).forEach((n) => {
-    if (!isNote(n)) return;
     const cur = notes[n.id];
-    if (!cur || n.updated >= cur.updated) { notes[n.id] = n; count++; }
+    if (!cur || n.updated >= cur.updated) { notes[n.id] = n; count++; firstId = firstId || n.id; }
   });
-  return count;
+  if (!count && !Object.keys(incoming).length) throw new Error('aucune note');
+  return { kind: 'backup', count, firstId };
 }

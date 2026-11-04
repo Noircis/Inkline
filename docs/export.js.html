@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>export.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordParts">chordParts</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-export.html">export</a><ul class='methods'><li data-type='method'><a href="module-export.html#.download">download</a></li><li data-type='method'><a href="module-export.html#.noteToInkline">noteToInkline</a></li><li data-type='method'><a href="module-export.html#.noteToPdf">noteToPdf</a></li><li data-type='method'><a href="module-export.html#.noteToPng">noteToPng</a></li><li data-type='method'><a href="module-export.html#.noteToSvg">noteToSvg</a></li><li data-type='method'><a href="module-export.html#.paginate">paginate</a></li><li data-type='method'><a href="module-export.html#.shareOrDownload">shareOrDownload</a></li><li data-type='method'><a href="module-export.html#.slug">slug</a></li><li data-type='method'><a href="module-export.html#~caption">caption</a></li><li data-type='method'><a href="module-export.html#~embeddedFontCss">embeddedFontCss</a></li><li data-type='method'><a href="module-export.html#~rasterize">rasterize</a></li><li data-type='method'><a href="module-export.html#~toBlob">toBlob</a></li><li data-type='method'><a href="module-export.html#~wrap">wrap</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridSvg">gridSvg</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pdf.html">pdf</a><ul class='members'><li data-type='member'><a href="module-pdf.html#.A4">A4</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pdf.html#.buildPdf">buildPdf</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-sanitize.html">sanitize</a><ul class='methods'><li data-type='method'><a href="module-sanitize.html#.sanitizeBlock">sanitizeBlock</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNote">sanitizeNote</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a></li><li data-type='method'><a href="module-sanitize.html#~item">item</a></li><li data-type='method'><a href="module-sanitize.html#~measure">measure</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li><li data-type='member'><a href="module-storage.html#~NOTE_APP">NOTE_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.importFile">importFile</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.noteFileJson">noteFileJson</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~bindShare">bindShare</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">export.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module export
+ * @description
+ * **Partage d'une note** : fichier `.inkline`, image PNG ou PDF.
+ *
+ * ## Rendu d'une note en image
+ *
+ * 1. {@link module:export.noteToSvg|noteToSvg} compose la note entière dans **un seul SVG** :
+ *    titre, date, blocs texte (retour à la ligne calculé avec
+ *    `CanvasRenderingContext2D.measureText`), portées ({@link module:render-staff}),
+ *    grilles ({@link module:grid.gridSvg|gridSvg}). Toujours en thème clair, pour l'impression.
+ * 2. Les **polices sont embarquées** dans le SVG en base64 (`data:` URI) :
+ *    une image SVG affichée par `&lt;img>` n'a pas le droit de charger des
+ *    fichiers externes. On relit `css/fonts.css` pour savoir lesquelles.
+ * 3. Le SVG est chargé dans un `Image`, dessiné sur un `&lt;canvas>` à ×2
+ *    (netteté sur écran haute densité), puis exporté en PNG ou en JPEG.
+ * 4. Pour le PDF, l'image est découpée en pages A4, de préférence entre
+ *    deux blocs, puis assemblée par {@link module:pdf.buildPdf|buildPdf}.
+ *
+ * ## Envoi
+ *
+ * {@link module:export.shareOrDownload|shareOrDownload} ouvre le menu de
+ * partage d'Android (API *Web Share*) quand le navigateur l'accepte pour ce
+ * type de fichier, et télécharge le fichier sinon.
+ */
+
+import { esc } from './util.js';
+import { staffSvg } from './render-staff.js';
+import { gridSvg, keyLabel } from './grid.js';
+import { noteFileJson } from './storage.js';
+import { buildPdf, A4 } from './pdf.js';
+
+/** Largeur logique de l'image (px) ; l'image finale fait le double. */
+const W = 720;
+/** Marge intérieure (px). */
+const PAD = 40;
+/** Facteur de suréchantillonnage du canvas. */
+const SCALE = 2;
+
+/** Palette claire fixe de l'export (indépendante du thème du téléphone). */
+const C = { ink: '#151A25', muted: '#5B6477', line: '#8D96A9', paper: '#FFFFFF' };
+
+/** Styles des classes SVG produites par render-staff et gridSvg. */
+const SVG_CSS = `
+.l{stroke:${C.line};stroke-width:1}.bar{stroke:${C.ink};stroke-width:1.2}.f{fill:${C.ink}}.s{stroke:${C.ink};fill:none}
+.h{fill:${C.paper};stroke:${C.ink};stroke-width:1.6}.t{fill:${C.ink};font-family:"Bricolage Grotesque",sans-serif;font-weight:700}
+.clef,.simg{fill:${C.ink};font-family:"Noto Music",serif}.simg{font-size:28px}
+.chord{fill:${C.ink};font-family:"Instrument Sans",sans-serif;font-weight:600;font-size:14px}
+.mnum{fill:${C.muted};font-size:10px;font-family:"Instrument Sans",sans-serif}
+.tup{fill:${C.ink};font-family:"Instrument Sans",sans-serif;font-style:italic;font-weight:700;font-size:12px}
+.chg,.chm{fill:${C.ink};font-family:"Bricolage Grotesque",sans-serif;font-weight:600}.chm{fill:${C.line};font-weight:400}
+.secl{fill:${C.paper};font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:11px}
+.volt{fill:${C.ink};font-family:"Instrument Sans",sans-serif;font-weight:600;font-size:10px}
+.ttl{fill:${C.ink};font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:30px}
+.txt{fill:${C.ink};font-family:"Instrument Sans",sans-serif;font-size:16px}
+.cap{fill:${C.muted};font-family:"Instrument Sans",sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em}
+.foot{fill:${C.muted};font-family:"Instrument Sans",sans-serif;font-size:11px}`;
+
+// Règles @font-face avec polices en base64 (calculées une seule fois).
+/** @type {Promise&lt;string>|null} */
+let fontCssPromise = null;
+
+/**
+ * Lit `css/fonts.css` et remplace chaque `url(...)` par le fichier encodé en base64.
+ * @returns {Promise&lt;string>}
+ */
+function embeddedFontCss() {
+  if (!fontCssPromise) {
+    fontCssPromise = (async () => {
+      const cssUrl = new URL('../css/fonts.css', import.meta.url);
+      const css = await (await fetch(cssUrl)).text();
+      const faces = css.match(/@font-face\{[^}]*\}/g) || [];
+      const out = await Promise.all(faces.map(async (face) => {
+        const m = /url\(([^)]+)\)/.exec(face);
+        if (!m) return '';
+        const buf = new Uint8Array(await (await fetch(new URL(m[1], cssUrl))).arrayBuffer());
+        // Conversion octets → base64 par paquets (String.fromCharCode refuse les très longs tableaux).
+        let bin = '';
+        for (let i = 0; i &lt; buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+        return face.replace(m[0], `url(data:font/woff2;base64,${btoa(bin)})`).replace(/unicode-range:[^;}]*;?/, '');
+      }));
+      return out.join('\n');
+    })().catch(() => '');
+  }
+  return fontCssPromise;
+}
+
+/**
+ * Coupe un paragraphe en lignes qui tiennent dans `maxW` pixels.
+ * Algorithme glouton mot à mot ; un mot plus long que la ligne est laissé tel quel.
+ * @param {CanvasRenderingContext2D} ctx Contexte avec la bonne police.
+ * @param {string} text
+ * @param {number} maxW
+ * @returns {string[]}
+ */
+function wrap(ctx, text, maxW) {
+  const lines = [];
+  text.split('\n').forEach((para) => {
+    let line = '';
+    para.split(/\s+/).filter(Boolean).forEach((word) => {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > maxW &amp;&amp; line) { lines.push(line); line = word; } else line = test;
+    });
+    lines.push(line);
+  });
+  return lines;
+}
+
+/**
+ * Légende affichée au-dessus d'une portée ou d'une grille.
+ * @param {module:model~Block} b
+ * @returns {string}
+ */
+function caption(b) {
+  if (b.type === 'grid') return `GRILLE · ${keyLabel(b.key).toUpperCase()} · ${b.time} · ${b.style.toUpperCase()} · TEMPO ${b.tempo}`;
+  const kind = b.clef === 'rhythm' ? 'RYTHME' : b.clef === 'bass' ? 'CLÉ DE FA' : 'CLÉ DE SOL';
+  return `${kind} · ${b.time} · TEMPO ${b.tempo}${b.swing ? ' · SWING' : ''}`;
+}
+
+/**
+ * Compose une note en un SVG autonome.
+ *
+ * @param {module:model~Note} note
+ * @returns {Promise&lt;{svg: string, width: number, height: number, breaks: number[]}>}
+ *   `breaks` : ordonnées (px) des espaces entre blocs, où une coupure de page est élégante.
+ */
+export async function noteToSvg(note) {
+  if (document.fonts) {
+    await Promise.all(['700 30px "Bricolage Grotesque"', '16px "Instrument Sans"'].map((f) => document.fonts.load(f).catch(() => {})));
+  }
+  const ctx = document.createElement('canvas').getContext('2d');
+  const CW = W - 2 * PAD;
+  let y = PAD;
+  let body = '';
+  const breaks = [];
+
+  // Titre (sur plusieurs lignes si besoin) et date.
+  ctx.font = '700 30px "Bricolage Grotesque", sans-serif';
+  wrap(ctx, note.title || 'Sans titre', CW).forEach((l) => { y += 34; body += `&lt;text class="ttl" x="${PAD}" y="${y}">${esc(l)}&lt;/text>`; });
+  const date = new Date(note.updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  y += 24;
+  body += `&lt;text class="foot" x="${PAD}" y="${y}">${esc(date)}&lt;/text>`;
+  y += 12;
+
+  ctx.font = '16px "Instrument Sans", sans-serif';
+  note.blocks.forEach((b) => {
+    if (b.type === 'text') {
+      if (!b.text.trim()) return;
+      breaks.push(y);
+      y += 14;
+      wrap(ctx, b.text, CW).forEach((l) => { y += 24; body += `&lt;text class="txt" x="${PAD}" y="${y}" xml:space="preserve">${esc(l)}&lt;/text>`; });
+      y += 6;
+    } else if (b.type === 'staff') {
+      breaks.push(y);
+      y += 30;
+      body += `&lt;text class="cap" x="${PAD}" y="${y}">${esc(caption(b))}&lt;/text>`;
+      // La bande de chaque ligne de portée réserve ~20 px en haut pour les
+      // accords chiffrés : on la place juste sous la légende sans chevauchement.
+      const { svg, L } = staffSvg(b, CW);
+      body += `&lt;g transform="translate(${PAD},${y + 4})">${svg}&lt;/g>`;
+      y += L.height - 6;
+    } else if (b.type === 'grid') {
+      breaks.push(y);
+      y += 30;
+      body += `&lt;text class="cap" x="${PAD}" y="${y}">${esc(caption(b))}&lt;/text>`;
+      // Les mesures vides en fin de grille (créées pendant la saisie) ne sont pas exportées.
+      const measures = b.measures.slice();
+      while (measures.length > 1 &amp;&amp; !measures[measures.length - 1].ch.length &amp;&amp; !measures[measures.length - 2].fin) measures.pop();
+      const g = gridSvg({ ...b, measures }, CW);
+      body += `&lt;g transform="translate(${PAD},${y + 12})">${g.svg}&lt;/g>`;
+      y += 12 + g.height;
+    }
+  });
+  y += 30;
+  body += `&lt;text class="foot" x="${W - PAD}" y="${y}" text-anchor="end">Inkline&lt;/text>`;
+  const height = Math.ceil(y + PAD - 10);
+  breaks.push(height);
+
+  const fonts = await embeddedFontCss();
+  const svg = `&lt;svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${height}" viewBox="0 0 ${W} ${height}">`
+    + `&lt;style>${fonts}${SVG_CSS}&lt;/style>&lt;rect width="100%" height="100%" fill="${C.paper}"/>${body}&lt;/svg>`;
+  return { svg, width: W, height, breaks };
+}
+
+/**
+ * Rasterise un SVG sur un canvas (×{@link SCALE}).
+ * @param {string} svg
+ * @param {number} w Largeur logique.
+ * @param {number} h Hauteur logique.
+ * @returns {Promise&lt;HTMLCanvasElement>}
+ */
+async function rasterize(svg, w, h) {
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    // Les polices embarquées sont parfois appliquées juste après le décodage :
+    // un court délai évite une première image avec des polices de secours.
+    await new Promise((r) => setTimeout(r, 60));
+    const canvas = document.createElement('canvas');
+    canvas.width = w * SCALE;
+    canvas.height = h * SCALE;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = C.paper;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} type
+ * @param {number} [quality]
+ * @returns {Promise&lt;Blob>}
+ */
+const toBlob = (canvas, type, quality) => new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('export impossible'))), type, quality));
+
+/**
+ * Image PNG de la note.
+ * @param {module:model~Note} note
+ * @returns {Promise&lt;Blob>}
+ */
+export async function noteToPng(note) {
+  const { svg, width, height } = await noteToSvg(note);
+  return toBlob(await rasterize(svg, width, height), 'image/png');
+}
+
+/**
+ * Choisit où couper les pages : on remplit chaque page au maximum en coupant
+ * au dernier espace entre blocs qui tient ; si un bloc est plus haut qu'une
+ * page, on coupe en plein milieu (rien de mieux possible).
+ *
+ * @param {number[]} breaks Coupures possibles (croissantes, la dernière = hauteur totale).
+ * @param {number} pageH Hauteur d'une page en px logiques.
+ * @returns {number[]} Ordonnées de fin de chaque page.
+ */
+export function paginate(breaks, pageH) {
+  const total = breaks[breaks.length - 1];
+  const ends = [];
+  let start = 0;
+  while (start &lt; total - 1) {
+    const limit = start + pageH;
+    if (limit >= total) { ends.push(total); break; }
+    const candidates = breaks.filter((b) => b > start + pageH * 0.3 &amp;&amp; b &lt;= limit);
+    const end = candidates.length ? candidates[candidates.length - 1] : limit;
+    ends.push(end);
+    start = end;
+  }
+  return ends;
+}
+
+/**
+ * PDF A4 de la note (une image JPEG par page).
+ * @param {module:model~Note} note
+ * @returns {Promise&lt;Blob>}
+ */
+export async function noteToPdf(note) {
+  const { svg, width, height, breaks } = await noteToSvg(note);
+  const canvas = await rasterize(svg, width, height);
+  const pageH = Math.floor((A4.h / A4.w) * width); // hauteur d'une page A4 en px logiques
+  const pages = [];
+  let start = 0;
+  for (const end of paginate(breaks, pageH)) {
+    const slice = document.createElement('canvas');
+    slice.width = canvas.width;
+    slice.height = Math.round((end - start) * SCALE);
+    const sctx = slice.getContext('2d');
+    sctx.fillStyle = C.paper;
+    sctx.fillRect(0, 0, slice.width, slice.height);
+    sctx.drawImage(canvas, 0, -start * SCALE);
+    const jpeg = new Uint8Array(await (await toBlob(slice, 'image/jpeg', 0.92)).arrayBuffer());
+    pages.push({ jpeg, width: slice.width, height: slice.height });
+    start = end;
+  }
+  return new Blob([buildPdf(pages)], { type: 'application/pdf' });
+}
+
+/**
+ * Fichier `.inkline` de la note.
+ * @param {module:model~Note} note
+ * @returns {Blob}
+ */
+export function noteToInkline(note) {
+  return new Blob([noteFileJson(note)], { type: 'application/json' });
+}
+
+/**
+ * Nom de fichier lisible à partir du titre (« Blues en F » → « blues-en-f »).
+ * @param {string} title
+ * @returns {string}
+ */
+export function slug(title) {
+  const s = (title || 'note').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return s.slice(0, 50) || 'note';
+}
+
+/**
+ * Télécharge un Blob via un lien temporaire.
+ * @param {Blob} blob
+ * @param {string} name
+ */
+export function download(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+/**
+ * Ouvre le menu de partage du téléphone avec le fichier, ou le télécharge.
+ *
+ * Chrome Android n'accepte de partager que certains types (images, PDF,
+ * texte…). Un `.inkline` (JSON) n'en fait pas partie : on tente donc
+ * plusieurs variantes de nom/type, du plus propre au plus compatible,
+ * puis on se replie sur le téléchargement.
+ *
+ * @param {Blob} blob
+ * @param {Array.&lt;{name: string, type: string}>} variants Noms et types à essayer, dans l'ordre.
+ * @param {string} title Titre proposé à l'app destinataire.
+ * @returns {Promise&lt;'shared'|'cancelled'|'downloaded'>}
+ */
+export async function shareOrDownload(blob, variants, title) {
+  if (navigator.canShare &amp;&amp; navigator.share) {
+    for (const v of variants) {
+      const file = new File([blob], v.name, { type: v.type });
+      if (!navigator.canShare({ files: [file] })) continue;
+      try {
+        await navigator.share({ files: [file], title });
+        return 'shared';
+      } catch (e) {
+        if (e &amp;&amp; e.name === 'AbortError') return 'cancelled'; // l'utilisateur a fermé le menu
+        break; // autre refus (activation expirée…) : on télécharge
+      }
+    }
+  }
+  download(blob, variants[0].name);
+  return 'downloaded';
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>
