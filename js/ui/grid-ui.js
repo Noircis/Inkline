@@ -27,7 +27,11 @@ import { sanitizeBlock } from '../sanitize.js';
 import * as audio from '../audio.js';
 import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks, readFile } from './common.js';
 import { setActive, undo, registerBlockKind } from './blocks.js';
+import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from './fold.js';
 import { renderScreen } from './nav.js';
+
+/** Mesures par ligne de grille. */
+const GRID_COLS = 4;
 
 const gpal = /** @type {HTMLElement} */ (document.getElementById('gpal'));
 const gin = /** @type {HTMLInputElement} */ (document.getElementById('gIn'));
@@ -90,7 +94,8 @@ function bindGridSettings(n, b, el) {
     touch(n);
   };
   el.querySelector('[data-play]').onclick = () => {
-    setActive(b.id);
+    // Un bloc réduit s'écoute sans se déplier : on ne l'active pas.
+    if (!el.classList.contains('folded')) setActive(b.id);
     audio.playGrid(b, playCallbacks(b.id, redrawGrid));
     updatePlayBtn(b.id);
   };
@@ -195,7 +200,9 @@ function bindIRealPanel(n, b, el) {
  * @param {HTMLElement} el
  */
 function bindMeasureSelection(n, b, el) {
-  el.querySelector('.gridwrap').addEventListener('click', (e) => {
+  const wrap = /** @type {HTMLElement} */ (el.querySelector('.gridwrap'));
+  guardFoldedTaps(wrap, b);
+  wrap.addEventListener('click', (e) => {
     const cell = /** @type {HTMLElement} */ (e.target).closest('[data-gm]');
     if (!cell) return;
     if (state.activeId !== b.id) setActive(b.id);
@@ -233,13 +240,17 @@ export function gridBlockEl(n, b, el) {
 export function redrawGrid(id) {
   const b = blockById(id);
   if (!b || b.type !== 'grid') return;
-  const w = app.querySelector(`[data-grid="${CSS.escape(id)}"]`);
+  const w = /** @type {HTMLElement} */ (app.querySelector(`[data-grid="${CSS.escape(id)}"]`));
   if (!w) return;
+  const lines = Math.ceil(b.measures.length / GRID_COLS);
+  const folded = isFolded(b, lines);
   w.innerHTML = gridHtml(
     b,
     state.activeId === id ? state.sel : null,
     audio.isPlaying(id) ? state.playIdx : null,
+    folded ? FOLD_PREVIEW_LINES * GRID_COLS : 0,
   );
+  applyFold(w, b, lines, folded);
   if (state.activeId === id) updateGridPalette();
 }
 

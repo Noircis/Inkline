@@ -3,6 +3,28 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.2.0] - 2026-11-04
+
+Blocs longs réduits : une longue portée ou une longue grille ne prend plus tout l'écran.
+
+### Ajouté
+
+- **Réduire un bloc long** : une portée, une ligne rythmique ou une grille de 5 lignes ou plus a un bouton « Réduire ▴ ». Réduite, elle n'affiche que ses 3 premières lignes, avec un fondu et un bouton « Afficher tout · N lignes ▾ ».
+- **Option « Réduire automatiquement les blocs longs »** (Options › Affichage), désactivée par défaut. Un choix fait à la main sur un bloc (déplier ou réduire) l'emporte toujours sur l'option.
+- Toucher un bloc réduit l'ouvre en édition : il s'affiche en entier tant qu'on l'édite, et aucune note n'est posée par erreur. Avec l'option automatique, il se réduit de nouveau quand on passe à autre chose.
+- Un bloc réduit peut être écouté sans être déplié.
+
+### Détails
+
+- L'état réduit est mémorisé dans la note, sans changer sa date de modification, et n'est pas modifié par « Annuler ».
+- Il n'est pas transmis dans un fichier `.inkline` partagé : chez le destinataire, c'est son option qui décide.
+- Les exports PNG et PDF montrent toujours les blocs en entier.
+
+### Développement
+
+- `js/folding.js` (règle de décision, pure et testée) et `js/ui/fold.js` (bouton, fondu, interception des touchers).
+- 3 tests (`tests/folding.test.js`). 58 tests au total.
+
 ## [2.1.0] - 2026-11-04
 
 Nouveau stockage : le carnet passe de `localStorage` à IndexedDB. Rien ne change à l'écran.

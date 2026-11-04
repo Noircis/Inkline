@@ -51,6 +51,9 @@ const LIMITS = {
   notes: 5000,
 };
 
+/** Valeurs possibles du champ `fold` d'un bloc. */
+const FOLDS = ['open', 'closed'];
+
 const isStr = (v) => typeof v === 'string';
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const str = (v, max) => (isStr(v) ? v.slice(0, max) : '');
@@ -119,13 +122,15 @@ export function sanitizeBlock(r) {
           .map((x) => item(x, clef === 'rhythm'))
           .filter(Boolean)
       : [];
-    return { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
+    const st = { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
+    if (FOLDS.includes(r.fold)) st.fold = r.fold;
+    return st;
   }
   if (r.type === 'grid') {
     const measures = Array.isArray(r.measures)
       ? r.measures.slice(0, LIMITS.measures).map(measure).filter(Boolean)
       : [];
-    return {
+    const grid = {
       id: id(r.id),
       type: 'grid',
       time,
@@ -134,6 +139,8 @@ export function sanitizeBlock(r) {
       style: isStr(r.style) && r.style.trim() ? str(r.style, LIMITS.style) : 'Medium Swing',
       measures: measures.length ? measures : [{ ch: [] }],
     };
+    if (FOLDS.includes(r.fold)) grid.fold = r.fold;
+    return grid;
   }
   return null;
 }
@@ -153,6 +160,7 @@ export function sanitizeNote(r, opt = {}) {
   if (opt.freshIds)
     blocks.forEach((b) => {
       b.id = uid();
+      delete b.fold; // l'affichage réduit appartient à celui qui reçoit la note
     });
   /** @type {module:model~Note} */
   const note = {

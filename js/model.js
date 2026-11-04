@@ -86,6 +86,7 @@ import { uid } from './util.js';
  * @property {number} tempo Tempo en noires par minute.
  * @property {boolean} swing Croches swing à la lecture.
  * @property {StaffItem[]} items Éléments dans l'ordre.
+ * @property {'open'|'closed'} [fold] Choix manuel d'affichage d'un bloc long (2.2) : déplié ou réduit. Absent : l'option « Réduire automatiquement » décide.
  */
 
 /**
@@ -118,6 +119,7 @@ import { uid } from './util.js';
  * @property {string} style Style iReal (`'Medium Swing'`, `'Bossa Nova'`…).
  * @property {number} tempo Tempo en noires par minute.
  * @property {GridMeasure[]} measures
+ * @property {'open'|'closed'} [fold] Choix manuel d'affichage d'un bloc long (2.2) : déplié ou réduit. Absent : l'option « Réduire automatiquement » décide.
  */
 
 /**

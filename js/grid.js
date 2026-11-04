@@ -185,11 +185,14 @@ export function gridPlayOrder(M) {
  * @param {module:model~GridBlock} b
  * @param {number|null} selI Mesure sélectionnée.
  * @param {number|null} playI Mesure en cours de lecture.
+ * @param {number} [limit=0] N'afficher que les `limit` premières mesures
+ *   (bloc réduit, sans cellule `+`). 0 : toutes.
  * @returns {string}
  */
-export function gridHtml(b, selI, playI) {
-  const M = b.measures;
-  const ended = M.length && M[M.length - 1].fin;
+export function gridHtml(b, selI, playI, limit = 0) {
+  const all = b.measures;
+  const M = limit ? all.slice(0, limit) : all;
+  const ended = all.length && all[all.length - 1].fin;
   let h = '<div class="grid">';
   M.forEach((m, i) => {
     const prev = M[i - 1];
@@ -205,7 +208,7 @@ export function gridHtml(b, selI, playI) {
     if (m.re) c.push('rb-re');
     else if (m.fin) c.push('rb-fin');
     else if (m.dbl) c.push('rb-dbl');
-    if (i % 4 === 3 || (i === M.length - 1 && ended)) c.push('rb');
+    if (i % 4 === 3 || (i === all.length - 1 && ended)) c.push('rb');
     const inner =
       m.ch.length === 1 && m.ch[0] === '%'
         ? '<span class="sim" aria-label="Mesure répétée">\u{1D10E}</span>'
@@ -216,7 +219,7 @@ export function gridHtml(b, selI, playI) {
       (m.ending ? `<span class="volta">${esc(String(m.ending))}.</span>` : '') +
       `<span class="gcs">${inner}</span></button>`;
   });
-  if (!ended)
+  if (!ended && M.length === all.length)
     h += '<button type="button" class="gm add" data-gm="add" aria-label="Ajouter une mesure">+</button>';
   return h + '</div>';
 }

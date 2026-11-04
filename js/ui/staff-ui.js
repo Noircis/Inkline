@@ -29,6 +29,7 @@ import { pushSnapshot } from '../history.js';
 import * as audio from '../audio.js';
 import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks } from './common.js';
 import { setActive, undo, registerBlockKind } from './blocks.js';
+import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from './fold.js';
 
 const pal = /** @type {HTMLElement} */ (document.getElementById('palette'));
 const barBar = /** @type {HTMLElement} */ (document.getElementById('barBar'));
@@ -96,13 +97,14 @@ export function staffBlockEl(n, b, el) {
     touch(n);
   };
   el.querySelector('[data-play]').onclick = () => {
-    setActive(b.id);
+    // Un bloc réduit s'écoute sans se déplier : on ne l'active pas.
+    if (!el.classList.contains('folded')) setActive(b.id);
     audio.playStaff(b, playCallbacks(b.id, redrawStaff));
     updatePlayBtn(b.id);
   };
-  el.querySelector('.staff-wrap').addEventListener('click', (e) =>
-    staffTap(n, b, /** @type {MouseEvent} */ (e)),
-  );
+  const wrap = /** @type {HTMLElement} */ (el.querySelector('.staff-wrap'));
+  guardFoldedTaps(wrap, b);
+  wrap.addEventListener('click', (e) => staffTap(n, b, /** @type {MouseEvent} */ (e)));
 }
 
 /**
@@ -118,11 +120,16 @@ export function redrawStaff(id) {
   if (!wrap) return;
   const W = Math.max(220, wrap.clientWidth || 300);
   const isAct = state.activeId === id;
+  // Nombre de lignes à cette largeur, pour décider de l'affichage réduit.
+  const lines = layout(b, W, isAct).systems.length;
+  const folded = isFolded(b, lines);
   wrap.innerHTML = staffSvg(b, W, {
     sel: isAct ? state.sel : null,
     play: audio.isPlaying(id) ? state.playIdx : null,
     cursor: isAct,
+    maxSystems: folded ? FOLD_PREVIEW_LINES : undefined,
   }).svg;
+  applyFold(wrap, b, lines, folded);
   wrap._W = W;
   if (isAct) updateStaffPalette();
 }

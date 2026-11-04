@@ -6,7 +6,8 @@
  * Il regroupe ce qui concerne le carnet entier, pour garder l'accueil
  * dédié aux notes :
  *
- * - **Affichage** : Cartes, Mosaïque ou Liste pour l'accueil ;
+ * - **Affichage** : Cartes, Mosaïque ou Liste pour l'accueil ; réduction
+ *   automatique des blocs longs ;
  * - **Dossiers** : liste des dossiers (toucher pour modifier), création ;
  * - **Carnet** : exporter une sauvegarde complète (notes et dossiers), importer un fichier
  *   (sauvegarde ou note reçue `.inkline`), date de la dernière sauvegarde ;
@@ -41,6 +42,7 @@ import { LIST_VIEWS } from './list-view.js';
 import { APP_VERSION, readFile } from './common.js';
 import { registerScreen, renderScreen, openNote, backToList } from './nav.js';
 import { openFolderSheet } from './folder-sheet.js';
+import { FOLD_MIN_LINES, FOLD_PREVIEW_LINES } from './fold.js';
 
 /** Nombre de jours sans sauvegarde avant d'afficher le rappel. */
 const BACKUP_REMINDER_DAYS = 30;
@@ -137,6 +139,9 @@ function renderOptions() {
   <section class="opt">
     <h2 class="eyebrow" id="viewLbl">Affichage des notes</h2>
     <div class="seg" role="radiogroup" aria-labelledby="viewLbl">${LIST_VIEWS.map((v) => `<button type="button" role="radio" data-view="${v.key}" aria-checked="${v.key === current}">${VIEW_ICONS[v.key]}<span>${v.label}</span></button>`).join('')}</div>
+  <div class="opt-group opt-gap">
+      <label class="opt-row" for="optFold"><span>Réduire automatiquement les blocs longs<small>Portées, rythmes et grilles de ${FOLD_MIN_LINES} lignes ou plus : seules les ${FOLD_PREVIEW_LINES} premières sont affichées</small></span><input type="checkbox" class="switch" id="optFold"${meta.autoFold ? ' checked' : ''}></label>
+    </div>
   </section>
   <section class="opt">
     <h2 class="eyebrow">Dossiers</h2>
@@ -188,6 +193,8 @@ function renderOptions() {
   app
     .querySelector('#optNewFolder')
     .addEventListener('click', () => openFolderSheet(null, () => renderScreen({ keepScroll: true })));
+  const fold = /** @type {HTMLInputElement} */ (app.querySelector('#optFold'));
+  fold.onchange = () => setMeta({ autoFold: fold.checked || undefined });
   const msg = app.querySelector('#optMsg');
 
   app.querySelector('#optExport').onclick = () => {

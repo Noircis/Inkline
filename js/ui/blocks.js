@@ -100,7 +100,17 @@ export function updateActive() {
  */
 export function undo() {
   const n = curNote();
-  if (!n || !popSnapshot(n)) return;
+  if (!n) return;
+  // L'affichage réduit ne fait pas partie de l'historique d'annulation : on
+  // le mémorise avant de restaurer l'instantané, puis on le réapplique.
+  const folds = new Map(n.blocks.map((b) => [b.id, b.fold]));
+  if (!popSnapshot(n)) return;
+  n.blocks.forEach((b) => {
+    if (!folds.has(b.id)) return; // bloc revenu par l'annulation : il garde son état
+    const f = folds.get(b.id);
+    if (f) b.fold = f;
+    else delete b.fold;
+  });
   state.sel = null;
   if (state.activeId && !n.blocks.some((b) => b.id === state.activeId)) state.activeId = null;
   touch(n);

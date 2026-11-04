@@ -345,9 +345,15 @@ export function backupJson(notes, folders = {}) {
  * @returns {string}
  */
 export function noteFileJson(note) {
-  // Le rangement (dossier, épingle) reste chez soi : il n'a pas de sens chez le destinataire.
+  // Le rangement (dossier, épingle, blocs réduits) reste chez soi : il n'a pas
+  // de sens chez le destinataire.
   // eslint-disable-next-line no-unused-vars
   const { folder, pinned, ...shared } = note;
+  shared.blocks = note.blocks.map((b) => {
+    // eslint-disable-next-line no-unused-vars
+    const { fold, ...rest } = b;
+    return rest;
+  });
   return JSON.stringify({ app: NOTE_APP, kind: 'note', version: 1, note: shared }, null, 1);
 }
 
@@ -420,6 +426,7 @@ export function importFile(notes, text, folders = {}) {
  * @property {Object.<string, string>} [sorts] Tri choisi pour chaque sélection de la barre de dossiers.
  * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
  * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
+ * @property {boolean} [autoFold] Option « Réduire automatiquement les blocs longs » (2.2).
  */
 
 /**
@@ -455,6 +462,7 @@ export function getMeta() {
       sorts: sortsOf(m.sorts),
       dataVersion: num(m.dataVersion),
       storage: m.storage === 'idb' ? 'idb' : undefined,
+      autoFold: m.autoFold === true ? true : undefined,
     };
   } catch (e) {
     return {};
