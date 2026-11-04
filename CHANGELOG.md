@@ -3,6 +3,39 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.0.0] - 2026-11-04
+
+Organisation des notes : dossiers, recherche, tri, épingles.
+
+### Ajouté
+
+- **Dossiers** : une barre de dossiers défile en haut de l'accueil (`Toutes · tes dossiers · Non classées · +`), avec le nombre de notes de chacun et une pastille de couleur (8 couleurs, adaptées au mode sombre).
+  - Créer un dossier : `+` dans la barre, « + Nouveau dossier » dans les Options ou dans le sélecteur d'une note.
+  - Modifier ou supprimer : toucher de nouveau le dossier sélectionné, « Modifier » au-dessus de la liste, ou la section Dossiers des Options. Supprimer un dossier ne supprime aucune note : elles passent dans « Non classées ».
+  - Une note créée depuis un dossier est rangée dedans.
+- **Sélecteur « Dossier »** sous le titre de chaque note.
+- **Épingle** dans l'en-tête d'une note : les notes épinglées restent en tête de liste, quel que soit le tri.
+- **Recherche** dans toutes les notes : titres, textes et accords (grilles et accords des portées). Insensible à la casse et aux accents ; `B♭7` et `Bb7` sont équivalents. Tous les mots tapés doivent être présents.
+- **Tri** sur l'accueil : modifiées récemment, créées récemment ou titre (A → Z). Le choix est mémorisé pour chaque dossier.
+- Les cartes, la mosaïque et la liste indiquent le dossier de chaque note (dans « Toutes » et dans les résultats de recherche) et les notes épinglées.
+- Section **Dossiers** dans les Options.
+
+### Modifié
+
+- **Sauvegarde du carnet, format 2** : elle contient maintenant les dossiers. Les sauvegardes des versions précédentes restent importables. Importer une sauvegarde ajoute les dossiers manquants sans modifier ceux qui existent.
+- **Une note partagée (.inkline) ne transporte ni son dossier ni son épingle** : chez le destinataire, elle arrive dans « Non classées ».
+- Ranger une note (dossier, épingle) ne change pas sa date de modification.
+- **Architecture de l'interface** : fin des imports circulaires. Les écrans (accueil, note, options) et les blocs musicaux s'enregistrent auprès de deux registres (`ui/nav`, `ui/blocks`) ; l'ancien `ui/views.js` est découpé en `ui/home`, `ui/note`, `ui/nav`, `ui/blocks`, `ui/common`, `ui/icons` et `ui/folder-sheet`.
+- Choisir deux fois le même fichier à importer fonctionne (le sélecteur de fichier est remis à zéro).
+
+### Migration
+
+- Automatique et sans perte : au premier lancement de la 2.0, toutes les notes existantes sont « non classées ». Le format des notes est inchangé (deux champs optionnels en plus : `folder`, `pinned`).
+
+### Tests
+
+- 12 nouveaux tests (`tests/folders-search.test.js`) : dossiers, recherche, tri, validation des dossiers importés, sauvegarde v2 (aller-retour), import d'une sauvegarde v1, note partagée sans rangement. 49 tests au total.
+
 ## [1.7.5] - 2026-11-04
 
 Version technique : aucune nouvelle fonctionnalité, l'app se comporte exactement comme la 1.7.0.

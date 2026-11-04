@@ -16,36 +16,61 @@
  *
  * ```
  * main
- *  └─ ui/views ──┬─ ui/staff-ui ── render-staff ── layout ── rhythm ── pitch ── model ── util
- *                ├─ ui/grid-ui ─── grid ── chords
- *                │                 ireal
- *                ├─ ui/options ─── ui/list-view (affichages de la liste)
- *                ├─ export ─────── pdf
- *                ├─ audio (rhythm, grid, chords)
- *                ├─ storage ────── sanitize
- *                ├─ history
- *                └─ ui/state
+ *  ├─ ui/home ─────┬─ ui/list-view       (affichages de la liste)
+ *  │               ├─ ui/folder-sheet    (éditeur de dossier)
+ *  │               └─ ui/options         (rappel de sauvegarde)
+ *  ├─ ui/note ─────── export ── pdf
+ *  ├─ ui/options ──── ireal
+ *  ├─ ui/staff-ui ─── render-staff ── layout ── rhythm ── pitch ── model ── util
+ *  ├─ ui/grid-ui ──── grid ── chords
+ *  │
+ *  │  socle commun à tous les écrans (n'importe aucun écran) :
+ *  ├─ ui/nav         registre des écrans, navigation, bouton retour
+ *  ├─ ui/blocks      registre des blocs musicaux, bloc actif, annulation
+ *  ├─ ui/common      version, petits outils d'interface
+ *  ├─ ui/state       état de l'interface
+ *  ├─ storage ─────── sanitize ── folders
+ *  ├─ search, folders
+ *  ├─ audio (rhythm, grid, chords)
+ *  └─ history
  * ```
+ *
+ * Les écrans (`home`, `note`, `options`) et les blocs (`staff-ui`,
+ * `grid-ui`) **s'enregistrent** auprès de `ui/nav` et `ui/blocks` au
+ * chargement : la navigation les appelle par leur nom, sans les importer.
+ * Le graphe d'imports est ainsi sans cycle. C'est pourquoi `main` importe
+ * chaque écran et chaque bloc : ces imports les enregistrent.
  *
  * Les modules hors de `ui/` (sauf `audio`, `storage`, `export` et `main`)
  * sont purs, sans DOM, et testés sous Node (`npm test`).
  */
 
 import { state, app } from './ui/state.js';
-import { loadNotes, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
-import { render, showList } from './ui/views.js';
+import { loadNotes, loadFolders, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
+import { renderScreen, showList } from './ui/nav.js';
 import { redrawStaff } from './ui/staff-ui.js';
+// Imports pour leur effet : chaque module s'enregistre auprès de ui/nav ou ui/blocks.
+import './ui/grid-ui.js';
+import './ui/home.js';
+import './ui/note.js';
+import './ui/options.js';
 
 state.notes = loadNotes();
+state.folders = loadFolders();
+// Une note qui référence un dossier disparu redevient non classée.
+Object.values(state.notes).forEach((n) => {
+  if (n.folder && !state.folders[n.folder]) delete n.folder;
+});
 // loadNotes valide les notes et complète les champs manquants (date de
 // création des notes d'avant la 1.7.0). On réécrit tout de suite le résultat
 // pour figer ces valeurs : sinon elles seraient recalculées à chaque lancement.
 flushSave(state.notes);
 if (!getMeta().firstUse) setMeta({ firstUse: Date.now() }); // point de départ du rappel de sauvegarde
+if (getMeta().dataVersion !== 2) setMeta({ dataVersion: 2 }); // format 2.0 (dossiers) en place
 // Au démarrage on est toujours sur la liste : une entrée d'historique laissée
 // par une session précédente (rechargement de la page) est neutralisée.
 if (history.state && history.state.inkline) history.replaceState(null, '');
-render();
+renderScreen();
 
 // Bouton retour d'Android (ou du navigateur) : d'un sous-écran vers la liste.
 window.addEventListener('popstate', () => {
@@ -55,7 +80,8 @@ requestPersistence();
 
 // Polices web chargées après le premier rendu : les largeurs de texte des SVG
 // changent, on redessine une fois.
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+if (document.fonts && document.fonts.ready)
+  document.fonts.ready.then(() => renderScreen({ keepScroll: true }));
 
 // Android peut tuer l'app en arrière-plan : on écrit tout de suite.
 document.addEventListener('visibilitychange', () => {
@@ -63,12 +89,18 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // Redimensionnement / rotation : les portées dépendent de la largeur.
+// L'ouverture du clavier virtuel change seulement la hauteur : on ne
+// redessine que si la largeur a changé (sinon le champ de recherche perdrait
+// le focus et le clavier se refermerait aussitôt).
 let resizeTimer = null;
+let lastWidth = window.innerWidth;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     if (state.view.name !== 'note') {
-      render();
+      if (window.innerWidth === lastWidth || document.getElementById('folderSheet')) return;
+      lastWidth = window.innerWidth;
+      renderScreen({ keepScroll: true });
       return;
     }
     app.querySelectorAll('[data-staff]').forEach((w) => {

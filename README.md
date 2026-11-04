@@ -49,15 +49,23 @@ js/
   audio.js            synthé et séquenceur Web Audio
   storage.js          localStorage, sauvegarde/restauration, fichiers .inkline
   sanitize.js         validation des données importées (liste blanche)
+  folders.js          dossiers : modèle, sélection, compteurs, suppression
+  search.js           recherche (titres, textes, accords) et tri
   export.js           partage d'une note : .inkline, PNG, PDF
   pdf.js              générateur PDF minimal (images JPEG)
   history.js          annulation (instantanés)
   ui/
     state.js          état de l'interface
-    views.js          écrans liste et note, gestion des blocs
+    nav.js            registre des écrans, navigation, bouton retour d'Android
+    blocks.js         registre des blocs musicaux, bloc actif, annulation
+    common.js         version, petits outils d'interface partagés
+    icons.js          pictogrammes SVG
+    home.js           accueil : recherche, barre de dossiers, tri, liste
+    note.js           écran note : titre, dossier, épingle, blocs, partage
+    folder-sheet.js   éditeur de dossier (panneau du bas)
     staff-ui.js       bloc portée : toucher, palette
     grid-ui.js        bloc grille : saisie, palette, panneau iReal
-    options.js        écran Options : affichage, sauvegarde, import, iReal, à propos
+    options.js        écran Options : affichage, dossiers, sauvegarde, import, iReal, à propos
     list-view.js      affichages de la liste : Cartes, Mosaïque, Liste
 tests/                tests unitaires des modules purs
 docs/                 documentation générée (npm run docs)
@@ -67,8 +75,10 @@ docs/                 documentation générée (npm run docs)
 
 Le code est séparé en deux couches :
 
-- **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale.
+- **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale et d'organisation.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`) : branche la logique sur le navigateur.
+
+Les écrans (`ui/home`, `ui/note`, `ui/options`) et les blocs musicaux (`ui/staff-ui`, `ui/grid-ui`) **s'enregistrent** au chargement auprès de deux registres, `ui/nav` et `ui/blocks`, qui les appellent ensuite par leur nom. Ces registres n'importent aucun écran : le graphe d'imports est sans cycle (voir le module `main`).
 
 Le rendu suit un modèle _immediate mode_ : l'état est modifié, puis la partie concernée de l'écran est régénérée (template strings → `innerHTML`, SVG en chaîne). Pas de DOM virtuel ni de réactivité : à cette échelle, c'est le plus simple, et c'est assez rapide.
 
@@ -95,11 +105,15 @@ Voir le module `model` pour le détail des types. En bref :
 
 Le format est rétrocompatible : une note créée en 1.0 s'ouvre dans la dernière version. Chaque note porte une date de création (`created`) et de modification (`updated`) ; pour les notes antérieures à la 1.7.0, la date de création a été initialisée avec la date de modification.
 
-Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 'note', version: 1, note }`.
+Depuis la 2.0, une note peut porter `folder` (id de dossier) et `pinned`. Les dossiers `{ id, name, color, created }` sont stockés à part (clé `inkline-folders`) ; une note sans dossier, ou dont le dossier a disparu, est « non classée ».
+
+Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 'note', version: 1, note }`, **sans** `folder` ni `pinned` (le rangement reste chez soi).
+
+Une sauvegarde est du JSON `{ app, version: 2, exported, notes, folders }` ; les sauvegardes `version: 1` (sans dossiers) restent importables.
 
 ## Publier une nouvelle version
 
-1. Mettre à jour `APP_VERSION` dans `js/ui/views.js`, `version` dans `package.json` et `CACHE` dans `sw.js`.
+1. Mettre à jour `APP_VERSION` dans `js/ui/common.js`, `version` dans `package.json` et `CACHE` dans `sw.js`.
 2. Ajouter l'entrée correspondante dans `CHANGELOG.md`.
 3. `npm test`, puis `npm run docs`.
 4. Pousser sur la branche publiée par GitHub Pages.

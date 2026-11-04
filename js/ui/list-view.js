@@ -25,6 +25,16 @@
 import { esc } from '../util.js';
 import { staffSvg } from '../render-staff.js';
 import { chordParts } from '../chords.js';
+import { folderOf } from '../folders.js';
+import { PIN_ICON } from './icons.js';
+
+/**
+ * Options d'affichage de la liste.
+ * @typedef {Object} ListOptions
+ * @property {Object.<string, module:folders~Folder>} [folders] Dossiers (pour les étiquettes).
+ * @property {boolean} [showFolder] Afficher le dossier de chaque note (inutile
+ *   quand la liste montre un seul dossier).
+ */
 
 /** Modes d'affichage, dans l'ordre du sélecteur. */
 export const LIST_VIEWS = [
@@ -118,18 +128,36 @@ function chordsPreview(n, max) {
 }
 
 /**
+ * Étiquette de dossier (pastille + nom), ou chaîne vide.
+ * @param {module:model~Note} n
+ * @param {ListOptions} opt
+ * @returns {string}
+ */
+function folderTag(n, opt) {
+  const f = opt.showFolder && opt.folders ? folderOf(n, opt.folders) : null;
+  return f
+    ? `<span class="ftag"><span class="fdot fc-${f.color}" aria-hidden="true"></span>${esc(f.name)}</span>`
+    : '';
+}
+
+/**
  * HTML d'une note selon le mode.
  * @param {module:model~Note} n
  * @param {string} mode
+ * @param {ListOptions} [opt={}]
  * @returns {string}
  */
-function itemHtml(n, mode) {
-  const title = esc(n.title || 'Sans titre');
+function itemHtml(n, mode, opt = {}) {
+  const pin = n.pinned
+    ? `<span class="pin" title="Épinglée">${PIN_ICON}<span class="sr">Épinglée</span></span>`
+    : '';
+  const title = pin + esc(n.title || 'Sans titre');
+  const tag = folderTag(n, opt);
   const sum = noteSummary(n);
   const txt = firstText(n);
   if (mode === 'list') {
     const sub = ['créée le ' + shortDate(n.created || n.updated), sum].filter(Boolean).join(' · ');
-    return `<span class="row-main"><span class="row-title">${title}</span><span class="row-sub">${esc(sub)}</span></span><span class="row-date">${esc(relativeDate(n.updated))}</span>`;
+    return `<span class="row-main"><span class="row-title">${title}</span><span class="row-sub">${tag}${esc(sub)}</span></span><span class="row-date">${esc(relativeDate(n.updated))}</span>`;
   }
   if (mode === 'mosaic') {
     // Aperçu : portée (dessinée plus tard) > accords > texte.
@@ -143,9 +171,9 @@ function itemHtml(n, mode) {
           ? `<p class="mz-text">${esc(txt)}</p>`
           : '<p class="mz-text mz-empty">Note vide</p>';
     }
-    return `<h3>${title}</h3>${preview}<div class="mz-foot"><span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>`;
+    return `<h3>${title}</h3>${preview}<div class="mz-foot">${tag}<span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>`;
   }
-  return `<h3>${title}</h3><div class="meta"><span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>${txt ? `<p class="snip">${esc(txt.split('\n')[0])}</p>` : ''}<div class="thumb"></div>`;
+  return `<h3>${title}</h3><div class="meta">${tag}<span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>${txt ? `<p class="snip">${esc(txt.split('\n')[0])}</p>` : ''}<div class="thumb"></div>`;
 }
 
 /**
@@ -155,15 +183,16 @@ function itemHtml(n, mode) {
  * @param {module:model~Note[]} notes Notes déjà triées.
  * @param {'cards'|'mosaic'|'list'} mode
  * @param {function(string)} onOpen Appelé avec l'id de la note touchée.
+ * @param {ListOptions} [opt={}]
  */
-export function renderNoteList(container, notes, mode, onOpen) {
+export function renderNoteList(container, notes, mode, onOpen, opt = {}) {
   const wrap = document.createElement('div');
   wrap.className = mode === 'mosaic' ? 'mosaic' : mode === 'list' ? 'rows' : 'list';
   notes.forEach((n) => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = mode === 'mosaic' ? 'mz' : mode === 'list' ? 'row' : 'card';
-    btn.innerHTML = itemHtml(n, mode);
+    btn.innerHTML = itemHtml(n, mode, opt);
     btn.onclick = () => onOpen(n.id);
     wrap.appendChild(btn);
   });

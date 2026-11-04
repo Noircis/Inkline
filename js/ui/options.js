@@ -7,7 +7,8 @@
  * dédié aux notes :
  *
  * - **Affichage** : Cartes, Mosaïque ou Liste pour l'accueil ;
- * - **Carnet** : exporter une sauvegarde complète, importer un fichier
+ * - **Dossiers** : liste des dossiers (toucher pour modifier), création ;
+ * - **Carnet** : exporter une sauvegarde complète (notes et dossiers), importer un fichier
  *   (sauvegarde ou note reçue `.inkline`), date de la dernière sauvegarde ;
  * - **iReal Pro** : importer un lien, une playlist ou un fichier `.html` ;
  * - **À propos** : version, nouveautés, documentation du code.
@@ -23,12 +24,15 @@
 
 import { state, app } from './state.js';
 import { esc, uid } from '../util.js';
-import { flushSave, backupJson, importFile, getMeta, setMeta } from '../storage.js';
+import { flushSave, saveFolders, backupJson, importFile, getMeta, setMeta } from '../storage.js';
 import { sanitizeBlock } from '../sanitize.js';
 import { parseIRealAll, songToGrid } from '../ireal.js';
+import { sortedFolders, countByFolder } from '../folders.js';
 import { download } from '../export.js';
 import { LIST_VIEWS } from './list-view.js';
-import { APP_VERSION, readFile, openNote, backToList, enterSubView } from './views.js';
+import { APP_VERSION, readFile } from './common.js';
+import { registerScreen, renderScreen, openNote, backToList } from './nav.js';
+import { openFolderSheet } from './folder-sheet.js';
 
 /** Nombre de jours sans sauvegarde avant d'afficher le rappel. */
 const BACKUP_REMINDER_DAYS = 30;
@@ -101,19 +105,24 @@ const VIEW_ICONS = {
 const CHEVRON = '<span class="opt-chev" aria-hidden="true">&#8250;</span>';
 
 /**
- * Ouvre l'écran Options (et l'ajoute à l'historique, pour le bouton retour d'Android).
+ * HTML de la section Dossiers.
+ * @returns {string}
  */
-export function openOptions() {
-  enterSubView();
-  state.view = { name: 'options', id: null };
-  renderOptions();
-  window.scrollTo(0, 0);
+function foldersHtml() {
+  const counts = countByFolder(Object.values(state.notes), state.folders);
+  const rows = sortedFolders(state.folders)
+    .map(
+      (f) =>
+        `<button class="opt-row" type="button" data-folder="${esc(f.id)}"><span class="opt-folder"><span class="fdot fc-${f.color}" aria-hidden="true"></span><span>${esc(f.name)}<small>${counts[f.id]} note${counts[f.id] > 1 ? 's' : ''}</small></span></span>${CHEVRON}</button>`,
+    )
+    .join('');
+  return `${rows}<button class="opt-row" id="optNewFolder" type="button"><span>+ Nouveau dossier<small>${rows ? 'Supprimer un dossier ne supprime pas ses notes' : 'Range tes notes par cours, projet, répertoire…'}</small></span>${CHEVRON}</button>`;
 }
 
 /**
  * Dessine l'écran Options.
  */
-export function renderOptions() {
+function renderOptions() {
   const meta = getMeta();
   const current = meta.listView || 'cards';
   app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><h1 class="top-title">Options</h1></header>
@@ -122,9 +131,13 @@ export function renderOptions() {
     <div class="seg" role="radiogroup" aria-labelledby="viewLbl">${LIST_VIEWS.map((v) => `<button type="button" role="radio" data-view="${v.key}" aria-checked="${v.key === current}">${VIEW_ICONS[v.key]}<span>${v.label}</span></button>`).join('')}</div>
   </section>
   <section class="opt">
+    <h2 class="eyebrow">Dossiers</h2>
+    <div class="opt-group" id="optFolders">${foldersHtml()}</div>
+  </section>
+  <section class="opt">
     <h2 class="eyebrow">Carnet</h2>
     <div class="opt-group">
-      <button class="opt-row" id="optExport" type="button"><span>Exporter le carnet<small>Sauvegarde de toutes les notes (.json)</small></span>${CHEVRON}</button>
+      <button class="opt-row" id="optExport" type="button"><span>Exporter le carnet<small>Sauvegarde des notes et des dossiers (.json)</small></span>${CHEVRON}</button>
       <label class="opt-row" for="optImport"><span>Importer un fichier<small>Sauvegarde ou note reçue (.inkline)</small></span>${CHEVRON}</label>
       <input type="file" id="optImport" hidden>
       <p class="opt-note${backupDue() ? ' due' : ''}" id="optLast">${esc(lastExportLabel(meta.lastExport))}</p>
@@ -157,11 +170,21 @@ export function renderOptions() {
       app.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
     };
   });
+  app.querySelectorAll('[data-folder]').forEach((b) => {
+    b.addEventListener('click', () =>
+      openFolderSheet(state.folders[/** @type {HTMLElement} */ (b).dataset.folder], () =>
+        renderScreen({ keepScroll: true }),
+      ),
+    );
+  });
+  app
+    .querySelector('#optNewFolder')
+    .addEventListener('click', () => openFolderSheet(null, () => renderScreen({ keepScroll: true })));
   const msg = app.querySelector('#optMsg');
 
   app.querySelector('#optExport').onclick = () => {
     download(
-      new Blob([backupJson(state.notes)], { type: 'application/json' }),
+      new Blob([backupJson(state.notes, state.folders)], { type: 'application/json' }),
       'inkline-carnet-' + new Date().toISOString().slice(0, 10) + '.json',
     );
     setMeta({ lastExport: Date.now() });
@@ -176,13 +199,20 @@ export function renderOptions() {
   app.querySelector('#optImport').onchange = (e) =>
     readFile(e, (text) => {
       try {
-        const r = importFile(state.notes, text);
+        const nf = Object.keys(state.folders).length;
+        const r = importFile(state.notes, text, state.folders);
         flushSave(state.notes);
+        saveFolders(state.folders);
         if (r.kind === 'note') {
           openNote(r.firstId);
           return;
         } // note reçue : on l'ouvre directement
-        msg.textContent = r.count + (r.count > 1 ? ' notes importées.' : ' note importée.');
+        const added = Object.keys(state.folders).length - nf;
+        renderScreen({ keepScroll: true }); // la section Dossiers a pu changer
+        app.querySelector('#optMsg').textContent =
+          r.count +
+          (r.count > 1 ? ' notes importées' : ' note importée') +
+          (added ? `, ${added} dossier${added > 1 ? 's' : ''} ajouté${added > 1 ? 's' : ''}.` : '.');
       } catch (err) {
         msg.textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
       }
@@ -203,3 +233,5 @@ export function renderOptions() {
     irGo(/** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr')).value);
   app.querySelector('#optIrFile').onchange = (e) => readFile(e, irGo);
 }
+
+registerScreen('options', renderOptions);

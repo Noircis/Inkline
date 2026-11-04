@@ -27,6 +27,7 @@
 
 import { uid, clamp } from './util.js';
 import { DUR, TIME_SIGNATURES } from './model.js';
+import { COLOR_KEYS, cleanFolderName } from './folders.js';
 
 /** Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères. */
 const ID_RE = /^[a-z0-9]{1,32}$/;
@@ -39,6 +40,7 @@ const SECTION_RE = /^[A-Za-z]{1,6}$/;
 
 /** Limites de taille : protègent contre des fichiers énormes qui gèleraient l'app. */
 const LIMITS = {
+  folders: 200,
   title: 200,
   text: 20000,
   chord: 16,
@@ -152,7 +154,8 @@ export function sanitizeNote(r, opt = {}) {
     blocks.forEach((b) => {
       b.id = uid();
     });
-  return {
+  /** @type {module:model~Note} */
+  const note = {
     id: opt.freshIds ? uid() : id(r.id),
     title: str(r.title, LIMITS.title).replace(/\n/g, ' '),
     // Notes d'avant la 1.7.0 : pas de date de création, on prend la date de
@@ -162,6 +165,13 @@ export function sanitizeNote(r, opt = {}) {
     updated: isNum(r.updated) ? r.updated : Date.now(),
     blocks: blocks.length ? blocks : [{ id: uid(), type: 'text', text: '' }],
   };
+  // Rangement (2.0). Une note reçue (freshIds) arrive non classée et non
+  // épinglée : son rangement appartient à celui qui la reçoit.
+  if (!opt.freshIds) {
+    if (isStr(r.folder) && ID_RE.test(r.folder)) note.folder = r.folder;
+    if (r.pinned === true) note.pinned = true;
+  }
+  return note;
 }
 
 /**
@@ -180,6 +190,41 @@ export function sanitizeNotes(r) {
     .forEach((x) => {
       const n = sanitizeNote(x);
       if (n) out[n.id] = n;
+    });
+  return out;
+}
+
+/**
+ * Valide un dossier.
+ * @param {*} r
+ * @returns {module:folders~Folder|null}
+ */
+export function sanitizeFolder(r) {
+  if (!r || typeof r !== 'object') return null;
+  const name = cleanFolderName(isStr(r.name) ? r.name : '');
+  if (!name) return null;
+  return {
+    id: id(r.id),
+    name,
+    color: COLOR_KEYS.includes(r.color) ? r.color : 'blue',
+    created: isNum(r.created) ? r.created : Date.now(),
+  };
+}
+
+/**
+ * Valide la liste des dossiers (stockage local ou sauvegarde).
+ * @param {*} r
+ * @returns {Object.<string, module:folders~Folder>}
+ */
+export function sanitizeFolders(r) {
+  /** @type {Object.<string, module:folders~Folder>} */
+  const out = {};
+  if (!r || typeof r !== 'object') return out;
+  Object.values(r)
+    .slice(0, LIMITS.folders)
+    .forEach((x) => {
+      const f = sanitizeFolder(x);
+      if (f) out[f.id] = f;
     });
   return out;
 }

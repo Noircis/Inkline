@@ -1,6 +1,6 @@
 {
   "name": "inkline",
-  "version": "1.7.5",
+  "version": "2.0.0",
   "description": "Carnet de notes musicales pour Android : texte, portées, rythmes et grilles d'accords (PWA hors ligne).",
   "type": "module",
   "private": true,

@@ -30,7 +30,9 @@ import { scheduleSave } from '../storage.js';
 /**
  * @typedef {Object} UiState
  * @property {Object.<string, module:model~Note>} notes Le carnet.
- * @property {{name: 'list'|'note', id: string|null}} view Écran affiché.
+ * @property {Object.<string, module:folders~Folder>} folders Les dossiers.
+ * @property {{name: 'list'|'note'|'options', id: string|null}} view Écran affiché.
+ * @property {string} query Recherche en cours sur l'accueil (non mémorisée).
  * @property {string|null} activeId Bloc en cours d'édition (une palette est ouverte).
  * @property {number|null} sel Sélection dans le bloc actif : index d'élément
  *   de portée **ou** index de mesure de grille, selon le type du bloc. Un seul
@@ -43,6 +45,8 @@ import { scheduleSave } from '../storage.js';
 /** @type {UiState} */
 export const state = {
   notes: {},
+  folders: {},
+  query: '',
   view: { name: 'list', id: null },
   activeId: null,
   sel: null,
@@ -74,6 +78,16 @@ export function blockById(id) {
  */
 export function touch(n) {
   n.updated = Date.now();
+  scheduleSave(state.notes);
+}
+
+/**
+ * Enregistre un changement de **rangement** (dossier, épingle) : contrairement
+ * à {@link module:ui/state.touch|touch}, la date de modification ne change
+ * pas. Ranger une note n'est pas la modifier : elle ne doit pas remonter en
+ * tête du tri « Modifiées récemment ».
+ */
+export function saveArrangement() {
   scheduleSave(state.notes);
 }
 

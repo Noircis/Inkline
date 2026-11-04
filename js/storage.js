@@ -25,13 +25,20 @@
  * vers IndexedDB.
  */
 
-import { sanitizeNote, sanitizeNotes } from './sanitize.js';
+import { sanitizeNote, sanitizeNotes, sanitizeFolders } from './sanitize.js';
+import { SORT_KEYS } from './search.js';
 
 /** Clé `localStorage` du carnet (historique : ne pas changer). */
 const STORAGE_KEY = 'carnet-portees-v1';
 
 /** Identifiant écrit dans les fichiers de sauvegarde. */
 const BACKUP_APP = 'carnet-portees';
+
+/** Clé `localStorage` des dossiers (depuis la 2.0). */
+const FOLDERS_KEY = 'inkline-folders';
+
+/** Version du format des sauvegardes : 2 depuis l'arrivée des dossiers. Les sauvegardes v1 restent lisibles. */
+const BACKUP_VERSION = 2;
 
 /** Clé `localStorage` des métadonnées (date de première utilisation, de dernière sauvegarde). */
 const META_KEY = 'inkline-meta';
@@ -93,12 +100,41 @@ export function requestPersistence() {
 }
 
 /**
- * Contenu d'un fichier de sauvegarde.
+ * Charge les dossiers (objet vide si aucun, ou si les données sont illisibles).
+ * @returns {Object.<string, module:folders~Folder>}
+ */
+export function loadFolders() {
+  try {
+    return sanitizeFolders(JSON.parse(localStorage.getItem(FOLDERS_KEY) || '{}'));
+  } catch (e) {
+    return {};
+  }
+}
+
+/**
+ * Enregistre les dossiers (immédiatement : ils changent rarement et pèsent peu).
+ * @param {Object.<string, module:folders~Folder>} folders
+ */
+export function saveFolders(folders) {
+  try {
+    localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+  } catch (e) {
+    /* stockage indisponible */
+  }
+}
+
+/**
+ * Contenu d'un fichier de sauvegarde (format v2 : notes et dossiers).
  * @param {Object.<string, module:model~Note>} notes
+ * @param {Object.<string, module:folders~Folder>} [folders={}]
  * @returns {string} JSON indenté (lisible et diffable).
  */
-export function backupJson(notes) {
-  return JSON.stringify({ app: BACKUP_APP, version: 1, exported: Date.now(), notes }, null, 1);
+export function backupJson(notes, folders = {}) {
+  return JSON.stringify(
+    { app: BACKUP_APP, version: BACKUP_VERSION, exported: Date.now(), notes, folders },
+    null,
+    1,
+  );
 }
 
 /**
@@ -107,7 +143,10 @@ export function backupJson(notes) {
  * @returns {string}
  */
 export function noteFileJson(note) {
-  return JSON.stringify({ app: NOTE_APP, kind: 'note', version: 1, note }, null, 1);
+  // Le rangement (dossier, épingle) reste chez soi : il n'a pas de sens chez le destinataire.
+  // eslint-disable-next-line no-unused-vars
+  const { folder, pinned, ...shared } = note;
+  return JSON.stringify({ app: NOTE_APP, kind: 'note', version: 1, note: shared }, null, 1);
 }
 
 /**
@@ -125,16 +164,20 @@ export function noteFileJson(note) {
  *   sans jamais écraser une note existante (recevoir deux fois la même note
  *   en crée deux copies, c'est voulu : on ne sait pas laquelle garder).
  * - **Sauvegarde** : fusion par id, la version la plus récente (`updated`)
- *   gagne. Importer deux fois la même sauvegarde est sans effet.
+ *   gagne. Importer deux fois la même sauvegarde est sans effet. Les dossiers
+ *   d'une sauvegarde v2 absents du carnet sont ajoutés ; ceux qui existent déjà
+ *   (même id) sont conservés tels quels. Une sauvegarde v1 (sans dossiers)
+ *   reste lisible.
  *
  * Dans les deux cas, tout passe par {@link module:sanitize|sanitize}.
  *
  * @param {Object.<string, module:model~Note>} notes Carnet (modifié sur place).
  * @param {string} text Contenu du fichier.
+ * @param {Object.<string, module:folders~Folder>} [folders={}] Dossiers (modifiés sur place).
  * @returns {ImportResult}
  * @throws {Error} Si le fichier n'est ni du JSON ni un format Inkline.
  */
-export function importFile(notes, text) {
+export function importFile(notes, text, folders = {}) {
   const d = JSON.parse(text);
   if (d && d.kind === 'note' && d.note) {
     const n = sanitizeNote(d.note, { freshIds: true });
@@ -146,6 +189,11 @@ export function importFile(notes, text) {
     return { kind: 'note', count: 1, firstId: n.id };
   }
   const incoming = sanitizeNotes(d && d.notes ? d.notes : d);
+  if (d && d.folders) {
+    Object.values(sanitizeFolders(d.folders)).forEach((f) => {
+      if (!folders[f.id]) folders[f.id] = f;
+    });
+  }
   let count = 0;
   let firstId = null;
   Object.values(incoming).forEach((n) => {
@@ -166,7 +214,26 @@ export function importFile(notes, text) {
  * @property {number} [firstUse] Horodatage de la première ouverture de l'app.
  * @property {number} [lastExport] Horodatage du dernier « Exporter le carnet ».
  * @property {'cards'|'mosaic'|'list'} [listView] Affichage de la liste choisi dans les Options.
+ * @property {string} [folder] Sélection de la barre de dossiers (`'all'`, `'none'` ou id de dossier).
+ * @property {Object.<string, string>} [sorts] Tri choisi pour chaque sélection de la barre de dossiers.
+ * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
  */
+
+/**
+ * Garde seulement les tris valides d'un objet `{ sélection: tri }`.
+ * @param {*} r
+ * @returns {Object.<string, string>|undefined}
+ */
+function sortsOf(r) {
+  if (!r || typeof r !== 'object') return undefined;
+  const out = {};
+  Object.keys(r)
+    .slice(0, 300)
+    .forEach((k) => {
+      if (/^[a-z0-9]{1,32}$/.test(k) && SORT_KEYS.includes(r[k])) out[k] = r[k];
+    });
+  return out;
+}
 
 /**
  * Lit les métadonnées (objet vide si absentes ou illisibles).
@@ -181,6 +248,9 @@ export function getMeta() {
       firstUse: num(m.firstUse),
       lastExport: num(m.lastExport),
       listView: views.includes(m.listView) ? m.listView : undefined,
+      folder: typeof m.folder === 'string' && /^[a-z0-9]{1,32}$/.test(m.folder) ? m.folder : undefined,
+      sorts: sortsOf(m.sorts),
+      dataVersion: num(m.dataVersion),
     };
   } catch (e) {
     return {};

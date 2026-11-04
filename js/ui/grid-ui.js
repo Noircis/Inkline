@@ -25,16 +25,9 @@ import { toIRealLink, parseIRealAll } from '../ireal.js';
 import { pushSnapshot } from '../history.js';
 import { sanitizeBlock } from '../sanitize.js';
 import * as audio from '../audio.js';
-import {
-  toolsHtml,
-  renderNote,
-  setActive,
-  syncPaletteSpace,
-  undo,
-  updatePlayBtn,
-  playCallbacks,
-  readFile,
-} from './views.js';
+import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks, readFile } from './common.js';
+import { setActive, undo, registerBlockKind } from './blocks.js';
+import { renderScreen } from './nav.js';
 
 const gpal = /** @type {HTMLElement} */ (document.getElementById('gpal'));
 const gin = /** @type {HTMLInputElement} */ (document.getElementById('gIn'));
@@ -138,8 +131,8 @@ function importIntoGrid(n, b, txt, msg) {
   if (!n.title.trim()) n.title = song.title.slice(0, 200);
   touch(n);
   state.sel = null;
-  renderNote(true);
-  // Le bloc a été recréé par renderNote : on écrit dans sa nouvelle zone de message.
+  renderScreen({ keepScroll: true });
+  // Le bloc a été recréé par le re-rendu : on écrit dans sa nouvelle zone de message.
   const newMsg = app.querySelector(`[data-block="${CSS.escape(b.id)}"] .ir-msg`);
   if (newMsg) {
     newMsg.textContent =
@@ -456,3 +449,5 @@ gpal.addEventListener('click', (e) => {
   redrawGrid(b.id);
   updateGridPalette();
 });
+
+registerBlockKind('grid', { build: gridBlockEl, redraw: redrawGrid, showPalette: showGridPalette });

@@ -27,7 +27,8 @@ import { staffSvg } from '../render-staff.js';
 import { layout, geom, stepFromY } from '../layout.js';
 import { pushSnapshot } from '../history.js';
 import * as audio from '../audio.js';
-import { toolsHtml, setActive, syncPaletteSpace, undo, updatePlayBtn, playCallbacks } from './views.js';
+import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks } from './common.js';
+import { setActive, undo, registerBlockKind } from './blocks.js';
 
 const pal = /** @type {HTMLElement} */ (document.getElementById('palette'));
 const barBar = /** @type {HTMLElement} */ (document.getElementById('barBar'));
@@ -553,3 +554,5 @@ chordIn.addEventListener('keydown', (e) => {
     applyChord();
   }
 });
+
+registerBlockKind('staff', { build: staffBlockEl, redraw: redrawStaff, showPalette: showStaffPalette });
