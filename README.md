@@ -46,6 +46,7 @@ js/
     views.js          écrans liste et note, gestion des blocs
     staff-ui.js       bloc portée : toucher, palette
     grid-ui.js        bloc grille : saisie, palette, panneau iReal
+    options.js        écran Options : sauvegarde, import, iReal, à propos
 tests/                tests unitaires des modules purs
 docs/                 documentation générée (npm run docs)
 ```

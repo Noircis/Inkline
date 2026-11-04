@@ -9,7 +9,8 @@
  * 2. afficher le premier écran ;
  * 3. brancher les écouteurs globaux (mise en arrière-plan, redimensionnement,
  *    clavier virtuel) ;
- * 4. enregistrer le service worker (fonctionnement hors ligne).
+ * 4. gérer le bouton retour d'Android (historique) ;
+ * 5. enregistrer le service worker (fonctionnement hors ligne).
  *
  * ## Graphe des modules
  *
@@ -27,12 +28,19 @@
  */
 
 import { state, app } from './ui/state.js';
-import { loadNotes, flushSave, requestPersistence } from './storage.js';
-import { render, renderList } from './ui/views.js';
+import { loadNotes, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
+import { render, showList } from './ui/views.js';
 import { redrawStaff } from './ui/staff-ui.js';
 
 state.notes = loadNotes();
+if (!getMeta().firstUse) setMeta({ firstUse: Date.now() }); // point de départ du rappel de sauvegarde
+// Au démarrage on est toujours sur la liste : une entrée d'historique laissée
+// par une session précédente (rechargement de la page) est neutralisée.
+if (history.state && history.state.inkline) history.replaceState(null, '');
 render();
+
+// Bouton retour d'Android (ou du navigateur) : d'un sous-écran vers la liste.
+window.addEventListener('popstate', () => { if (state.view.name !== 'list') showList(); });
 requestPersistence();
 
 // Polices web chargées après le premier rendu : les largeurs de texte des SVG
@@ -47,7 +55,7 @@ let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (state.view.name !== 'note') { renderList(); return; }
+    if (state.view.name !== 'note') { render(); return; }
     app.querySelectorAll('[data-staff]').forEach((w) => {
       const el = /** @type {HTMLElement} */ (w);
       if (el.clientWidth !== el._W) redrawStaff(el.dataset.staff);

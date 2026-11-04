@@ -3,8 +3,8 @@
  * @description
  * Les deux écrans de l'app et la gestion des blocs :
  *
- * - **liste** des notes ({@link module:ui/views.renderList|renderList}), avec sauvegarde
- *   et import iReal Pro ;
+ * - **liste** des notes ({@link module:ui/views.renderList|renderList}), avec la roue
+ *   crantée qui ouvre {@link module:ui/options|les options} ;
  * - **note** ({@link module:ui/views.renderNote|renderNote}) : titre, blocs, barre d'ajout.
  *
  * Le rendu est fait par template strings et `innerHTML`, puis les
@@ -22,26 +22,60 @@
 import { state, app, curNote, blockById, touch } from './state.js';
 import { esc } from '../util.js';
 import { newNote as makeNote, newTextBlock, newStaffBlock, newGridBlock, exampleNote } from '../model.js';
-import { flushSave, backupJson, importFile } from '../storage.js';
-import { sanitizeBlock } from '../sanitize.js';
+import { flushSave } from '../storage.js';
 import { noteToInkline, noteToPng, noteToPdf, shareOrDownload, slug } from '../export.js';
 import { pushSnapshot, popSnapshot } from '../history.js';
-import { parseIRealAll, songToGrid } from '../ireal.js';
-import { uid } from '../util.js';
 import * as audio from '../audio.js';
 import { staffSvg } from '../render-staff.js';
 import { staffBlockEl, redrawStaff, showStaffPalette } from './staff-ui.js';
 import { gridBlockEl, redrawGrid, showGridPalette } from './grid-ui.js';
+import { openOptions, renderOptions, backupDue } from './options.js';
 
 /** Version affichée en bas de l'accueil (à garder alignée sur CHANGELOG.md). */
-export const APP_VERSION = '1.5.0';
+export const APP_VERSION = '1.6.0';
 
 /**
  * Affiche l'écran courant.
  */
 export function render() {
   if (state.view.name === 'note' && curNote()) renderNote();
+  else if (state.view.name === 'options') renderOptions();
   else { state.view = { name: 'list', id: null }; renderList(); }
+}
+
+// ---------- Navigation et bouton retour d'Android ----------
+// La liste est l'écran racine ; note et options sont des « sous-écrans ».
+// En entrant dans un sous-écran, on ajoute UNE entrée à l'historique du
+// navigateur (history.pushState). Le bouton retour d'Android déclenche alors
+// un événement popstate (écouté dans main.js) qui ramène à la liste, au lieu
+// de fermer l'app. Passer d'un sous-écran à un autre remplace l'entrée
+// (replaceState) : l'historique ne fait jamais plus d'un niveau.
+
+/**
+ * À appeler en entrant dans un sous-écran (note, options).
+ */
+export function enterSubView() {
+  if (history.state && history.state.inkline) history.replaceState({ inkline: 1 }, '');
+  else history.pushState({ inkline: 1 }, '');
+}
+
+/**
+ * Affiche la liste (sans toucher à l'historique).
+ */
+export function showList() {
+  state.view = { name: 'list', id: null };
+  renderList();
+  window.scrollTo(0, 0);
+}
+
+/**
+ * Retour à la liste depuis un sous-écran : on recule dans l'historique si
+ * on y a ajouté une entrée (le popstate affichera la liste), sinon on
+ * affiche directement la liste.
+ */
+export function backToList() {
+  if (history.state && history.state.inkline) history.back();
+  else showList();
 }
 
 /** Date courte en français (« 4 nov. »). */
@@ -66,26 +100,12 @@ function noteSummary(n) {
   return parts.join(' · ');
 }
 
-/**
- * Crée une note par morceau iReal trouvé dans `text`.
- * @param {string} text Lien(s) `irealb://` ou fichier `.html` iReal.
- * @returns {number} Nombre de morceaux importés.
- */
-function importIRealNotes(text) {
-  const songs = parseIRealAll(text);
-  songs.forEach((s, k) => {
-    // Le compositeur iReal est au format « Nom Prénom » : on le remet dans l'ordre usuel.
-    const composer = s.composer && s.composer !== 'Unknown' ? s.composer.split(' ').reverse().join(' ') : '';
-    const n = { id: uid(), title: s.title, updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer.slice(0, 200) }, sanitizeBlock(songToGrid(s))] };
-    state.notes[n.id] = n;
-  });
-  if (songs.length) flushSave(state.notes);
-  return songs.length;
-}
+/** Icône de roue crantée (SVG : le caractère ⚙ s'afficherait en emoji coloré sur Android). */
+const GEAR = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M19.84 10.41 L22.42 10.74 L22.42 13.26 L19.84 13.59 L18.67 16.42 L20.26 18.48 L18.48 20.26 L16.42 18.67 L13.59 19.84 L13.26 22.42 L10.74 22.42 L10.41 19.84 L7.58 18.67 L5.52 20.26 L3.74 18.48 L5.33 16.42 L4.16 13.59 L1.58 13.26 L1.58 10.74 L4.16 10.41 L5.33 7.58 L3.74 5.52 L5.52 3.74 L7.58 5.33 L10.41 4.16 L10.74 1.58 L13.26 1.58 L13.59 4.16 L16.42 5.33 L18.48 3.74 L20.26 5.52 L18.67 7.58 Z M15.4 12 A3.4 3.4 0 1 0 8.6 12 A3.4 3.4 0 1 0 15.4 12 Z"/></svg>';
 
 /**
- * Écran liste : notes triées par date de modification, vignette de la
- * première portée, puis sections Sauvegarde et iReal Pro.
+ * Écran liste : notes triées par date de modification, avec la vignette de
+ * la première portée. La roue crantée ouvre {@link module:ui/options|les options}.
  */
 export function renderList() {
   audio.stop();
@@ -94,7 +114,8 @@ export function renderList() {
   showStaffPalette(false);
   showGridPalette(false);
   const list = Object.values(state.notes).sort((a, b) => b.updated - a.updated);
-  app.innerHTML = `<header class="top"><div class="grow"><h1 class="brand">Inkline</h1><div class="status">Enregistré sur ce téléphone</div></div><button class="btn primary" id="newNote" type="button">+ Note</button></header>
+  const due = backupDue();
+  app.innerHTML = `<header class="top"><div class="grow"><h1 class="brand">Inkline</h1></div><button class="btn icon-btn" id="optBtn" type="button" aria-label="${due ? 'Options (sauvegarde conseillée)' : 'Options'}">${GEAR}${due ? '<span class="dot" aria-hidden="true"></span>' : ''}</button><button class="btn primary" id="newNote" type="button">+ Note</button></header>
   <div id="listBody"></div>`;
   const body = app.querySelector('#listBody');
 
@@ -129,50 +150,7 @@ export function renderList() {
     });
   }
 
-  const bk = document.createElement('div');
-  bk.className = 'backup';
-  bk.innerHTML = `<div class="eyebrow">Sauvegarde</div><p>Tes notes restent sur ce téléphone. Exporte tout le carnet de temps en temps pour ne rien perdre. « Importer » ouvre aussi une note reçue (fichier .inkline).</p><div class="actions"><button class="btn" id="exp" type="button">Exporter le carnet</button><label class="btn" for="impIn">Importer un fichier</label><input type="file" id="impIn" hidden></div><div class="status" id="bkMsg"></div>
-  <div class="eyebrow" style="margin-top:18px">iReal Pro</div><p>Colle un lien <code>irealb://</code> (morceau ou playlist) pour créer une note par morceau.</p>
-  <textarea id="irList" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
-  <div class="actions" style="margin-top:8px"><button class="btn" id="irListGo" type="button">Importer d'iReal Pro</button><label class="btn" for="irListF">Ouvrir un fichier</label><input type="file" id="irListF" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
-  <div class="status" id="irMsg"></div>
-  <div class="version">Inkline ${APP_VERSION}</div>`;
-  body.appendChild(bk);
-
-  const irGo = (txt) => {
-    const k = importIRealNotes(txt);
-    if (!k) { bk.querySelector('#irMsg').textContent = 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb://.'; return; }
-    renderList();
-    const m = app.querySelector('#irMsg');
-    if (m) m.textContent = k + (k > 1 ? ' morceaux importés.' : ' morceau importé.');
-  };
-  bk.querySelector('#irListGo').onclick = () => irGo(bk.querySelector('#irList').value);
-  bk.querySelector('#irListF').onchange = (e) => readFile(e, irGo);
-  bk.querySelector('#exp').onclick = () => {
-    // Téléchargement via un lien temporaire vers un Blob.
-    const blob = new Blob([backupJson(state.notes)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'inkline-carnet-' + new Date().toISOString().slice(0, 10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    bk.querySelector('#bkMsg').textContent = 'Fichier exporté dans tes téléchargements.';
-  };
-  bk.querySelector('#impIn').onchange = (e) => readFile(e, (text) => {
-    // Pas de filtre « accept » sur le champ fichier : Android grise les
-    // extensions qu'il ne connaît pas (.inkline). On vérifie le contenu ici.
-    try {
-      const r = importFile(state.notes, text);
-      flushSave(state.notes);
-      if (r.kind === 'note') { openNote(r.firstId); return; } // note reçue : on l'ouvre directement
-      renderList();
-      const m = app.querySelector('#bkMsg');
-      if (m) m.textContent = r.count + (r.count > 1 ? ' notes importées.' : ' note importée.');
-    } catch (err) {
-      bk.querySelector('#bkMsg').textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
-    }
-  });
+  app.querySelector('#optBtn').onclick = openOptions;
   app.querySelector('#newNote').onclick = newNote;
 }
 
@@ -203,6 +181,7 @@ export function newNote() {
  * @param {boolean} [focusTitle] Placer le curseur dans le titre.
  */
 export function openNote(id, focusTitle) {
+  enterSubView();
   state.view = { name: 'note', id };
   state.activeId = null;
   state.sel = null;
@@ -231,7 +210,7 @@ export function toolsHtml() {
  */
 export function renderNote(keepScroll) {
   const n = curNote();
-  if (!n) { state.view = { name: 'list', id: null }; renderList(); return; }
+  if (!n) { showList(); return; }
   const sy = window.scrollY;
   app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><button class="btn" id="shareBtn" type="button" aria-expanded="false">Partager</button></header>
   <div class="sharebox" id="shareBox" hidden>
@@ -251,13 +230,13 @@ export function renderNote(keepScroll) {
   ti.addEventListener('focus', () => { pushSnapshot(n); setActive(null); });
   ti.addEventListener('input', () => { n.title = ti.value.replace(/\n/g, ' '); autosize(ti); touch(n); });
   ti.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ti.blur(); } });
-  app.querySelector('#back').onclick = () => { state.view = { name: 'list', id: null }; renderList(); window.scrollTo(0, 0); };
+  app.querySelector('#back').onclick = backToList;
   bindShare(n);
 
   // Suppression en deux temps (les boîtes confirm() natives sont peu pratiques sur mobile).
   const dn = /** @type {HTMLButtonElement} */ (app.querySelector('#delNote'));
   dn.onclick = () => {
-    if (dn.dataset.armed) { delete state.notes[n.id]; flushSave(state.notes); state.view = { name: 'list', id: null }; renderList(); return; }
+    if (dn.dataset.armed) { delete state.notes[n.id]; flushSave(state.notes); backToList(); return; }
     dn.dataset.armed = '1';
     dn.textContent = 'Toucher encore pour supprimer';
     dn.classList.add('confirm');

@@ -3,6 +3,17 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [1.6.0] - 2026-11-04
+
+### Ajouté
+- **Écran Options** (roue crantée sur l'accueil) : exporter et importer le carnet, importer depuis iReal Pro, version, nouveautés et documentation du code.
+- **Rappel de sauvegarde** : la date de la dernière sauvegarde est affichée dans les Options, et un point apparaît sur la roue crantée après 30 jours sans export.
+- **Bouton retour d'Android** : il ramène d'une note ou des Options à la liste au lieu de fermer l'app.
+
+### Modifié
+- L'accueil ne montre plus que les notes : les sections « Sauvegarde » et « iReal Pro » ont rejoint les Options.
+- Le bouton iReal de chaque grille (export de la grille) reste dans le bloc.
+
 ## [1.5.0] - 2026-11-04
 
 ### Ajouté

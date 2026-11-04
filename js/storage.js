@@ -33,6 +33,9 @@ export const STORAGE_KEY = 'carnet-portees-v1';
 /** Identifiant écrit dans les fichiers de sauvegarde. */
 const BACKUP_APP = 'carnet-portees';
 
+/** Clé `localStorage` des métadonnées (date de première utilisation, de dernière sauvegarde). */
+const META_KEY = 'inkline-meta';
+
 /** Identifiant écrit dans les fichiers de note partagée (`.inkline`). */
 const NOTE_APP = 'inkline';
 
@@ -137,4 +140,31 @@ export function importFile(notes, text) {
   });
   if (!count && !Object.keys(incoming).length) throw new Error('aucune note');
   return { kind: 'backup', count, firstId };
+}
+
+/**
+ * Métadonnées du carnet, stockées à part des notes.
+ * @typedef {Object} Meta
+ * @property {number} [firstUse] Horodatage de la première ouverture de l'app.
+ * @property {number} [lastExport] Horodatage du dernier « Exporter le carnet ».
+ */
+
+/**
+ * Lit les métadonnées (objet vide si absentes ou illisibles).
+ * @returns {Meta}
+ */
+export function getMeta() {
+  try {
+    const m = JSON.parse(localStorage.getItem(META_KEY) || '{}') || {};
+    const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
+    return { firstUse: num(m.firstUse), lastExport: num(m.lastExport) };
+  } catch (e) { return {}; }
+}
+
+/**
+ * Met à jour une partie des métadonnées.
+ * @param {Meta} patch
+ */
+export function setMeta(patch) {
+  try { localStorage.setItem(META_KEY, JSON.stringify({ ...getMeta(), ...patch })); } catch (e) { /* stockage indisponible */ }
 }
