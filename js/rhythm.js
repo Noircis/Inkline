@@ -53,15 +53,28 @@ export function segmentMeasures(items, time) {
   let cur = [];
   let pos = 0;
   items.forEach((it, i) => {
-    if (it.rs && cur.length) { measures.push({ idx: cur, full: true, type: 'single', rs: false }); cur = []; pos = 0; }
+    if (it.rs && cur.length) {
+      measures.push({ idx: cur, full: true, type: 'single', rs: false });
+      cur = [];
+      pos = 0;
+    }
     cur.push(i);
     pos = snap(pos + qlen(it));
-    if (it.bar) { measures.push({ idx: cur, full: true, type: it.bar, rs: false }); cur = []; pos = 0; }
-    else if (pos >= ML - EPS) { measures.push({ idx: cur, full: true, type: 'single', rs: false }); cur = []; pos = 0; }
+    if (it.bar) {
+      measures.push({ idx: cur, full: true, type: it.bar, rs: false });
+      cur = [];
+      pos = 0;
+    } else if (pos >= ML - EPS) {
+      measures.push({ idx: cur, full: true, type: 'single', rs: false });
+      cur = [];
+      pos = 0;
+    }
   });
   if (cur.length) measures.push({ idx: cur, full: false, rs: false });
   // Le drapeau rs est porté par le premier élément de la mesure.
-  measures.forEach((m) => { m.rs = !!items[m.idx[0]].rs; });
+  measures.forEach((m) => {
+    m.rs = !!items[m.idx[0]].rs;
+  });
   return measures;
 }
 
@@ -73,7 +86,11 @@ export function segmentMeasures(items, time) {
  */
 function measureOfItem(measures, count) {
   const out = new Array(count).fill(0);
-  measures.forEach((m, k) => m.idx.forEach((i) => { out[i] = k; }));
+  measures.forEach((m, k) =>
+    m.idx.forEach((i) => {
+      out[i] = k;
+    }),
+  );
   return out;
 }
 
@@ -112,9 +129,17 @@ export function tupletGroups(items, time) {
   /** @type {TupletGroup[]} */
   const groups = [];
   let cur = null;
-  const close = (complete) => { if (cur) { groups.push({ idx: cur.idx, complete }); cur = null; } };
+  const close = (complete) => {
+    if (cur) {
+      groups.push({ idx: cur.idx, complete });
+      cur = null;
+    }
+  };
   items.forEach((it, i) => {
-    if (!it.tup) { close(false); return; }
+    if (!it.tup) {
+      close(false);
+      return;
+    }
     if (cur && mOf[i] !== mOf[cur.idx[0]]) close(false);
     if (!cur) cur = { idx: [], written: 0, min: Infinity };
     cur.idx.push(i);
@@ -132,9 +157,13 @@ export function tupletGroups(items, time) {
  * @param {number} count
  * @returns {number[]}
  */
-export function tupletIndex(groups, count) {
+function tupletIndex(groups, count) {
   const out = new Array(count).fill(-1);
-  groups.forEach((g, k) => g.idx.forEach((i) => { out[i] = k; }));
+  groups.forEach((g, k) =>
+    g.idx.forEach((i) => {
+      out[i] = k;
+    }),
+  );
   return out;
 }
 
@@ -165,7 +194,11 @@ export function beamGroups(items, time) {
     let pos = 0;
     let cur = [];
     let curKey = null;
-    const flush = () => { if (cur.length >= 2) groups.push(cur); cur = []; curKey = null; };
+    const flush = () => {
+      if (cur.length >= 2) groups.push(cur);
+      cur = [];
+      curKey = null;
+    };
     m.idx.forEach((i) => {
       const it = items[i];
       const beat = Math.floor(snap(pos) / BU + EPS);
@@ -208,7 +241,10 @@ export function staffPlayOrder(items) {
     if (it.rs) rs = i;
     order.push(i);
     if (it.bar === 'rep') {
-      if (!done.has(i)) { done.add(i); i = rs - 1; } // -1 car la boucle fait i++
+      if (!done.has(i)) {
+        done.add(i);
+        i = rs - 1;
+      } // -1 car la boucle fait i++
       else rs = i + 1;
     }
   }
@@ -288,8 +324,13 @@ export function staffEvents(b) {
     const start = q;
     q = snap(q + qlen(it));
     const ev = {
-      i, start: warp(start, it.tup), end: warp(q, it.tup), midi: midis[i],
-      rest: !!it.r, held: false, downbeat: mpos < EPS,
+      i,
+      start: warp(start, it.tup),
+      end: warp(q, it.tup),
+      midi: midis[i],
+      rest: !!it.r,
+      held: false,
+      downbeat: mpos < EPS,
     };
     const prevIdx = order[k - 1];
     const prev = items[i - 1];

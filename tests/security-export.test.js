@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import { sanitizeNote, sanitizeNotes } from '../js/sanitize.js';
 import { importFile, noteFileJson } from '../js/storage.js';
 import { buildPdf } from '../js/pdf.js';
+import { paginate, parseFontFaces } from '../js/export.js';
+import { readFileSync } from 'node:fs';
 import { gridHtml } from '../js/grid.js';
 import { staffSvg } from '../js/render-staff.js';
 
@@ -11,11 +13,28 @@ const EVIL = '"><img src=x onerror=alert(1)>';
 
 /** Note piégée : chaque champ tente une injection. */
 const evilNote = {
-  id: EVIL, title: 'ok', updated: 1, blocks: [
-    { id: EVIL, type: 'staff', clef: EVIL, time: EVIL, tempo: 9999, swing: 'yes',
-      items: [{ d: EVIL }, { d: 'q', s: EVIL, a: 7, c: 'C7' + EVIL, bar: EVIL, tie: 'oui' }] },
-    { id: 'abc', type: 'grid', key: EVIL, style: 'x', time: '4/4', tempo: 120,
-      measures: [{ ch: ['C7', 42, EVIL], sec: EVIL, ending: EVIL }] },
+  id: EVIL,
+  title: 'ok',
+  updated: 1,
+  blocks: [
+    {
+      id: EVIL,
+      type: 'staff',
+      clef: EVIL,
+      time: EVIL,
+      tempo: 9999,
+      swing: 'yes',
+      items: [{ d: EVIL }, { d: 'q', s: EVIL, a: 7, c: 'C7' + EVIL, bar: EVIL, tie: 'oui' }],
+    },
+    {
+      id: 'abc',
+      type: 'grid',
+      key: EVIL,
+      style: 'x',
+      time: '4/4',
+      tempo: 120,
+      measures: [{ ch: ['C7', 42, EVIL], sec: EVIL, ending: EVIL }],
+    },
     { id: 'zz', type: 'script', src: EVIL },
   ],
 };
@@ -47,7 +66,9 @@ test('rendu : aucune balise injectée ne survit (défense en profondeur)', () =>
 });
 
 test('importFile : une note reçue est ajoutée avec de nouveaux ids, sans écraser', () => {
-  const notes = sanitizeNotes({ a: { id: 'note1', title: 'Moi', updated: 5, blocks: [{ id: 'b1', type: 'text', text: 'x' }] } });
+  const notes = sanitizeNotes({
+    a: { id: 'note1', title: 'Moi', updated: 5, blocks: [{ id: 'b1', type: 'text', text: 'x' }] },
+  });
   const shared = JSON.parse(noteFileJson(notes.note1));
   const r = importFile(notes, JSON.stringify(shared));
   assert.equal(r.kind, 'note');
@@ -67,7 +88,10 @@ test('importFile : sauvegarde fusionnée par date, fichier étranger refusé', (
 
 test('buildPdf : structure et table xref cohérentes', () => {
   const jpeg = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]); // JPEG minimal (début/fin)
-  const pdf = buildPdf([{ jpeg, width: 10, height: 20 }, { jpeg, width: 10, height: 5 }]);
+  const pdf = buildPdf([
+    { jpeg, width: 10, height: 20 },
+    { jpeg, width: 10, height: 5 },
+  ]);
   const text = new TextDecoder('latin1').decode(pdf);
   assert.ok(text.startsWith('%PDF-1.4'));
   assert.match(text, /\/Count 2/);
@@ -77,4 +101,24 @@ test('buildPdf : structure et table xref cohérentes', () => {
   const entries = [...text.slice(xrefAt).matchAll(/^(\d{10}) 00000 n $/gm)].map((m) => Number(m[1]));
   assert.equal(entries.length, 8); // catalogue + pages + 3 objets × 2 pages
   entries.forEach((off, k) => assert.ok(text.slice(off).startsWith(`${k + 1} 0 obj`), `objet ${k + 1}`));
+});
+
+test('paginate : coupe entre deux blocs quand possible, sinon en pleine page', () => {
+  assert.deepEqual(paginate([100, 400, 700, 900], 500), [400, 900]);
+  assert.deepEqual(paginate([100, 1200], 500), [500, 1000, 1200]); // bloc plus haut qu'une page
+  assert.deepEqual(paginate([300], 500), [300]);
+});
+
+test('parseFontFaces : le vrai fonts.css donne ses 7 polices (export des images)', () => {
+  const faces = parseFontFaces(readFileSync(new URL('../css/fonts.css', import.meta.url), 'utf8'));
+  assert.equal(faces.length, 7);
+  faces.forEach((f) => {
+    assert.match(f.url, /^\.\.\/fonts\/.+\.woff2$/);
+    assert.ok(!/unicode-range/.test(f.rule));
+  });
+  // Syntaxes alternatives : compacte, guillemets, espaces.
+  assert.equal(
+    parseFontFaces('@font-face{src:url(\'a.woff2\')}@font-face {\n src: url( "b.woff2" ) }').length,
+    2,
+  );
 });

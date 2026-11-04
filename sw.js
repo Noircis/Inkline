@@ -27,31 +27,62 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-1.7.0';
+const CACHE = 'inkline-1.7.5';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
-  './', './index.html', './manifest.webmanifest', './css/app.css', './css/fonts.css',
-  './fonts/bricolage-grotesque-latin-600-normal.woff2', './fonts/bricolage-grotesque-latin-700-normal.woff2',
-  './fonts/instrument-sans-latin-400-normal.woff2', './fonts/instrument-sans-latin-500-normal.woff2',
-  './fonts/instrument-sans-latin-600-normal.woff2', './fonts/instrument-sans-latin-700-italic.woff2',
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './css/app.css',
+  './css/fonts.css',
+  './fonts/bricolage-grotesque-latin-600-normal.woff2',
+  './fonts/bricolage-grotesque-latin-700-normal.woff2',
+  './fonts/instrument-sans-latin-400-normal.woff2',
+  './fonts/instrument-sans-latin-500-normal.woff2',
+  './fonts/instrument-sans-latin-600-normal.woff2',
+  './fonts/instrument-sans-latin-700-italic.woff2',
   './fonts/noto-music-music-400-normal.woff2',
-  './icon-192.png', './icon-512.png', './icon-maskable.png',
-  './js/main.js', './js/util.js', './js/model.js', './js/pitch.js', './js/rhythm.js',
-  './js/layout.js', './js/render-staff.js', './js/chords.js', './js/grid.js', './js/ireal.js',
-  './js/audio.js', './js/storage.js', './js/history.js', './js/sanitize.js', './js/export.js', './js/pdf.js',
-  './js/ui/state.js', './js/ui/views.js', './js/ui/staff-ui.js', './js/ui/grid-ui.js', './js/ui/options.js', './js/ui/list-view.js',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable.png',
+  './js/main.js',
+  './js/util.js',
+  './js/model.js',
+  './js/pitch.js',
+  './js/rhythm.js',
+  './js/layout.js',
+  './js/render-staff.js',
+  './js/chords.js',
+  './js/grid.js',
+  './js/ireal.js',
+  './js/audio.js',
+  './js/storage.js',
+  './js/history.js',
+  './js/sanitize.js',
+  './js/export.js',
+  './js/pdf.js',
+  './js/ui/state.js',
+  './js/ui/views.js',
+  './js/ui/staff-ui.js',
+  './js/ui/grid-ui.js',
+  './js/ui/options.js',
+  './js/ui/list-view.js',
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE)
-    .then((c) => c.addAll(CORE.map((u) => new Request(u, { cache: 'reload' }))))
-    .then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.addAll(CORE.map((u) => new Request(u, { cache: 'reload' }))))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys()
+    caches
+      .keys()
       .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
@@ -62,16 +93,24 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return; // rien d'autre à mettre en cache
-  e.respondWith(caches.open(CACHE).then(async (c) => {
-    const hit = await c.match(req, { ignoreSearch: true });
-    const net = fetch(req, { cache: 'no-cache' })
-      .then((r) => { if (r && r.ok) c.put(req, r.clone()); return r; })
-      .catch(() => null);
-    if (hit) { e.waitUntil(net); return hit; }
-    const r = await net;
-    if (r) return r;
-    // Navigation hors ligne vers une URL inconnue : on sert l'app.
-    if (req.mode === 'navigate') return (await c.match('./index.html')) || Response.error();
-    return Response.error();
-  }));
+  e.respondWith(
+    caches.open(CACHE).then(async (c) => {
+      const hit = await c.match(req, { ignoreSearch: true });
+      const net = fetch(req, { cache: 'no-cache' })
+        .then((r) => {
+          if (r && r.ok) c.put(req, r.clone());
+          return r;
+        })
+        .catch(() => null);
+      if (hit) {
+        e.waitUntil(net);
+        return hit;
+      }
+      const r = await net;
+      if (r) return r;
+      // Navigation hors ligne vers une URL inconnue : on sert l'app.
+      if (req.mode === 'navigate') return (await c.match('./index.html')) || Response.error();
+      return Response.error();
+    }),
+  );
 });

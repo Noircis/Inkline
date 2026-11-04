@@ -4,7 +4,7 @@
  * Interaction avec un bloc **portée** (ou ligne rythmique) :
  *
  * - en-tête du bloc (clé, mesure, tempo, swing, lecture) ;
- * - **toucher** sur la portée ({@link module:ui/staff-ui.staffTap|staffTap}) : ajout,
+ * - **toucher** sur la portée ({@link module:ui/staff-ui~staffTap|staffTap}) : ajout,
  *   sélection, déplacement d'une note ;
  * - **palette** fixée en bas d'écran : valeurs, point, triolet, silence,
  *   liaison, altérations, barres, accord chiffré, navigation, annuler, effacer.
@@ -53,7 +53,8 @@ const LABELS = {
  */
 export function staffBlockEl(n, b, el) {
   const rh = b.clef === 'rhythm';
-  el.innerHTML = `<div class="shead"><span class="kind">${rh ? 'Rythme' : 'Portée'}</span>
+  el.innerHTML =
+    `<div class="shead"><span class="kind">${rh ? 'Rythme' : 'Portée'}</span>
     ${rh ? '' : `<select data-f="clef" id="c_${esc(b.id)}" aria-label="Clé"><option value="treble">Sol</option><option value="bass">Fa</option></select>`}
     <select data-f="time" id="m_${esc(b.id)}" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${esc(b.id)}"></label>
@@ -62,21 +63,45 @@ export function staffBlockEl(n, b, el) {
     <div class="staff-wrap" data-staff="${esc(b.id)}"></div>` + toolsHtml();
 
   const cs = /** @type {HTMLSelectElement|null} */ (el.querySelector('[data-f=clef]'));
-  if (cs) { cs.value = b.clef; cs.onchange = () => { pushSnapshot(n); b.clef = /** @type {any} */ (cs.value); touch(n); redrawStaff(b.id); }; }
+  if (cs) {
+    cs.value = b.clef;
+    cs.onchange = () => {
+      pushSnapshot(n);
+      b.clef = /** @type {any} */ (cs.value);
+      touch(n);
+      redrawStaff(b.id);
+    };
+  }
   const ms = /** @type {HTMLSelectElement} */ (el.querySelector('[data-f=time]'));
   ms.value = b.time;
-  ms.onchange = () => { pushSnapshot(n); b.time = ms.value; touch(n); redrawStaff(b.id); };
+  ms.onchange = () => {
+    pushSnapshot(n);
+    b.time = ms.value;
+    touch(n);
+    redrawStaff(b.id);
+  };
   const tp = /** @type {HTMLInputElement} */ (el.querySelector('[data-f=tempo]'));
   tp.value = String(b.tempo);
-  tp.onchange = () => { const v = Math.max(30, Math.min(300, parseInt(tp.value, 10) || 100)); tp.value = String(v); b.tempo = v; touch(n); };
+  tp.onchange = () => {
+    const v = Math.max(30, Math.min(300, parseInt(tp.value, 10) || 100));
+    tp.value = String(v);
+    b.tempo = v;
+    touch(n);
+  };
   const swb = el.querySelector('[data-f=swing]');
-  swb.onclick = () => { b.swing = !b.swing; swb.setAttribute('aria-pressed', String(b.swing)); touch(n); };
+  swb.onclick = () => {
+    b.swing = !b.swing;
+    swb.setAttribute('aria-pressed', String(b.swing));
+    touch(n);
+  };
   el.querySelector('[data-play]').onclick = () => {
     setActive(b.id);
     audio.playStaff(b, playCallbacks(b.id, redrawStaff));
     updatePlayBtn(b.id);
   };
-  el.querySelector('.staff-wrap').addEventListener('click', (e) => staffTap(n, b, /** @type {MouseEvent} */ (e)));
+  el.querySelector('.staff-wrap').addEventListener('click', (e) =>
+    staffTap(n, b, /** @type {MouseEvent} */ (e)),
+  );
 }
 
 /**
@@ -119,7 +144,7 @@ export function redrawStaff(id) {
  * @param {module:model~StaffBlock} b
  * @param {MouseEvent} e
  */
-export function staffTap(n, b, e) {
+function staffTap(n, b, e) {
   const wrap = /** @type {HTMLElement} */ (e.currentTarget);
   const r = wrap.getBoundingClientRect();
   const x = e.clientX - r.left;
@@ -146,7 +171,8 @@ export function staffTap(n, b, e) {
         // rompt la liaison qui y arrive, et entraîne la note à laquelle elle est liée.
         const prev = b.items[hit - 1];
         if (prev && prev.tie) delete prev.tie;
-        for (let k = hit; b.items[k] && b.items[k].tie && b.items[k + 1] && !b.items[k + 1].r; k++) b.items[k + 1].s = s;
+        for (let k = hit; b.items[k] && b.items[k].tie && b.items[k + 1] && !b.items[k + 1].r; k++)
+          b.items[k + 1].s = s;
         touch(n);
       }
       audio.previewItem(b, hit);
@@ -174,7 +200,9 @@ export function staffTap(n, b, e) {
     if (inp.rs) it.rs = true;
     b.items.push(it);
     // Réglages « à usage unique » consommés ; triolet et silence restent actifs.
-    inp.acc = null; inp.rs = false; inp.tie = false;
+    inp.acc = null;
+    inp.rs = false;
+    inp.tie = false;
     state.sel = null;
     touch(n);
     audio.previewItem(b, b.items.length - 1);
@@ -189,7 +217,10 @@ export function staffTap(n, b, e) {
  * @param {boolean} on
  */
 export function showStaffPalette(on) {
-  if (!on) { closeChord(); barBar.hidden = true; }
+  if (!on) {
+    closeChord();
+    barBar.hidden = true;
+  }
   pal.hidden = !on;
   if (on) updateStaffPalette();
 }
@@ -198,7 +229,7 @@ export function showStaffPalette(on) {
  * Met la palette en accord avec la sélection ou les réglages de saisie :
  * boutons enfoncés, glyphes (note ou silence), message d'aide.
  */
-export function updateStaffPalette() {
+function updateStaffPalette() {
   const b = blockById(state.activeId);
   if (!b || b.type !== 'staff') return;
   const inp = state.input;
@@ -234,21 +265,29 @@ export function updateStaffPalette() {
   const target = it || last;
   barBar.querySelectorAll('[data-bar]').forEach((x) => {
     const t = x.dataset.bar;
-    const on = t === 'rs' ? (it ? !!it.rs : inp.rs) : (target ? t !== 'none' && target.bar === t : false);
+    const on = t === 'rs' ? (it ? !!it.rs : inp.rs) : target ? t !== 'none' && target.bar === t : false;
     x.setAttribute('aria-pressed', String(on));
   });
 
   // Message d'aide, du plus spécifique au plus général.
   const info = document.getElementById('palInfo');
   if (it) {
-    info.textContent = it.r ? 'Silence sélectionné'
-      : (rh ? 'Note sélectionnée' : pitchName(b.clef, it.s, it.a) + ' · touche plus haut ou plus bas pour la déplacer');
-  } else if (last && last.bar === 'final') info.textContent = 'Motif terminé · retire la barre de fin pour continuer';
+    info.textContent = it.r
+      ? 'Silence sélectionné'
+      : rh
+        ? 'Note sélectionnée'
+        : pitchName(b.clef, it.s, it.a) + ' · touche plus haut ou plus bas pour la déplacer';
+  } else if (last && last.bar === 'final')
+    info.textContent = 'Motif terminé · retire la barre de fin pour continuer';
   else if (inp.tie) info.textContent = 'Liaison · la prochaine note prolonge la précédente';
   else if (inp.rs) info.textContent = 'La prochaine note ouvrira une reprise';
-  else if (rest) info.textContent = 'Mode silence (' + LABELS.rest[d].toLowerCase() + ') · touche la zone bleue';
+  else if (rest)
+    info.textContent = 'Mode silence (' + LABELS.rest[d].toLowerCase() + ') · touche la zone bleue';
   else if (inp.tup) info.textContent = 'Mode triolet · touche la zone bleue';
-  else info.textContent = rh ? 'Touche la zone bleue pour ajouter' : 'Touche la portée dans la zone bleue pour ajouter';
+  else
+    info.textContent = rh
+      ? 'Touche la zone bleue pour ajouter'
+      : 'Touche la portée dans la zone bleue pour ajouter';
   syncPaletteSpace();
 }
 
@@ -278,10 +317,16 @@ function toggleTie() {
   const b = /** @type {module:model~StaffBlock} */ (blockById(state.activeId));
   const done = withSel((it, blk) => {
     if (it.r) return;
-    if (it.tie) { delete it.tie; return; }
+    if (it.tie) {
+      delete it.tie;
+      return;
+    }
     it.tie = true;
     const next = blk.items[state.sel + 1];
-    if (next && !next.r) { next.s = it.s; delete next.a; }
+    if (next && !next.r) {
+      next.s = it.s;
+      delete next.a;
+    }
   });
   if (!done) {
     const last = b.items[b.items.length - 1];
@@ -303,13 +348,22 @@ function applyBar(type) {
   const tgt = state.sel != null ? state.sel : b.items.length - 1;
   if (type === 'rs') {
     // Le début de reprise se place AVANT une note : sur la sélection, ou sur la prochaine note.
-    if (state.sel != null) { pushSnapshot(n); const it = b.items[state.sel]; if (it.rs) delete it.rs; else it.rs = true; touch(n); }
-    else state.input.rs = !state.input.rs;
+    if (state.sel != null) {
+      pushSnapshot(n);
+      const it = b.items[state.sel];
+      if (it.rs) delete it.rs;
+      else it.rs = true;
+      touch(n);
+    } else state.input.rs = !state.input.rs;
   } else {
     if (tgt < 0) return;
     pushSnapshot(n);
     const it = b.items[tgt];
-    if (type === 'none') { delete it.bar; delete it.rs; } else if (it.bar === type) delete it.bar; else it.bar = /** @type {any} */ (type);
+    if (type === 'none') {
+      delete it.bar;
+      delete it.rs;
+    } else if (it.bar === type) delete it.bar;
+    else it.bar = /** @type {any} */ (type);
     touch(n);
   }
   barBar.hidden = true;
@@ -326,16 +380,38 @@ pal.addEventListener('click', (e) => {
   if (!n || !b || b.type !== 'staff') return;
   const inp = state.input;
 
-  if (btn.dataset.bar) { applyBar(btn.dataset.bar); return; }
+  if (btn.dataset.bar) {
+    applyBar(btn.dataset.bar);
+    return;
+  }
   if (btn.dataset.dur) {
     const d = /** @type {any} */ (btn.dataset.dur);
-    if (withSel((it) => { it.d = d; })) audio.previewItem(b, state.sel); else { inp.d = d; updateStaffPalette(); }
+    if (
+      withSel((it) => {
+        it.d = d;
+      })
+    )
+      audio.previewItem(b, state.sel);
+    else {
+      inp.d = d;
+      updateStaffPalette();
+    }
     return;
   }
   if (btn.hasAttribute('data-acc')) {
     const a = /** @type {number} */ (Number(btn.dataset.acc));
-    if (withSel((it) => { if (it.r) return; if (it.a === a) delete it.a; else it.a = a; })) audio.previewItem(b, state.sel);
-    else { inp.acc = inp.acc === a ? null : a; updateStaffPalette(); }
+    if (
+      withSel((it) => {
+        if (it.r) return;
+        if (it.a === a) delete it.a;
+        else it.a = a;
+      })
+    )
+      audio.previewItem(b, state.sel);
+    else {
+      inp.acc = inp.acc === a ? null : a;
+      updateStaffPalette();
+    }
     return;
   }
   switch (btn.dataset.act) {
@@ -345,24 +421,55 @@ pal.addEventListener('click', (e) => {
       updateStaffPalette();
       return;
     case 'dot':
-      if (!withSel((it) => { if (it.dot) delete it.dot; else it.dot = true; })) { inp.dot = !inp.dot; updateStaffPalette(); }
+      if (
+        !withSel((it) => {
+          if (it.dot) delete it.dot;
+          else it.dot = true;
+        })
+      ) {
+        inp.dot = !inp.dot;
+        updateStaffPalette();
+      }
       return;
     case 'tup':
-      if (!withSel((it) => { if (it.tup) delete it.tup; else it.tup = 3; })) { inp.tup = !inp.tup; updateStaffPalette(); }
+      if (
+        !withSel((it) => {
+          if (it.tup) delete it.tup;
+          else it.tup = 3;
+        })
+      ) {
+        inp.tup = !inp.tup;
+        updateStaffPalette();
+      }
       return;
     case 'tie':
       toggleTie();
       return;
     case 'rest':
-      if (!withSel((it, blk) => {
-        if (it.r) { delete it.r; if (blk.clef !== 'rhythm') it.s = it.s ?? 4; } else { it.r = true; delete it.tie; }
-      })) { inp.rest = !inp.rest; updateStaffPalette(); }
+      if (
+        !withSel((it, blk) => {
+          if (it.r) {
+            delete it.r;
+            if (blk.clef !== 'rhythm') it.s = it.s ?? 4;
+          } else {
+            it.r = true;
+            delete it.tie;
+          }
+        })
+      ) {
+        inp.rest = !inp.rest;
+        updateStaffPalette();
+      }
       return;
     case 'prev':
     case 'next':
       if (!b.items.length) return;
       if (state.sel == null) state.sel = btn.dataset.act === 'prev' ? b.items.length - 1 : 0;
-      else state.sel = Math.max(0, Math.min(b.items.length - 1, state.sel + (btn.dataset.act === 'prev' ? -1 : 1)));
+      else
+        state.sel = Math.max(
+          0,
+          Math.min(b.items.length - 1, state.sel + (btn.dataset.act === 'prev' ? -1 : 1)),
+        );
       redrawStaff(b.id);
       audio.previewItem(b, state.sel);
       return;
@@ -400,7 +507,10 @@ let chordTarget = null;
 function openChord(b) {
   barBar.hidden = true;
   chordTarget = { b, i: state.sel != null ? state.sel : b.items.length - 1 };
-  if (state.sel == null) { state.sel = chordTarget.i; redrawStaff(b.id); }
+  if (state.sel == null) {
+    state.sel = chordTarget.i;
+    redrawStaff(b.id);
+  }
   chordIn.value = b.items[chordTarget.i].c || '';
   chordBar.hidden = false;
   updateStaffPalette();
@@ -422,7 +532,8 @@ function applyChord() {
   if (it && n) {
     pushSnapshot(n);
     const v = chordIn.value.trim().slice(0, 16);
-    if (v) it.c = v; else delete it.c;
+    if (v) it.c = v;
+    else delete it.c;
     touch(n);
   }
   closeChord();
@@ -431,5 +542,14 @@ function applyChord() {
   updateStaffPalette();
 }
 document.getElementById('chordOk').onclick = applyChord;
-document.getElementById('chordCancel').onclick = () => { closeChord(); chordIn.blur(); updateStaffPalette(); };
-chordIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); applyChord(); } });
+document.getElementById('chordCancel').onclick = () => {
+  closeChord();
+  chordIn.blur();
+  updateStaffPalette();
+};
+chordIn.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    applyChord();
+  }
+});

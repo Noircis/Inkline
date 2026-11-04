@@ -5,7 +5,7 @@
  *
  * ## Rendu d'une note en image
  *
- * 1. {@link module:export.noteToSvg|noteToSvg} compose la note entière dans **un seul SVG** :
+ * 1. {@link module:export~noteToSvg|noteToSvg} compose la note entière dans **un seul SVG** :
  *    titre, date, blocs texte (retour à la ligne calculé avec
  *    `CanvasRenderingContext2D.measureText`), portées ({@link module:render-staff}),
  *    grilles ({@link module:grid.gridSvg|gridSvg}). Toujours en thème clair, pour l'impression.
@@ -61,24 +61,53 @@ const SVG_CSS = `
 let fontCssPromise = null;
 
 /**
- * Lit `css/fonts.css` et remplace chaque `url(...)` par le fichier encodé en base64.
- * @returns {Promise<string>}
+ * Une règle `@font-face` trouvée dans une feuille de style.
+ * @typedef {Object} FontFaceRule
+ * @property {string} rule Texte complet de la règle, `unicode-range` retiré
+ *   (inutile dans l'image, et la police doit couvrir tous les caractères).
+ * @property {string} url Adresse du fichier de police, telle qu'écrite dans le CSS.
+ */
+
+/**
+ * Extrait les règles `@font-face` d'une feuille de style.
+ *
+ * Fonction pure, testée sur le vrai `css/fonts.css` : la syntaxe CSS
+ * autorise espaces, retours à la ligne et guillemets, et un reformatage du
+ * fichier (Prettier) ne doit pas casser l'export des images.
+ *
+ * @param {string} css
+ * @returns {FontFaceRule[]}
+ */
+export function parseFontFaces(css) {
+  const rules = css.match(/@font-face\s*\{[^}]*\}/g) || [];
+  return rules
+    .map((rule) => {
+      const m = /url\(\s*['"]?([^'")]+)['"]?\s*\)/.exec(rule);
+      return m ? { rule: rule.replace(/unicode-range\s*:[^;}]*;?/, ''), url: m[1] } : null;
+    })
+    .filter(Boolean);
+}
+
+/**
+ * Lit `css/fonts.css` et remplace l'adresse de chaque police par le fichier encodé en base64.
+ * Calculé une seule fois par session.
+ * @returns {Promise<string>} Règles `@font-face` autonomes, à insérer dans le SVG.
  */
 function embeddedFontCss() {
   if (!fontCssPromise) {
     fontCssPromise = (async () => {
       const cssUrl = new URL('../css/fonts.css', import.meta.url);
-      const css = await (await fetch(cssUrl)).text();
-      const faces = css.match(/@font-face\{[^}]*\}/g) || [];
-      const out = await Promise.all(faces.map(async (face) => {
-        const m = /url\(([^)]+)\)/.exec(face);
-        if (!m) return '';
-        const buf = new Uint8Array(await (await fetch(new URL(m[1], cssUrl))).arrayBuffer());
-        // Conversion octets → base64 par paquets (String.fromCharCode refuse les très longs tableaux).
-        let bin = '';
-        for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
-        return face.replace(m[0], `url(data:font/woff2;base64,${btoa(bin)})`).replace(/unicode-range:[^;}]*;?/, '');
-      }));
+      const faces = parseFontFaces(await (await fetch(cssUrl)).text());
+      const out = await Promise.all(
+        faces.map(async ({ rule, url }) => {
+          const buf = new Uint8Array(await (await fetch(new URL(url, cssUrl))).arrayBuffer());
+          // Conversion octets → base64 par paquets (String.fromCharCode refuse les très longs tableaux).
+          let bin = '';
+          for (let i = 0; i < buf.length; i += 0x8000)
+            bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+          return rule.replace(/url\([^)]*\)/, `url(data:font/woff2;base64,${btoa(bin)})`);
+        }),
+      );
       return out.join('\n');
     })().catch(() => '');
   }
@@ -97,10 +126,16 @@ function wrap(ctx, text, maxW) {
   const lines = [];
   text.split('\n').forEach((para) => {
     let line = '';
-    para.split(/\s+/).filter(Boolean).forEach((word) => {
-      const test = line ? line + ' ' + word : word;
-      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = word; } else line = test;
-    });
+    para
+      .split(/\s+/)
+      .filter(Boolean)
+      .forEach((word) => {
+        const test = line ? line + ' ' + word : word;
+        if (ctx.measureText(test).width > maxW && line) {
+          lines.push(line);
+          line = word;
+        } else line = test;
+      });
     lines.push(line);
   });
   return lines;
@@ -112,7 +147,8 @@ function wrap(ctx, text, maxW) {
  * @returns {string}
  */
 function caption(b) {
-  if (b.type === 'grid') return `GRILLE · ${keyLabel(b.key).toUpperCase()} · ${b.time} · ${b.style.toUpperCase()} · TEMPO ${b.tempo}`;
+  if (b.type === 'grid')
+    return `GRILLE · ${keyLabel(b.key).toUpperCase()} · ${b.time} · ${b.style.toUpperCase()} · TEMPO ${b.tempo}`;
   const kind = b.clef === 'rhythm' ? 'RYTHME' : b.clef === 'bass' ? 'CLÉ DE FA' : 'CLÉ DE SOL';
   return `${kind} · ${b.time} · TEMPO ${b.tempo}${b.swing ? ' · SWING' : ''}`;
 }
@@ -124,9 +160,13 @@ function caption(b) {
  * @returns {Promise<{svg: string, width: number, height: number, breaks: number[]}>}
  *   `breaks` : ordonnées (px) des espaces entre blocs, où une coupure de page est élégante.
  */
-export async function noteToSvg(note) {
+async function noteToSvg(note) {
   if (document.fonts) {
-    await Promise.all(['700 30px "Bricolage Grotesque"', '16px "Instrument Sans"'].map((f) => document.fonts.load(f).catch(() => {})));
+    await Promise.all(
+      ['700 30px "Bricolage Grotesque"', '16px "Instrument Sans"'].map((f) =>
+        document.fonts.load(f).catch(() => {}),
+      ),
+    );
   }
   const ctx = document.createElement('canvas').getContext('2d');
   const CW = W - 2 * PAD;
@@ -136,8 +176,17 @@ export async function noteToSvg(note) {
 
   // Titre (sur plusieurs lignes si besoin) et date.
   ctx.font = '700 30px "Bricolage Grotesque", sans-serif';
-  wrap(ctx, note.title || 'Sans titre', CW).forEach((l) => { y += 34; body += `<text class="ttl" x="${PAD}" y="${y}">${esc(l)}</text>`; });
-  const date = 'Créée le ' + new Date(note.created || note.updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  wrap(ctx, note.title || 'Sans titre', CW).forEach((l) => {
+    y += 34;
+    body += `<text class="ttl" x="${PAD}" y="${y}">${esc(l)}</text>`;
+  });
+  const date =
+    'Créée le ' +
+    new Date(note.created || note.updated).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
   y += 24;
   body += `<text class="foot" x="${PAD}" y="${y}">${esc(date)}</text>`;
   y += 12;
@@ -148,7 +197,10 @@ export async function noteToSvg(note) {
       if (!b.text.trim()) return;
       breaks.push(y);
       y += 14;
-      wrap(ctx, b.text, CW).forEach((l) => { y += 24; body += `<text class="txt" x="${PAD}" y="${y}" xml:space="preserve">${esc(l)}</text>`; });
+      wrap(ctx, b.text, CW).forEach((l) => {
+        y += 24;
+        body += `<text class="txt" x="${PAD}" y="${y}" xml:space="preserve">${esc(l)}</text>`;
+      });
       y += 6;
     } else if (b.type === 'staff') {
       breaks.push(y);
@@ -165,7 +217,12 @@ export async function noteToSvg(note) {
       body += `<text class="cap" x="${PAD}" y="${y}">${esc(caption(b))}</text>`;
       // Les mesures vides en fin de grille (créées pendant la saisie) ne sont pas exportées.
       const measures = b.measures.slice();
-      while (measures.length > 1 && !measures[measures.length - 1].ch.length && !measures[measures.length - 2].fin) measures.pop();
+      while (
+        measures.length > 1 &&
+        !measures[measures.length - 1].ch.length &&
+        !measures[measures.length - 2].fin
+      )
+        measures.pop();
       const g = gridSvg({ ...b, measures }, CW);
       body += `<g transform="translate(${PAD},${y + 12})">${g.svg}</g>`;
       y += 12 + g.height;
@@ -177,8 +234,9 @@ export async function noteToSvg(note) {
   breaks.push(height);
 
   const fonts = await embeddedFontCss();
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${height}" viewBox="0 0 ${W} ${height}">`
-    + `<style>${fonts}${SVG_CSS}</style><rect width="100%" height="100%" fill="${C.paper}"/>${body}</svg>`;
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${height}" viewBox="0 0 ${W} ${height}">` +
+    `<style>${fonts}${SVG_CSS}</style><rect width="100%" height="100%" fill="${C.paper}"/>${body}</svg>`;
   return { svg, width: W, height, breaks };
 }
 
@@ -217,7 +275,10 @@ async function rasterize(svg, w, h) {
  * @param {number} [quality]
  * @returns {Promise<Blob>}
  */
-const toBlob = (canvas, type, quality) => new Promise((res, rej) => canvas.toBlob((b) => (b ? res(b) : rej(new Error('export impossible'))), type, quality));
+const toBlob = (canvas, type, quality) =>
+  new Promise((res, rej) =>
+    canvas.toBlob((b) => (b ? res(b) : rej(new Error('export impossible'))), type, quality),
+  );
 
 /**
  * Image PNG de la note.
@@ -244,7 +305,10 @@ export function paginate(breaks, pageH) {
   let start = 0;
   while (start < total - 1) {
     const limit = start + pageH;
-    if (limit >= total) { ends.push(total); break; }
+    if (limit >= total) {
+      ends.push(total);
+      break;
+    }
     const candidates = breaks.filter((b) => b > start + pageH * 0.3 && b <= limit);
     const end = candidates.length ? candidates[candidates.length - 1] : limit;
     ends.push(end);
@@ -294,7 +358,12 @@ export function noteToInkline(note) {
  * @returns {string}
  */
 export function slug(title) {
-  const s = (title || 'note').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const s = (title || 'note')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
   return s.slice(0, 50) || 'note';
 }
 
@@ -309,7 +378,10 @@ export function download(blob, name) {
   a.download = name;
   document.body.appendChild(a);
   a.click();
-  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  setTimeout(() => {
+    URL.revokeObjectURL(a.href);
+    a.remove();
+  }, 1000);
 }
 
 /**

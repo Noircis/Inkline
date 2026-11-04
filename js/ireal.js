@@ -68,8 +68,14 @@ const MUSIC_PREFIX = '1r34LbKcu7';
  */
 function obfuscate50(s) {
   const a = s.split('');
-  for (let i = 0; i < 5; i++) { a[49 - i] = s[i]; a[i] = s[49 - i]; }
-  for (let i = 10; i < 24; i++) { a[49 - i] = s[i]; a[i] = s[49 - i]; }
+  for (let i = 0; i < 5; i++) {
+    a[49 - i] = s[i];
+    a[i] = s[49 - i];
+  }
+  for (let i = 10; i < 24; i++) {
+    a[49 - i] = s[i];
+    a[i] = s[49 - i];
+  }
   return a.join('');
 }
 
@@ -94,7 +100,7 @@ export function scramble(s) {
  * @param {string} s
  * @returns {string}
  */
-export function unscramble(s) {
+function unscramble(s) {
   return scramble(s).replace(/XyQ/g, '   ').replace(/LZ/g, ' |').replace(/Kcl/g, '| x');
 }
 
@@ -104,12 +110,15 @@ export function unscramble(s) {
  * @param {string} q
  * @returns {string}
  */
-export function qualityToIReal(q) {
+function qualityToIReal(q) {
   let s = q.replace(/\s/g, '').replace(/♭/g, 'b').replace(/♯/g, '#');
   s = s.replace(/^(min|mi|m(?!aj)|–)/, '-');
   s = s.replace(/(maj|Maj|MA|Δ|∆)/, '^').replace(/^M(?=7|9|13|$)/, '^');
   if (s === '^' || s === '-^') s += '7';
-  s = s.replace(/^(ø7?|h(?!7)|-7b5)/, 'h7').replace(/^(dim|°)/, 'o').replace(/^aug/, '+');
+  s = s
+    .replace(/^(ø7?|h(?!7)|-7b5)/, 'h7')
+    .replace(/^(dim|°)/, 'o')
+    .replace(/^aug/, '+');
   return s;
 }
 
@@ -120,8 +129,15 @@ export function qualityToIReal(q) {
  * @returns {string}
  */
 export function qualityFromIReal(q) {
-  if (q.startsWith('^')) { const r = q.slice(1); return 'maj' + (r === '' ? '7' : r); }
-  return q.replace(/^-\^(\d*)/, (m, d) => 'mMaj' + (d || '7')).replace(/^-/, 'm').replace(/^h7?/, 'm7b5').replace(/^o/, 'dim');
+  if (q.startsWith('^')) {
+    const r = q.slice(1);
+    return 'maj' + (r === '' ? '7' : r);
+  }
+  return q
+    .replace(/^-\^(\d*)/, (m, d) => 'mMaj' + (d || '7'))
+    .replace(/^-/, 'm')
+    .replace(/^h7?/, 'm7b5')
+    .replace(/^o/, 'dim');
 }
 
 /**
@@ -188,7 +204,18 @@ export function toIRealMusic(b) {
  * @returns {string}
  */
 export function toIRealLink(title, b) {
-  const fields = [title, 'Unknown', '', b.style || 'Medium Swing', b.key || 'C', '', MUSIC_PREFIX + scramble(toIRealMusic(b)), '', String(b.tempo || 0), '0'];
+  const fields = [
+    title,
+    'Unknown',
+    '',
+    b.style || 'Medium Swing',
+    b.key || 'C',
+    '',
+    MUSIC_PREFIX + scramble(toIRealMusic(b)),
+    '',
+    String(b.tempo || 0),
+    '0',
+  ];
   return 'irealb://' + fields.map((f) => encodeURIComponent(f)).join('=');
 }
 
@@ -209,38 +236,98 @@ export function parseIRealMusic(raw) {
   let cur = null;
   let pend = {};
   let time = '4/4';
-  const open = () => { if (!cur) { cur = { ch: [], ...pend }; pend = {}; } return cur; };
+  const open = () => {
+    if (!cur) {
+      cur = { ch: [], ...pend };
+      pend = {};
+    }
+    return cur;
+  };
   const close = (flag) => {
-    if (cur) { if (flag) cur[flag] = true; M.push(cur); cur = null; }
-    else if (flag && M.length) M[M.length - 1][flag] = true; // barre juste après une autre barre
+    if (cur) {
+      if (flag) cur[flag] = true;
+      M.push(cur);
+      cur = null;
+    } else if (flag && M.length) M[M.length - 1][flag] = true; // barre juste après une autre barre
   };
   const s = raw.replace(/<[^>]*>/g, ' ').replace(/\([^)]*\)/g, ' ');
   let i = 0;
   while (i < s.length) {
     const r = s.slice(i);
     let mm;
-    if ((mm = /^T(\d\d)/.exec(r))) { const t = TOKEN_TO_TIME['T' + mm[1]]; if (t && !M.length) time = t; i += 3; continue; }
+    if ((mm = /^T(\d\d)/.exec(r))) {
+      const t = TOKEN_TO_TIME['T' + mm[1]];
+      if (t && !M.length) time = t;
+      i += 3;
+      continue;
+    }
     if ((mm = /^\*([A-Za-z])/.exec(r))) {
       const v = mm[1] === 'i' ? 'Intro' : mm[1] === 'V' ? 'Verse' : mm[1].toUpperCase();
-      if (cur && !cur.ch.length) cur.sec = v; else pend.sec = v;
-      i += 2; continue;
+      if (cur && !cur.ch.length) cur.sec = v;
+      else pend.sec = v;
+      i += 2;
+      continue;
     }
-    if ((mm = /^N([0-3])/.exec(r))) { const v = Number(mm[1]); if (v) open().ending = v; i += 2; continue; }
+    if ((mm = /^N([0-3])/.exec(r))) {
+      const v = Number(mm[1]);
+      if (v) open().ending = v;
+      i += 2;
+      continue;
+    }
     const c0 = r[0];
-    if (c0 === '{') { close(); pend.rs = true; i++; continue; }
-    if (c0 === '[' || c0 === '|') { close(); i++; continue; }
-    if (c0 === ']') { close('dbl'); i++; continue; }
-    if (c0 === '}') { close('re'); i++; continue; }
-    if (c0 === 'Z') { close('fin'); i++; continue; }
-    if (c0 === 'x') { open().ch = ['%']; i++; continue; }
-    if (c0 === 'r') { close(); M.push({ ch: ['%'] }, { ch: ['%'] }); i++; continue; }
-    if (c0 === 'n') { open().ch.push('n'); i++; continue; }
-    if (c0 === 'p') { open().ch.push(''); i++; continue; }
+    if (c0 === '{') {
+      close();
+      pend.rs = true;
+      i++;
+      continue;
+    }
+    if (c0 === '[' || c0 === '|') {
+      close();
+      i++;
+      continue;
+    }
+    if (c0 === ']') {
+      close('dbl');
+      i++;
+      continue;
+    }
+    if (c0 === '}') {
+      close('re');
+      i++;
+      continue;
+    }
+    if (c0 === 'Z') {
+      close('fin');
+      i++;
+      continue;
+    }
+    if (c0 === 'x') {
+      open().ch = ['%'];
+      i++;
+      continue;
+    }
+    if (c0 === 'r') {
+      close();
+      M.push({ ch: ['%'] }, { ch: ['%'] });
+      i++;
+      continue;
+    }
+    if (c0 === 'n') {
+      open().ch.push('n');
+      i++;
+      continue;
+    }
+    if (c0 === 'p') {
+      open().ch.push('');
+      i++;
+      continue;
+    }
     if ((mm = /^([A-GW])([b#]?)([\^\-ho+0-9b#susaldt]*)(\/[A-G][b#]?)?/.exec(r)) && mm[0].length) {
       // W = « fondamentale invisible » (accord prolongé avec nouvelle basse) : on garde une case vide.
       if (mm[1] === 'W') open().ch.push('');
       else open().ch.push(mm[1] + mm[2] + qualityFromIReal(mm[3]) + (mm[4] || ''));
-      i += mm[0].length; continue;
+      i += mm[0].length;
+      continue;
     }
     i++; // jeton ignoré : espace, virgule, Y, S, Q, f, l, s, U…
   }
@@ -248,7 +335,9 @@ export function parseIRealMusic(raw) {
   // Nettoyage : mesures vides finales, barre de fin implicite.
   while (M.length && !M[M.length - 1].ch.length && !M[M.length - 1].sec) M.pop();
   if (M.length && !M[M.length - 1].re) M[M.length - 1].fin = true;
-  M.forEach((m) => { if (m.re && m.fin) delete m.fin; });
+  M.forEach((m) => {
+    if (m.re && m.fin) delete m.fin;
+  });
   return { time, measures: M };
 }
 
@@ -277,14 +366,21 @@ export function parseIRealAll(text) {
   const out = [];
   urls.forEach((u) => {
     let d;
-    try { d = decodeURIComponent(u.replace(/\+/g, '%20')); } catch (e) { d = u; }
+    try {
+      d = decodeURIComponent(u.replace(/\+/g, '%20'));
+    } catch (e) {
+      d = u;
+    }
     const isNew = d.startsWith('irealb://');
     d = d.replace(/^irealb(?:ook)?:\/\//, '');
     d.split('===').forEach((song) => {
       const p = song.split('=');
       if (p.length < 6) return; // nom de playlist ou fragment
       const mi = p.findIndex((x) => x.startsWith(MUSIC_PREFIX));
-      let music; let style; let key; let tempo = 0;
+      let music;
+      let style;
+      let key;
+      let tempo = 0;
       if (mi >= 0) {
         // Les champs sont repérés par rapport au champ musique, plus robuste qu'un index fixe.
         music = unscramble(p[mi].slice(MUSIC_PREFIX.length));
@@ -292,13 +388,20 @@ export function parseIRealAll(text) {
         key = p[mi - 2] || 'C';
         tempo = parseInt(p[mi + 2], 10) || 0;
       } else if (!isNew) {
-        music = p[5]; style = p[2]; key = p[3];
+        music = p[5];
+        style = p[2];
+        key = p[3];
       } else return;
       const r = parseIRealMusic(music);
       if (!r.measures.length) return;
       out.push({
-        title: p[0] || 'Sans titre', composer: p[1] || '', style: style || 'Medium Swing', key: key || 'C',
-        tempo: tempo >= 30 && tempo <= 300 ? tempo : 0, time: r.time, measures: r.measures,
+        title: p[0] || 'Sans titre',
+        composer: p[1] || '',
+        style: style || 'Medium Swing',
+        key: key || 'C',
+        tempo: tempo >= 30 && tempo <= 300 ? tempo : 0,
+        time: r.time,
+        measures: r.measures,
       });
     });
   });
@@ -311,5 +414,11 @@ export function parseIRealAll(text) {
  * @returns {module:model~GridBlock}
  */
 export function songToGrid(s) {
-  return Object.assign(newGridBlock(), { time: s.time, key: s.key, style: s.style, tempo: s.tempo || 120, measures: s.measures });
+  return Object.assign(newGridBlock(), {
+    time: s.time,
+    key: s.key,
+    style: s.style,
+    tempo: s.tempo || 120,
+    measures: s.measures,
+  });
 }

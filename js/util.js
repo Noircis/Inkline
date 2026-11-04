@@ -70,5 +70,5 @@ export function snap(x) {
  * @returns {string} Chaîne sûre à placer entre balises ou dans un attribut entre guillemets.
  */
 export function esc(s) {
-  return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 }

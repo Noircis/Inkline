@@ -7,13 +7,24 @@ Application web progressive (PWA) **sans framework ni étape de build** : des mo
 ## Démarrage
 
 ```bash
-npm install        # uniquement pour les outils de dev (JSDoc)
+npm install        # outils de développement uniquement (JSDoc, Prettier, ESLint)
 npm test           # tests unitaires (node:test, aucune dépendance)
+npm run lint       # analyse du code (ESLint)
+npm run format     # formatage automatique (Prettier)
+npm run check      # format + lint + tests : à lancer avant chaque commit
 npm run docs       # génère la documentation dans docs/
 npm run serve      # sert l'app sur http://localhost:8080
 ```
 
 L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur statique HTTPS convient (GitHub Pages, par exemple).
+
+## Conventions de code
+
+- **Formatage** : Prettier (`.prettierrc.json`), lignes de 110 caractères au plus. Ne pas formater à la main : `npm run format`.
+- **Analyse** : ESLint (`eslint.config.js`), règles recommandées + variables inutilisées, `===`, `const`.
+- **Exports** : un module n'exporte que ce qui est utilisé ailleurs ou testé ; le reste est privé et apparaît dans la doc comme membre interne (`~`).
+- **Commentaires** : JSDoc en français sur chaque module et chaque fonction ; les algorithmes sont expliqués en tête de fonction.
+- **Fonctions longues** : découpées en étapes nommées (par exemple `render-staff` : une fonction par couche de dessin).
 
 ## Arborescence
 
@@ -59,7 +70,7 @@ Le code est séparé en deux couches :
 - **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`) : branche la logique sur le navigateur.
 
-Le rendu suit un modèle *immediate mode* : l'état est modifié, puis la partie concernée de l'écran est régénérée (template strings → `innerHTML`, SVG en chaîne). Pas de DOM virtuel ni de réactivité : à cette échelle, c'est le plus simple, et c'est assez rapide.
+Le rendu suit un modèle _immediate mode_ : l'état est modifié, puis la partie concernée de l'écran est régénérée (template strings → `innerHTML`, SVG en chaîne). Pas de DOM virtuel ni de réactivité : à cette échelle, c'est le plus simple, et c'est assez rapide.
 
 Le moteur de mise en page (`layout`) est utilisé **à la fois** par le rendu et par le hit-testing : ce que l'on voit et ce que l'on touche sont calculés par la même fonction.
 
@@ -93,4 +104,4 @@ Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 
 3. `npm test`, puis `npm run docs`.
 4. Pousser sur la branche publiée par GitHub Pages.
 
-Sur le téléphone, la nouvelle version s'affiche à la **deuxième** ouverture de l'app (stratégie *stale-while-revalidate* du service worker).
+Sur le téléphone, la nouvelle version s'affiche à la **deuxième** ouverture de l'app (stratégie _stale-while-revalidate_ du service worker).

@@ -3,15 +3,37 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { chordTones, chordOk } from '../js/chords.js';
 import { gridTokens, slotDurations, gridPlayOrder } from '../js/grid.js';
-import { scramble, chordToIReal, qualityFromIReal, toIRealLink, toIRealMusic, parseIRealAll } from '../js/ireal.js';
+import {
+  scramble,
+  chordToIReal,
+  qualityFromIReal,
+  toIRealLink,
+  toIRealMusic,
+  parseIRealAll,
+  parseIRealMusic,
+} from '../js/ireal.js';
 import { CHORD_RE } from '../js/chords.js';
 
 const blues = {
-  id: 'g', type: 'grid', time: '4/4', key: 'F', style: 'Medium Swing', tempo: 160,
+  id: 'g',
+  type: 'grid',
+  time: '4/4',
+  key: 'F',
+  style: 'Medium Swing',
+  tempo: 160,
   measures: [
-    { ch: ['F7'], sec: 'A', rs: true }, { ch: ['Bb7'] }, { ch: ['F7'] }, { ch: ['Cm7', 'F7'] },
-    { ch: ['Bbmaj7'] }, { ch: ['Bdim7'] }, { ch: ['Am7b5', 'D7alt'], ending: 1 }, { ch: ['Gm7', 'C7'], re: true },
-    { ch: ['F6'], ending: 2, sec: 'B' }, { ch: ['%'] }, { ch: ['Ebm7', 'Ab7', 'Dbmaj7', 'n'] }, { ch: ['C7sus', '', 'C7b9/E'], fin: true },
+    { ch: ['F7'], sec: 'A', rs: true },
+    { ch: ['Bb7'] },
+    { ch: ['F7'] },
+    { ch: ['Cm7', 'F7'] },
+    { ch: ['Bbmaj7'] },
+    { ch: ['Bdim7'] },
+    { ch: ['Am7b5', 'D7alt'], ending: 1 },
+    { ch: ['Gm7', 'C7'], re: true },
+    { ch: ['F6'], ending: 2, sec: 'B' },
+    { ch: ['%'] },
+    { ch: ['Ebm7', 'Ab7', 'Dbmaj7', 'n'] },
+    { ch: ['C7sus', '', 'C7b9/E'], fin: true },
   ],
 };
 
@@ -41,7 +63,10 @@ test('scramble est une involution', () => {
 });
 
 test('qualités : texte → iReal → texte', () => {
-  const back = (c) => { const m = CHORD_RE.exec(chordToIReal(c)); return m[1] + m[2] + qualityFromIReal(m[3]) + (m[4] ? '/' + m[4] : ''); };
+  const back = (c) => {
+    const m = CHORD_RE.exec(chordToIReal(c));
+    return m[1] + m[2] + qualityFromIReal(m[3]) + (m[4] ? '/' + m[4] : '');
+  };
   assert.equal(chordToIReal('Cmaj7'), 'C^7');
   assert.equal(chordToIReal('Cø'), 'Ch7');
   assert.equal(back('C-7'), 'Cm7');
@@ -69,4 +94,19 @@ test('iReal : playlist et fichier HTML', () => {
   const html = `<a href="${link}===${link.slice(9)}===Ma playlist">x</a>`;
   assert.equal(parseIRealAll(html).length, 2);
   assert.match(toIRealMusic(blues), /^T44\*A\{F7/);
+});
+
+test('parseIRealMusic : sections, reprise, voltas, mesure répétée, fin', () => {
+  const r = parseIRealMusic('T34*A{C^7 |x |N1D-7 G7 }|N2G7 Z');
+  assert.equal(r.time, '3/4');
+  assert.deepEqual(
+    r.measures.map((m) => m.ch),
+    [['Cmaj7'], ['%'], ['Dm7', 'G7'], ['G7']],
+  );
+  assert.equal(r.measures[0].sec, 'A');
+  assert.equal(r.measures[0].rs, true);
+  assert.equal(r.measures[2].ending, 1);
+  assert.equal(r.measures[2].re, true);
+  assert.equal(r.measures[3].ending, 2);
+  assert.equal(r.measures[3].fin, true);
 });

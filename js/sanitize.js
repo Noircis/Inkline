@@ -38,7 +38,16 @@ const KEY_RE = /^[A-G][b#]?-?$/;
 const SECTION_RE = /^[A-Za-z]{1,6}$/;
 
 /** Limites de taille : protègent contre des fichiers énormes qui gèleraient l'app. */
-const LIMITS = { title: 200, text: 20000, chord: 16, style: 40, blocks: 200, items: 5000, measures: 1000, notes: 5000 };
+const LIMITS = {
+  title: 200,
+  text: 20000,
+  chord: 16,
+  style: 40,
+  blocks: 200,
+  items: 5000,
+  measures: 1000,
+  notes: 5000,
+};
 
 const isStr = (v) => typeof v === 'string';
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
@@ -75,7 +84,12 @@ function item(r, rhythm) {
 function measure(r) {
   if (!r || !Array.isArray(r.ch)) return null;
   /** @type {module:model~GridMeasure} */
-  const m = { ch: r.ch.slice(0, 4).filter(isStr).map((c) => c.slice(0, LIMITS.chord)) };
+  const m = {
+    ch: r.ch
+      .slice(0, 4)
+      .filter(isStr)
+      .map((c) => c.slice(0, LIMITS.chord)),
+  };
   if (isStr(r.sec) && SECTION_RE.test(r.sec)) m.sec = r.sec;
   if (r.rs === true) m.rs = true;
   if (r.re === true) m.re = true;
@@ -97,13 +111,23 @@ export function sanitizeBlock(r) {
   if (r.type === 'text') return { id: id(r.id), type: 'text', text: str(r.text, LIMITS.text) };
   if (r.type === 'staff') {
     const clef = ['treble', 'bass', 'rhythm'].includes(r.clef) ? r.clef : 'treble';
-    const items = Array.isArray(r.items) ? r.items.slice(0, LIMITS.items).map((x) => item(x, clef === 'rhythm')).filter(Boolean) : [];
+    const items = Array.isArray(r.items)
+      ? r.items
+          .slice(0, LIMITS.items)
+          .map((x) => item(x, clef === 'rhythm'))
+          .filter(Boolean)
+      : [];
     return { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
   }
   if (r.type === 'grid') {
-    const measures = Array.isArray(r.measures) ? r.measures.slice(0, LIMITS.measures).map(measure).filter(Boolean) : [];
+    const measures = Array.isArray(r.measures)
+      ? r.measures.slice(0, LIMITS.measures).map(measure).filter(Boolean)
+      : [];
     return {
-      id: id(r.id), type: 'grid', time, tempo,
+      id: id(r.id),
+      type: 'grid',
+      time,
+      tempo,
       key: isStr(r.key) && KEY_RE.test(r.key) ? r.key : 'C',
       style: isStr(r.style) && r.style.trim() ? str(r.style, LIMITS.style) : 'Medium Swing',
       measures: measures.length ? measures : [{ ch: [] }],
@@ -124,7 +148,10 @@ export function sanitizeBlock(r) {
 export function sanitizeNote(r, opt = {}) {
   if (!r || typeof r !== 'object' || !Array.isArray(r.blocks)) return null;
   const blocks = r.blocks.slice(0, LIMITS.blocks).map(sanitizeBlock).filter(Boolean);
-  if (opt.freshIds) blocks.forEach((b) => { b.id = uid(); });
+  if (opt.freshIds)
+    blocks.forEach((b) => {
+      b.id = uid();
+    });
   return {
     id: opt.freshIds ? uid() : id(r.id),
     title: str(r.title, LIMITS.title).replace(/\n/g, ' '),
@@ -148,9 +175,11 @@ export function sanitizeNotes(r) {
   /** @type {Object.<string, module:model~Note>} */
   const out = {};
   if (!r || typeof r !== 'object') return out;
-  Object.values(r).slice(0, LIMITS.notes).forEach((x) => {
-    const n = sanitizeNote(x);
-    if (n) out[n.id] = n;
-  });
+  Object.values(r)
+    .slice(0, LIMITS.notes)
+    .forEach((x) => {
+      const n = sanitizeNote(x);
+      if (n) out[n.id] = n;
+    });
   return out;
 }

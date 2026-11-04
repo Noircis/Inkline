@@ -3,9 +3,39 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [1.7.5] - 2026-11-04
+
+Version technique : aucune nouvelle fonctionnalité, l'app se comporte exactement comme la 1.7.0.
+
+### Modifié
+
+- **Lisibilité du code** :
+  - formatage automatique de tout le code (Prettier) : une instruction par ligne, lignes de 110 caractères au plus ;
+  - découpage des fonctions les plus longues en étapes nommées : rendu des portées (`staffSvg`, une fonction par couche de dessin), mise en page (`layout`), grille du mode écran (`gridBlockEl`) et de l'export (`gridSvg`) ;
+  - noms de variables explicites et constantes nommées à la place des nombres magiques ;
+  - commentaires et graphe des modules mis à jour.
+- Les fonctions internes ne sont plus exportées : l'interface publique de chaque module se limite à ce qui sert ailleurs.
+- Outils de développement : `npm run lint` (ESLint), `npm run format` (Prettier), `npm run check` (tout d'un coup).
+
+### Supprimé
+
+- CSS mort hérité des anciennes versions (section « Sauvegarde » de l'accueil, numéro de version de l'accueil, séparateur de palette inutilisé).
+- Une ligne redondante dans l'import iReal.
+
+### Corrigé
+
+- Message périmé après l'import d'une playlist dans une grille : la playlist s'importe depuis les Options, plus depuis l'accueil.
+- L'export en image ne dépend plus de la mise en forme exacte de `css/fonts.css` (un reformatage du fichier faisait perdre les polices dans les images exportées).
+
+### Tests
+
+- 37 tests (3 nouveaux : décodage iReal direct, pagination du PDF, lecture des polices).
+- Vérification de non-régression : sorties des moteurs de rendu identiques au caractère près à la 1.7.0 sur 86 cas ; export PNG et PDF identiques au pixel près.
+
 ## [1.7.0] - 2026-11-04
 
 ### Ajouté
+
 - **Trois affichages de la liste**, au choix dans Options > Affichage des notes (choix mémorisé) :
   - **Cartes** : l'affichage habituel ;
   - **Mosaïque** : cartes carrées, 2 par ligne, avec un aperçu adapté au contenu (début de la portée en zoom, premiers accords d'une grille, ou début du texte) ;
@@ -16,22 +46,26 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 ## [1.6.1] - 2026-11-04
 
 ### Corrigé
+
 - Mise à jour de l'app : le service worker pouvait reprendre d'anciens fichiers dans le cache HTTP du navigateur (GitHub Pages les garde 10 minutes), et l'app restait sur l'ancienne version. Le préchargement passe maintenant toujours par le réseau.
 
 ## [1.6.0] - 2026-11-04
 
 ### Ajouté
+
 - **Écran Options** (roue crantée sur l'accueil) : exporter et importer le carnet, importer depuis iReal Pro, version, nouveautés et documentation du code.
 - **Rappel de sauvegarde** : la date de la dernière sauvegarde est affichée dans les Options, et un point apparaît sur la roue crantée après 30 jours sans export.
 - **Bouton retour d'Android** : il ramène d'une note ou des Options à la liste au lieu de fermer l'app.
 
 ### Modifié
+
 - L'accueil ne montre plus que les notes : les sections « Sauvegarde » et « iReal Pro » ont rejoint les Options.
 - Le bouton iReal de chaque grille (export de la grille) reste dans le bloc.
 
 ## [1.5.0] - 2026-11-04
 
 ### Ajouté
+
 - **Partager une note** (bouton « Partager » en haut de chaque note) :
   - **Fichier Inkline** (`.inkline`, par défaut) : la note reste modifiable et écoutable chez la personne qui la reçoit ;
   - **Image PNG** : la note entière (titre, textes, portées, grilles), lisible sans l'app ;
@@ -40,17 +74,20 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 - **Importer une note reçue** : le bouton « Importer un fichier » de l'accueil accepte les `.inkline` ; la note est ajoutée (jamais écrasée) puis ouverte.
 
 ### Sécurité
+
 - Toute donnée importée (note reçue, sauvegarde, lien iReal) ou relue du stockage est **validée** champ par champ ; un fichier piégé ne peut plus injecter de code.
 - **Échappement systématique** de toutes les valeurs insérées dans le HTML et le SVG.
 - **Content Security Policy** : seuls les scripts de l'app peuvent s'exécuter.
 - Les **polices sont hébergées dans le dépôt** : l'app ne contacte plus Google Fonts (ni aucun autre serveur), et fonctionne entièrement hors ligne.
 
 ### Modifié
+
 - « Exporter » sur l'accueil devient « Exporter le carnet » (sauvegarde complète), « Importer » devient « Importer un fichier ».
 
 ## [1.4.0] - 2026-11-04
 
 ### Ajouté
+
 - **Liaisons de prolongation** (bouton ‿) : deux notes liées sont jouées comme une seule note tenue. Elles sont dessinées du côté opposé aux hampes, y compris par-dessus une barre de mesure ou un retour à la ligne (deux demi-liaisons).
   - Note sélectionnée : ‿ la lie à la suivante, qui prend la même hauteur.
   - Sans sélection : la prochaine note ajoutée prolonge la dernière (la hauteur touchée est ignorée).
@@ -62,20 +99,23 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 - `README.md` : architecture, arborescence, procédure de publication.
 
 ### Modifié
+
 - **Refonte du code** : le fichier unique est découpé en modules ES natifs (`js/`), commentés en JSDoc, toujours sans framework ni étape de build. La logique musicale (modules purs) est séparée de l'interface (`js/ui/`).
 - L'application s'appelle désormais **Inkline** (titre, icône installée).
 - Palette de portée : annuler et effacer remontent sur la ligne du haut, pour faire de la place à ‿ et 3.
 - Supprimer une note retire la liaison qui y menait ; déplacer une note liée entraîne les notes qui lui sont liées.
 
 ### Compatibilité
+
 - Les notes existantes sont conservées (même stockage, format rétrocompatible).
 
 ## [1.3.0] - 2026-11-04
 
 ### Ajouté
+
 - Bloc **Grille** (style iReal Pro), à côté de Texte, Portée et Rythme : 4 mesures par ligne, accords chiffrés avec qualités en exposant (Δ, –, ø, °, alt…).
 - Saisie rapide des accords : on tape les accords d'une mesure séparés par des espaces, Entrée passe à la mesure suivante, et `|` remplit plusieurs mesures d'un coup (`F7|Bb7|F7|Cm7 F7`).
-- Dans une mesure : `/` prolonge l'accord précédent, `NC` indique *no chord*, `%` répète la mesure précédente.
+- Dans une mesure : `/` prolonge l'accord précédent, `NC` indique _no chord_, `%` répète la mesure précédente.
 - Repères de structure : sections (A, B, C, D, Intro), 1re et 2e fins (volta), reprises, double barre et barre de fin.
 - Réglages de la grille : tonalité (majeure ou mineure), mesure, style, tempo.
 - Lecture audio de la grille (basse + accords, charleston sur 2 et 4 dans les styles swing). Les reprises et les 1re et 2e fins sont respectées.
@@ -85,33 +125,39 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), ver
 - Numéro de version affiché en bas de l'accueil.
 
 ### Modifié
+
 - Les palettes de saisie restent au-dessus du clavier Android au lieu d'être cachées dessous.
 - Les boutons d'ajout de bloc tiennent sur une seule ligne (4 boutons).
 
 ## [1.2.1] - 2026-11-04
 
 ### Modifié
+
 - Justification automatique : avec une barre de fin, la dernière ligne s'étire jusqu'au bord si elle occupe déjà plus de 50 % de la largeur.
 - Les lignes de la portée s'arrêtent à la barre de fin au lieu de continuer jusqu'au bord.
 
 ## [1.2.0] - 2026-11-03
 
 ### Ajouté
+
 - Barres de mesure : simple, double, barre de fin, début et fin de reprise. Une barre posée ferme la mesure même si elle est incomplète.
 - Après une barre de fin, aucune nouvelle mesure n'est proposée (fin de motif).
 - Lecture audio des reprises (la section est jouée deux fois).
 
 ### Modifié
+
 - Les altérations sont réinitialisées à chaque barre de mesure.
 
 ## [1.1.0] - 2026-11-03
 
 ### Modifié
+
 - Mode silence plus lisible : quand il est actif, les boutons de durée affichent pause, demi-pause, soupir, demi-soupir et quart de soupir.
 
 ## [1.0.0] - 2026-11-03
 
 ### Ajouté
+
 - Première version : notes composées de blocs texte, portée (clé de sol ou de fa) et ligne rythmique.
 - Saisie des notes au toucher sur la portée : durées de la ronde à la double croche, points, silences, altérations.
 - Accords chiffrés au-dessus des notes, ligatures automatiques des croches et doubles croches.

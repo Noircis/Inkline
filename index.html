@@ -1,12 +1,15 @@
 <!doctype html>
 <html lang="fr">
-<head>
-<meta charset="utf-8">
-<!-- interactive-widget=resizes-content : le clavier Android réduit la page au lieu de passer par-dessus les palettes -->
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#F2F4F8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F1218" media="(prefers-color-scheme: dark)">
-<!--
+  <head>
+    <meta charset="utf-8" />
+    <!-- interactive-widget=resizes-content : le clavier Android réduit la page au lieu de passer par-dessus les palettes -->
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#F2F4F8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0F1218" media="(prefers-color-scheme: dark)" />
+    <!--
   Content Security Policy : ce que la page a le droit de charger et d'exécuter.
   - script-src 'self' : uniquement les fichiers .js de l'app. Un script injecté
     dans le HTML (onerror=…, <script> inline) est refusé par le navigateur :
@@ -16,90 +19,127 @@
   - img-src data: blob: : images générées pour l'export ; font-src data: : polices embarquées.
   - Aucune autre origine : l'app ne contacte aucun serveur tiers.
 -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>Inkline</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="css/app.css">
-</head>
-<body>
-<!-- Les vues (liste, note) sont rendues ici par js/ui/views.js -->
-<div class="wrap" id="app"></div>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>Inkline</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <!-- Les vues (liste, note) sont rendues ici par js/ui/views.js -->
+    <div class="wrap" id="app"></div>
 
-<!-- Palette de portée (js/ui/staff-ui.js). Visible quand un bloc portée est actif. -->
-<div id="palette" hidden>
-  <div class="pal-inner">
-    <div class="pal-info">
-      <span id="palInfo"></span>
-      <button type="button" class="icon" data-act="undo" aria-label="Annuler">&#8630;</button>
-      <button type="button" class="icon" data-act="del" aria-label="Effacer la note">&#9003;</button>
-      <button id="palDone" type="button">Terminé</button>
+    <!-- Palette de portée (js/ui/staff-ui.js). Visible quand un bloc portée est actif. -->
+    <div id="palette" hidden>
+      <div class="pal-inner">
+        <div class="pal-info">
+          <span id="palInfo"></span>
+          <button type="button" class="icon" data-act="undo" aria-label="Annuler">&#8630;</button>
+          <button type="button" class="icon" data-act="del" aria-label="Effacer la note">&#9003;</button>
+          <button id="palDone" type="button">Terminé</button>
+        </div>
+        <div class="pal-chord" id="chordBar" hidden>
+          <input
+            id="chordIn"
+            placeholder="Accord, ex. Bb7, Cm7, F7alt"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+          <button id="chordOk" class="ok" type="button">OK</button>
+          <button id="chordCancel" type="button">Annuler</button>
+        </div>
+        <div class="pal-bars" id="barBar" hidden>
+          <button type="button" data-bar="single"><span class="mus">&#x1D100;</span>Simple</button>
+          <button type="button" data-bar="double"><span class="mus">&#x1D101;</span>Double</button>
+          <button type="button" data-bar="final"><span class="mus">&#x1D102;</span>Fin</button>
+          <button type="button" data-bar="rs"><span class="mus">&#x1D106;</span>Début rep.</button>
+          <button type="button" data-bar="rep"><span class="mus">&#x1D107;</span>Fin rep.</button>
+          <button type="button" data-bar="none"><span class="mus">&#x2715;</span>Aucune</button>
+        </div>
+        <div class="pal-row">
+          <button type="button" class="mus" data-dur="w" aria-label="Ronde">&#x1D15D;</button>
+          <button type="button" class="mus" data-dur="h" aria-label="Blanche">&#x1D15E;</button>
+          <button type="button" class="mus" data-dur="q" aria-label="Noire">&#x1D15F;</button>
+          <button type="button" class="mus" data-dur="8" aria-label="Croche">&#x1D160;</button>
+          <button type="button" class="mus" data-dur="16" aria-label="Double croche">&#x1D161;</button>
+          <button
+            type="button"
+            data-act="dot"
+            aria-label="Note pointée"
+            style="font-size: 26px; font-weight: 700"
+          >
+            &middot;
+          </button>
+          <button type="button" class="tupb" data-act="tup" aria-label="Triolet">3</button>
+          <button type="button" class="mus" data-act="rest" aria-label="Silence">&#x1D13D;</button>
+        </div>
+        <div class="pal-row">
+          <button type="button" class="tieb" data-act="tie" aria-label="Liaison de prolongation">
+            <svg width="28" height="14" viewBox="0 0 28 14" aria-hidden="true">
+              <path d="M2 3 Q14 15 26 3 Q14 11.5 2 3 Z" fill="currentColor" />
+            </svg>
+          </button>
+          <button type="button" class="accb" data-acc="-1" aria-label="Bémol">&#x266D;</button>
+          <button type="button" class="accb" data-acc="0" aria-label="Bécarre">&#x266E;</button>
+          <button type="button" class="accb" data-acc="1" aria-label="Dièse">&#x266F;</button>
+          <button type="button" class="mus" data-act="bar" aria-label="Barres de mesure">&#x1D102;</button>
+          <button
+            type="button"
+            data-act="chord"
+            aria-label="Accord chiffré"
+            style="font-weight: 600; font-size: 13px"
+          >
+            Acc.
+          </button>
+          <button type="button" data-act="prev" aria-label="Note précédente">&#9664;</button>
+          <button type="button" data-act="next" aria-label="Note suivante">&#9654;</button>
+        </div>
+      </div>
     </div>
-    <div class="pal-chord" id="chordBar" hidden>
-      <input id="chordIn" placeholder="Accord, ex. Bb7, Cm7, F7alt" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <button id="chordOk" class="ok" type="button">OK</button>
-      <button id="chordCancel" type="button">Annuler</button>
-    </div>
-    <div class="pal-bars" id="barBar" hidden>
-      <button type="button" data-bar="single"><span class="mus">&#x1D100;</span>Simple</button>
-      <button type="button" data-bar="double"><span class="mus">&#x1D101;</span>Double</button>
-      <button type="button" data-bar="final"><span class="mus">&#x1D102;</span>Fin</button>
-      <button type="button" data-bar="rs"><span class="mus">&#x1D106;</span>Début rep.</button>
-      <button type="button" data-bar="rep"><span class="mus">&#x1D107;</span>Fin rep.</button>
-      <button type="button" data-bar="none"><span class="mus">&#x2715;</span>Aucune</button>
-    </div>
-    <div class="pal-row">
-      <button type="button" class="mus" data-dur="w" aria-label="Ronde">&#x1D15D;</button>
-      <button type="button" class="mus" data-dur="h" aria-label="Blanche">&#x1D15E;</button>
-      <button type="button" class="mus" data-dur="q" aria-label="Noire">&#x1D15F;</button>
-      <button type="button" class="mus" data-dur="8" aria-label="Croche">&#x1D160;</button>
-      <button type="button" class="mus" data-dur="16" aria-label="Double croche">&#x1D161;</button>
-      <button type="button" data-act="dot" aria-label="Note pointée" style="font-size:26px;font-weight:700">&middot;</button>
-      <button type="button" class="tupb" data-act="tup" aria-label="Triolet">3</button>
-      <button type="button" class="mus" data-act="rest" aria-label="Silence">&#x1D13D;</button>
-    </div>
-    <div class="pal-row">
-      <button type="button" class="tieb" data-act="tie" aria-label="Liaison de prolongation"><svg width="28" height="14" viewBox="0 0 28 14" aria-hidden="true"><path d="M2 3 Q14 15 26 3 Q14 11.5 2 3 Z" fill="currentColor"/></svg></button>
-      <button type="button" class="accb" data-acc="-1" aria-label="Bémol">&#x266D;</button>
-      <button type="button" class="accb" data-acc="0" aria-label="Bécarre">&#x266E;</button>
-      <button type="button" class="accb" data-acc="1" aria-label="Dièse">&#x266F;</button>
-      <button type="button" class="mus" data-act="bar" aria-label="Barres de mesure">&#x1D102;</button>
-      <button type="button" data-act="chord" aria-label="Accord chiffré" style="font-weight:600;font-size:13px">Acc.</button>
-      <button type="button" data-act="prev" aria-label="Note précédente">&#9664;</button>
-      <button type="button" data-act="next" aria-label="Note suivante">&#9654;</button>
-    </div>
-  </div>
-</div>
 
-<!-- Palette de grille (js/ui/grid-ui.js). Visible quand un bloc grille est actif. -->
-<div id="gpal" hidden>
-  <div class="pal-inner">
-    <div class="pal-info"><span id="gInfo"></span><button id="gDone" type="button">Terminé</button></div>
-    <div class="pal-chord">
-      <input id="gIn" placeholder="Accords : Bb7 Eb7 · | = mesure suivante" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next">
-      <button id="gOk" class="ok" type="button" aria-label="Mesure suivante">&#8629;</button>
+    <!-- Palette de grille (js/ui/grid-ui.js). Visible quand un bloc grille est actif. -->
+    <div id="gpal" hidden>
+      <div class="pal-inner">
+        <div class="pal-info"><span id="gInfo"></span><button id="gDone" type="button">Terminé</button></div>
+        <div class="pal-chord">
+          <input
+            id="gIn"
+            placeholder="Accords : Bb7 Eb7 · | = mesure suivante"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            enterkeyhint="next"
+          />
+          <button id="gOk" class="ok" type="button" aria-label="Mesure suivante">&#8629;</button>
+        </div>
+        <div class="pal-row g-row">
+          <button type="button" data-g="sec">Section</button>
+          <button type="button" data-g="end">Volta</button>
+          <button type="button" class="mus" data-g="rs" aria-label="Début de reprise">&#x1D106;</button>
+          <button type="button" class="mus" data-g="re" aria-label="Fin de reprise">&#x1D107;</button>
+          <button type="button" class="mus" data-g="dbl" aria-label="Double barre">&#x1D101;</button>
+          <button type="button" class="mus" data-g="fin" aria-label="Barre de fin">&#x1D102;</button>
+        </div>
+        <div class="pal-row g-row">
+          <button type="button" data-g="prev" aria-label="Mesure précédente">&#9664;</button>
+          <button type="button" data-g="next" aria-label="Mesure suivante">&#9654;</button>
+          <button type="button" class="mus" data-g="sim" aria-label="Répéter la mesure précédente">
+            &#x1D10E;
+          </button>
+          <button type="button" data-g="ins">+ Mes.</button>
+          <button type="button" data-g="del">Suppr.</button>
+          <button type="button" data-g="undo" aria-label="Annuler" style="font-size: 20px">&#8630;</button>
+        </div>
+      </div>
     </div>
-    <div class="pal-row g-row">
-      <button type="button" data-g="sec">Section</button>
-      <button type="button" data-g="end">Volta</button>
-      <button type="button" class="mus" data-g="rs" aria-label="Début de reprise">&#x1D106;</button>
-      <button type="button" class="mus" data-g="re" aria-label="Fin de reprise">&#x1D107;</button>
-      <button type="button" class="mus" data-g="dbl" aria-label="Double barre">&#x1D101;</button>
-      <button type="button" class="mus" data-g="fin" aria-label="Barre de fin">&#x1D102;</button>
-    </div>
-    <div class="pal-row g-row">
-      <button type="button" data-g="prev" aria-label="Mesure précédente">&#9664;</button>
-      <button type="button" data-g="next" aria-label="Mesure suivante">&#9654;</button>
-      <button type="button" class="mus" data-g="sim" aria-label="Répéter la mesure précédente">&#x1D10E;</button>
-      <button type="button" data-g="ins">+ Mes.</button>
-      <button type="button" data-g="del">Suppr.</button>
-      <button type="button" data-g="undo" aria-label="Annuler" style="font-size:20px">&#8630;</button>
-    </div>
-  </div>
-</div>
 
-<script type="module" src="js/main.js"></script>
-</body>
+    <script type="module" src="js/main.js"></script>
+  </body>
 </html>

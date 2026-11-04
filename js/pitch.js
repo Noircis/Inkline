@@ -27,7 +27,7 @@ import { mod, EPS, snap } from './util.js';
 import { qlen, mlen } from './model.js';
 
 /** Noms de notes en solfège français, indexés par degré (0 = do). */
-export const NOTE_NAMES = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
+const NOTE_NAMES = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
 
 /** Demi-tons depuis do pour chaque degré de la gamme majeure. */
 const SEMITONES = [0, 2, 4, 5, 7, 9, 11];
@@ -36,7 +36,7 @@ const SEMITONES = [0, 2, 4, 5, 7, 9, 11];
  * Note posée sur la 1re ligne pour chaque clé : `L` = degré, `O` = octave.
  * @type {Object.<string, {L:number, O:number}>}
  */
-export const CLEF_BASE = { treble: { L: 2, O: 4 }, bass: { L: 4, O: 2 } };
+const CLEF_BASE = { treble: { L: 2, O: 4 }, bass: { L: 4, O: 2 } };
 
 /**
  * Numéro MIDI d'une position de portée.
@@ -96,7 +96,10 @@ export function resolveMidis(b) {
   const out = [];
   b.items.forEach((it, i) => {
     // Un début de reprise ouvre une nouvelle mesure : on remet tout à zéro.
-    if (it.rs && pos > 0) { pos = 0; carry = {}; }
+    if (it.rs && pos > 0) {
+      pos = 0;
+      carry = {};
+    }
     let m = null;
     if (!it.r && b.clef !== 'rhythm') {
       const prev = b.items[i - 1];
@@ -111,7 +114,10 @@ export function resolveMidis(b) {
     out.push(m);
     pos = snap(pos + qlen(it));
     // Fin de mesure (barre explicite ou mesure pleine) : les altérations tombent.
-    if (it.bar || pos >= ML - EPS) { pos = 0; carry = {}; }
+    if (it.bar || pos >= ML - EPS) {
+      pos = 0;
+      carry = {};
+    }
   });
   return out;
 }

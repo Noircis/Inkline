@@ -106,6 +106,122 @@ function itemWidth(it, rh) {
   return w;
 }
 
+/** Abscisse de début de la musique : la 1re ligne porte la clé ET le chiffrage, les suivantes seulement la clé. */
+function systemStart(rh, isFirst) {
+  if (isFirst) return rh ? 46 : 64;
+  return rh ? 30 : 44;
+}
+
+/**
+ * Ajoute une ligne vide à la liste.
+ * @param {System[]} systems
+ * @param {boolean} rh
+ * @returns {System}
+ */
+function newSystem(systems, rh) {
+  const sys = { start: systemStart(rh, systems.length === 0), ms: [], used: 0, end: 0, firstMeasure: 1 };
+  systems.push(sys);
+  return sys;
+}
+
+/**
+ * Largeur naturelle d'une mesure : marges, signe de reprise éventuel,
+ * éléments, et place pour la barre de fin.
+ * @param {module:rhythm~Measure} m
+ * @param {number[]} widths Largeur naturelle de chaque élément.
+ * @returns {number}
+ */
+function measureWidth(m, widths) {
+  const content = m.idx.reduce((sum, i) => sum + widths[i], 0);
+  return PAD_L + (m.rs ? REPEAT_START_W : 0) + content + PAD_R + (BAR_EXTRA[m.type] || 0);
+}
+
+/**
+ * Étape 3 : coupure de lignes, algorithme glouton (*first-fit*). Une mesure
+ * va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.
+ * @param {module:rhythm~Measure[]} measures
+ * @param {number[]} widths
+ * @param {number} W
+ * @param {boolean} rh
+ * @returns {System[]}
+ */
+function breakIntoSystems(measures, widths, W, rh) {
+  const systems = [];
+  let sys = newSystem(systems, rh);
+  measures.forEach((m) => {
+    const w = measureWidth(m, widths);
+    const avail = W - sys.start - 4;
+    if (sys.ms.length && sys.used + w > avail) sys = newSystem(systems, rh);
+    sys.ms.push({ m, w });
+    sys.used += w;
+  });
+  return systems;
+}
+
+/**
+ * Facteur d'étirement d'une ligne (étape 4, justification).
+ * - ligne trop pleine : on comprime (`< 1`) ;
+ * - ligne pleine non finale : on étire jusqu'au bord, au plus ×{@link MAX_STRETCH} ;
+ * - dernière ligne : largeur naturelle, sauf fin de motif remplie à plus de 50 %.
+ * @param {System} sys
+ * @param {number} W
+ * @param {boolean} isLast
+ * @param {boolean} ended Le motif se termine par une barre de fin.
+ * @returns {number}
+ */
+function stretchFactor(sys, W, isLast, ended) {
+  const avail = W - sys.start - 4;
+  if (sys.used > avail) return avail / sys.used;
+  if (!isLast && sys.used > 0) return Math.min(avail / sys.used, MAX_STRETCH);
+  if (isLast && ended && sys.used > avail * 0.5) return avail / sys.used;
+  return 1;
+}
+
+/**
+ * Étapes 4 et 5 : justification de chaque ligne et calcul des positions des
+ * éléments, des barres et des débuts de reprise. Renseigne aussi `end` et
+ * `firstMeasure` de chaque ligne.
+ * @param {System[]} systems
+ * @param {module:model~StaffItem[]} items
+ * @param {number[]} widths
+ * @param {number} W
+ * @param {boolean} rh
+ * @param {boolean} ended
+ * @returns {{pos: ItemPos[], bars: Array.<{sys: number, x: number, type: string}>, starts: Array.<{sys: number, x: number}>, measureCount: number}}
+ */
+function placeSystems(systems, items, widths, W, rh, ended) {
+  const pos = [];
+  const bars = [];
+  const starts = [];
+  let measureCount = 0;
+  systems.forEach((sys, si) => {
+    const sc = stretchFactor(sys, W, si === systems.length - 1, ended);
+    sys.firstMeasure = measureCount + 1;
+    let x = sys.start;
+    sys.ms.forEach(({ m }) => {
+      measureCount++;
+      const measureX = x;
+      x += PAD_L * sc;
+      if (m.rs) {
+        starts.push({ sys: si, x: measureX + 2 });
+        x += REPEAT_START_W * sc;
+      }
+      m.idx.forEach((i) => {
+        const it = items[i];
+        const w = widths[i] * sc;
+        // La tête est décalée à droite de sa zone pour laisser la place à l'altération.
+        const headOffset = (it.a != null && !it.r && !rh ? 12 : 0) + 8;
+        pos[i] = { sys: si, x: x + headOffset * Math.min(1, sc), x0: x, x1: x + w };
+        x += w;
+      });
+      x += (PAD_R + (BAR_EXTRA[m.type] || 0)) * sc;
+      if (m.full) bars.push({ sys: si, x, type: m.type || 'single' });
+    });
+    sys.end = x;
+  });
+  return { pos, bars, starts, measureCount };
+}
+
 /**
  * Met en page une portée.
  *
@@ -119,78 +235,35 @@ export function layout(b, W, active = false) {
   const rh = b.clef === 'rhythm';
   const items = b.items;
   const widths = items.map((it) => itemWidth(it, rh));
-  const measures = segmentMeasures(items, b.time);
-
-  // La 1re ligne porte la clé ET le chiffrage ; les suivantes seulement la clé.
-  const firstStart = rh ? 46 : 64;
-  const otherStart = rh ? 30 : 44;
-
-  // --- 3. Coupure de lignes (glouton) ---
-  /** @type {System[]} */
-  const systems = [];
-  let sys;
-  const newSys = () => {
-    sys = { start: systems.length ? otherStart : firstStart, ms: [], used: 0, end: 0, firstMeasure: 1 };
-    systems.push(sys);
-  };
-  newSys();
-  measures.forEach((m) => {
-    const w = PAD_L + (m.rs ? REPEAT_START_W : 0) + m.idx.reduce((s, i) => s + widths[i], 0) + PAD_R + (BAR_EXTRA[m.type] || 0);
-    const avail = W - sys.start - 4;
-    if (sys.ms.length && sys.used + w > avail) newSys();
-    sys.ms.push({ m, w });
-    sys.used += w;
-  });
-
-  // --- 4 et 5. Justification et positions ---
-  /** @type {ItemPos[]} */
-  const pos = [];
-  const bars = [];
-  const starts = [];
-  let mcount = 0;
   const ended = items.length > 0 && items[items.length - 1].bar === 'final';
-  systems.forEach((s, si) => {
-    const avail = W - s.start - 4;
-    const last = si === systems.length - 1;
-    let sc = 1;
-    if (s.used > avail) sc = avail / s.used; // trop plein : on comprime
-    else if (!last && s.used > 0) sc = Math.min(avail / s.used, MAX_STRETCH);
-    else if (last && ended && s.used > avail * 0.5) sc = avail / s.used; // justification de fin de motif
-    s.firstMeasure = mcount + 1;
-    let x = s.start;
-    s.ms.forEach(({ m }) => {
-      mcount++;
-      const mx = x;
-      x += PAD_L * sc;
-      if (m.rs) { starts.push({ sys: si, x: mx + 2 }); x += REPEAT_START_W * sc; }
-      m.idx.forEach((i) => {
-        const it = items[i];
-        const iw = widths[i] * sc;
-        // La tête est décalée à droite de la zone pour laisser la place à l'altération.
-        const off = (it.a != null && !it.r && !rh ? 12 : 0) + 8;
-        pos[i] = { sys: si, x: x + off * Math.min(1, sc), x0: x, x1: x + iw };
-        x += iw;
-      });
-      x += (PAD_R + (BAR_EXTRA[m.type] || 0)) * sc;
-      if (m.full) bars.push({ sys: si, x, type: m.type || 'single' });
-    });
-    s.end = x;
-  });
 
-  // --- Zone d'ajout ---
-  let ls = systems[systems.length - 1];
-  if (active && !ended && W - ls.end < 48) {
-    // Plus de place sur la dernière ligne : on prépare une ligne vide.
-    newSys();
-    sys.end = sys.start;
-    sys.firstMeasure = mcount + 1;
-    ls = sys;
+  const systems = breakIntoSystems(segmentMeasures(items, b.time), widths, W, rh);
+  const { pos, bars, starts, measureCount } = placeSystems(systems, items, widths, W, rh, ended);
+
+  // Zone d'ajout : après la dernière mesure, ou sur une nouvelle ligne vide
+  // s'il ne reste pas assez de place (en édition seulement).
+  let last = systems[systems.length - 1];
+  if (active && !ended && W - last.end < 48) {
+    last = newSystem(systems, rh);
+    last.end = last.start;
+    last.firstMeasure = measureCount + 1;
   }
-  const appendSys = systems.length - 1;
-  const appendX = ended ? null : ls.ms.length ? ls.end + 8 : ls.start + 6;
+  const appendX = ended ? null : last.ms.length ? last.end + 8 : last.start + 6;
 
   const SH = rh ? 92 : 124;
-  return { rh, systems, pos, bars, starts, appendSys, appendX, ended, SH, height: systems.length * SH, ML: mlen(b.time) };
+  return {
+    rh,
+    systems,
+    pos,
+    bars,
+    starts,
+    appendSys: systems.length - 1,
+    appendX,
+    ended,
+    SH,
+    height: systems.length * SH,
+    ML: mlen(b.time),
+  };
 }
 
 /**

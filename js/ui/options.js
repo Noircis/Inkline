@@ -15,7 +15,7 @@
  * ## Rappel de sauvegarde
  *
  * Les notes ne vivent que sur le téléphone. Au-delà de
- * {@link module:ui/options.BACKUP_REMINDER_DAYS|BACKUP_REMINDER_DAYS} jours
+ * {@link module:ui/options~BACKUP_REMINDER_DAYS|BACKUP_REMINDER_DAYS} jours
  * sans export, un point apparaît sur la roue crantée
  * ({@link module:ui/options.backupDue|backupDue}) : c'est un rappel visible,
  * mais jamais bloquant.
@@ -31,7 +31,7 @@ import { LIST_VIEWS } from './list-view.js';
 import { APP_VERSION, readFile, openNote, backToList, enterSubView } from './views.js';
 
 /** Nombre de jours sans sauvegarde avant d'afficher le rappel. */
-export const BACKUP_REMINDER_DAYS = 30;
+const BACKUP_REMINDER_DAYS = 30;
 
 const DAY = 24 * 3600 * 1000;
 
@@ -75,7 +75,13 @@ function importIRealNotes(text) {
   songs.forEach((s, k) => {
     // Le compositeur iReal est au format « Nom Prénom » : on le remet dans l'ordre usuel.
     const composer = s.composer && s.composer !== 'Unknown' ? s.composer.split(' ').reverse().join(' ') : '';
-    const n = { id: uid(), title: s.title.slice(0, 200), created: Date.now() + k, updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer.slice(0, 200) }, sanitizeBlock(songToGrid(s))] };
+    const n = {
+      id: uid(),
+      title: s.title.slice(0, 200),
+      created: Date.now() + k,
+      updated: Date.now() + k,
+      blocks: [{ id: uid(), type: 'text', text: composer.slice(0, 200) }, sanitizeBlock(songToGrid(s))],
+    };
     state.notes[n.id] = n;
   });
   if (songs.length) flushSave(state.notes);
@@ -84,8 +90,10 @@ function importIRealNotes(text) {
 
 /** Pictogrammes des trois affichages (SVG en ligne, colorés par currentColor). */
 const VIEW_ICONS = {
-  cards: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="16" height="7" rx="1.5" fill="currentColor"/></svg>',
-  mosaic: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="12" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="12" y="12" width="7" height="7" rx="1.5" fill="currentColor"/></svg>',
+  cards:
+    '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="16" height="7" rx="1.5" fill="currentColor"/></svg>',
+  mosaic:
+    '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="12" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="12" y="12" width="7" height="7" rx="1.5" fill="currentColor"/></svg>',
   list: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="4" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="3" y="9.8" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="3" y="15.6" width="16" height="2.4" rx="1.2" fill="currentColor"/></svg>',
 };
 
@@ -152,7 +160,10 @@ export function renderOptions() {
   const msg = app.querySelector('#optMsg');
 
   app.querySelector('#optExport').onclick = () => {
-    download(new Blob([backupJson(state.notes)], { type: 'application/json' }), 'inkline-carnet-' + new Date().toISOString().slice(0, 10) + '.json');
+    download(
+      new Blob([backupJson(state.notes)], { type: 'application/json' }),
+      'inkline-carnet-' + new Date().toISOString().slice(0, 10) + '.json',
+    );
     setMeta({ lastExport: Date.now() });
     const last = app.querySelector('#optLast');
     last.textContent = lastExportLabel(Date.now());
@@ -162,25 +173,33 @@ export function renderOptions() {
 
   // Pas de filtre « accept » : Android grise les extensions qu'il ne connaît
   // pas (.inkline). Le contenu est vérifié par importFile.
-  app.querySelector('#optImport').onchange = (e) => readFile(e, (text) => {
-    try {
-      const r = importFile(state.notes, text);
-      flushSave(state.notes);
-      if (r.kind === 'note') { openNote(r.firstId); return; } // note reçue : on l'ouvre directement
-      msg.textContent = r.count + (r.count > 1 ? ' notes importées.' : ' note importée.');
-    } catch (err) {
-      msg.textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
-    }
-  });
+  app.querySelector('#optImport').onchange = (e) =>
+    readFile(e, (text) => {
+      try {
+        const r = importFile(state.notes, text);
+        flushSave(state.notes);
+        if (r.kind === 'note') {
+          openNote(r.firstId);
+          return;
+        } // note reçue : on l'ouvre directement
+        msg.textContent = r.count + (r.count > 1 ? ' notes importées.' : ' note importée.');
+      } catch (err) {
+        msg.textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
+      }
+    });
 
   const irMsg = app.querySelector('#optIrMsg');
   const irGo = (txt) => {
     const k = importIRealNotes(txt);
     irMsg.textContent = k
-      ? k + (k > 1 ? ' morceaux importés : ils sont dans tes notes.' : ' morceau importé : il est dans tes notes.')
+      ? k +
+        (k > 1
+          ? ' morceaux importés : ils sont dans tes notes.'
+          : ' morceau importé : il est dans tes notes.')
       : 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb://.';
     if (k) /** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr')).value = '';
   };
-  app.querySelector('#optIrGo').onclick = () => irGo(/** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr')).value);
+  app.querySelector('#optIrGo').onclick = () =>
+    irGo(/** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr')).value);
   app.querySelector('#optIrFile').onchange = (e) => readFile(e, irGo);
 }

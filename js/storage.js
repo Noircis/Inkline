@@ -28,7 +28,7 @@
 import { sanitizeNote, sanitizeNotes } from './sanitize.js';
 
 /** Clé `localStorage` du carnet (historique : ne pas changer). */
-export const STORAGE_KEY = 'carnet-portees-v1';
+const STORAGE_KEY = 'carnet-portees-v1';
 
 /** Identifiant écrit dans les fichiers de sauvegarde. */
 const BACKUP_APP = 'carnet-portees';
@@ -48,7 +48,11 @@ let timer = null;
  */
 export function loadNotes() {
   let data = {};
-  try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch (e) { data = {}; }
+  try {
+    data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {};
+  } catch (e) {
+    data = {};
+  }
   // Même le stockage local est validé : il a pu être écrit par une ancienne
   // version, ou corrompu. Une donnée invalide ne doit jamais atteindre le rendu.
   return sanitizeNotes(data);
@@ -70,14 +74,22 @@ export function scheduleSave(notes) {
  */
 export function flushSave(notes) {
   clearTimeout(timer);
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch (e) { /* stockage indisponible */ }
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  } catch (e) {
+    /* stockage indisponible */
+  }
 }
 
 /**
  * Demande un stockage persistant (sans effet si non supporté).
  */
 export function requestPersistence() {
-  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* ignoré */ }
+  try {
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  } catch (e) {
+    /* ignoré */
+  }
 }
 
 /**
@@ -138,7 +150,11 @@ export function importFile(notes, text) {
   let firstId = null;
   Object.values(incoming).forEach((n) => {
     const cur = notes[n.id];
-    if (!cur || n.updated >= cur.updated) { notes[n.id] = n; count++; firstId = firstId || n.id; }
+    if (!cur || n.updated >= cur.updated) {
+      notes[n.id] = n;
+      count++;
+      firstId = firstId || n.id;
+    }
   });
   if (!count && !Object.keys(incoming).length) throw new Error('aucune note');
   return { kind: 'backup', count, firstId };
@@ -161,8 +177,14 @@ export function getMeta() {
     const m = JSON.parse(localStorage.getItem(META_KEY) || '{}') || {};
     const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
     const views = ['cards', 'mosaic', 'list'];
-    return { firstUse: num(m.firstUse), lastExport: num(m.lastExport), listView: views.includes(m.listView) ? m.listView : undefined };
-  } catch (e) { return {}; }
+    return {
+      firstUse: num(m.firstUse),
+      lastExport: num(m.lastExport),
+      listView: views.includes(m.listView) ? m.listView : undefined,
+    };
+  } catch (e) {
+    return {};
+  }
 }
 
 /**
@@ -170,5 +192,9 @@ export function getMeta() {
  * @param {Meta} patch
  */
 export function setMeta(patch) {
-  try { localStorage.setItem(META_KEY, JSON.stringify({ ...getMeta(), ...patch })); } catch (e) { /* stockage indisponible */ }
+  try {
+    localStorage.setItem(META_KEY, JSON.stringify({ ...getMeta(), ...patch }));
+  } catch (e) {
+    /* stockage indisponible */
+  }
 }

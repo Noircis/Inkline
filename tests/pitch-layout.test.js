@@ -5,7 +5,16 @@ import { midiOf, resolveMidis, pitchName } from '../js/pitch.js';
 import { layout } from '../js/layout.js';
 import { staffSvg } from '../js/render-staff.js';
 
-const staff = (items, extra = {}) => ({ id: 't', type: 'staff', clef: 'treble', time: '4/4', tempo: 120, swing: false, items, ...extra });
+const staff = (items, extra = {}) => ({
+  id: 't',
+  type: 'staff',
+  clef: 'treble',
+  time: '4/4',
+  tempo: 120,
+  swing: false,
+  items,
+  ...extra,
+});
 const q = (s, extra = {}) => ({ d: 'q', s, ...extra });
 
 test('midiOf : repères des clés', () => {
@@ -25,7 +34,7 @@ test('resolveMidis : une note liée garde la hauteur par-dessus la barre', () =>
   assert.equal(m[4], 70);
 });
 
-test('layout : barre de fin, plus de zone d\'ajout, dernière ligne justifiée au-delà de 50 %', () => {
+test("layout : barre de fin, plus de zone d'ajout, dernière ligne justifiée au-delà de 50 %", () => {
   const items = Array.from({ length: 16 }, (_, i) => q(i % 8));
   items[15].bar = 'final';
   const L = layout(staff(items), 360, true);

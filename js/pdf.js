@@ -62,7 +62,12 @@ export function buildPdf(pages) {
     chunks.push(b);
     pos += b.length;
   };
-  const obj = (num, body) => { offsets[num - 1] = pos; put(`${num} 0 obj\n`); body(); put('\nendobj\n'); };
+  const obj = (num, body) => {
+    offsets[num - 1] = pos;
+    put(`${num} 0 obj\n`);
+    body();
+    put('\nendobj\n');
+  };
 
   // En-tête ; la 2e ligne (octets > 127) signale aux outils que le fichier contient du binaire.
   put('%PDF-1.4\n%âãÏÓ\n');
@@ -70,7 +75,9 @@ export function buildPdf(pages) {
   // Numérotation : 1 catalogue, 2 arbre des pages, puis 3 objets par page.
   const pageNums = pages.map((_, k) => 3 + k * 3);
   obj(1, () => put('<< /Type /Catalog /Pages 2 0 R >>'));
-  obj(2, () => put(`<< /Type /Pages /Kids [${pageNums.map((n) => `${n} 0 R`).join(' ')}] /Count ${pages.length} >>`));
+  obj(2, () =>
+    put(`<< /Type /Pages /Kids [${pageNums.map((n) => `${n} 0 R`).join(' ')}] /Count ${pages.length} >>`),
+  );
 
   pages.forEach((p, k) => {
     const pageN = pageNums[k];
@@ -80,10 +87,16 @@ export function buildPdf(pages) {
     const dw = A4.w;
     const dh = (p.height * A4.w) / p.width;
     const content = `q ${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} 0 ${(A4.h - dh).toFixed(2)} cm /Im0 Do Q`;
-    obj(pageN, () => put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${A4.w} ${A4.h}] /Resources << /XObject << /Im0 ${imageN} 0 R >> >> /Contents ${contentN} 0 R >>`));
+    obj(pageN, () =>
+      put(
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${A4.w} ${A4.h}] /Resources << /XObject << /Im0 ${imageN} 0 R >> >> /Contents ${contentN} 0 R >>`,
+      ),
+    );
     obj(contentN, () => put(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`));
     obj(imageN, () => {
-      put(`<< /Type /XObject /Subtype /Image /Width ${p.width} /Height ${p.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.jpeg.length} >>\nstream\n`);
+      put(
+        `<< /Type /XObject /Subtype /Image /Width ${p.width} /Height ${p.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.jpeg.length} >>\nstream\n`,
+      );
       put(p.jpeg);
       put('\nendstream');
     });
@@ -98,6 +111,9 @@ export function buildPdf(pages) {
 
   const out = new Uint8Array(pos);
   let at = 0;
-  chunks.forEach((c) => { out.set(c, at); at += c.length; });
+  chunks.forEach((c) => {
+    out.set(c, at);
+    at += c.length;
+  });
   return out;
 }

@@ -53,7 +53,7 @@ let current = null;
  * Contexte audio, créé à la demande et réveillé s'il est suspendu.
  * @returns {AudioContext|null} `null` si la Web Audio API est absente.
  */
-export function audioContext() {
+function audioContext() {
   if (!ac) {
     const C = window.AudioContext || window.webkitAudioContext;
     if (!C) return null;
@@ -73,7 +73,7 @@ const freq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
  * @param {number|null} midi
  * @param {AudioScheduledSourceNode[]} [nodes] Collecteur pour pouvoir couper.
  */
-export function tone(t, dur, midi, nodes) {
+function tone(t, dur, midi, nodes) {
   const c = audioContext();
   if (!c || midi == null) return;
   const f = freq(midi);
@@ -82,10 +82,13 @@ export function tone(t, dur, midi, nodes) {
   const lp = c.createBiquadFilter();
   const g = c.createGain();
   const g1 = c.createGain();
-  o1.type = 'sawtooth'; o2.type = 'triangle';
-  o1.frequency.value = f; o2.frequency.value = f;
+  o1.type = 'sawtooth';
+  o2.type = 'triangle';
+  o1.frequency.value = f;
+  o2.frequency.value = f;
   g1.gain.value = 0.35; // la dent de scie est dosée pour ne pas être agressive
-  lp.type = 'lowpass'; lp.Q.value = 0.8;
+  lp.type = 'lowpass';
+  lp.Q.value = 0.8;
   lp.frequency.setValueAtTime(f * 1.5, t);
   lp.frequency.linearRampToValueAtTime(f * 4, t + 0.05);
   lp.frequency.setTargetAtTime(f * 2.2, t + 0.06, 0.15);
@@ -95,8 +98,15 @@ export function tone(t, dur, midi, nodes) {
   g.gain.linearRampToValueAtTime(v, t + 0.025);
   g.gain.setTargetAtTime(v * 0.75, t + 0.04, 0.12);
   g.gain.setTargetAtTime(0, end, 0.025);
-  o1.connect(g1); g1.connect(lp); o2.connect(lp); lp.connect(g); g.connect(c.destination);
-  o1.start(t); o2.start(t); o1.stop(end + 0.2); o2.stop(end + 0.2);
+  o1.connect(g1);
+  g1.connect(lp);
+  o2.connect(lp);
+  lp.connect(g);
+  g.connect(c.destination);
+  o1.start(t);
+  o2.start(t);
+  o1.stop(end + 0.2);
+  o2.stop(end + 0.2);
   if (nodes) nodes.push(o1, o2);
 }
 
@@ -115,17 +125,26 @@ export function pad(t, dur, midi, nodes) {
   const o2 = c.createOscillator();
   const lp = c.createBiquadFilter();
   const g = c.createGain();
-  o.type = 'triangle'; o2.type = 'sine';
-  o.frequency.value = f; o2.frequency.value = f * 2;
-  lp.type = 'lowpass'; lp.frequency.value = Math.min(4000, f * 3);
+  o.type = 'triangle';
+  o2.type = 'sine';
+  o.frequency.value = f;
+  o2.frequency.value = f * 2;
+  lp.type = 'lowpass';
+  lp.frequency.value = Math.min(4000, f * 3);
   const end = t + Math.max(0.1, dur * 0.92);
   const v = 0.075;
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(v, t + 0.02);
   g.gain.setTargetAtTime(v * 0.55, t + 0.05, 0.25);
   g.gain.setTargetAtTime(0, end, 0.05);
-  o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(c.destination);
-  o.start(t); o2.start(t); o.stop(end + 0.3); o2.stop(end + 0.3);
+  o.connect(lp);
+  o2.connect(lp);
+  lp.connect(g);
+  g.connect(c.destination);
+  o.start(t);
+  o2.start(t);
+  o.stop(end + 0.3);
+  o2.stop(end + 0.3);
   nodes.push(o, o2);
 }
 
@@ -135,7 +154,7 @@ export function pad(t, dur, midi, nodes) {
  * @param {boolean} accent Premier temps (plus aigu, plus fort).
  * @param {AudioScheduledSourceNode[]} [nodes]
  */
-export function perc(t, accent, nodes) {
+function perc(t, accent, nodes) {
   const c = audioContext();
   if (!c) return;
   const o = c.createOscillator();
@@ -146,8 +165,10 @@ export function perc(t, accent, nodes) {
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(accent ? 0.5 : 0.35, t + 0.003);
   g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
-  o.connect(g); g.connect(c.destination);
-  o.start(t); o.stop(t + 0.13);
+  o.connect(g);
+  g.connect(c.destination);
+  o.start(t);
+  o.stop(t + 0.13);
   if (nodes) nodes.push(o);
 }
 
@@ -182,7 +203,13 @@ export function stop() {
   const p = current;
   current = null;
   p.timers.forEach(clearTimeout);
-  p.nodes.forEach((n) => { try { n.stop(); } catch (e) { /* déjà arrêté */ } });
+  p.nodes.forEach((n) => {
+    try {
+      n.stop();
+    } catch (e) {
+      /* déjà arrêté */
+    }
+  });
   p.onEnd();
 }
 
@@ -231,7 +258,10 @@ function at(p, c, t, fn) {
  * @param {PlayCallbacks} cb
  */
 export function playStaff(b, cb) {
-  if (!b.items.length) { stop(); return; }
+  if (!b.items.length) {
+    stop();
+    return;
+  }
   const r = begin(b.id, cb);
   if (!r) return;
   const { c, p } = r;
@@ -261,7 +291,10 @@ export function playStaff(b, cb) {
  * @param {PlayCallbacks} cb
  */
 export function playGrid(b, cb) {
-  if (!b.measures.length) { stop(); return; }
+  if (!b.measures.length) {
+    stop();
+    return;
+  }
   const r = begin(b.id, cb);
   if (!r) return;
   const { c, p } = r;
@@ -294,7 +327,8 @@ export function playGrid(b, cb) {
       }
       qq += d;
     });
-    if (swingy && !b.time.endsWith('/8')) for (let bt = 1; bt < ML; bt += 2) perc(t0 + (q + bt) * spq, false, p.nodes);
+    if (swingy && !b.time.endsWith('/8'))
+      for (let bt = 1; bt < ML; bt += 2) perc(t0 + (q + bt) * spq, false, p.nodes);
     at(p, c, t0 + q * spq, () => cb.onStep(i));
     q += ML;
   });

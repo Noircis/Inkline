@@ -1,16 +1,23 @@
 {
   "name": "inkline",
-  "version": "1.7.0",
+  "version": "1.7.5",
   "description": "Carnet de notes musicales pour Android : texte, portées, rythmes et grilles d'accords (PWA hors ligne).",
   "type": "module",
   "private": true,
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "check": "prettier --check . && eslint . && node --test tests/*.test.js",
     "docs": "jsdoc -c jsdoc.json",
     "serve": "python3 -m http.server 8080"
   },
   "devDependencies": {
+    "@eslint/js": "9.13.0",
     "docdash": "2.0.2",
-    "jsdoc": "4.0.4"
+    "eslint": "9.13.0",
+    "globals": "15.11.0",
+    "jsdoc": "4.0.4",
+    "prettier": "3.3.3"
   }
 }

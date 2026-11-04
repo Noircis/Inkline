@@ -19,12 +19,16 @@
  *  └─ ui/views ──┬─ ui/staff-ui ── render-staff ── layout ── rhythm ── pitch ── model ── util
  *                ├─ ui/grid-ui ─── grid ── chords
  *                │                 ireal
+ *                ├─ ui/options ─── ui/list-view (affichages de la liste)
+ *                ├─ export ─────── pdf
  *                ├─ audio (rhythm, grid, chords)
- *                ├─ storage, history
+ *                ├─ storage ────── sanitize
+ *                ├─ history
  *                └─ ui/state
  * ```
  *
- * Les modules hors de `ui/` (et hors `audio`/`storage`) sont purs et testés sous Node.
+ * Les modules hors de `ui/` (sauf `audio`, `storage`, `export` et `main`)
+ * sont purs, sans DOM, et testés sous Node (`npm test`).
  */
 
 import { state, app } from './ui/state.js';
@@ -44,7 +48,9 @@ if (history.state && history.state.inkline) history.replaceState(null, '');
 render();
 
 // Bouton retour d'Android (ou du navigateur) : d'un sous-écran vers la liste.
-window.addEventListener('popstate', () => { if (state.view.name !== 'list') showList(); });
+window.addEventListener('popstate', () => {
+  if (state.view.name !== 'list') showList();
+});
 requestPersistence();
 
 // Polices web chargées après le premier rendu : les largeurs de texte des SVG
@@ -52,14 +58,19 @@ requestPersistence();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 
 // Android peut tuer l'app en arrière-plan : on écrit tout de suite.
-document.addEventListener('visibilitychange', () => { if (document.hidden) flushSave(state.notes); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) flushSave(state.notes);
+});
 
 // Redimensionnement / rotation : les portées dépendent de la largeur.
 let resizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (state.view.name !== 'note') { render(); return; }
+    if (state.view.name !== 'note') {
+      render();
+      return;
+    }
     app.querySelectorAll('[data-staff]').forEach((w) => {
       const el = /** @type {HTMLElement} */ (w);
       if (el.clientWidth !== el._W) redrawStaff(el.dataset.staff);
@@ -76,7 +87,9 @@ if (window.visualViewport) {
   const vv = window.visualViewport;
   const fix = () => {
     const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    ['palette', 'gpal'].forEach((id) => { document.getElementById(id).style.bottom = kb + 'px'; });
+    ['palette', 'gpal'].forEach((id) => {
+      document.getElementById(id).style.bottom = kb + 'px';
+    });
   };
   vv.addEventListener('resize', fix);
   vv.addEventListener('scroll', fix);
@@ -84,5 +97,7 @@ if (window.visualViewport) {
 
 // Hors ligne : uniquement servi en http(s) (pas en file://).
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js').catch(() => { /* hors ligne indisponible, l'app marche quand même */ });
+  navigator.serviceWorker.register('sw.js').catch(() => {
+    /* hors ligne indisponible, l'app marche quand même */
+  });
 }

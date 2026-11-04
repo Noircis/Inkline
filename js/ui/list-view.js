@@ -41,8 +41,12 @@ const MOSAIC_STAFF_W = 260;
  * @param {number} ts
  * @returns {string}
  */
-export function shortDate(ts) {
-  try { return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
+function shortDate(ts) {
+  try {
+    return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  } catch (e) {
+    return '';
+  }
 }
 
 /**
@@ -53,7 +57,10 @@ export function shortDate(ts) {
  * @returns {string}
  */
 export function relativeDate(ts, now = Date.now()) {
-  const day = (t) => { const d = new Date(t); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
+  const day = (t) => {
+    const d = new Date(t);
+    return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  };
   const diff = Math.round((day(now) - day(ts)) / 86400000);
   if (diff <= 0) return 'aujourd’hui';
   if (diff === 1) return 'hier';
@@ -95,10 +102,18 @@ function chordsPreview(n, max) {
   const push = (c) => {
     if (out.length >= max || !c || c === 'n' || c === '%') return;
     const p = chordParts(c);
-    if (p) out.push(`<span class="pc">${esc(p.root)}${p.quality ? `<sup>${esc(p.quality)}</sup>` : ''}${esc(p.bass)}</span>`);
+    if (p)
+      out.push(
+        `<span class="pc">${esc(p.root)}${p.quality ? `<sup>${esc(p.quality)}</sup>` : ''}${esc(p.bass)}</span>`,
+      );
   };
-  n.blocks.forEach((b) => { if (b.type === 'grid') b.measures.forEach((m) => m.ch.forEach(push)); });
-  if (!out.length) n.blocks.forEach((b) => { if (b.type === 'staff') b.items.forEach((it) => push(it.c)); });
+  n.blocks.forEach((b) => {
+    if (b.type === 'grid') b.measures.forEach((m) => m.ch.forEach(push));
+  });
+  if (!out.length)
+    n.blocks.forEach((b) => {
+      if (b.type === 'staff') b.items.forEach((it) => push(it.c));
+    });
   return out.join(' ');
 }
 
@@ -122,7 +137,11 @@ function itemHtml(n, mode) {
     if (firstStaff(n)) preview = '<div class="mz-thumb"></div>';
     else {
       const ch = chordsPreview(n, 10);
-      preview = ch ? `<div class="mz-chords">${ch}</div>` : txt ? `<p class="mz-text">${esc(txt)}</p>` : '<p class="mz-text mz-empty">Note vide</p>';
+      preview = ch
+        ? `<div class="mz-chords">${ch}</div>`
+        : txt
+          ? `<p class="mz-text">${esc(txt)}</p>`
+          : '<p class="mz-text mz-empty">Note vide</p>';
     }
     return `<h3>${title}</h3>${preview}<div class="mz-foot"><span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>`;
   }
@@ -158,7 +177,9 @@ export function renderNoteList(container, notes, mode, onOpen) {
       const th = el.querySelector(mode === 'mosaic' ? '.mz-thumb' : '.thumb');
       if (!st || !th) return;
       // Mosaïque : dessin sur une largeur fixe réduite, puis mise à l'échelle par CSS (zoom sur le début).
-      th.innerHTML = staffSvg(st, mode === 'mosaic' ? MOSAIC_STAFF_W : th.clientWidth || 300, { maxSystems: 1 }).svg;
+      th.innerHTML = staffSvg(st, mode === 'mosaic' ? MOSAIC_STAFF_W : th.clientWidth || 300, {
+        maxSystems: 1,
+      }).svg;
     });
   });
 }

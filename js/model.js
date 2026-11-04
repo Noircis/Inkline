@@ -222,7 +222,15 @@ export function newTextBlock() {
  * @returns {StaffBlock}
  */
 export function newStaffBlock(rhythm) {
-  return { id: uid(), type: 'staff', clef: rhythm ? 'rhythm' : 'treble', time: '4/4', tempo: 100, swing: false, items: [] };
+  return {
+    id: uid(),
+    type: 'staff',
+    clef: rhythm ? 'rhythm' : 'treble',
+    time: '4/4',
+    tempo: 100,
+    swing: false,
+    items: [],
+  };
 }
 
 /**
@@ -231,7 +239,12 @@ export function newStaffBlock(rhythm) {
  */
 export function newGridBlock() {
   return {
-    id: uid(), type: 'grid', time: '4/4', key: 'C', style: 'Medium Swing', tempo: 120,
+    id: uid(),
+    type: 'grid',
+    time: '4/4',
+    key: 'C',
+    style: 'Medium Swing',
+    tempo: 120,
     measures: [{ ch: [] }, { ch: [] }, { ch: [] }, { ch: [] }],
   };
 }
@@ -243,22 +256,58 @@ export function newGridBlock() {
  */
 export function exampleNote() {
   return {
-    id: uid(), title: 'Exemple · motif sur Bb blues', created: Date.now(), updated: Date.now(),
+    id: uid(),
+    title: 'Exemple · motif sur Bb blues',
+    created: Date.now(),
+    updated: Date.now(),
     blocks: [
-      { id: uid(), type: 'text', text: 'Motif de deux mesures, à développer en question / réponse. Essayer plus lent.' },
       {
-        id: uid(), type: 'staff', clef: 'treble', time: '4/4', tempo: 132, swing: true,
+        id: uid(),
+        type: 'text',
+        text: 'Motif de deux mesures, à développer en question / réponse. Essayer plus lent.',
+      },
+      {
+        id: uid(),
+        type: 'staff',
+        clef: 'treble',
+        time: '4/4',
+        tempo: 132,
+        swing: true,
         items: [
-          { d: '8', s: 4, a: -1, c: 'Bb7' }, { d: '8', s: 6 }, { d: '8', s: 8 }, { d: '8', s: 10, a: -1 },
-          { d: '8', s: 9, tup: 3 }, { d: '8', s: 8, tup: 3 }, { d: '8', s: 6, tup: 3 }, { d: 'q', s: 6, a: -1, tie: true },
-          { d: '8', s: 6, c: 'Eb7' }, { d: '8', s: 5 }, { d: 'q', s: 4, a: -1 }, { d: 'q', r: true }, { d: 'q', s: 1 },
-          { d: 'h', s: 1, c: 'Bb7' }, { d: 'h', r: true, bar: 'final' },
+          { d: '8', s: 4, a: -1, c: 'Bb7' },
+          { d: '8', s: 6 },
+          { d: '8', s: 8 },
+          { d: '8', s: 10, a: -1 },
+          { d: '8', s: 9, tup: 3 },
+          { d: '8', s: 8, tup: 3 },
+          { d: '8', s: 6, tup: 3 },
+          { d: 'q', s: 6, a: -1, tie: true },
+          { d: '8', s: 6, c: 'Eb7' },
+          { d: '8', s: 5 },
+          { d: 'q', s: 4, a: -1 },
+          { d: 'q', r: true },
+          { d: 'q', s: 1 },
+          { d: 'h', s: 1, c: 'Bb7' },
+          { d: 'h', r: true, bar: 'final' },
         ],
       },
       { id: uid(), type: 'text', text: 'Cellule rythmique pour la relance :' },
       {
-        id: uid(), type: 'staff', clef: 'rhythm', time: '4/4', tempo: 132, swing: true,
-        items: [{ d: '8' }, { d: '8', tie: true }, { d: 'q' }, { d: '8', dot: true }, { d: '16' }, { d: '8', r: true }, { d: '8', bar: 'final' }],
+        id: uid(),
+        type: 'staff',
+        clef: 'rhythm',
+        time: '4/4',
+        tempo: 132,
+        swing: true,
+        items: [
+          { d: '8' },
+          { d: '8', tie: true },
+          { d: 'q' },
+          { d: '8', dot: true },
+          { d: '16' },
+          { d: '8', r: true },
+          { d: '8', bar: 'final' },
+        ],
       },
     ],
   };

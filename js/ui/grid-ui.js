@@ -25,106 +25,212 @@ import { toIRealLink, parseIRealAll } from '../ireal.js';
 import { pushSnapshot } from '../history.js';
 import { sanitizeBlock } from '../sanitize.js';
 import * as audio from '../audio.js';
-import { toolsHtml, renderNote, setActive, syncPaletteSpace, undo, updatePlayBtn, playCallbacks, readFile } from './views.js';
+import {
+  toolsHtml,
+  renderNote,
+  setActive,
+  syncPaletteSpace,
+  undo,
+  updatePlayBtn,
+  playCallbacks,
+  readFile,
+} from './views.js';
 
 const gpal = /** @type {HTMLElement} */ (document.getElementById('gpal'));
 const gin = /** @type {HTMLInputElement} */ (document.getElementById('gIn'));
 
 /**
- * Remplit l'élément d'un bloc grille.
+ * HTML d'un bloc grille : en-tête de réglages, panneau iReal (replié), zone de la grille, outils.
+ * @param {module:model~GridBlock} b
+ * @returns {string}
+ */
+function gridBlockHtml(b) {
+  const id = esc(b.id);
+  const keyOptions =
+    KEYS.map((k) => `<option value="${k}">${keyLabel(k)}</option>`).join('') +
+    KEYS.map((k) => `<option value="${k}-">${keyLabel(k + '-')}</option>`).join('');
+  // Un style importé absent de la liste y est ajouté, pour ne pas le perdre.
+  const styles = STYLES.includes(b.style) ? STYLES : [b.style, ...STYLES];
+  return (
+    `<div class="shead"><span class="kind">Grille</span>
+    <select data-f="key" aria-label="Tonalité">${keyOptions}</select>
+    <select data-f="time" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
+    <select data-f="style" aria-label="Style">${styles.map((st) => `<option>${esc(st)}</option>`).join('')}</select>
+    <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" aria-label="Tempo"></label>
+    <button type="button" class="chip" data-f="ireal" aria-expanded="false">iReal</button>
+    <button type="button" class="playbtn" data-play="${id}">&#9654; Écouter</button></div>
+    <div class="irealbox" hidden>
+      <div class="ir-actions"><a class="btn" data-ir="open" href="#">Ouvrir dans iReal Pro</a><button class="btn" type="button" data-ir="copy">Copier le lien</button></div>
+      <label class="ir-lbl" for="ir_${id}">Importer depuis iReal Pro : colle un lien <code>irealb://</code> (Partager &gt; iReal Pro format)</label>
+      <textarea id="ir_${id}" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
+      <div class="ir-actions"><button class="btn primary" type="button" data-ir="import">Remplacer cette grille</button><label class="btn" for="irf_${id}">Ouvrir un fichier</label><input type="file" id="irf_${id}" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
+      <div class="status ir-msg"></div>
+    </div>
+    <div class="gridwrap" data-grid="${id}"></div>` + toolsHtml()
+  );
+}
+
+/**
+ * Branche les réglages de l'en-tête (tonalité, mesure, style, tempo) et le bouton Écouter.
  * @param {module:model~Note} n
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} el
  */
-export function gridBlockEl(n, b, el) {
-  const keyOpts = KEYS.map((k) => `<option value="${k}">${keyLabel(k)}</option>`).join('')
-    + KEYS.map((k) => `<option value="${k}-">${keyLabel(k + '-')}</option>`).join('');
-  const styles = STYLES.includes(b.style) ? STYLES : [b.style, ...STYLES];
-  el.innerHTML = `<div class="shead"><span class="kind">Grille</span>
-    <select data-f="key" aria-label="Tonalité">${keyOpts}</select>
-    <select data-f="time" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
-    <select data-f="style" aria-label="Style">${styles.map((s) => `<option>${esc(s)}</option>`).join('')}</select>
-    <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" aria-label="Tempo"></label>
-    <button type="button" class="chip" data-f="ireal" aria-expanded="false">iReal</button>
-    <button type="button" class="playbtn" data-play="${esc(b.id)}">&#9654; Écouter</button></div>
-    <div class="irealbox" hidden>
-      <div class="ir-actions"><a class="btn" data-ir="open" href="#">Ouvrir dans iReal Pro</a><button class="btn" type="button" data-ir="copy">Copier le lien</button></div>
-      <label class="ir-lbl" for="ir_${esc(b.id)}">Importer depuis iReal Pro : colle un lien <code>irealb://</code> (Partager &gt; iReal Pro format)</label>
-      <textarea id="ir_${esc(b.id)}" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
-      <div class="ir-actions"><button class="btn primary" type="button" data-ir="import">Remplacer cette grille</button><label class="btn" for="irf_${esc(b.id)}">Ouvrir un fichier</label><input type="file" id="irf_${esc(b.id)}" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
-      <div class="status ir-msg"></div>
-    </div>
-    <div class="gridwrap" data-grid="${esc(b.id)}"></div>` + toolsHtml();
-
+function bindGridSettings(n, b, el) {
   /** @param {string} k */
-  const f = (k) => /** @type {HTMLInputElement} */ (el.querySelector(`[data-f=${k}]`));
-  f('key').value = b.key; f('time').value = b.time; f('style').value = b.style; f('tempo').value = String(b.tempo);
-  f('key').onchange = () => { pushSnapshot(n); b.key = f('key').value; touch(n); };
-  f('time').onchange = () => { pushSnapshot(n); b.time = f('time').value; touch(n); };
-  f('style').onchange = () => { pushSnapshot(n); b.style = f('style').value; touch(n); };
-  f('tempo').onchange = () => { const v = Math.max(30, Math.min(300, parseInt(f('tempo').value, 10) || 120)); f('tempo').value = String(v); b.tempo = v; touch(n); };
+  const field = (k) => /** @type {HTMLInputElement} */ (el.querySelector(`[data-f=${k}]`));
+  // Tonalité, mesure, style : même traitement (annulable, sauvegardé).
+  ['key', 'time', 'style'].forEach((k) => {
+    field(k).value = b[k];
+    field(k).onchange = () => {
+      pushSnapshot(n);
+      b[k] = field(k).value;
+      touch(n);
+    };
+  });
+  const tempo = field('tempo');
+  tempo.value = String(b.tempo);
+  tempo.onchange = () => {
+    const v = Math.max(30, Math.min(300, parseInt(tempo.value, 10) || 120));
+    tempo.value = String(v);
+    b.tempo = v;
+    touch(n);
+  };
   el.querySelector('[data-play]').onclick = () => {
     setActive(b.id);
     audio.playGrid(b, playCallbacks(b.id, redrawGrid));
     updatePlayBtn(b.id);
   };
+}
 
-  // --- Panneau iReal ---
+/**
+ * Remplace le contenu d'une grille par le premier morceau iReal trouvé dans `txt`.
+ * Le morceau passe par la validation, comme toute donnée importée.
+ * @param {module:model~Note} n
+ * @param {module:model~GridBlock} b
+ * @param {string} txt Lien ou contenu de fichier.
+ * @param {Element} msg Zone de message du panneau.
+ */
+function importIntoGrid(n, b, txt, msg) {
+  const songs = parseIRealAll(txt);
+  if (!songs.length) {
+    msg.textContent = 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb:// ou irealbook://.';
+    return;
+  }
+  const song = songs[0];
+  pushSnapshot(n);
+  const clean = sanitizeBlock({
+    ...b,
+    type: 'grid',
+    time: song.time,
+    key: song.key,
+    style: song.style,
+    tempo: song.tempo || b.tempo,
+    measures: song.measures,
+  });
+  Object.assign(b, {
+    time: clean.time,
+    key: clean.key,
+    style: clean.style,
+    tempo: clean.tempo,
+    measures: clean.measures,
+  });
+  if (!n.title.trim()) n.title = song.title.slice(0, 200);
+  touch(n);
+  state.sel = null;
+  renderNote(true);
+  // Le bloc a été recréé par renderNote : on écrit dans sa nouvelle zone de message.
+  const newMsg = app.querySelector(`[data-block="${CSS.escape(b.id)}"] .ir-msg`);
+  if (newMsg) {
+    newMsg.textContent =
+      `« ${song.title} » importé (${song.measures.length} mesures)` +
+      (songs.length > 1
+        ? `. ${songs.length - 1} autre(s) morceau(x) ignoré(s) : importe la playlist depuis les Options.`
+        : '.');
+  }
+}
+
+/**
+ * Branche le panneau iReal : ouvrir dans iReal Pro, copier le lien, importer.
+ * Le lien est recalculé au moment du clic : la grille a pu changer depuis
+ * l'ouverture du panneau.
+ * @param {module:model~Note} n
+ * @param {module:model~GridBlock} b
+ * @param {HTMLElement} el
+ */
+function bindIRealPanel(n, b, el) {
+  const toggle = el.querySelector('[data-f=ireal]');
   const box = /** @type {HTMLElement} */ (el.querySelector('.irealbox'));
   const msg = el.querySelector('.ir-msg');
-  const ta = /** @type {HTMLTextAreaElement} */ (el.querySelector('textarea'));
+  const textarea = /** @type {HTMLTextAreaElement} */ (el.querySelector('textarea'));
   const openLink = /** @type {HTMLAnchorElement} */ (el.querySelector('[data-ir=open]'));
   const link = () => toIRealLink(n.title || 'Sans titre', b);
-  f('ireal').onclick = () => {
+
+  toggle.onclick = () => {
     box.hidden = !box.hidden;
-    f('ireal').setAttribute('aria-expanded', String(!box.hidden));
+    toggle.setAttribute('aria-expanded', String(!box.hidden));
     if (!box.hidden) openLink.href = link();
   };
-  // Le lien est recalculé au moment du clic : la grille a pu changer depuis l'ouverture du panneau.
-  openLink.addEventListener('click', () => { openLink.href = link(); });
+  openLink.addEventListener('click', () => {
+    openLink.href = link();
+  });
   el.querySelector('[data-ir=copy]').onclick = () => {
     const l = link();
-    const fallback = () => { ta.value = l; ta.select(); msg.textContent = 'Copie bloquée : le lien est sélectionné ci-dessus, copie-le à la main.'; };
+    // Presse-papiers refusé (vieux navigateur, permission) : on sélectionne le lien pour une copie manuelle.
+    const fallback = () => {
+      textarea.value = l;
+      textarea.select();
+      msg.textContent = 'Copie bloquée : le lien est sélectionné ci-dessus, copie-le à la main.';
+    };
     try {
-      navigator.clipboard.writeText(l).then(
-        () => { msg.textContent = "Lien copié. Ouvre-le sur ce téléphone pour l'importer dans iReal Pro."; },
-        fallback,
-      );
-    } catch (e) { fallback(); }
-  };
-  const doImport = (txt) => {
-    const songs = parseIRealAll(txt);
-    if (!songs.length) { msg.textContent = 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb:// ou irealbook://.'; return; }
-    const s = songs[0];
-    pushSnapshot(n);
-    // Le morceau passe par la validation comme toute donnée importée.
-    const clean = sanitizeBlock({ ...b, type: 'grid', time: s.time, key: s.key, style: s.style, tempo: s.tempo || b.tempo, measures: s.measures });
-    Object.assign(b, { time: clean.time, key: clean.key, style: clean.style, tempo: clean.tempo, measures: clean.measures });
-    n.title = n.title.slice(0, 200);
-    if (!n.title.trim()) n.title = s.title.slice(0, 200);
-    touch(n);
-    state.sel = null;
-    renderNote(true);
-    const nb = app.querySelector(`[data-block="${CSS.escape(b.id)}"] .ir-msg`);
-    if (nb) {
-      nb.textContent = `« ${s.title} » importé (${s.measures.length} mesures)`
-        + (songs.length > 1 ? `. ${songs.length - 1} autre(s) morceau(x) ignoré(s) : importe la playlist depuis l'écran d'accueil.` : '.');
+      navigator.clipboard.writeText(l).then(() => {
+        msg.textContent = "Lien copié. Ouvre-le sur ce téléphone pour l'importer dans iReal Pro.";
+      }, fallback);
+    } catch (e) {
+      fallback();
     }
   };
-  el.querySelector('[data-ir=import]').onclick = () => doImport(ta.value);
-  el.querySelector('input[type=file]').onchange = (e) => readFile(e, doImport);
+  el.querySelector('[data-ir=import]').onclick = () => importIntoGrid(n, b, textarea.value, msg);
+  el.querySelector('input[type=file]').onchange = (e) =>
+    readFile(e, (text) => importIntoGrid(n, b, text, msg));
+}
 
-  // --- Sélection d'une mesure ---
+/**
+ * Branche la sélection d'une mesure (ou l'ajout via la cellule « + »).
+ * @param {module:model~Note} n
+ * @param {module:model~GridBlock} b
+ * @param {HTMLElement} el
+ */
+function bindMeasureSelection(n, b, el) {
   el.querySelector('.gridwrap').addEventListener('click', (e) => {
-    const c = /** @type {HTMLElement} */ (e.target).closest('[data-gm]');
-    if (!c) return;
+    const cell = /** @type {HTMLElement} */ (e.target).closest('[data-gm]');
+    if (!cell) return;
     if (state.activeId !== b.id) setActive(b.id);
-    if (c.dataset.gm === 'add') { pushSnapshot(n); b.measures.push({ ch: [] }); touch(n); state.sel = b.measures.length - 1; }
-    else state.sel = Number(c.dataset.gm);
+    if (cell.dataset.gm === 'add') {
+      pushSnapshot(n);
+      b.measures.push({ ch: [] });
+      touch(n);
+      state.sel = b.measures.length - 1;
+    } else {
+      state.sel = Number(cell.dataset.gm);
+    }
     loadInput(b);
     redrawGrid(b.id);
     gin.focus();
   });
+}
+
+/**
+ * Remplit l'élément d'un bloc grille et branche ses interactions.
+ * @param {module:model~Note} n
+ * @param {module:model~GridBlock} b
+ * @param {HTMLElement} el
+ */
+export function gridBlockEl(n, b, el) {
+  el.innerHTML = gridBlockHtml(b);
+  bindGridSettings(n, b, el);
+  bindIRealPanel(n, b, el);
+  bindMeasureSelection(n, b, el);
 }
 
 /**
@@ -136,7 +242,11 @@ export function redrawGrid(id) {
   if (!b || b.type !== 'grid') return;
   const w = app.querySelector(`[data-grid="${CSS.escape(id)}"]`);
   if (!w) return;
-  w.innerHTML = gridHtml(b, state.activeId === id ? state.sel : null, audio.isPlaying(id) ? state.playIdx : null);
+  w.innerHTML = gridHtml(
+    b,
+    state.activeId === id ? state.sel : null,
+    audio.isPlaying(id) ? state.playIdx : null,
+  );
   if (state.activeId === id) updateGridPalette();
 }
 
@@ -172,21 +282,25 @@ export function showGridPalette(on) {
 /**
  * Met à jour le message et l'état des boutons de la palette de grille.
  */
-export function updateGridPalette() {
+function updateGridPalette() {
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
   if (!b || b.type !== 'grid') return;
   const m = state.sel != null ? b.measures[state.sel] : null;
   const info = document.getElementById('gInfo');
   info.textContent = m
-    ? `Mesure ${state.sel + 1}` + (m.sec ? ` · section ${m.sec}` : '')
-      + (m.ending ? ' · ' + (m.ending === 1 ? '1re' : m.ending + 'e') + ' fin' : '')
-      + (gin.classList.contains('err') ? ' · accord non reconnu' : '')
+    ? `Mesure ${state.sel + 1}` +
+      (m.sec ? ` · section ${m.sec}` : '') +
+      (m.ending ? ' · ' + (m.ending === 1 ? '1re' : m.ending + 'e') + ' fin' : '') +
+      (gin.classList.contains('err') ? ' · accord non reconnu' : '')
     : 'Touche une mesure';
   gpal.querySelectorAll('[data-g]').forEach((x) => {
     const k = x.dataset.g;
-    const on = !!m && ({ sec: !!m.sec, end: !!m.ending, rs: !!m.rs, re: !!m.re, dbl: !!m.dbl, fin: !!m.fin }[k] || false);
+    const on =
+      !!m &&
+      ({ sec: !!m.sec, end: !!m.ending, rs: !!m.rs, re: !!m.re, dbl: !!m.dbl, fin: !!m.fin }[k] || false);
     if (k === 'sec') x.textContent = m && m.sec ? 'Section ' + m.sec : 'Section';
-    if (k === 'end') x.textContent = m && m.ending ? m.ending + (m.ending === 1 ? 're' : 'e') + ' fin' : 'Volta';
+    if (k === 'end')
+      x.textContent = m && m.ending ? m.ending + (m.ending === 1 ? 're' : 'e') + ' fin' : 'Volta';
     x.setAttribute('aria-pressed', String(on));
   });
   syncPaletteSpace();
@@ -202,7 +316,9 @@ function applyInput(commit) {
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
   if (!n || !b || state.sel == null) return;
   const parts = gin.value.split('|');
-  const bad = gin.value.split(/[\s,|]+/).filter(Boolean)
+  const bad = gin.value
+    .split(/[\s,|]+/)
+    .filter(Boolean)
     .map((t) => (/^(n|nc|n\.c\.?|\/)$/i.test(t) ? '' : t))
     .some((t) => !chordOk(t));
   gin.classList.toggle('err', bad);
@@ -226,8 +342,14 @@ function nextMeasure() {
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
   if (!n || !b || state.sel == null) return;
   applyInput(true);
-  if (b.measures[state.sel].fin) { gin.blur(); return; }
-  if (state.sel >= b.measures.length - 1) { b.measures.push({ ch: [] }); touch(n); }
+  if (b.measures[state.sel].fin) {
+    gin.blur();
+    return;
+  }
+  if (state.sel >= b.measures.length - 1) {
+    b.measures.push({ ch: [] });
+    touch(n);
+  }
   state.sel++;
   loadInput(b);
   redrawGrid(b.id);
@@ -236,11 +358,27 @@ function nextMeasure() {
 }
 
 // ---------- Câblage (une seule fois) ----------
-gin.addEventListener('focus', () => { const n = curNote(); if (n) pushSnapshot(n); });
-gin.addEventListener('input', () => { if (!gin.value.includes('|')) applyInput(false); });
-gin.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); nextMeasure(); } });
-document.getElementById('gOk').onclick = () => { nextMeasure(); gin.focus(); };
-document.getElementById('gDone').onclick = () => { gin.blur(); setActive(null); };
+gin.addEventListener('focus', () => {
+  const n = curNote();
+  if (n) pushSnapshot(n);
+});
+gin.addEventListener('input', () => {
+  if (!gin.value.includes('|')) applyInput(false);
+});
+gin.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    nextMeasure();
+  }
+});
+document.getElementById('gOk').onclick = () => {
+  nextMeasure();
+  gin.focus();
+};
+document.getElementById('gDone').onclick = () => {
+  gin.blur();
+  setActive(null);
+};
 
 gpal.addEventListener('click', (e) => {
   const x = /** @type {HTMLElement} */ (e.target).closest('[data-g]');
@@ -251,12 +389,18 @@ gpal.addEventListener('click', (e) => {
   if (!n || !b) return;
   if (k === 'prev' || k === 'next') {
     if (state.sel != null) applyInput(false);
-    state.sel = state.sel == null ? 0 : Math.max(0, Math.min(b.measures.length - 1, state.sel + (k === 'prev' ? -1 : 1)));
+    state.sel =
+      state.sel == null
+        ? 0
+        : Math.max(0, Math.min(b.measures.length - 1, state.sel + (k === 'prev' ? -1 : 1)));
     loadInput(b);
     redrawGrid(b.id);
     return;
   }
-  if (k === 'undo') { undo(); return; }
+  if (k === 'undo') {
+    undo();
+    return;
+  }
   if (state.sel == null) return;
   const m = b.measures[state.sel];
   pushSnapshot(n);
@@ -279,17 +423,33 @@ gpal.addEventListener('click', (e) => {
       loadInput(b);
       break;
     case 'del':
-      if (b.measures.length > 1) { b.measures.splice(state.sel, 1); state.sel = Math.min(state.sel, b.measures.length - 1); loadInput(b); }
+      if (b.measures.length > 1) {
+        b.measures.splice(state.sel, 1);
+        state.sel = Math.min(state.sel, b.measures.length - 1);
+        loadInput(b);
+      }
       break;
     default: {
       // Barres : rs, re, dbl, fin (une barre de droite exclut les autres).
       const flag = { rs: 'rs', re: 're', dbl: 'dbl', fin: 'fin' }[k];
       if (!flag) break;
-      if (m[flag]) { delete m[flag]; break; }
+      if (m[flag]) {
+        delete m[flag];
+        break;
+      }
       m[flag] = true;
-      if (flag === 'fin') { delete m.dbl; delete m.re; }
-      if (flag === 're') { delete m.fin; delete m.dbl; }
-      if (flag === 'dbl') { delete m.fin; delete m.re; }
+      if (flag === 'fin') {
+        delete m.dbl;
+        delete m.re;
+      }
+      if (flag === 're') {
+        delete m.fin;
+        delete m.dbl;
+      }
+      if (flag === 'dbl') {
+        delete m.fin;
+        delete m.re;
+      }
     }
   }
   touch(n);

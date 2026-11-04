@@ -34,7 +34,7 @@ const LETTER_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
  * @param {string} s Lettre + altération éventuelle.
  * @returns {number}
  */
-export function pitchClass(s) {
+function pitchClass(s) {
   const acc = s.slice(1);
   return LETTER_PC[s[0]] + (/[b♭]/.test(acc) ? -1 : /[#♯]/.test(acc) ? 1 : 0);
 }
@@ -160,7 +160,8 @@ export function chordTones(c) {
   const hasExt = /(7|9|11|13)/.test(body);
   if (isMaj || minMaj) sev = 11;
   else if (isHalf) sev = 10;
-  else if (isDim) sev = /7/.test(body) ? 9 : null; // septième diminuée = 9 demi-tons
+  else if (isDim)
+    sev = /7/.test(body) ? 9 : null; // septième diminuée = 9 demi-tons
   else if (hasExt) sev = 10;
   if (/(^|[^1b#])6/.test(body) && !/7/.test(body)) sev = 9;
   if (/sus/.test(body)) third = 5;
@@ -171,18 +172,23 @@ export function chordTones(c) {
   else if (/9/.test(body)) ext.push(14);
   if (/#11/.test(body)) ext.push(18);
   if (/13/.test(body)) ext.push(/b13/.test(body) ? 20 : 21);
-  if (/alt/.test(body)) { ext.push(13, 15); fifth = 8; }
+  if (/alt/.test(body)) {
+    ext.push(13, 15);
+    fifth = 8;
+  }
 
   const iv = [third, sev, ...ext];
   if (ext.length < 2 || sev == null) iv.push(fifth);
   const bass = m[4] ? pitchClass(m[4]) : root;
   return {
     bass: 40 + mod(bass - 4, 12),
-    notes: iv.filter((x) => x != null).map((x) => {
-      let n = 48 + root + x;
-      while (n < 52) n += 12;
-      while (n > 72) n -= 12;
-      return n;
-    }),
+    notes: iv
+      .filter((x) => x != null)
+      .map((x) => {
+        let n = 48 + root + x;
+        while (n < 52) n += 12;
+        while (n > 72) n -= 12;
+        return n;
+      }),
   };
 }

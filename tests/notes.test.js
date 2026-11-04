@@ -20,7 +20,13 @@ test("migration : une note d'avant la 1.7 reçoit sa date de modification comme 
 });
 
 test('note reçue : garde sa date de création, devient « modifiée maintenant »', () => {
-  const src = sanitizeNote({ id: 'n1', title: 'X', created: 1600000000000, updated: 1650000000000, blocks: [] });
+  const src = sanitizeNote({
+    id: 'n1',
+    title: 'X',
+    created: 1600000000000,
+    updated: 1650000000000,
+    blocks: [],
+  });
   const notes = {};
   const r = importFile(notes, noteFileJson(src));
   assert.equal(notes[r.firstId].created, 1600000000000);
@@ -35,6 +41,14 @@ test('relativeDate : aujourd’hui, hier, puis date courte', () => {
 });
 
 test('noteSummary : décompte par type de bloc', () => {
-  const n = { blocks: [{ type: 'staff', clef: 'treble' }, { type: 'staff', clef: 'rhythm' }, { type: 'grid' }, { type: 'grid' }, { type: 'text' }] };
+  const n = {
+    blocks: [
+      { type: 'staff', clef: 'treble' },
+      { type: 'staff', clef: 'rhythm' },
+      { type: 'grid' },
+      { type: 'grid' },
+      { type: 'text' },
+    ],
+  };
   assert.equal(noteSummary(n), '1 portée · 1 rythme · 2 grilles');
 });
