@@ -3,6 +3,11 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [1.6.1] - 2026-11-04
+
+### Corrigé
+- Mise à jour de l'app : le service worker pouvait reprendre d'anciens fichiers dans le cache HTTP du navigateur (GitHub Pages les garde 10 minutes), et l'app restait sur l'ancienne version. Le préchargement passe maintenant toujours par le réseau.
+
 ## [1.6.0] - 2026-11-04
 
 ### Ajouté

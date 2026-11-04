@@ -16,9 +16,18 @@
  *
  * Depuis la 1.5.0, les polices sont hébergées dans le dépôt : l'app ne
  * contacte plus aucun autre serveur.
+ *
+ * Piège du cache HTTP (corrigé en 1.6.1) : GitHub Pages envoie
+ * « Cache-Control: max-age=600 ». Un fetch() ordinaire peut donc renvoyer,
+ * pendant 10 minutes, l'ANCIENNE version d'un fichier gardée par le cache
+ * HTTP du navigateur, qui est distinct du cache du service worker. Un nouveau
+ * worker pouvait ainsi précharger d'anciens fichiers sous le nouveau nom de
+ * cache, et l'app restait bloquée sur l'ancienne version. D'où :
+ *   - préchargement avec cache: 'reload' (toujours depuis le réseau) ;
+ *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-1.6.0';
+const CACHE = 'inkline-1.6.1';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -35,7 +44,9 @@ const CORE = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE)
+    .then((c) => c.addAll(CORE.map((u) => new Request(u, { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -53,7 +64,7 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return; // rien d'autre à mettre en cache
   e.respondWith(caches.open(CACHE).then(async (c) => {
     const hit = await c.match(req, { ignoreSearch: true });
-    const net = fetch(req)
+    const net = fetch(req, { cache: 'no-cache' })
       .then((r) => { if (r && r.ok) c.put(req, r.clone()); return r; })
       .catch(() => null);
     if (hit) { e.waitUntil(net); return hit; }
