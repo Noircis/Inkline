@@ -1,0 +1,33 @@
+{
+  "source": {
+    "include": ["js"],
+    "includePattern": "\\.js$"
+  },
+  "sourceType": "module",
+  "plugins": ["plugins/markdown"],
+  "opts": {
+    "destination": "docs",
+    "recurse": true,
+    "readme": "README.md",
+    "template": "node_modules/docdash",
+    "encoding": "utf8"
+  },
+  "templates": {
+    "default": { "includeDate": false }
+  },
+  "docdash": {
+    "static": true,
+    "sort": true,
+    "sectionOrder": ["Modules", "Global"],
+    "search": true,
+    "collapse": false,
+    "typedefs": true,
+    "meta": {
+      "title": "Inkline · documentation",
+      "description": "Documentation du code d'Inkline"
+    },
+    "menu": {
+      "Application": { "href": "../", "target": "_blank", "class": "menu-item" }
+    }
+  }
+}

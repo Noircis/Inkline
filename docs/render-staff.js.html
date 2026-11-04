@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>render-staff.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.mergeBackup">mergeBackup</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#~isNote">isNote</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">render-staff.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module render-staff
+ * @description
+ * Rendu d'une portée en **SVG**, sous forme de chaîne de caractères.
+ *
+ * Le rendu part de la mise en page ({@link module:layout.layout|layout}) et dessine
+ * par couches, dans cet ordre (l'ordre SVG est l'ordre de peinture) :
+ *
+ * 1. fond de la zone d'ajout (si le bloc est en édition) ;
+ * 2. lignes de portée, clé, chiffrage, numéros de mesure ;
+ * 3. barres de mesure et débuts de reprise ;
+ * 4. éléments : surlignage, accord chiffré, tête, altération, point, hampe, crochets ;
+ * 5. ligatures ;
+ * 6. liaisons de prolongation ;
+ * 7. crochets de triolet ;
+ * 8. curseur d'ajout.
+ *
+ * ## Conventions graphiques
+ *
+ * - Les couleurs ne sont jamais écrites en dur : chaque forme reçoit une
+ *   classe CSS (`f` = remplie, `s` = trait, `h` = tête creuse, `l` = ligne de
+ *   portée…) dont la couleur vient des variables du thème. Le SVG suit donc
+ *   automatiquement le mode clair/sombre.
+ * - Les têtes sont des ellipses tournées, les hampes des lignes, les
+ *   ligatures des polygones (pour gérer la pente), les silences et les
+ *   altérations des chemins de Bézier dessinés à la main.
+ * - Les clés utilisent les glyphes Unicode du bloc « Musical Symbols »
+ *   (U+1D11E clé de sol, U+1D122 clé de fa) avec la police Noto Music.
+ *
+ * ## Sens des hampes
+ *
+ * Note isolée : hampe vers le haut si la tête est sous la 3e ligne (`s &lt; 4`),
+ * sinon vers le bas. Groupe ligaturé : un seul sens pour tout le groupe,
+ * d'après la position moyenne. Ligne rythmique : toujours vers le haut.
+ */
+
+import { esc, mod } from './util.js';
+import { layout, geom, yOfStep, HALF_SPACE } from './layout.js';
+import { beamGroups, tupletGroups } from './rhythm.js';
+
+/** Remplace `b` et `#` par les vrais signes ♭ et ♯ dans un accord chiffré. */
+const fmtChord = (c) => c.replace(/([A-G])b/g, '$1♭').replace(/#/g, '♯');
+
+/** Longueur standard d'une hampe (px), un peu plus d'une octave. */
+const STEM = 34;
+
+/** Décalage horizontal (px) de la hampe par rapport au centre de la tête. */
+const STEM_DX = 5.6;
+
+/**
+ * Dessine un silence.
+ * @param {module:model~DurationCode} d
+ * @param {number} x Centre.
+ * @param {module:layout~SystemGeom} g
+ * @param {boolean} rh Ligne rythmique.
+ * @returns {string} Fragment SVG.
+ */
+export function restSvg(d, x, g, rh) {
+  const m = g.mid;
+  // Pause : rectangle sous la 4e ligne. Demi-pause : posée sur la 3e ligne.
+  if (d === 'w') { const y = rh ? m : g.staffTop + 10; return `&lt;rect class="f" x="${x - 6}" y="${y}" width="12" height="5"/>`; }
+  if (d === 'h') return `&lt;rect class="f" x="${x - 6}" y="${m - 5}" width="12" height="5"/>`;
+  // Soupir : zigzag en trait épais terminé par un crochet.
+  if (d === 'q') return `&lt;path class="s" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" d="M${x - 2} ${m - 15} L${x + 4} ${m - 8} L${x - 1} ${m - 2} L${x + 4} ${m + 4} C${x - 2} ${m + 1} ${x - 4} ${m + 8} ${x + 1} ${m + 12}"/>`;
+  // Demi-soupir (et quart de soupir) : un (deux) point(s) avec crochet, sur une tige oblique.
+  let s = `&lt;circle class="f" cx="${x - 3}" cy="${m - 5}" r="2.6"/>&lt;path class="s" stroke-width="1.6" stroke-linecap="round" d="M${x - 3} ${m - 3} Q${x + 1} ${m - 2} ${x + 4} ${m - 7} L${x - 1} ${m + (d === '16' ? 14 : 10)}"/>`;
+  if (d === '16') s += `&lt;circle class="f" cx="${x - 5}" cy="${m + 2}" r="2.6"/>&lt;path class="s" stroke-width="1.6" stroke-linecap="round" d="M${x - 5} ${m + 4} Q${x - 1} ${m + 5} ${x + 2} ${m + 1}"/>`;
+  return s;
+}
+
+/**
+ * Dessine une altération à gauche d'une tête.
+ * @param {number} a Bémol, bécarre, dièse.
+ * @param {number} x Centre de l'altération.
+ * @param {number} y Ordonnée de la tête.
+ * @returns {string}
+ */
+export function accSvg(a, x, y) {
+  if (a === 1) return `&lt;path class="s" stroke-width="1.2" d="M${x - 2.5} ${y - 9}V${y + 10}M${x + 2.5} ${y - 10}V${y + 9}"/>&lt;path class="s" stroke-width="2.6" d="M${x - 5} ${y - 2}L${x + 5} ${y - 4.5}M${x - 5} ${y + 4.5}L${x + 5} ${y + 2}"/>`;
+  if (a === 0) return `&lt;path class="s" stroke-width="1.2" d="M${x - 3} ${y - 10}V${y + 4}M${x + 3} ${y - 4}V${y + 10}"/>&lt;path class="s" stroke-width="2.4" d="M${x - 3} ${y - 1.5}L${x + 3} ${y - 3.5}M${x - 3} ${y + 3.5}L${x + 3} ${y + 1.5}"/>`;
+  return `&lt;path class="s" stroke-width="1.3" d="M${x - 3} ${y - 13}V${y + 5}"/>&lt;path class="s" stroke-width="1.9" d="M${x - 3} ${y + 5}C${x + 6} ${y - 1} ${x + 5} ${y - 6} ${x - 3} ${y - 1}"/>`;
+}
+
+/**
+ * Dessine une barre de mesure.
+ * @param {string} type `'single'`, `'double'`, `'final'`, `'rep'` (fin de reprise).
+ * @param {number} x Abscisse de la barre (bord droit pour les barres composées).
+ * @param {module:layout~SystemGeom} g
+ * @param {boolean} rh
+ * @param {boolean} start `true` pour un début de reprise `‖:` (x = bord gauche).
+ * @returns {string}
+ */
+export function barSvg(type, x, g, rh, start) {
+  const y1 = rh ? g.line - 10 : g.staffTop;
+  const y2 = rh ? g.line + 10 : g.staffBottom;
+  const h = y2 - y1;
+  const thin = (xx) => `&lt;line class="bar" x1="${xx}" x2="${xx}" y1="${y1}" y2="${y2}"/>`;
+  const thick = (xx) => `&lt;rect class="f" x="${xx}" y="${y1}" width="4" height="${h}"/>`;
+  // Points de reprise : dans les 2e et 3e interlignes.
+  const dots = (xx) => (rh ? [g.line - 5, g.line + 5] : [g.staffTop + 15, g.staffTop + 25]).map((y) => `&lt;circle class="f" cx="${xx}" cy="${y}" r="2"/>`).join('');
+  if (start) return thick(x) + thin(x + 7) + dots(x + 12);
+  if (type === 'double') return thin(x - 4) + thin(x);
+  if (type === 'final') return thin(x - 6) + thick(x - 3);
+  if (type === 'rep') return dots(x - 12) + thin(x - 7) + thick(x - 3);
+  return thin(x);
+}
+
+/**
+ * Dessine une liaison de prolongation : un croissant rempli (deux courbes de
+ * Bézier quadratiques de flèches différentes), plus élégant qu'un simple trait.
+ *
+ * @param {number} x1 Début.
+ * @param {number} x2 Fin.
+ * @param {number} y Ordonnée des têtes.
+ * @param {number} dir `1` = liaison sous les têtes (courbe vers le bas), `-1` = au-dessus.
+ * @returns {string}
+ */
+export function tieSvg(x1, x2, y, dir) {
+  if (x2 - x1 &lt; 4) return '';
+  const xm = (x1 + x2) / 2;
+  const h = Math.max(4, Math.min(9, (x2 - x1) * 0.15)); // flèche proportionnelle à la longueur
+  const y0 = y + dir * 6; // départ légèrement décollé de la tête
+  return `&lt;path class="f" d="M${x1} ${y0} Q${xm} ${y0 + dir * h * 2} ${x2} ${y0} Q${xm} ${y0 + dir * (h * 2 - 2.6)} ${x1} ${y0} Z"/>`;
+}
+
+/**
+ * Options de rendu.
+ * @typedef {Object} StaffSvgOptions
+ * @property {number|null} [sel] Index de l'élément sélectionné (surligné).
+ * @property {number|null} [play] Index de l'élément en cours de lecture.
+ * @property {boolean} [cursor] Afficher la zone et le curseur d'ajout (bloc en édition).
+ * @property {number} [maxSystems] Limiter le nombre de lignes (vignettes de la liste).
+ */
+
+/**
+ * Rend une portée complète en SVG.
+ *
+ * @param {module:model~StaffBlock} b
+ * @param {number} W Largeur en px.
+ * @param {StaffSvgOptions} [opt]
+ * @returns {{svg: string, L: module:layout~Layout}} Le SVG et la mise
+ *   en page utilisée (réutilisée par l'appelant pour le hit-testing).
+ */
+export function staffSvg(b, W, opt = {}) {
+  const L = layout(b, W, !!opt.cursor);
+  const sysCount = opt.maxSystems ? Math.min(opt.maxSystems, L.systems.length) : L.systems.length;
+  const height = sysCount * L.SH;
+  const items = b.items;
+  const visible = (i) => L.pos[i] &amp;&amp; L.pos[i].sys &lt; sysCount;
+
+  let bg = '';
+  let staff = '';
+  let marks = '';
+  let body = '';
+  let beams = '';
+  let ties = '';
+  let tuplets = '';
+  let cursor = '';
+
+  // ---------- 2. Lignes de portée, clé, chiffrage ----------
+  for (let si = 0; si &lt; sysCount; si++) {
+    const g = geom(L, si);
+    const s = L.systems[si];
+    // Après une barre de fin, les lignes s'arrêtent à la barre (convention de gravure).
+    const xe = L.ended &amp;&amp; si === L.systems.length - 1 ? s.end : W;
+    if (L.rh) {
+      staff += `&lt;line class="l" x1="0" x2="${xe}" y1="${g.line}" y2="${g.line}"/>`;
+      // « Clé » de percussion : deux barres verticales.
+      staff += `&lt;rect class="f" x="9" y="${g.line - 10}" width="3.2" height="20"/>&lt;rect class="f" x="15" y="${g.line - 10}" width="3.2" height="20"/>`;
+    } else {
+      for (let k = 0; k &lt; 5; k++) { const y = g.staffTop + k * 10; staff += `&lt;line class="l" x1="0" x2="${xe}" y1="${y}" y2="${y}"/>`; }
+      staff += `&lt;line class="bar" x1="0.6" x2="0.6" y1="${g.staffTop}" y2="${g.staffBottom}"/>`;
+      staff += b.clef === 'bass'
+        ? `&lt;text class="clef" x="4" y="${g.staffTop + 30}" font-size="38">\u{1D122}&lt;/text>`
+        : `&lt;text class="clef" x="3" y="${g.staffTop + 30}" font-size="38">\u{1D11E}&lt;/text>`;
+    }
+    if (si === 0) {
+      const [n, d] = b.time.split('/');
+      staff += L.rh
+        ? `&lt;text class="t" x="34" y="${g.line - 3}" font-size="15" text-anchor="middle">${n}&lt;/text>&lt;text class="t" x="34" y="${g.line + 14}" font-size="15" text-anchor="middle">${d}&lt;/text>`
+        : `&lt;text class="t" x="46" y="${g.staffTop + 17}" font-size="21" text-anchor="middle">${n}&lt;/text>&lt;text class="t" x="46" y="${g.staffTop + 37}" font-size="21" text-anchor="middle">${d}&lt;/text>`;
+    } else if (s.ms.length) {
+      staff += `&lt;text class="mnum" x="2" y="${L.rh ? g.line - 16 : g.staffTop - 8}">${s.firstMeasure}&lt;/text>`;
+    }
+  }
+
+  // ---------- 3. Barres ----------
+  L.bars.forEach((br) => { if (br.sys &lt; sysCount) marks += barSvg(br.type, br.x, geom(L, br.sys), L.rh, false); });
+  L.starts.forEach((st) => { if (st.sys &lt; sysCount) marks += barSvg('rs', st.x, geom(L, st.sys), L.rh, true); });
+
+  // ---------- Pré-calcul des ligatures ----------
+  // Les groupes rythmiques sont découpés en plus par ligne : une ligature ne
+  // traverse pas un retour à la ligne.
+  // hampe imposée par la ligature
+  /** @type {Object.&lt;number, {sx:number, y1:number, y2:number}>} */
+  const stemInfo = {};
+  // sens de hampe de chaque note (true = vers le haut)
+  /** @type {Object.&lt;number, boolean>} */
+  const stemUp = {};
+  // groupe de ligature de chaque note
+  /** @type {Object.&lt;number, number>} */
+  const beamOf = {};
+  const groups = [];
+  beamGroups(items, b.time).forEach((gr) => {
+    let cur = [];
+    gr.forEach((i) => {
+      if (cur.length &amp;&amp; L.pos[i].sys !== L.pos[cur[0]].sys) { if (cur.length >= 2) groups.push(cur); cur = []; }
+      cur.push(i);
+    });
+    if (cur.length >= 2) groups.push(cur);
+  });
+
+  groups.forEach((gr, gi) => {
+    const si = L.pos[gr[0]].sys;
+    if (si >= sysCount) return;
+    const g = geom(L, si);
+    const avg = gr.reduce((a, i) => a + (L.rh ? 0 : items[i].s), 0) / gr.length;
+    const up = L.rh || avg &lt; 4;
+    const pts = gr.map((i) => ({ i, y: yOfStep(L, g, L.rh ? 4 : items[i].s), sx: L.pos[i].x + (up ? STEM_DX : -STEM_DX) }));
+    const f = pts[0];
+    const l = pts[pts.length - 1];
+    // Pente naturelle : de l'extrémité de la 1re hampe à celle de la dernière,
+    // bornée à ±0.22 pour rester lisible.
+    const e0 = up ? f.y - (STEM - 2) : f.y + (STEM - 2);
+    const e1 = up ? l.y - (STEM - 2) : l.y + (STEM - 2);
+    let slope = l.sx > f.sx ? (e1 - e0) / (l.sx - f.sx) : 0;
+    slope = Math.max(-0.22, Math.min(0.22, slope));
+    const base = (x) => e0 + slope * (x - f.sx);
+    // Décalage pour qu'aucune hampe ne soit plus courte que 27 px.
+    let shift = 0;
+    pts.forEach((p) => {
+      const v = up ? base(p.sx) - (p.y - 27) : p.y + 27 - base(p.sx);
+      if (v > shift) shift = v;
+    });
+    const bAt = (x) => base(x) + (up ? -shift : shift);
+    const T = 4.6; // épaisseur d'une ligature
+    const dir = up ? 1 : -1;
+    const poly = (x1, x2, o) => {
+      const a = bAt(x1) + o * dir;
+      const c = bAt(x2) + o * dir;
+      return `&lt;polygon class="f" points="${x1},${a} ${x2},${c} ${x2},${c + T * dir} ${x1},${a + T * dir}"/>`;
+    };
+    beams += poly(f.sx - (up ? 0.8 : 0), l.sx + (up ? 0 : 0.8), 0);
+    // Ligature secondaire pour les doubles croches : continue entre doubles
+    // croches voisines, sinon demi-ligature (crochet court) vers l'intérieur du groupe.
+    for (let k = 0; k &lt; pts.length; k++) {
+      if (items[pts[k].i].d !== '16') continue;
+      let j = k;
+      while (j + 1 &lt; pts.length &amp;&amp; items[pts[j + 1].i].d === '16') j++;
+      if (j > k) beams += poly(pts[k].sx, pts[j].sx, 7.4);
+      else { const x = pts[k].sx; beams += k === pts.length - 1 ? poly(x - 8, x, 7.4) : poly(x, x + 8, 7.4); }
+      k = j;
+    }
+    pts.forEach((p) => {
+      stemInfo[p.i] = { sx: p.sx, y1: p.y + (up ? -1 : 1), y2: bAt(p.sx) };
+      stemUp[p.i] = up;
+      beamOf[p.i] = gi;
+    });
+  });
+
+  // ---------- 4. Éléments ----------
+  // point le plus haut de chaque élément (pour placer les triolets)
+  /** @type {Object.&lt;number, number>} */
+  const tops = {};
+  items.forEach((it, i) => {
+    if (!visible(i)) return;
+    const p = L.pos[i];
+    const g = geom(L, p.sys);
+    const cls = 'it' + (opt.sel === i ? ' sel' : '') + (opt.play === i ? ' play' : '');
+    let s = `&lt;g class="${cls}">`;
+    if (opt.sel === i) {
+      const top = L.rh ? g.line - 26 : g.staffTop - 14;
+      s += `&lt;rect class="selbg" x="${p.x0}" y="${top}" width="${p.x1 - p.x0}" height="${L.rh ? 52 : 68}" rx="4"/>`;
+    }
+    if (it.c) s += `&lt;text class="chord" x="${p.x - 6}" y="${g.chordY}">${esc(fmtChord(it.c))}&lt;/text>`;
+
+    if (it.r) {
+      s += restSvg(it.d, p.x, g, L.rh);
+      if (it.dot) s += `&lt;circle class="f" cx="${p.x + 10}" cy="${g.mid - 5}" r="1.9"/>`;
+      tops[i] = L.rh ? g.line - 16 : g.staffTop;
+    } else {
+      const st = L.rh ? 4 : it.s;
+      const y = yOfStep(L, g, st);
+      // Lignes supplémentaires (sous la portée pour s ≤ -2, au-dessus pour s ≥ 10).
+      if (!L.rh) {
+        for (let k = -2; k >= st; k -= 2) { const ly = yOfStep(L, g, k); s += `&lt;line class="s" stroke-width="1.2" x1="${p.x - 10}" x2="${p.x + 10}" y1="${ly}" y2="${ly}"/>`; }
+        for (let k = 10; k &lt;= st; k += 2) { const ly = yOfStep(L, g, k); s += `&lt;line class="s" stroke-width="1.2" x1="${p.x - 10}" x2="${p.x + 10}" y1="${ly}" y2="${ly}"/>`; }
+      }
+      // Tête : creuse pour ronde et blanche, pleine sinon.
+      const hollow = it.d === 'w' || it.d === 'h';
+      const rx = it.d === 'w' ? 7.6 : 6.2;
+      const ry = it.d === 'w' ? 4.8 : 4.5;
+      s += `&lt;ellipse class="${hollow ? 'h' : 'f'}" cx="${p.x}" cy="${y}" rx="${rx}" ry="${ry}" transform="rotate(${it.d === 'w' ? -8 : -22} ${p.x} ${y})"${hollow ? ' stroke-width="' + (it.d === 'w' ? 2.4 : 1.8) + '"' : ''}/>`;
+      if (it.a != null &amp;&amp; !L.rh) s += accSvg(it.a, p.x - 15, y);
+      // Point : dans l'interligne au-dessus si la tête est sur une ligne.
+      if (it.dot) { const dy = L.rh || mod(st, 2) === 0 ? y - HALF_SPACE : y; s += `&lt;circle class="f" cx="${p.x + (it.d === 'w' ? 13 : 11)}" cy="${dy}" r="1.9"/>`; }
+      let top = y - 6;
+      if (it.d !== 'w') {
+        const si2 = stemInfo[i];
+        if (si2) {
+          s += `&lt;line class="s" stroke-width="1.3" x1="${si2.sx}" x2="${si2.sx}" y1="${si2.y1}" y2="${si2.y2}"/>`;
+          if (stemUp[i]) top = si2.y2;
+        } else {
+          const up = L.rh || st &lt; 4;
+          stemUp[i] = up;
+          const sx = p.x + (up ? STEM_DX : -STEM_DX);
+          let ey = up ? y - STEM : y + STEM;
+          // Une hampe atteint au moins la ligne du milieu (règle de gravure).
+          if (!L.rh) { if (up &amp;&amp; ey > g.mid) ey = g.mid; if (!up &amp;&amp; ey &lt; g.mid) ey = g.mid; }
+          s += `&lt;line class="s" stroke-width="1.3" x1="${sx}" x2="${sx}" y1="${y + (up ? -1 : 1)}" y2="${ey}"/>`;
+          if (up) top = ey;
+          // Crochets (croche : 1, double croche : 2).
+          const nf = it.d === '8' ? 1 : it.d === '16' ? 2 : 0;
+          for (let k = 0; k &lt; nf; k++) {
+            const o = k * 7;
+            s += up
+              ? `&lt;path class="s" stroke-width="2" stroke-linecap="round" d="M${sx} ${ey + o} C${sx} ${ey + o + 7} ${sx + 9} ${ey + o + 11} ${sx + 7} ${ey + o + 22}"/>`
+              : `&lt;path class="s" stroke-width="2" stroke-linecap="round" d="M${sx} ${ey - o} C${sx} ${ey - o - 7} ${sx + 9} ${ey - o - 11} ${sx + 7} ${ey - o - 22}"/>`;
+          }
+        }
+      } else {
+        stemUp[i] = st &lt; 4;
+      }
+      tops[i] = top;
+    }
+    s += '&lt;/g>';
+    body += s;
+  });
+
+  // ---------- 6. Liaisons de prolongation ----------
+  // Une liaison part de la tête liée et va jusqu'à la tête suivante. Si la
+  // note suivante est sur la ligne d'après, on dessine deux demi-liaisons :
+  // jusqu'au bout de la ligne, puis depuis le début de la ligne suivante.
+  // Côté : à l'opposé de la hampe (sous la tête si la hampe monte).
+  items.forEach((it, i) => {
+    if (!it.tie || it.r || !visible(i)) return;
+    const p = L.pos[i];
+    const g = geom(L, p.sys);
+    const y = yOfStep(L, g, L.rh ? 4 : it.s);
+    const dir = L.rh || stemUp[i] ? 1 : -1;
+    const next = items[i + 1];
+    const q = L.pos[i + 1];
+    if (!next || next.r || !q) {
+      ties += tieSvg(p.x + 7, p.x + 22, y, dir); // liaison « en attente » de la note suivante
+      return;
+    }
+    if (q.sys === p.sys) {
+      ties += tieSvg(p.x + 7, q.x - 7, y, dir);
+    } else {
+      ties += tieSvg(p.x + 7, Math.max(p.x + 20, L.systems[p.sys].end - 2), y, dir);
+      if (q.sys &lt; sysCount) {
+        const g2 = geom(L, q.sys);
+        ties += tieSvg(L.systems[q.sys].start - 10, q.x - 7, yOfStep(L, g2, L.rh ? 4 : next.s), dir);
+      }
+    }
+  });
+
+  // ---------- 7. Triolets ----------
+  // Un « 3 » au-dessus du groupe. Si le groupe est exactement une ligature
+  // hampes en haut, le chiffre suffit (usage courant) ; sinon on ajoute un
+  // crochet horizontal avec deux petits retours vers le bas.
+  tupletGroups(items, b.time).forEach((tg) => {
+    const idx = tg.idx.filter(visible);
+    if (!idx.length) return;
+    const si = L.pos[idx[0]].sys;
+    const same = idx.filter((i) => L.pos[i].sys === si);
+    const g = geom(L, si);
+    const x0 = L.pos[same[0]].x - 8;
+    const x1 = L.pos[same[same.length - 1]].x + 8;
+    const minTop = Math.min(...same.map((i) => tops[i] ?? g.staffTop), L.rh ? g.line - 30 : g.staffTop);
+    const y = Math.max(g.top + 26, minTop - 8);
+    const xm = (x0 + x1) / 2;
+    const oneBeam = same.length >= 2 &amp;&amp; same.every((i) => beamOf[i] !== undefined &amp;&amp; beamOf[i] === beamOf[same[0]] &amp;&amp; stemUp[i]);
+    if (!oneBeam) {
+      tuplets += `&lt;path class="s" stroke-width="1.1" d="M${x0} ${y + 5} V${y} H${xm - 7} M${xm + 7} ${y} H${x1} V${y + 5}"/>`;
+    }
+    tuplets += `&lt;text class="tup" x="${xm}" y="${y + 4}" text-anchor="middle">3&lt;/text>`;
+  });
+
+  // ---------- 1 et 8. Zone et curseur d'ajout ----------
+  if (opt.cursor &amp;&amp; L.appendX != null &amp;&amp; L.appendSys &lt; sysCount) {
+    const g = geom(L, L.appendSys);
+    const y1 = L.rh ? g.line - 18 : g.staffTop - 10;
+    const y2 = L.rh ? g.line + 18 : g.staffBottom + 10;
+    bg = `&lt;rect class="cursorbg" x="${L.appendX - 6}" y="${y1}" width="${Math.max(30, W - L.appendX + 6)}" height="${y2 - y1}" rx="4"/>`;
+    cursor = `&lt;line class="cursor" x1="${L.appendX}" x2="${L.appendX}" y1="${y1}" y2="${y2}"/>`;
+  }
+
+  const svg = `&lt;svg width="${W}" height="${height}" viewBox="0 0 ${W} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portée">`
+    + bg + staff + marks + body + beams + ties + tuplets + cursor + '&lt;/svg>';
+  return { svg, L };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

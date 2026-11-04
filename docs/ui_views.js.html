@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>ui/views.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.mergeBackup">mergeBackup</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#~isNote">isNote</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ui/views.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module ui/views
+ * @description
+ * Les deux écrans de l'app et la gestion des blocs :
+ *
+ * - **liste** des notes ({@link module:ui/views.renderList|renderList}), avec sauvegarde
+ *   et import iReal Pro ;
+ * - **note** ({@link module:ui/views.renderNote|renderNote}) : titre, blocs, barre d'ajout.
+ *
+ * Le rendu est fait par template strings et `innerHTML`, puis les
+ * gestionnaires d'événements sont branchés sur les éléments créés. Les blocs
+ * portée et grille délèguent leur contenu à {@link module:ui/staff-ui|ui/staff-ui} et
+ * {@link module:ui/grid-ui|ui/grid-ui}.
+ *
+ * ## Bloc actif
+ *
+ * Un seul bloc est « actif » à la fois ({@link module:ui/views.setActive|setActive}) :
+ * il est encadré, affiche ses outils (monter/descendre/supprimer), et ouvre
+ * la palette correspondant à son type.
+ */
+
+import { state, app, curNote, blockById, touch } from './state.js';
+import { esc } from '../util.js';
+import { newNote as makeNote, newTextBlock, newStaffBlock, newGridBlock, exampleNote } from '../model.js';
+import { flushSave, backupJson, mergeBackup } from '../storage.js';
+import { pushSnapshot, popSnapshot } from '../history.js';
+import { parseIRealAll, songToGrid } from '../ireal.js';
+import { uid } from '../util.js';
+import * as audio from '../audio.js';
+import { staffSvg } from '../render-staff.js';
+import { staffBlockEl, redrawStaff, showStaffPalette } from './staff-ui.js';
+import { gridBlockEl, redrawGrid, showGridPalette } from './grid-ui.js';
+
+/** Version affichée en bas de l'accueil (à garder alignée sur CHANGELOG.md). */
+export const APP_VERSION = '1.4.0';
+
+/**
+ * Affiche l'écran courant.
+ */
+export function render() {
+  if (state.view.name === 'note' &amp;&amp; curNote()) renderNote();
+  else { state.view = { name: 'list', id: null }; renderList(); }
+}
+
+/** Date courte en français (« 4 nov. »). */
+function fmtDate(ts) {
+  try { return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
+}
+
+/**
+ * Résumé du contenu d'une note pour la liste (« 1 portée · 2 grilles »).
+ * @param {module:model~Note} n
+ * @returns {string}
+ */
+function noteSummary(n) {
+  const st = n.blocks.filter((b) => b.type === 'staff');
+  const r = st.filter((b) => b.clef === 'rhythm').length;
+  const p = st.length - r;
+  const gr = n.blocks.filter((b) => b.type === 'grid').length;
+  const parts = [];
+  if (p) parts.push(p + (p > 1 ? ' portées' : ' portée'));
+  if (r) parts.push(r + (r > 1 ? ' rythmes' : ' rythme'));
+  if (gr) parts.push(gr + (gr > 1 ? ' grilles' : ' grille'));
+  return parts.join(' · ');
+}
+
+/**
+ * Crée une note par morceau iReal trouvé dans `text`.
+ * @param {string} text Lien(s) `irealb://` ou fichier `.html` iReal.
+ * @returns {number} Nombre de morceaux importés.
+ */
+function importIRealNotes(text) {
+  const songs = parseIRealAll(text);
+  songs.forEach((s, k) => {
+    // Le compositeur iReal est au format « Nom Prénom » : on le remet dans l'ordre usuel.
+    const composer = s.composer &amp;&amp; s.composer !== 'Unknown' ? s.composer.split(' ').reverse().join(' ') : '';
+    const n = { id: uid(), title: s.title, updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer }, songToGrid(s)] };
+    state.notes[n.id] = n;
+  });
+  if (songs.length) flushSave(state.notes);
+  return songs.length;
+}
+
+/**
+ * Écran liste : notes triées par date de modification, vignette de la
+ * première portée, puis sections Sauvegarde et iReal Pro.
+ */
+export function renderList() {
+  audio.stop();
+  state.activeId = null;
+  state.sel = null;
+  showStaffPalette(false);
+  showGridPalette(false);
+  const list = Object.values(state.notes).sort((a, b) => b.updated - a.updated);
+  app.innerHTML = `&lt;header class="top">&lt;div class="grow">&lt;h1 class="brand">Inkline&lt;/h1>&lt;div class="status">Enregistré sur ce téléphone&lt;/div>&lt;/div>&lt;button class="btn primary" id="newNote" type="button">+ Note&lt;/button>&lt;/header>
+  &lt;div id="listBody">&lt;/div>`;
+  const body = app.querySelector('#listBody');
+
+  if (!list.length) {
+    // État vide : on montre ce que fait l'app avec une vraie portée d'exemple.
+    const ex = exampleNote();
+    body.innerHTML = `&lt;div class="empty">&lt;div class="eyebrow">Aperçu&lt;/div>&lt;h2>Notez une idée en trois touchers&lt;/h2>&lt;p>Écrivez du texte, insérez une portée, une ligne rythmique ou une grille d'accords, puis touchez la portée pour poser les notes. Liaisons, triolets, accords chiffrés et lecture audio inclus.&lt;/p>&lt;div class="thumb" id="emptyThumb">&lt;/div>&lt;div class="actions">&lt;button class="btn primary" id="newNote2" type="button">Nouvelle note&lt;/button>&lt;button class="btn" id="tryEx" type="button">Ouvrir l'exemple&lt;/button>&lt;/div>&lt;/div>`;
+    requestAnimationFrame(() => { const el = body.querySelector('#emptyThumb'); if (el) el.innerHTML = staffSvg(ex.blocks[1], el.clientWidth || 320).svg; });
+    body.querySelector('#newNote2').onclick = newNote;
+    body.querySelector('#tryEx').onclick = () => { const n = exampleNote(); state.notes[n.id] = n; touch(n); openNote(n.id); };
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'list';
+    list.forEach((n) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'card';
+      const txt = (n.blocks.find((b) => b.type === 'text' &amp;&amp; b.text.trim()) || {}).text || '';
+      const sum = noteSummary(n);
+      btn.innerHTML = `&lt;h3>${esc(n.title || 'Sans titre')}&lt;/h3>&lt;div class="meta">&lt;span>${fmtDate(n.updated)}&lt;/span>${sum ? `&lt;span>${sum}&lt;/span>` : ''}&lt;/div>${txt ? `&lt;p class="snip">${esc(txt.split('\n')[0])}&lt;/p>` : ''}&lt;div class="thumb">&lt;/div>`;
+      btn.onclick = () => openNote(n.id);
+      wrap.appendChild(btn);
+    });
+    body.appendChild(wrap);
+    // Vignettes après le layout, pour connaître la largeur réelle.
+    requestAnimationFrame(() => {
+      wrap.querySelectorAll('.card').forEach((c, k) => {
+        const st = list[k].blocks.find((b) => b.type === 'staff' &amp;&amp; b.items.length);
+        const th = c.querySelector('.thumb');
+        if (st &amp;&amp; th) th.innerHTML = staffSvg(st, th.clientWidth || 300, { maxSystems: 1 }).svg;
+      });
+    });
+  }
+
+  const bk = document.createElement('div');
+  bk.className = 'backup';
+  bk.innerHTML = `&lt;div class="eyebrow">Sauvegarde&lt;/div>&lt;p>Tes notes restent sur ce téléphone. Exporte un fichier de temps en temps pour ne rien perdre.&lt;/p>&lt;div class="actions">&lt;button class="btn" id="exp" type="button">Exporter&lt;/button>&lt;label class="btn" for="impIn">Importer&lt;/label>&lt;input type="file" id="impIn" accept="application/json,.json" hidden>&lt;/div>&lt;div class="status" id="bkMsg">&lt;/div>
+  &lt;div class="eyebrow" style="margin-top:18px">iReal Pro&lt;/div>&lt;p>Colle un lien &lt;code>irealb://&lt;/code> (morceau ou playlist) pour créer une note par morceau.&lt;/p>
+  &lt;textarea id="irList" rows="2" placeholder="irealb://…" spellcheck="false">&lt;/textarea>
+  &lt;div class="actions" style="margin-top:8px">&lt;button class="btn" id="irListGo" type="button">Importer d'iReal Pro&lt;/button>&lt;label class="btn" for="irListF">Ouvrir un fichier&lt;/label>&lt;input type="file" id="irListF" accept=".html,.htm,.txt,text/html,text/plain" hidden>&lt;/div>
+  &lt;div class="status" id="irMsg">&lt;/div>
+  &lt;div class="version">Inkline ${APP_VERSION}&lt;/div>`;
+  body.appendChild(bk);
+
+  const irGo = (txt) => {
+    const k = importIRealNotes(txt);
+    if (!k) { bk.querySelector('#irMsg').textContent = 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb://.'; return; }
+    renderList();
+    const m = app.querySelector('#irMsg');
+    if (m) m.textContent = k + (k > 1 ? ' morceaux importés.' : ' morceau importé.');
+  };
+  bk.querySelector('#irListGo').onclick = () => irGo(bk.querySelector('#irList').value);
+  bk.querySelector('#irListF').onchange = (e) => readFile(e, irGo);
+  bk.querySelector('#exp').onclick = () => {
+    // Téléchargement via un lien temporaire vers un Blob.
+    const blob = new Blob([backupJson(state.notes)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'inkline-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    bk.querySelector('#bkMsg').textContent = 'Fichier exporté dans tes téléchargements.';
+  };
+  bk.querySelector('#impIn').onchange = (e) => readFile(e, (text) => {
+    try {
+      const k = mergeBackup(state.notes, text);
+      flushSave(state.notes);
+      renderList();
+      const m = app.querySelector('#bkMsg');
+      if (m) m.textContent = k + (k > 1 ? ' notes importées.' : ' note importée.');
+    } catch (err) {
+      bk.querySelector('#bkMsg').textContent = "Ce fichier n'est pas une sauvegarde Inkline.";
+    }
+  });
+  app.querySelector('#newNote').onclick = newNote;
+}
+
+/**
+ * Lit le fichier choisi dans un `&lt;input type=file>` et passe son texte à `fn`.
+ * @param {Event} e
+ * @param {function(string)} fn
+ */
+export function readFile(e, fn) {
+  const f = /** @type {HTMLInputElement} */ (e.target).files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => fn(String(r.result));
+  r.readAsText(f);
+}
+
+/** Crée une note et l'ouvre, curseur dans le titre. */
+export function newNote() {
+  const n = makeNote();
+  state.notes[n.id] = n;
+  touch(n);
+  openNote(n.id, true);
+}
+
+/**
+ * Ouvre une note.
+ * @param {string} id
+ * @param {boolean} [focusTitle] Placer le curseur dans le titre.
+ */
+export function openNote(id, focusTitle) {
+  state.view = { name: 'note', id };
+  state.activeId = null;
+  state.sel = null;
+  renderNote();
+  window.scrollTo(0, 0);
+  if (focusTitle) { const t = app.querySelector('.title-in'); if (t) t.focus(); }
+}
+
+/**
+ * Ajuste la hauteur d'un `&lt;textarea>` à son contenu (pas d'ascenseur interne).
+ * @param {HTMLTextAreaElement} t
+ */
+export function autosize(t) {
+  t.style.height = 'auto';
+  t.style.height = t.scrollHeight + 'px';
+}
+
+/** HTML des outils d'un bloc actif. */
+export function toolsHtml() {
+  return '&lt;div class="tools">&lt;button type="button" data-tool="up" aria-label="Monter">&amp;#8593;&lt;/button>&lt;button type="button" data-tool="down" aria-label="Descendre">&amp;#8595;&lt;/button>&lt;button type="button" data-tool="del">Supprimer&lt;/button>&lt;/div>';
+}
+
+/**
+ * Écran note : titre, blocs, barre d'ajout, suppression.
+ * @param {boolean} [keepScroll] Conserver la position de défilement (re-rendu après une modification).
+ */
+export function renderNote(keepScroll) {
+  const n = curNote();
+  if (!n) { state.view = { name: 'list', id: null }; renderList(); return; }
+  const sy = window.scrollY;
+  app.innerHTML = `&lt;header class="top">&lt;button class="btn ghost" id="back" type="button">&amp;#8249; Notes&lt;/button>&lt;div class="grow">&lt;/div>&lt;span class="status">Enregistré sur ce téléphone&lt;/span>&lt;/header>
+  &lt;textarea class="title-in" id="titleIn" rows="1" placeholder="Titre de la note">&lt;/textarea>
+  &lt;div class="blocks" id="blocks">&lt;/div>
+  &lt;div class="addbar">&lt;button class="btn" data-add="text" type="button">+ Texte&lt;/button>&lt;button class="btn" data-add="staff" type="button">+ Portée&lt;/button>&lt;button class="btn" data-add="rhythm" type="button">+ Rythme&lt;/button>&lt;button class="btn" data-add="grid" type="button">+ Grille&lt;/button>&lt;/div>
+  &lt;div class="notefoot">&lt;button class="btn ghost danger" id="delNote" type="button">Supprimer la note&lt;/button>&lt;/div>`;
+
+  const ti = /** @type {HTMLTextAreaElement} */ (app.querySelector('#titleIn'));
+  ti.value = n.title;
+  autosize(ti);
+  ti.addEventListener('focus', () => { pushSnapshot(n); setActive(null); });
+  ti.addEventListener('input', () => { n.title = ti.value.replace(/\n/g, ' '); autosize(ti); touch(n); });
+  ti.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ti.blur(); } });
+  app.querySelector('#back').onclick = () => { state.view = { name: 'list', id: null }; renderList(); window.scrollTo(0, 0); };
+
+  // Suppression en deux temps (les boîtes confirm() natives sont peu pratiques sur mobile).
+  const dn = /** @type {HTMLButtonElement} */ (app.querySelector('#delNote'));
+  dn.onclick = () => {
+    if (dn.dataset.armed) { delete state.notes[n.id]; flushSave(state.notes); state.view = { name: 'list', id: null }; renderList(); return; }
+    dn.dataset.armed = '1';
+    dn.textContent = 'Toucher encore pour supprimer';
+    dn.classList.add('confirm');
+    setTimeout(() => { if (dn.isConnected) { delete dn.dataset.armed; dn.textContent = 'Supprimer la note'; dn.classList.remove('confirm'); } }, 3500);
+  };
+  app.querySelectorAll('[data-add]').forEach((btn) => { btn.onclick = () => addBlock(n, btn.dataset.add); });
+
+  const bl = app.querySelector('#blocks');
+  n.blocks.forEach((b, bi) => bl.appendChild(blockEl(n, b, bi)));
+  // Les SVG ont besoin de la largeur réelle : on les dessine après le layout.
+  requestAnimationFrame(() => {
+    n.blocks.forEach((b) => { redrawStaff(b.id); redrawGrid(b.id); });
+    app.querySelectorAll('.block textarea').forEach(autosize);
+  });
+  updateActive();
+  if (keepScroll) window.scrollTo(0, sy);
+}
+
+/**
+ * Ajoute un bloc en fin de note et l'active.
+ * @param {module:model~Note} n
+ * @param {'text'|'staff'|'rhythm'|'grid'} kind
+ */
+export function addBlock(n, kind) {
+  pushSnapshot(n);
+  const b = kind === 'grid' ? newGridBlock() : kind === 'text' ? newTextBlock() : newStaffBlock(kind === 'rhythm');
+  n.blocks.push(b);
+  touch(n);
+  state.activeId = b.id;
+  state.sel = kind === 'grid' ? 0 : null; // une grille s'ouvre sur sa 1re mesure
+  renderNote(true);
+  const el = app.querySelector(`[data-block="${b.id}"]`);
+  if (el) {
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (kind === 'text') { const t = el.querySelector('textarea'); if (t) t.focus(); }
+  }
+}
+
+/**
+ * Crée l'élément DOM d'un bloc et branche ses outils.
+ * @param {module:model~Note} n
+ * @param {module:model~Block} b
+ * @param {number} bi Position du bloc dans la note.
+ * @returns {HTMLDivElement}
+ */
+function blockEl(n, b, bi) {
+  const el = document.createElement('div');
+  el.className = 'block ' + (b.type === 'text' ? 'text' : b.type === 'grid' ? 'gridblk' : 'staff');
+  el.dataset.block = b.id;
+  if (b.type === 'text') {
+    el.innerHTML = `&lt;textarea rows="1" placeholder="${bi === 0 ? 'Écrivez ici…' : 'Texte'}" id="t_${b.id}">&lt;/textarea>` + toolsHtml();
+    const t = el.querySelector('textarea');
+    t.value = b.text;
+    t.addEventListener('focus', () => { pushSnapshot(n); setActive(b.id); });
+    t.addEventListener('input', () => { b.text = t.value; autosize(t); touch(n); });
+  } else if (b.type === 'grid') {
+    gridBlockEl(n, b, el);
+  } else {
+    staffBlockEl(n, b, el);
+  }
+
+  el.querySelectorAll('[data-tool]').forEach((btn) => {
+    btn.onclick = () => {
+      const i = n.blocks.indexOf(b);
+      const tool = btn.dataset.tool;
+      if (tool === 'del') {
+        if (!btn.dataset.armed) {
+          btn.dataset.armed = '1'; btn.textContent = 'Confirmer'; btn.classList.add('confirm');
+          setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = 'Supprimer'; btn.classList.remove('confirm'); } }, 3000);
+          return;
+        }
+        pushSnapshot(n);
+        if (audio.isPlaying(b.id)) audio.stop();
+        n.blocks.splice(i, 1);
+        state.activeId = null; state.sel = null;
+        touch(n);
+        renderNote(true);
+        return;
+      }
+      const j = tool === 'up' ? i - 1 : i + 1;
+      if (j &lt; 0 || j >= n.blocks.length) return;
+      pushSnapshot(n);
+      n.blocks.splice(i, 1);
+      n.blocks.splice(j, 0, b);
+      touch(n);
+      renderNote(true);
+      const nel = app.querySelector(`[data-block="${b.id}"]`);
+      if (nel) nel.scrollIntoView({ block: 'nearest' });
+    };
+  });
+  return el;
+}
+
+/**
+ * Change le bloc actif (ou aucun avec `null`). Remet la sélection à zéro et
+ * redessine l'ancien et le nouveau bloc (curseur, surlignage).
+ * @param {string|null} id
+ */
+export function setActive(id) {
+  if (state.activeId === id) return;
+  const prev = state.activeId;
+  state.activeId = id;
+  state.sel = null;
+  if (prev) { redrawStaff(prev); redrawGrid(prev); }
+  if (id) { redrawStaff(id); redrawGrid(id); }
+  updateActive();
+}
+
+/**
+ * Applique l'état « actif » au DOM : cadre du bloc et palette ouverte.
+ */
+export function updateActive() {
+  app.querySelectorAll('.block').forEach((el) => el.classList.toggle('active', el.dataset.block === state.activeId));
+  const b = blockById(state.activeId);
+  // Cacher d'abord, montrer ensuite : la palette visible fixe l'espace réservé.
+  showStaffPalette(!!b &amp;&amp; b.type === 'staff');
+  showGridPalette(!!b &amp;&amp; b.type === 'grid');
+  syncPaletteSpace();
+}
+
+/**
+ * Réserve en bas de page la hauteur de la palette ouverte (variable CSS
+ * `--pal-h`), pour que le contenu ne passe pas dessous.
+ */
+export function syncPaletteSpace() {
+  const pal = document.getElementById('palette');
+  const gpal = document.getElementById('gpal');
+  const h = !pal.hidden ? pal.offsetHeight : !gpal.hidden ? gpal.offsetHeight : 0;
+  document.documentElement.style.setProperty('--pal-h', h + 'px');
+}
+
+/**
+ * Annule la dernière modification de la note affichée.
+ */
+export function undo() {
+  const n = curNote();
+  if (!n || !popSnapshot(n)) return;
+  state.sel = null;
+  if (state.activeId &amp;&amp; !n.blocks.some((b) => b.id === state.activeId)) state.activeId = null;
+  touch(n);
+  renderNote(true);
+}
+
+/**
+ * Met à jour le bouton Écouter/Stop d'un bloc.
+ * @param {string} id
+ */
+export function updatePlayBtn(id) {
+  const btn = document.querySelector(`[data-play="${id}"]`);
+  if (!btn) return;
+  const on = audio.isPlaying(id);
+  btn.classList.toggle('on', on);
+  btn.innerHTML = on ? '&amp;#9632; Stop' : '&amp;#9654; Écouter';
+}
+
+/**
+ * Rappels de lecture communs aux portées et aux grilles : surlignage de
+ * l'élément joué, puis remise à zéro à la fin.
+ * @param {string} id Bloc joué.
+ * @param {function(string)} redraw Fonction de redessin du bloc.
+ * @returns {module:audio~PlayCallbacks}
+ */
+export function playCallbacks(id, redraw) {
+  return {
+    onStep: (i) => { state.playIdx = i; redraw(id); },
+    onEnd: () => { state.playIdx = null; redraw(id); updatePlayBtn(id); },
+  };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

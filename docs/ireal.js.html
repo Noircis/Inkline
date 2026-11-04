@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>ireal.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.mergeBackup">mergeBackup</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#~isNote">isNote</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ireal.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module ireal
+ * @description
+ * Import et export au format **iReal Pro** (`irealb://`).
+ *
+ * ## Structure d'un lien
+ *
+ * ```
+ * irealb://&lt;morceau>===&lt;morceau>===…===&lt;nom de playlist>
+ * morceau = Titre=Compositeur=(vide)=Style=Tonalité=(transposition)=Musique=(comp)=Tempo=Répétitions
+ * ```
+ *
+ * Le tout est encodé en URL (`%20`…). L'ancien format `irealbook://` est plus
+ * simple : `Titre=Compositeur=Style=Tonalité=n=Musique`, musique non obfusquée.
+ *
+ * ## Obfuscation du champ musique
+ *
+ * Le champ musique commence par la signature `1r34LbKcu7`, suivie de la
+ * chaîne réelle brouillée :
+ *
+ * - découpage en blocs de 50 caractères (le dernier bloc, ou un bloc suivi
+ *   de moins de 2 caractères, n'est pas brouillé) ;
+ * - dans chaque bloc, les positions 0–4 et 10–23 sont échangées avec leurs
+ *   symétriques `49 − i`.
+ *
+ * Cette permutation est une **involution** (appliquée deux fois, elle redonne
+ * l'original) : la même fonction {@link module:ireal.scramble|scramble} sert à
+ * encoder et à décoder. Au décodage s'ajoutent trois substitutions de jetons
+ * de compression (`XyQ` → 3 espaces, `LZ` → ` |`, `Kcl` → `| x`).
+ *
+ * ## Langage de la musique (une fois décodée)
+ *
+ * | Jeton            | Sens                                   |
+ * |------------------|----------------------------------------|
+ * | `T44`, `T34`…    | chiffrage de mesure                    |
+ * | `*A`, `*B`, `*i` | section (A, B, intro…)                 |
+ * | `[` `]`          | double barre ouvrante / fermante       |
+ * | `{` `}`          | reprise ouvrante / fermante            |
+ * | `\|`             | barre simple                           |
+ * | `Z`              | barre de fin                           |
+ * | `N1`, `N2`       | 1re / 2e fin                           |
+ * | `x`, `r`         | répéter 1 / 2 mesures                  |
+ * | `n`              | *no chord*                             |
+ * | `p`              | barre oblique (prolonge l'accord)      |
+ * | `&lt;…>`, `(…)`     | commentaire, accord alternatif (ignorés) |
+ * | espace           | une **case** vide (4 cases par mesure) |
+ * | `,`              | séparateur sans case                   |
+ *
+ * Qualités iReal : `^7` maj7, `-7` m7, `h7` m7♭5, `o7` dim7, `+` aug…
+ *
+ * ## Limites connues
+ *
+ * Les codas, segnos et D.C. sont ignorés à l'import. Le format a été codé
+ * d'après les lecteurs open source de ce format et validé par aller-retour
+ * (export puis import), pas contre l'application iReal Pro elle-même.
+ */
+
+import { CHORD_RE } from './chords.js';
+import { newGridBlock } from './model.js';
+
+/** Signature qui précède le champ musique obfusqué. */
+const MUSIC_PREFIX = '1r34LbKcu7';
+
+/**
+ * Permutation d'un bloc de 50 caractères (voir l'en-tête du module).
+ * @param {string} s Bloc de 50 caractères exactement.
+ * @returns {string}
+ */
+function obfuscate50(s) {
+  const a = s.split('');
+  for (let i = 0; i &lt; 5; i++) { a[49 - i] = s[i]; a[i] = s[49 - i]; }
+  for (let i = 10; i &lt; 24; i++) { a[49 - i] = s[i]; a[i] = s[49 - i]; }
+  return a.join('');
+}
+
+/**
+ * Brouille ou débrouille une chaîne (involution).
+ * @param {string} s
+ * @returns {string}
+ */
+export function scramble(s) {
+  let r = '';
+  let p = s;
+  while (p.length > 51) {
+    const t = p.slice(0, 50);
+    p = p.slice(50);
+    r += p.length &lt; 2 ? t : obfuscate50(t);
+  }
+  return r + p;
+}
+
+/**
+ * Décode un champ musique (sans la signature).
+ * @param {string} s
+ * @returns {string}
+ */
+export function unscramble(s) {
+  return scramble(s).replace(/XyQ/g, '   ').replace(/LZ/g, ' |').replace(/Kcl/g, '| x');
+}
+
+/**
+ * Qualité Inkline/texte libre → qualité iReal.
+ * @example qualityToIReal('maj7') // '^7'
+ * @param {string} q
+ * @returns {string}
+ */
+export function qualityToIReal(q) {
+  let s = q.replace(/\s/g, '').replace(/♭/g, 'b').replace(/♯/g, '#');
+  s = s.replace(/^(min|mi|m(?!aj)|–)/, '-');
+  s = s.replace(/(maj|Maj|MA|Δ|∆)/, '^').replace(/^M(?=7|9|13|$)/, '^');
+  if (s === '^' || s === '-^') s += '7';
+  s = s.replace(/^(ø7?|h(?!7)|-7b5)/, 'h7').replace(/^(dim|°)/, 'o').replace(/^aug/, '+');
+  return s;
+}
+
+/**
+ * Qualité iReal → qualité lisible au clavier.
+ * @example qualityFromIReal('-^7') // 'mMaj7'
+ * @param {string} q
+ * @returns {string}
+ */
+export function qualityFromIReal(q) {
+  if (q.startsWith('^')) { const r = q.slice(1); return 'maj' + (r === '' ? '7' : r); }
+  return q.replace(/^-\^(\d*)/, (m, d) => 'mMaj' + (d || '7')).replace(/^-/, 'm').replace(/^h7?/, 'm7b5').replace(/^o/, 'dim');
+}
+
+/**
+ * Case de grille → jeton iReal.
+ * @param {string} c
+ * @returns {string}
+ */
+export function chordToIReal(c) {
+  if (c === '%') return 'x';
+  if (c === 'n') return 'n';
+  if (c === '') return 'p';
+  const m = CHORD_RE.exec(c);
+  if (!m) return 'n';
+  const fix = (s) => s.replace('♭', 'b').replace('♯', '#');
+  return m[1] + fix(m[2]) + qualityToIReal(m[3]) + (m[4] ? '/' + fix(m[4]) : '');
+}
+
+/** Chiffrages ↔ jetons iReal. */
+const TIME_TO_TOKEN = { '4/4': 'T44', '3/4': 'T34', '2/4': 'T24', '5/4': 'T54', '6/8': 'T68', '12/8': 'T12' };
+const TOKEN_TO_TIME = { T44: '4/4', T34: '3/4', T24: '2/4', T54: '5/4', T68: '6/8', T12: '12/8', T64: '6/4' };
+
+/**
+ * Sérialise les mesures d'une grille dans le langage iReal (non obfusqué).
+ *
+ * Chaque mesure est écrite sur 4 **cases** : 1 accord = accord + 3 espaces,
+ * 2 accords = 1re et 3e cases, 3 accords = 2 + 1 + 1, 4 accords = 1 par case.
+ * Les barres sont écrites entre deux mesures selon les drapeaux de chacune.
+ *
+ * @param {module:model~GridBlock} b
+ * @returns {string}
+ */
+export function toIRealMusic(b) {
+  const M = b.measures;
+  let s = TIME_TO_TOKEN[b.time] || 'T44';
+  M.forEach((m, i) => {
+    const p = M[i - 1];
+    // Barre entre la mesure précédente et celle-ci.
+    if (p) {
+      if (p.re) s += '}';
+      else if (p.fin) s += 'Z';
+      else if (p.dbl || m.sec || m.rs) s += ']';
+      else s += '|';
+    }
+    if (m.sec) s += '*' + (m.sec === 'Intro' ? 'i' : m.sec[0]);
+    if (m.rs) s += '{';
+    else if (!p || m.sec || p.dbl || p.fin) s += '[';
+    if (m.ending) s += 'N' + m.ending;
+    const ch = m.ch.map(chordToIReal);
+    if (!ch.length) s += '    ';
+    else if (ch.length === 1) s += ch[0] + '   ';
+    else if (ch.length === 2) s += ch[0] + ' ' + ch[1] + ' ';
+    else if (ch.length === 3) s += ch[0] + ' ' + ch[1] + ',' + ch[2];
+    else s += ch.join(',');
+  });
+  const l = M[M.length - 1];
+  s += l &amp;&amp; l.re ? '}' : ' Z';
+  return s;
+}
+
+/**
+ * Construit le lien `irealb://` d'une grille.
+ * @param {string} title Titre du morceau.
+ * @param {module:model~GridBlock} b
+ * @returns {string}
+ */
+export function toIRealLink(title, b) {
+  const fields = [title, 'Unknown', '', b.style || 'Medium Swing', b.key || 'C', '', MUSIC_PREFIX + scramble(toIRealMusic(b)), '', String(b.tempo || 0), '0'];
+  return 'irealb://' + fields.map((f) => encodeURIComponent(f)).join('=');
+}
+
+/**
+ * Analyse le langage musical iReal (déjà décodé) en mesures de grille.
+ *
+ * Scanner écrit à la main : à chaque position on essaie des motifs ancrés
+ * par ordre de priorité. L'état se réduit à la mesure en cours `cur` et à des
+ * drapeaux en attente `pend` (section, début de reprise) qui s'appliqueront
+ * à la prochaine mesure ouverte.
+ *
+ * @param {string} raw
+ * @returns {{time: string, measures: module:model~GridMeasure[]}}
+ */
+export function parseIRealMusic(raw) {
+  /** @type {module:model~GridMeasure[]} */
+  const M = [];
+  let cur = null;
+  let pend = {};
+  let time = '4/4';
+  const open = () => { if (!cur) { cur = { ch: [], ...pend }; pend = {}; } return cur; };
+  const close = (flag) => {
+    if (cur) { if (flag) cur[flag] = true; M.push(cur); cur = null; }
+    else if (flag &amp;&amp; M.length) M[M.length - 1][flag] = true; // barre juste après une autre barre
+  };
+  const s = raw.replace(/&lt;[^>]*>/g, ' ').replace(/\([^)]*\)/g, ' ');
+  let i = 0;
+  while (i &lt; s.length) {
+    const r = s.slice(i);
+    let mm;
+    if ((mm = /^T(\d\d)/.exec(r))) { const t = TOKEN_TO_TIME['T' + mm[1]]; if (t &amp;&amp; !M.length) time = t; i += 3; continue; }
+    if ((mm = /^\*([A-Za-z])/.exec(r))) {
+      const v = mm[1] === 'i' ? 'Intro' : mm[1] === 'V' ? 'Verse' : mm[1].toUpperCase();
+      if (cur &amp;&amp; !cur.ch.length) cur.sec = v; else pend.sec = v;
+      i += 2; continue;
+    }
+    if ((mm = /^N([0-3])/.exec(r))) { const v = Number(mm[1]); if (v) open().ending = v; i += 2; continue; }
+    const c0 = r[0];
+    if (c0 === '{') { close(); pend.rs = true; i++; continue; }
+    if (c0 === '[' || c0 === '|') { close(); i++; continue; }
+    if (c0 === ']') { close('dbl'); i++; continue; }
+    if (c0 === '}') { close('re'); i++; continue; }
+    if (c0 === 'Z') { close('fin'); i++; continue; }
+    if (c0 === 'x') { open().ch = ['%']; i++; continue; }
+    if (c0 === 'r') { close(); M.push({ ch: ['%'] }, { ch: ['%'] }); i++; continue; }
+    if (c0 === 'n') { open().ch.push('n'); i++; continue; }
+    if (c0 === 'p') { open().ch.push(''); i++; continue; }
+    if ((mm = /^([A-GW])([b#]?)([\^\-ho+0-9b#susaldt]*)(\/[A-G][b#]?)?/.exec(r)) &amp;&amp; mm[0].length) {
+      // W = « fondamentale invisible » (accord prolongé avec nouvelle basse) : on garde une case vide.
+      if (mm[1] === 'W') open().ch.push('');
+      else open().ch.push(mm[1] + mm[2] + qualityFromIReal(mm[3]) + (mm[4] || ''));
+      i += mm[0].length; continue;
+    }
+    i++; // jeton ignoré : espace, virgule, Y, S, Q, f, l, s, U…
+  }
+  close();
+  // Nettoyage : mesures vides finales, barre de fin implicite.
+  while (M.length &amp;&amp; !M[M.length - 1].ch.length &amp;&amp; !M[M.length - 1].sec) M.pop();
+  if (M.length &amp;&amp; !M[M.length - 1].re) M[M.length - 1].fin = true;
+  M.forEach((m) => { if (m.re &amp;&amp; m.fin) delete m.fin; });
+  return { time, measures: M };
+}
+
+/**
+ * Un morceau importé.
+ * @typedef {Object} IRealSong
+ * @property {string} title
+ * @property {string} composer Au format iReal « Nom Prénom ».
+ * @property {string} style
+ * @property {string} key
+ * @property {number} tempo 0 si non précisé.
+ * @property {string} time
+ * @property {module:model~GridMeasure[]} measures
+ */
+
+/**
+ * Extrait tous les morceaux d'un texte : lien seul, playlist, ou fichier
+ * `.html` partagé par iReal Pro (les liens y sont dans des attributs `href`).
+ *
+ * @param {string} text
+ * @returns {IRealSong[]}
+ */
+export function parseIRealAll(text) {
+  const urls = String(text).match(/irealb(?:ook)?:\/\/[^"'\s&lt;>]+/g) || [];
+  /** @type {IRealSong[]} */
+  const out = [];
+  urls.forEach((u) => {
+    let d;
+    try { d = decodeURIComponent(u.replace(/\+/g, '%20')); } catch (e) { d = u; }
+    const isNew = d.startsWith('irealb://');
+    d = d.replace(/^irealb(?:ook)?:\/\//, '');
+    d.split('===').forEach((song) => {
+      const p = song.split('=');
+      if (p.length &lt; 6) return; // nom de playlist ou fragment
+      const mi = p.findIndex((x) => x.startsWith(MUSIC_PREFIX));
+      let music; let style; let key; let tempo = 0;
+      if (mi >= 0) {
+        // Les champs sont repérés par rapport au champ musique, plus robuste qu'un index fixe.
+        music = unscramble(p[mi].slice(MUSIC_PREFIX.length));
+        style = p[mi - 3] || '';
+        key = p[mi - 2] || 'C';
+        tempo = parseInt(p[mi + 2], 10) || 0;
+      } else if (!isNew) {
+        music = p[5]; style = p[2]; key = p[3];
+      } else return;
+      const r = parseIRealMusic(music);
+      if (!r.measures.length) return;
+      out.push({
+        title: p[0] || 'Sans titre', composer: p[1] || '', style: style || 'Medium Swing', key: key || 'C',
+        tempo: tempo >= 30 &amp;&amp; tempo &lt;= 300 ? tempo : 0, time: r.time, measures: r.measures,
+      });
+    });
+  });
+  return out;
+}
+
+/**
+ * Convertit un morceau importé en bloc grille.
+ * @param {IRealSong} s
+ * @returns {module:model~GridBlock}
+ */
+export function songToGrid(s) {
+  return Object.assign(newGridBlock(), { time: s.time, key: s.key, style: s.style, tempo: s.tempo || 120, measures: s.measures });
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

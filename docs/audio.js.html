@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>audio.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.mergeBackup">mergeBackup</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#~isNote">isNote</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">audio.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module audio
+ * @description
+ * Lecture audio avec la **Web Audio API** : un petit synthétiseur et un
+ * séquenceur.
+ *
+ * ## Séquencement
+ *
+ * Toutes les notes d'un morceau sont **programmées d'avance** sur l'horloge
+ * audio (`AudioContext.currentTime`), qui est précise à l'échantillon près et
+ * insensible aux ralentissements du thread principal. Les `setTimeout` ne
+ * servent qu'au surlignage visuel (léger décalage possible, invisible à
+ * l'oreille) et à la détection de fin.
+ *
+ * Un seul morceau joue à la fois : lancer une lecture arrête la précédente,
+ * relancer le même bloc l'arrête (bouton bascule).
+ *
+ * ## Synthèse
+ *
+ * - **Mélodie** ({@link tone}) : dent de scie + triangle → filtre passe-bas
+ *   dont la coupure suit une petite enveloppe (attaque brillante qui
+ *   s'adoucit) → gain avec enveloppe attaque / déclin / relâchement.
+ * - **Accords** ({@link pad}) : triangle + sinus à l'octave, plus doux.
+ * - **Percussion** ({@link perc}) : sinus dont la fréquence chute très vite
+ *   (effet « clave »), accentué sur le premier temps.
+ *
+ * Les navigateurs n'autorisent le son qu'après une interaction de
+ * l'utilisateur : le contexte est créé (ou réveillé) au premier appel.
+ */
+
+import { staffEvents } from './rhythm.js';
+import { resolveMidis } from './pitch.js';
+import { mlen } from './model.js';
+import { gridPlayOrder, slotDurations } from './grid.js';
+import { chordTones } from './chords.js';
+
+/** @type {AudioContext|null} */
+let ac = null;
+
+/**
+ * Lecture en cours.
+ * @typedef {Object} Playback
+ * @property {string} id Bloc joué.
+ * @property {number[]} timers `setTimeout` à annuler à l'arrêt.
+ * @property {AudioScheduledSourceNode[]} nodes Oscillateurs à couper à l'arrêt.
+ * @property {function()} onEnd Rappel de fin (appelé aussi en cas d'arrêt).
+ */
+
+/** @type {Playback|null} */
+let current = null;
+
+/**
+ * Contexte audio, créé à la demande et réveillé s'il est suspendu.
+ * @returns {AudioContext|null} `null` si la Web Audio API est absente.
+ */
+export function audioContext() {
+  if (!ac) {
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return null;
+    ac = new C();
+  }
+  if (ac.state === 'suspended') ac.resume();
+  return ac;
+}
+
+/** Fréquence (Hz) d'un numéro MIDI (la 4 = 69 = 440 Hz). */
+const freq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
+
+/**
+ * Joue une note mélodique.
+ * @param {number} t Instant de début (secondes, horloge audio).
+ * @param {number} dur Durée (s).
+ * @param {number|null} midi
+ * @param {AudioScheduledSourceNode[]} [nodes] Collecteur pour pouvoir couper.
+ */
+export function tone(t, dur, midi, nodes) {
+  const c = audioContext();
+  if (!c || midi == null) return;
+  const f = freq(midi);
+  const o1 = c.createOscillator();
+  const o2 = c.createOscillator();
+  const lp = c.createBiquadFilter();
+  const g = c.createGain();
+  const g1 = c.createGain();
+  o1.type = 'sawtooth'; o2.type = 'triangle';
+  o1.frequency.value = f; o2.frequency.value = f;
+  g1.gain.value = 0.35; // la dent de scie est dosée pour ne pas être agressive
+  lp.type = 'lowpass'; lp.Q.value = 0.8;
+  lp.frequency.setValueAtTime(f * 1.5, t);
+  lp.frequency.linearRampToValueAtTime(f * 4, t + 0.05);
+  lp.frequency.setTargetAtTime(f * 2.2, t + 0.06, 0.15);
+  const v = 0.16;
+  const end = t + Math.max(0.06, dur * 0.94); // léger détaché entre les notes
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(v, t + 0.025);
+  g.gain.setTargetAtTime(v * 0.75, t + 0.04, 0.12);
+  g.gain.setTargetAtTime(0, end, 0.025);
+  o1.connect(g1); g1.connect(lp); o2.connect(lp); lp.connect(g); g.connect(c.destination);
+  o1.start(t); o2.start(t); o1.stop(end + 0.2); o2.stop(end + 0.2);
+  if (nodes) nodes.push(o1, o2);
+}
+
+/**
+ * Joue une note d'accord (son de nappe).
+ * @param {number} t
+ * @param {number} dur
+ * @param {number} midi
+ * @param {AudioScheduledSourceNode[]} nodes
+ */
+export function pad(t, dur, midi, nodes) {
+  const c = audioContext();
+  if (!c) return;
+  const f = freq(midi);
+  const o = c.createOscillator();
+  const o2 = c.createOscillator();
+  const lp = c.createBiquadFilter();
+  const g = c.createGain();
+  o.type = 'triangle'; o2.type = 'sine';
+  o.frequency.value = f; o2.frequency.value = f * 2;
+  lp.type = 'lowpass'; lp.frequency.value = Math.min(4000, f * 3);
+  const end = t + Math.max(0.1, dur * 0.92);
+  const v = 0.075;
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(v, t + 0.02);
+  g.gain.setTargetAtTime(v * 0.55, t + 0.05, 0.25);
+  g.gain.setTargetAtTime(0, end, 0.05);
+  o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(c.destination);
+  o.start(t); o2.start(t); o.stop(end + 0.3); o2.stop(end + 0.3);
+  nodes.push(o, o2);
+}
+
+/**
+ * Joue un coup de percussion.
+ * @param {number} t
+ * @param {boolean} accent Premier temps (plus aigu, plus fort).
+ * @param {AudioScheduledSourceNode[]} [nodes]
+ */
+export function perc(t, accent, nodes) {
+  const c = audioContext();
+  if (!c) return;
+  const o = c.createOscillator();
+  const g = c.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(accent ? 1250 : 950, t);
+  o.frequency.exponentialRampToValueAtTime(accent ? 700 : 520, t + 0.06);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(accent ? 0.5 : 0.35, t + 0.003);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+  o.connect(g); g.connect(c.destination);
+  o.start(t); o.stop(t + 0.13);
+  if (nodes) nodes.push(o);
+}
+
+/**
+ * Fait entendre un élément de portée isolé (retour sonore à la saisie).
+ * @param {module:model~StaffBlock} b
+ * @param {number} i
+ */
+export function previewItem(b, i) {
+  const it = b.items[i];
+  if (!it || it.r) return;
+  const c = audioContext();
+  if (!c) return;
+  if (b.clef === 'rhythm') perc(c.currentTime + 0.01, false);
+  else tone(c.currentTime + 0.01, 0.38, resolveMidis(b)[i]);
+}
+
+/**
+ * Le bloc `id` est-il en cours de lecture ?
+ * @param {string} id
+ * @returns {boolean}
+ */
+export function isPlaying(id) {
+  return !!current &amp;&amp; current.id === id;
+}
+
+/**
+ * Arrête la lecture en cours (s'il y en a une) et appelle son rappel de fin.
+ */
+export function stop() {
+  if (!current) return;
+  const p = current;
+  current = null;
+  p.timers.forEach(clearTimeout);
+  p.nodes.forEach((n) => { try { n.stop(); } catch (e) { /* déjà arrêté */ } });
+  p.onEnd();
+}
+
+/**
+ * Rappels de lecture.
+ * @typedef {Object} PlayCallbacks
+ * @property {function(number)} onStep Élément (ou mesure) qui commence.
+ * @property {function()} onEnd Fin ou arrêt.
+ */
+
+/**
+ * Prépare une lecture : arrête la précédente, ou bascule (arrêt) si c'est le même bloc.
+ * @param {string} id
+ * @param {PlayCallbacks} cb
+ * @returns {{c: AudioContext, p: Playback}|null} `null` si on vient d'arrêter ce bloc.
+ */
+function begin(id, cb) {
+  const was = isPlaying(id);
+  stop();
+  if (was) return null;
+  const c = audioContext();
+  if (!c) return null;
+  current = { id, timers: [], nodes: [], onEnd: cb.onEnd };
+  return { c, p: current };
+}
+
+/**
+ * Programme un rappel visuel à un instant de l'horloge audio.
+ * @param {Playback} p
+ * @param {AudioContext} c
+ * @param {number} t Instant audio (s).
+ * @param {function()} fn
+ */
+function at(p, c, t, fn) {
+  p.timers.push(setTimeout(fn, Math.max(0, (t - c.currentTime) * 1000)));
+}
+
+/**
+ * Joue une portée (bascule lecture/arrêt).
+ *
+ * Les événements viennent de {@link module:rhythm.staffEvents|staffEvents} (reprises,
+ * liaisons, triolets et swing déjà résolus) ; il ne reste qu'à convertir les
+ * noires en secondes : `secondes = noires × 60 / tempo`.
+ *
+ * @param {module:model~StaffBlock} b
+ * @param {PlayCallbacks} cb
+ */
+export function playStaff(b, cb) {
+  if (!b.items.length) { stop(); return; }
+  const r = begin(b.id, cb);
+  if (!r) return;
+  const { c, p } = r;
+  const spq = 60 / (b.tempo || 120); // secondes par noire
+  const t0 = c.currentTime + 0.12; // petite marge pour que la 1re note ne soit pas tronquée
+  const { events, total } = staffEvents(b);
+  events.forEach((ev) => {
+    const ts = t0 + ev.start * spq;
+    if (!ev.rest &amp;&amp; !ev.held) {
+      if (b.clef === 'rhythm') perc(ts, ev.downbeat, p.nodes);
+      else tone(ts, (ev.end - ev.start) * spq, ev.midi, p.nodes);
+    }
+    at(p, c, ts, () => cb.onStep(ev.i));
+  });
+  at(p, c, t0 + total * spq + 0.15, stop);
+}
+
+/**
+ * Joue une grille (bascule lecture/arrêt) : basse + accords en nappe, et un
+ * « charleston » sur les temps 2 et 4 pour les styles swing.
+ *
+ * Chaque mesure suit {@link module:grid.gridPlayOrder|gridPlayOrder} ; à l'intérieur, les
+ * cases se partagent la mesure selon {@link module:grid.slotDurations|slotDurations}.
+ * Une mesure vide prolonge le dernier accord, `%` rejoue la mesure précédente.
+ *
+ * @param {module:model~GridBlock} b
+ * @param {PlayCallbacks} cb
+ */
+export function playGrid(b, cb) {
+  if (!b.measures.length) { stop(); return; }
+  const r = begin(b.id, cb);
+  if (!r) return;
+  const { c, p } = r;
+  const spq = 60 / (b.tempo || 120);
+  const ML = mlen(b.time);
+  const swingy = /swing|waltz|blues|gospel|ballad/i.test(b.style);
+  const t0 = c.currentTime + 0.15;
+  let q = 0;
+  let last = null; // dernier accord joué (pour les cases vides et les mesures vides)
+  let prevCh = [];
+  gridPlayOrder(b.measures).forEach((i) => {
+    let ch = b.measures[i].ch;
+    if (ch.length === 1 &amp;&amp; ch[0] === '%') ch = prevCh;
+    else if (!ch.length) ch = last ? [last] : [];
+    prevCh = ch;
+    const durs = slotDurations(Math.max(1, ch.length), b.time);
+    let qq = q;
+    ch.forEach((x, k) => {
+      const d = durs[k];
+      if (x === 'n') last = null;
+      else {
+        const cc = x === '' ? last : x;
+        const tn = cc &amp;&amp; chordTones(cc);
+        if (tn) {
+          last = cc;
+          const ts = t0 + qq * spq;
+          tone(ts, Math.min(d * spq, spq * 2), tn.bass, p.nodes);
+          tn.notes.forEach((nm) => pad(ts, d * spq, nm, p.nodes));
+        }
+      }
+      qq += d;
+    });
+    if (swingy &amp;&amp; !b.time.endsWith('/8')) for (let bt = 1; bt &lt; ML; bt += 2) perc(t0 + (q + bt) * spq, false, p.nodes);
+    at(p, c, t0 + q * spq, () => cb.onStep(i));
+    q += ML;
+  });
+  at(p, c, t0 + q * spq + 0.2, stop);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

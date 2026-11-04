@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>layout.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.perc">perc</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#.tone">tone</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.unscramble">unscramble</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#.NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#.barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#.restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#.tieSvg">tieSvg</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#.tupletIndex">tupletIndex</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.loadNotes">loadNotes</a></li><li data-type='method'><a href="module-storage.html#.mergeBackup">mergeBackup</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#~isNote">isNote</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.updateGridPalette">updateGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_views.html">ui/views</a><ul class='members'><li data-type='member'><a href="module-ui_views.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_views.html#.addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_views.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_views.html#.newNote">newNote</a></li><li data-type='method'><a href="module-ui_views.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_views.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_views.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_views.html#.render">render</a></li><li data-type='method'><a href="module-ui_views.html#.renderList">renderList</a></li><li data-type='method'><a href="module-ui_views.html#.renderNote">renderNote</a></li><li data-type='method'><a href="module-ui_views.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_views.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_views.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_views.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_views.html#.updateActive">updateActive</a></li><li data-type='method'><a href="module-ui_views.html#.updatePlayBtn">updatePlayBtn</a></li><li data-type='method'><a href="module-ui_views.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_views.html#~fmtDate">fmtDate</a></li><li data-type='method'><a href="module-ui_views.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_views.html#~noteSummary">noteSummary</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">layout.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module layout
+ * @description
+ * Moteur de **mise en page** d'une portée : décide où chaque élément se place
+ * (ligne et abscisse), où tombent les barres, et où se trouve la zone d'ajout.
+ *
+ * C'est une fonction pure : même entrée, même sortie, sans DOM. Le rendu SVG
+ * ({@link module:render-staff|render-staff}) **et** le hit-testing (le toucher de
+ * l'utilisateur, dans {@link module:ui/staff-ui|ui/staff-ui}) appellent tous deux
+ * {@link module:layout.layout|layout} avec les mêmes paramètres : ils sont donc
+ * cohérents par construction.
+ *
+ * ## Algorithme
+ *
+ * 1. **Largeurs intrinsèques** : chaque élément reçoit une largeur de base
+ *    selon sa valeur (gravure proportionnelle : une ronde prend plus de place
+ *    qu'une croche), plus de la place pour une altération, un point ou un
+ *    accord chiffré trop long.
+ * 2. **Mesures** : découpage par {@link module:rhythm.segmentMeasures|segmentMeasures}.
+ * 3. **Coupure de lignes**, algorithme glouton (*first-fit*) : une mesure va
+ *    sur la ligne courante si elle tient, sinon elle ouvre une ligne. On ne
+ *    coupe jamais une mesure en deux.
+ * 4. **Justification** : chaque ligne est étirée d'un facteur
+ *    `sc = largeurDisponible / largeurUtilisée`, plafonné à 2.4 pour éviter
+ *    un étirement absurde. La dernière ligne n'est pas étirée, sauf si le
+ *    motif se termine par une barre de fin **et** que la ligne est déjà
+ *    remplie à plus de 50 %. Une ligne trop pleine (mesure plus large que
+ *    l'écran) est comprimée (`sc &lt; 1`).
+ * 5. **Positions finales** des éléments, des barres et des débuts de reprise.
+ *
+ * ## Repère vertical
+ *
+ * Chaque ligne (système) occupe une bande de hauteur fixe `SH` ; les
+ * coordonnées y à l'intérieur sont données par {@link module:layout.geom|geom}.
+ */
+
+import { segmentMeasures } from './rhythm.js';
+import { mlen } from './model.js';
+
+/** Moitié d'un interligne, en pixels : l'écart vertical entre deux positions `s` consécutives. */
+export const HALF_SPACE = 5;
+
+/** Largeur de base (px) par valeur de note, avant justification. */
+const BASE_WIDTH = { w: 46, h: 34, q: 27, 8: 23, 16: 21 };
+
+/** Largeur supplémentaire (px) réservée après la mesure selon le type de barre. */
+const BAR_EXTRA = { double: 4, final: 6, rep: 14 };
+
+/** Marges intérieures de mesure (px) avant la première et après la dernière note. */
+const PAD_L = 10;
+const PAD_R = 8;
+
+/** Largeur (px) réservée au signe de début de reprise `‖:`. */
+const REPEAT_START_W = 16;
+
+/** Facteur d'étirement maximal d'une ligne justifiée. */
+const MAX_STRETCH = 2.4;
+
+/**
+ * Position calculée d'un élément.
+ * @typedef {Object} ItemPos
+ * @property {number} sys Index de la ligne.
+ * @property {number} x Abscisse de la tête de note (centre).
+ * @property {number} x0 Début de la zone horizontale de l'élément (pour le toucher).
+ * @property {number} x1 Fin de cette zone.
+ */
+
+/**
+ * Une ligne (système) de la portée.
+ * @typedef {Object} System
+ * @property {number} start Abscisse où commence la musique (après clé et chiffrage).
+ * @property {number} end Abscisse après la dernière mesure.
+ * @property {number} used Largeur naturelle occupée (avant justification).
+ * @property {number} firstMeasure Numéro (à partir de 1) de la première mesure, affiché en début de ligne.
+ * @property {Array.&lt;{m: module:rhythm~Measure, w: number}>} ms Mesures placées sur la ligne.
+ */
+
+/**
+ * Résultat de la mise en page.
+ * @typedef {Object} Layout
+ * @property {boolean} rh Ligne rythmique (une seule ligne de portée, pas de hauteurs).
+ * @property {System[]} systems
+ * @property {ItemPos[]} pos Une position par élément, même index que `items`.
+ * @property {Array.&lt;{sys:number, x:number, type:string}>} bars Barres de fin de mesure.
+ * @property {Array.&lt;{sys:number, x:number}>} starts Débuts de reprise.
+ * @property {number} appendSys Ligne de la zone d'ajout.
+ * @property {number|null} appendX Abscisse de la zone d'ajout, `null` si le
+ *   motif est terminé par une barre de fin.
+ * @property {boolean} ended Le dernier élément porte une barre de fin.
+ * @property {number} SH Hauteur d'une ligne en px.
+ * @property {number} height Hauteur totale en px.
+ * @property {number} ML Capacité d'une mesure en noires.
+ */
+
+/**
+ * Largeur naturelle (px) d'un élément.
+ * @param {module:model~StaffItem} it
+ * @param {boolean} rh Ligne rythmique (pas d'altérations).
+ * @returns {number}
+ */
+function itemWidth(it, rh) {
+  let w = BASE_WIDTH[it.d];
+  if (it.dot) w += 7;
+  if (it.a != null &amp;&amp; !it.r &amp;&amp; !rh) w += 12;
+  if (it.c) w = Math.max(w, it.c.length * 8 + 10); // l'accord chiffré ne doit pas déborder sur le suivant
+  return w;
+}
+
+/**
+ * Met en page une portée.
+ *
+ * @param {module:model~StaffBlock} b Bloc portée.
+ * @param {number} W Largeur disponible en px.
+ * @param {boolean} [active=false] Bloc en cours d'édition : on garantit alors
+ *   une zone d'ajout assez large, quitte à ouvrir une nouvelle ligne vide.
+ * @returns {Layout}
+ */
+export function layout(b, W, active = false) {
+  const rh = b.clef === 'rhythm';
+  const items = b.items;
+  const widths = items.map((it) => itemWidth(it, rh));
+  const measures = segmentMeasures(items, b.time);
+
+  // La 1re ligne porte la clé ET le chiffrage ; les suivantes seulement la clé.
+  const firstStart = rh ? 46 : 64;
+  const otherStart = rh ? 30 : 44;
+
+  // --- 3. Coupure de lignes (glouton) ---
+  /** @type {System[]} */
+  const systems = [];
+  let sys;
+  const newSys = () => {
+    sys = { start: systems.length ? otherStart : firstStart, ms: [], used: 0, end: 0, firstMeasure: 1 };
+    systems.push(sys);
+  };
+  newSys();
+  measures.forEach((m) => {
+    const w = PAD_L + (m.rs ? REPEAT_START_W : 0) + m.idx.reduce((s, i) => s + widths[i], 0) + PAD_R + (BAR_EXTRA[m.type] || 0);
+    const avail = W - sys.start - 4;
+    if (sys.ms.length &amp;&amp; sys.used + w > avail) newSys();
+    sys.ms.push({ m, w });
+    sys.used += w;
+  });
+
+  // --- 4 et 5. Justification et positions ---
+  /** @type {ItemPos[]} */
+  const pos = [];
+  const bars = [];
+  const starts = [];
+  let mcount = 0;
+  const ended = items.length > 0 &amp;&amp; items[items.length - 1].bar === 'final';
+  systems.forEach((s, si) => {
+    const avail = W - s.start - 4;
+    const last = si === systems.length - 1;
+    let sc = 1;
+    if (s.used > avail) sc = avail / s.used; // trop plein : on comprime
+    else if (!last &amp;&amp; s.used > 0) sc = Math.min(avail / s.used, MAX_STRETCH);
+    else if (last &amp;&amp; ended &amp;&amp; s.used > avail * 0.5) sc = avail / s.used; // justification de fin de motif
+    s.firstMeasure = mcount + 1;
+    let x = s.start;
+    s.ms.forEach(({ m }) => {
+      mcount++;
+      const mx = x;
+      x += PAD_L * sc;
+      if (m.rs) { starts.push({ sys: si, x: mx + 2 }); x += REPEAT_START_W * sc; }
+      m.idx.forEach((i) => {
+        const it = items[i];
+        const iw = widths[i] * sc;
+        // La tête est décalée à droite de la zone pour laisser la place à l'altération.
+        const off = (it.a != null &amp;&amp; !it.r &amp;&amp; !rh ? 12 : 0) + 8;
+        pos[i] = { sys: si, x: x + off * Math.min(1, sc), x0: x, x1: x + iw };
+        x += iw;
+      });
+      x += (PAD_R + (BAR_EXTRA[m.type] || 0)) * sc;
+      if (m.full) bars.push({ sys: si, x, type: m.type || 'single' });
+    });
+    s.end = x;
+  });
+
+  // --- Zone d'ajout ---
+  let ls = systems[systems.length - 1];
+  if (active &amp;&amp; !ended &amp;&amp; W - ls.end &lt; 48) {
+    // Plus de place sur la dernière ligne : on prépare une ligne vide.
+    newSys();
+    sys.end = sys.start;
+    sys.firstMeasure = mcount + 1;
+    ls = sys;
+  }
+  const appendSys = systems.length - 1;
+  const appendX = ended ? null : ls.ms.length ? ls.end + 8 : ls.start + 6;
+
+  const SH = rh ? 92 : 124;
+  return { rh, systems, pos, bars, starts, appendSys, appendX, ended, SH, height: systems.length * SH, ML: mlen(b.time) };
+}
+
+/**
+ * Repères verticaux d'une ligne.
+ * @typedef {Object} SystemGeom
+ * @property {number} top Haut de la bande.
+ * @property {number} chordY Ligne de base des accords chiffrés.
+ * @property {number} staffTop Ordonnée de la 5e ligne (en haut).
+ * @property {number} staffBottom Ordonnée de la 1re ligne (en bas) ; `s = 0` ici.
+ * @property {number} mid Ligne du milieu (3e ligne), pivot du sens des hampes.
+ * @property {number} [line] Ligne unique d'une ligne rythmique.
+ */
+
+/**
+ * Ordonnées de référence de la ligne `si`.
+ * @param {Layout} L
+ * @param {number} si Index de ligne.
+ * @returns {SystemGeom}
+ */
+export function geom(L, si) {
+  const top = si * L.SH;
+  if (L.rh) {
+    const ly = top + 56;
+    return { top, chordY: top + 20, staffTop: ly, staffBottom: ly, mid: ly, line: ly };
+  }
+  const st = top + 46;
+  return { top, chordY: top + 20, staffTop: st, staffBottom: st + 40, mid: st + 20 };
+}
+
+/**
+ * Ordonnée d'une position `s` (tête de note) sur la ligne de géométrie `g`.
+ * Sur une ligne rythmique, toutes les notes sont sur la ligne.
+ * @param {Layout} L
+ * @param {SystemGeom} g
+ * @param {number} s
+ * @returns {number}
+ */
+export function yOfStep(L, g, s) {
+  return L.rh ? g.line : g.staffBottom - s * HALF_SPACE;
+}
+
+/**
+ * Hit-testing vertical : position `s` la plus proche d'une ordonnée touchée.
+ * Bornée à [-6, 14] (trois lignes supplémentaires de chaque côté).
+ * @param {SystemGeom} g
+ * @param {number} y
+ * @returns {number}
+ */
+export function stepFromY(g, y) {
+  return Math.max(-6, Math.min(14, Math.round((g.staffBottom - y) / HALF_SPACE)));
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>
