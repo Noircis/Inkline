@@ -78,7 +78,7 @@ export function blockById(id) {
  */
 export function touch(n) {
   n.updated = Date.now();
-  scheduleSave(state.notes);
+  scheduleSave(state.notes, n.id);
 }
 
 /**
@@ -86,9 +86,10 @@ export function touch(n) {
  * à {@link module:ui/state.touch|touch}, la date de modification ne change
  * pas. Ranger une note n'est pas la modifier : elle ne doit pas remonter en
  * tête du tri « Modifiées récemment ».
+ * @param {module:model~Note} n
  */
-export function saveArrangement() {
-  scheduleSave(state.notes);
+export function saveArrangement(n) {
+  scheduleSave(state.notes, n.id);
 }
 
 /** Élément racine où sont rendues les vues. */

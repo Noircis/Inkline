@@ -3,6 +3,30 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.1.0] - 2026-11-04
+
+Nouveau stockage : le carnet passe de `localStorage` à IndexedDB. Rien ne change à l'écran.
+
+### Modifié
+
+- **Stockage dans IndexedDB** : une entrée par note et par dossier, au lieu d'une seule chaîne JSON pour tout le carnet.
+  - Capacité : des centaines de Mo au lieu d'environ 5 Mo.
+  - Rapidité : une modification n'écrit plus que la note concernée, au lieu de réécrire tout le carnet à chaque frappe.
+  - Quand l'app passe en arrière-plan, l'écriture attend que les données soient physiquement sur le disque.
+- Les Options (À propos) indiquent le stockage utilisé.
+
+### Migration
+
+- Automatique au premier lancement : notes et dossiers sont copiés de `localStorage` vers IndexedDB en une seule transaction (tout ou rien). Si l'app est fermée pendant la copie, elle recommence au lancement suivant.
+- La copie n'a lieu que vers une base vide : des données déjà présentes dans IndexedDB ne sont jamais écrasées.
+- L'ancien carnet reste dans `localStorage`, intact, comme filet de sécurité.
+- Si IndexedDB est indisponible, l'app continue avec `localStorage`, comme avant.
+
+### Ajouté (développement)
+
+- `js/db.js` : petite couche au-dessus d'IndexedDB (ouverture, lecture, écriture en transaction), documentée pour les débutants.
+- 6 tests (`tests/storage-idb.test.js`) : migration, base déjà remplie jamais écrasée, écriture ciblée, suppressions, dossiers, repli sur `localStorage`. 55 tests au total. Dépendance de développement : `fake-indexeddb`.
+
 ## [2.0.0] - 2026-11-04
 
 Organisation des notes : dossiers, recherche, tri, épingles.

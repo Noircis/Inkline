@@ -24,7 +24,15 @@
 
 import { state, app } from './state.js';
 import { esc, uid } from '../util.js';
-import { flushSave, saveFolders, backupJson, importFile, getMeta, setMeta } from '../storage.js';
+import {
+  flushSave,
+  saveFolders,
+  backupJson,
+  importFile,
+  getMeta,
+  setMeta,
+  storageBackend,
+} from '../storage.js';
 import { sanitizeBlock } from '../sanitize.js';
 import { parseIRealAll, songToGrid } from '../ireal.js';
 import { sortedFolders, countByFolder } from '../folders.js';
@@ -156,7 +164,7 @@ function renderOptions() {
   <section class="opt">
     <h2 class="eyebrow">À propos</h2>
     <div class="opt-group">
-      <div class="opt-row static"><span>Inkline<small>Version ${esc(APP_VERSION)}</small></span></div>
+      <div class="opt-row static"><span>Inkline<small>Version ${esc(APP_VERSION)} · stockage ${storageBackend() === 'idb' ? 'IndexedDB' : 'localStorage'}</small></span></div>
       <a class="opt-row" href="${CHANGELOG_URL}" target="_blank" rel="noopener"><span>Nouveautés<small>Historique des versions</small></span>${CHEVRON}</a>
       <a class="opt-row" href="docs/" target="_blank" rel="noopener"><span>Documentation du code<small>Générée avec JSDoc</small></span>${CHEVRON}</a>
     </div>

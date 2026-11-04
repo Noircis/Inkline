@@ -1,40 +1,72 @@
 /**
  * @module storage
  * @description
- * Persistance des notes dans `localStorage`, et sauvegarde/restauration en
+ * Persistance du carnet (notes et dossiers), et sauvegarde/restauration en
  * fichier JSON.
+ *
+ * ## Où sont les données ? (depuis la 2.1)
+ *
+ * Dans **IndexedDB** (voir {@link module:db|db}) : un enregistrement par note
+ * et par dossier. Jusqu'à la 2.0, tout le carnet était une seule chaîne JSON
+ * dans `localStorage`, ce qui posait deux limites :
+ *
+ * - **taille** : environ 5 Mo par site pour `localStorage`, contre des
+ *   centaines de Mo pour IndexedDB ;
+ * - **coût** : chaque frappe réécrivait le carnet entier. Désormais, seule la
+ *   note modifiée est écrite.
+ *
+ * Les **métadonnées** (affichage choisi, dossier sélectionné, date de dernière
+ * sauvegarde…) restent dans `localStorage` : elles sont minuscules, et les
+ * lire de façon synchrone est pratique.
+ *
+ * ## Migration depuis `localStorage`
+ *
+ * Au premier lancement de la 2.1, {@link module:storage.loadAll|loadAll}
+ * copie les notes et dossiers de `localStorage` vers IndexedDB, **en une
+ * seule transaction** (tout ou rien), puis note `storage: 'idb'` dans les
+ * métadonnées. La copie n'a lieu que si la base IndexedDB est **vide** : des
+ * données déjà présentes ne sont jamais écrasées par l'ancienne copie.
+ *
+ * L'ancienne copie n'est **pas effacée** : elle reste en filet de sécurité
+ * (figée à la date de la migration). Règle d'or : ne jamais déplacer et
+ * supprimer des données dans la même opération.
+ *
+ * Si IndexedDB est indisponible (navigateur très ancien, stockage bloqué),
+ * l'app continue avec `localStorage`, comme avant la 2.1.
  *
  * ## Stratégie d'écriture
  *
  * - **Debounce** : chaque modification programme une écriture 150 ms plus
- *   tard ; les frappes rapprochées n'en déclenchent qu'une. Sérialiser tout le
- *   carnet à chaque caractère serait inutilement coûteux.
- * - **Flush** sur `visibilitychange` (voir {@link module:main|main}) : Android peut
- *   tuer une app en arrière-plan sans prévenir ; on écrit donc immédiatement
- *   quand la page passe en arrière-plan.
+ *   tard ; les frappes rapprochées n'en déclenchent qu'une.
+ * - **Notes « sales »** : {@link module:storage.scheduleSave|scheduleSave}
+ *   reçoit l'id de la note modifiée ; seules ces notes sont écrites.
+ * - **Comparaison** : {@link module:storage.flushSave|flushSave} compare
+ *   chaque note à sa dernière version écrite (sa forme JSON) et n'écrit que
+ *   les différences, suppressions comprises. C'est un filet de sécurité :
+ *   après une opération groupée (import, suppression d'un dossier…), rien ne
+ *   peut être oublié, même si l'appelant ne sait pas quelles notes ont changé.
+ * - **Flush** sur `visibilitychange` (voir {@link module:main|main}) : Android
+ *   peut tuer une app en arrière-plan sans prévenir ; on écrit donc tout de
+ *   suite, en mode `strict` (le navigateur attend que ce soit sur le disque).
  * - `navigator.storage.persist()` demande au navigateur de ne pas évincer
  *   les données quand l'espace disque manque.
  *
- * La clé de stockage date de la première version (« Carnet de portées ») et
- * n'a pas été renommée, pour ne pas perdre les notes existantes.
- *
- * ## Limites
- *
- * `localStorage` est synchrone et plafonné à environ 5 Mo par origine, ce qui
- * représente déjà plusieurs milliers de notes. Au-delà, il faudrait migrer
- * vers IndexedDB.
+ * Les écritures sont asynchrones et leurs erreurs (quota dépassé…) ne
+ * bloquent pas l'app : une note non écrite reste « différente » et sera
+ * retentée à l'écriture suivante.
  */
 
 import { sanitizeNote, sanitizeNotes, sanitizeFolders } from './sanitize.js';
 import { SORT_KEYS } from './search.js';
+import { openDb, getAll, write, STORES } from './db.js';
 
-/** Clé `localStorage` du carnet (historique : ne pas changer). */
+/** Clé `localStorage` du carnet jusqu'à la 2.0 (historique : ne pas changer). */
 const STORAGE_KEY = 'carnet-portees-v1';
 
 /** Identifiant écrit dans les fichiers de sauvegarde. */
 const BACKUP_APP = 'carnet-portees';
 
-/** Clé `localStorage` des dossiers (depuis la 2.0). */
+/** Clé `localStorage` des dossiers en 2.0. */
 const FOLDERS_KEY = 'inkline-folders';
 
 /** Version du format des sauvegardes : 2 depuis l'arrivée des dossiers. Les sauvegardes v1 restent lisibles. */
@@ -46,45 +78,217 @@ const META_KEY = 'inkline-meta';
 /** Identifiant écrit dans les fichiers de note partagée (`.inkline`). */
 const NOTE_APP = 'inkline';
 
+/** Délai du debounce d'écriture (ms). */
+const SAVE_DELAY = 150;
+
+/**
+ * Où le carnet est enregistré.
+ * @type {'idb'|'local'}
+ */
+let backend = 'local';
+
+/** @type {IDBDatabase|null} */
+let db = null;
+
+/**
+ * Dernière version écrite de chaque note, en JSON (id → chaîne). Sert à
+ * savoir ce qui a changé depuis la dernière écriture.
+ * @type {Map.<string, string>}
+ */
+const saved = new Map();
+
+/** JSON du carnet entier lors de la dernière écriture (mode `localStorage`). */
+let savedLocal = '';
+
+/** Notes modifiées depuis la dernière écriture (ids). */
+const dirty = new Set();
+
+/** Une écriture programmée doit-elle tout comparer (appel sans id) ? */
+let fullPending = false;
+
 let timer = null;
 
 /**
- * Charge le carnet. Retourne un objet vide si rien n'est stocké, si le JSON
- * est illisible ou si le stockage est indisponible (navigation privée).
- * @returns {Object.<string, module:model~Note>}
+ * Contenu chargé au démarrage.
+ * @typedef {Object} LoadResult
+ * @property {Object.<string, module:model~Note>} notes
+ * @property {Object.<string, module:folders~Folder>} folders
+ * @property {'idb'|'local'} backend Où le carnet est enregistré.
+ * @property {boolean} migrated La migration depuis `localStorage` vient d'avoir lieu.
  */
-export function loadNotes() {
-  let data = {};
+
+/**
+ * Lit une valeur JSON de `localStorage` (objet vide si absente ou illisible).
+ * @param {string} key
+ * @returns {*}
+ */
+function readLocal(key) {
   try {
-    data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {};
+    return JSON.parse(localStorage.getItem(key) || '{}') || {};
   } catch (e) {
-    data = {};
+    return {};
   }
-  // Même le stockage local est validé : il a pu être écrit par une ancienne
-  // version, ou corrompu. Une donnée invalide ne doit jamais atteindre le rendu.
-  return sanitizeNotes(data);
 }
 
 /**
- * Programme une écriture (debounce 150 ms).
- * @param {Object.<string, module:model~Note>} notes
+ * Lit les deux magasins.
+ * @param {IDBDatabase} database
+ * @returns {Promise<Array.<Array.<Object>>>} `[notes, dossiers]` bruts.
  */
-export function scheduleSave(notes) {
-  clearTimeout(timer);
-  timer = setTimeout(() => flushSave(notes), 150);
+function readDb(database) {
+  return Promise.all([getAll(database, STORES.notes), getAll(database, STORES.folders)]);
 }
 
 /**
- * Écrit immédiatement. Les erreurs (quota dépassé, stockage bloqué) sont
- * ignorées : l'app reste utilisable, l'utilisateur peut exporter.
- * @param {Object.<string, module:model~Note>} notes
+ * Charge le carnet (asynchrone : à attendre avec `await`).
+ *
+ * Toutes les données lues sont validées
+ * ({@link module:sanitize.sanitizeNotes|sanitizeNotes}) : elles ont pu être
+ * écrites par une ancienne version, ou corrompues. Une donnée invalide ne
+ * doit jamais atteindre le rendu.
+ *
+ * @returns {Promise<LoadResult>}
  */
-export function flushSave(notes) {
-  clearTimeout(timer);
+export async function loadAll() {
+  saved.clear();
+  dirty.clear();
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    db = await openDb();
+    let [rawNotes, rawFolders] = await readDb(db);
+    let migrated = false;
+    if (getMeta().storage !== 'idb') {
+      // Ne migrer que vers une base VIDE : si elle contient déjà des données
+      // (métadonnées perdues, par exemple), elles sont plus récentes que la
+      // copie de localStorage et ne doivent surtout pas être écrasées.
+      if (!rawNotes.length && !rawFolders.length) {
+        await migrateFromLocal(db);
+        migrated = true;
+        [rawNotes, rawFolders] = await readDb(db);
+      }
+      setMeta({ storage: 'idb' });
+    }
+    // On mémorise ce qui est réellement sur le disque (avant validation) : si
+    // la validation corrige une note, la première écriture enregistrera la
+    // version corrigée.
+    rawNotes.forEach((r) => {
+      if (r && typeof r.id === 'string') saved.set(r.id, JSON.stringify(r));
+    });
+    backend = 'idb';
+    return { notes: sanitizeNotes(rawNotes), folders: sanitizeFolders(rawFolders), backend, migrated };
   } catch (e) {
-    /* stockage indisponible */
+    // IndexedDB indisponible : on reste sur localStorage, comme avant la 2.1.
+    db = null;
+    backend = 'local';
+    try {
+      savedLocal = localStorage.getItem(STORAGE_KEY) || '';
+    } catch (e2) {
+      savedLocal = '';
+    }
+    return {
+      notes: sanitizeNotes(readLocal(STORAGE_KEY)),
+      folders: sanitizeFolders(readLocal(FOLDERS_KEY)),
+      backend,
+      migrated: false,
+    };
+  }
+}
+
+/**
+ * Copie le carnet de `localStorage` vers IndexedDB, en une transaction : si
+ * l'app est tuée au milieu, rien n'est écrit et la migration recommencera au
+ * lancement suivant. L'original est conservé.
+ * @param {IDBDatabase} database
+ * @returns {Promise<void>}
+ */
+async function migrateFromLocal(database) {
+  const notes = Object.values(sanitizeNotes(readLocal(STORAGE_KEY)));
+  const folders = Object.values(sanitizeFolders(readLocal(FOLDERS_KEY)));
+  await write(database, { [STORES.notes]: { put: notes }, [STORES.folders]: { put: folders } }, true);
+}
+
+/**
+ * Où le carnet est enregistré (pour l'écran Options et les tests).
+ * @returns {'idb'|'local'}
+ */
+export function storageBackend() {
+  return backend;
+}
+
+/**
+ * Programme une écriture (debounce de {@link SAVE_DELAY} ms).
+ * @param {Object.<string, module:model~Note>} notes Le carnet.
+ * @param {string} [id] Note modifiée. Sans id, toutes les notes seront comparées.
+ */
+export function scheduleSave(notes, id) {
+  if (id) dirty.add(id);
+  else fullPending = true;
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    const ids = fullPending ? null : [...dirty];
+    dirty.clear();
+    fullPending = false;
+    writeChanges(notes, ids, false);
+  }, SAVE_DELAY);
+}
+
+/**
+ * Écrit immédiatement tout ce qui a changé (comparaison de toutes les notes).
+ * @param {Object.<string, module:model~Note>} notes
+ * @param {boolean} [strict=false] Attendre l'écriture physique sur le disque.
+ * @returns {Promise<void>} Résolue quand l'écriture est terminée (ou a échoué).
+ */
+export function flushSave(notes, strict = false) {
+  clearTimeout(timer);
+  dirty.clear();
+  fullPending = false;
+  return writeChanges(notes, null, strict);
+}
+
+/**
+ * Écrit les notes qui diffèrent de leur dernière version écrite.
+ *
+ * Point subtil : IndexedDB copie chaque objet **au moment** de `put`, et
+ * `write` émet les `put` immédiatement (avant le premier `await`). Le JSON
+ * comparé et l'objet écrit correspondent donc exactement au même état de la
+ * note, même si l'utilisateur continue de taper pendant l'écriture.
+ *
+ * @param {Object.<string, module:model~Note>} notes
+ * @param {?Array.<string>} ids Notes à examiner, ou `null` pour toutes
+ *   (et pour détecter les suppressions).
+ * @param {boolean} strict
+ * @returns {Promise<void>}
+ */
+async function writeChanges(notes, ids, strict) {
+  if (backend === 'local') {
+    try {
+      const json = JSON.stringify(notes);
+      if (json !== savedLocal) localStorage.setItem(STORAGE_KEY, json);
+      savedLocal = json;
+    } catch (e) {
+      /* stockage indisponible : l'utilisateur peut exporter */
+    }
+    return;
+  }
+  /** @type {Map.<string, string>} */
+  const changed = new Map();
+  const put = [];
+  (ids || Object.keys(notes)).forEach((id) => {
+    const n = notes[id];
+    if (!n) return;
+    const json = JSON.stringify(n);
+    if (saved.get(id) === json) return;
+    changed.set(id, json);
+    put.push(n);
+  });
+  // Suppressions : notes écrites autrefois et absentes du carnet.
+  const del = (ids || [...saved.keys()]).filter((id) => !notes[id] && saved.has(id));
+  if (!put.length && !del.length) return;
+  try {
+    await write(db, { [STORES.notes]: { put, del } }, strict);
+    changed.forEach((json, id) => saved.set(id, json));
+    del.forEach((id) => saved.delete(id));
+  } catch (e) {
+    /* quota dépassé, base fermée… : ces notes restent « différentes » et seront retentées */
   }
 }
 
@@ -100,26 +304,24 @@ export function requestPersistence() {
 }
 
 /**
- * Charge les dossiers (objet vide si aucun, ou si les données sont illisibles).
- * @returns {Object.<string, module:folders~Folder>}
- */
-export function loadFolders() {
-  try {
-    return sanitizeFolders(JSON.parse(localStorage.getItem(FOLDERS_KEY) || '{}'));
-  } catch (e) {
-    return {};
-  }
-}
-
-/**
- * Enregistre les dossiers (immédiatement : ils changent rarement et pèsent peu).
+ * Enregistre les dossiers (immédiatement : ils changent rarement et pèsent
+ * peu, on réécrit donc le magasin entier).
  * @param {Object.<string, module:folders~Folder>} folders
+ * @returns {Promise<void>}
  */
-export function saveFolders(folders) {
+export async function saveFolders(folders) {
+  if (backend === 'local') {
+    try {
+      localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+    } catch (e) {
+      /* stockage indisponible */
+    }
+    return;
+  }
   try {
-    localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+    await write(db, { [STORES.folders]: { clear: true, put: Object.values(folders) } });
   } catch (e) {
-    /* stockage indisponible */
+    /* retenté au prochain changement de dossier */
   }
 }
 
@@ -217,6 +419,7 @@ export function importFile(notes, text, folders = {}) {
  * @property {string} [folder] Sélection de la barre de dossiers (`'all'`, `'none'` ou id de dossier).
  * @property {Object.<string, string>} [sorts] Tri choisi pour chaque sélection de la barre de dossiers.
  * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
+ * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
  */
 
 /**
@@ -251,6 +454,7 @@ export function getMeta() {
       folder: typeof m.folder === 'string' && /^[a-z0-9]{1,32}$/.test(m.folder) ? m.folder : undefined,
       sorts: sortsOf(m.sorts),
       dataVersion: num(m.dataVersion),
+      storage: m.storage === 'idb' ? 'idb' : undefined,
     };
   } catch (e) {
     return {};

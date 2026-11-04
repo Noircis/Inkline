@@ -27,7 +27,7 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-2.0.0';
+const CACHE = 'inkline-2.1.0';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -58,6 +58,7 @@ const CORE = [
   './js/ireal.js',
   './js/audio.js',
   './js/storage.js',
+  './js/db.js',
   './js/history.js',
   './js/sanitize.js',
   './js/export.js',

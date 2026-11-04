@@ -7,7 +7,7 @@ Application web progressive (PWA) **sans framework ni étape de build** : des mo
 ## Démarrage
 
 ```bash
-npm install        # outils de développement uniquement (JSDoc, Prettier, ESLint)
+npm install        # outils de développement uniquement (JSDoc, Prettier, ESLint, fake-indexeddb)
 npm test           # tests unitaires (node:test, aucune dépendance)
 npm run lint       # analyse du code (ESLint)
 npm run format     # formatage automatique (Prettier)
@@ -47,7 +47,8 @@ js/
   grid.js             grilles d'accords : saisie, durées, ordre de lecture, rendu HTML
   ireal.js            import/export iReal Pro (irealb://)
   audio.js            synthé et séquenceur Web Audio
-  storage.js          localStorage, sauvegarde/restauration, fichiers .inkline
+  storage.js          enregistrement du carnet, migration, sauvegarde/restauration, fichiers .inkline
+  db.js               petite couche au-dessus d'IndexedDB (ouvrir, lire, écrire en transaction)
   sanitize.js         validation des données importées (liste blanche)
   folders.js          dossiers : modèle, sélection, compteurs, suppression
   search.js           recherche (titres, textes, accords) et tri
@@ -105,11 +106,20 @@ Voir le module `model` pour le détail des types. En bref :
 
 Le format est rétrocompatible : une note créée en 1.0 s'ouvre dans la dernière version. Chaque note porte une date de création (`created`) et de modification (`updated`) ; pour les notes antérieures à la 1.7.0, la date de création a été initialisée avec la date de modification.
 
-Depuis la 2.0, une note peut porter `folder` (id de dossier) et `pinned`. Les dossiers `{ id, name, color, created }` sont stockés à part (clé `inkline-folders`) ; une note sans dossier, ou dont le dossier a disparu, est « non classée ».
+Depuis la 2.0, une note peut porter `folder` (id de dossier) et `pinned`. Les dossiers `{ id, name, color, created }` sont stockés à part ; une note sans dossier, ou dont le dossier a disparu, est « non classée ».
 
 Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 'note', version: 1, note }`, **sans** `folder` ni `pinned` (le rangement reste chez soi).
 
 Une sauvegarde est du JSON `{ app, version: 2, exported, notes, folders }` ; les sauvegardes `version: 1` (sans dossiers) restent importables.
+
+## Stockage
+
+Depuis la 2.1, le carnet est enregistré dans **IndexedDB** (base `inkline`, magasins `notes` et `folders`, une entrée par note et par dossier). Les métadonnées (affichage, dossier sélectionné, tris, date de dernière sauvegarde) restent dans `localStorage` (clé `inkline-meta`).
+
+- **Migration** : au premier lancement de la 2.1, le carnet de `localStorage` (clés `carnet-portees-v1` et `inkline-folders`) est copié en une transaction, seulement si la base est vide. L'ancienne copie est conservée, figée à la date de la migration.
+- **Écritures** : seule la note modifiée est écrite ; après une opération groupée, une comparaison avec la dernière version écrite (JSON) détecte toutes les modifications et suppressions.
+- **Repli** : si IndexedDB est indisponible, l'app fonctionne comme avant avec `localStorage`. Les Options indiquent le stockage utilisé (À propos).
+- **Tests** : `tests/storage-idb.test.js` utilise `fake-indexeddb`, une implémentation en mémoire d'IndexedDB pour Node.
 
 ## Publier une nouvelle version
 

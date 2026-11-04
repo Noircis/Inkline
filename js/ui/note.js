@@ -131,13 +131,13 @@ function bindArrangement(n) {
     if (n.pinned) delete n.pinned;
     else n.pinned = true;
     pin.setAttribute('aria-pressed', String(!!n.pinned));
-    saveArrangement();
+    saveArrangement(n);
   };
 
   const assign = (id) => {
     if (id) n.folder = id;
     else delete n.folder;
-    saveArrangement();
+    saveArrangement(n);
     app.querySelector('.note-folder').outerHTML = folderSelectHtml(n);
     bindArrangementSelect(n, assign);
   };

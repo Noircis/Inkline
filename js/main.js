@@ -5,7 +5,7 @@
  * `<script type="module" src="js/main.js">`.
  *
  * Responsabilités :
- * 1. charger le carnet depuis le stockage ;
+ * 1. charger le carnet (IndexedDB, de façon asynchrone) ;
  * 2. afficher le premier écran ;
  * 3. brancher les écouteurs globaux (mise en arrière-plan, redimensionnement,
  *    clavier virtuel) ;
@@ -46,7 +46,7 @@
  */
 
 import { state, app } from './ui/state.js';
-import { loadNotes, loadFolders, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
+import { loadAll, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
 import { renderScreen, showList } from './ui/nav.js';
 import { redrawStaff } from './ui/staff-ui.js';
 // Imports pour leur effet : chaque module s'enregistre auprès de ui/nav ou ui/blocks.
@@ -55,13 +55,18 @@ import './ui/home.js';
 import './ui/note.js';
 import './ui/options.js';
 
-state.notes = loadNotes();
-state.folders = loadFolders();
+// Chargement asynchrone (IndexedDB) : `await` au niveau du module. Le reste
+// de ce fichier, dont le premier rendu, ne s'exécute qu'une fois le carnet
+// chargé. Les modules importés plus haut, eux, sont déjà évalués : ils n'ont
+// fait que s'enregistrer, sans rien afficher.
+const loaded = await loadAll();
+state.notes = loaded.notes;
+state.folders = loaded.folders;
 // Une note qui référence un dossier disparu redevient non classée.
 Object.values(state.notes).forEach((n) => {
   if (n.folder && !state.folders[n.folder]) delete n.folder;
 });
-// loadNotes valide les notes et complète les champs manquants (date de
+// loadAll valide les notes et complète les champs manquants (date de
 // création des notes d'avant la 1.7.0). On réécrit tout de suite le résultat
 // pour figer ces valeurs : sinon elles seraient recalculées à chaque lancement.
 flushSave(state.notes);
@@ -85,7 +90,7 @@ if (document.fonts && document.fonts.ready)
 
 // Android peut tuer l'app en arrière-plan : on écrit tout de suite.
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) flushSave(state.notes);
+  if (document.hidden) flushSave(state.notes, true);
 });
 
 // Redimensionnement / rotation : les portées dépendent de la largeur.
