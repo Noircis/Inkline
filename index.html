@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#F2F4F8" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1218" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
@@ -96,7 +96,7 @@ button{cursor:pointer}
 .tools button{border:1px solid var(--rule);background:var(--bg);border-radius:6px;min-height:32px;min-width:38px;padding:0 10px;font-size:13px}
 .tools .confirm{background:var(--danger);border-color:var(--danger);color:var(--surface)}
 .addbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.addbar .btn{flex:1;justify-content:center;min-width:96px}
+.addbar .btn{flex:1;justify-content:center;min-width:70px;padding:8px 6px}
 .notefoot{margin-top:24px;display:flex;justify-content:center}
 
 /* staff svg classes */
@@ -119,7 +119,7 @@ svg .it.play .s,svg .it.play .h{stroke:var(--accent)}
 svg .selbg{fill:var(--sel);opacity:.14}
 
 /* palette */
-#palette{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--rule);box-shadow:0 -6px 20px rgba(10,15,30,.12);padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
+#palette,#gpal{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--rule);box-shadow:0 -6px 20px rgba(10,15,30,.12);padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
 .pal-inner{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:6px;padding-top:8px}
 .pal-info{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);min-height:32px}
 .pal-info span{flex:1;min-width:0}
@@ -137,6 +137,47 @@ svg .selbg{fill:var(--sel);opacity:.14}
 .pal-bars button .mus{font-family:var(--f-music);font-size:24px;line-height:1}
 .pal-bars button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
 .pal-chord{display:flex;gap:6px}
+/* grilles */
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));row-gap:16px;padding-top:12px;margin-top:4px}
+.gm{position:relative;min-height:54px;border:0;border-left:1.5px solid var(--ink);background:transparent;padding:8px 4px 4px 7px;text-align:left;display:flex;align-items:center;min-width:0;border-radius:0;color:var(--ink)}
+.gm.rb{border-right:1.5px solid var(--ink)}
+.gm.lb-none{border-left:0}
+.gm.lb-dbl{border-left:4px double var(--ink)}
+.gm.lb-rs{border-left:4px solid var(--ink);padding-left:12px}
+.gm.lb-rs::before,.gm.rb-re::after{content:"";position:absolute;top:50%;width:4px;height:14px;transform:translateY(-50%);background:radial-gradient(circle,var(--ink) 1.6px,transparent 1.9px) 0 0/4px 7px repeat-y}
+.gm.lb-rs::before{left:3px}
+.gm.rb-re{border-right:4px solid var(--ink);padding-right:10px}
+.gm.rb-re::after{right:3px}
+.gm.rb-dbl{border-right:4px double var(--ink)}
+.gm.rb-fin{border-right:5px solid var(--ink);padding-right:9px}
+.gm.rb-fin::after{content:"";position:absolute;right:3px;top:0;bottom:0;width:1.5px;background:var(--ink)}
+.gm.sel{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.gm.play{background:var(--accent-soft)}
+.gm.add{border:1.5px dashed var(--rule);border-radius:6px;justify-content:center;color:var(--muted);font-size:22px;margin-left:6px;padding:0}
+.gm .sec{position:absolute;top:-10px;left:-3px;font-family:var(--f-display);font-weight:700;font-size:11px;background:var(--ink);color:var(--surface);padding:0 4px;border-radius:3px;line-height:16px;z-index:1}
+.gm .volta{position:absolute;top:-9px;left:14px;right:2px;height:10px;border-top:1.5px solid var(--ink);border-left:1.5px solid var(--ink);font-size:10px;font-weight:600;padding:1px 3px;line-height:1}
+.gcs{display:flex;width:100%;gap:3px;min-width:0}
+.gc{flex:1;min-width:0;white-space:nowrap;overflow:hidden;font-family:var(--f-display);font-weight:600;font-size:17px;line-height:1.1}
+.gm.n2 .gc{font-size:15px}
+.gm.n3 .gcs,.gm.n4 .gcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));row-gap:3px;column-gap:2px}
+.gm.n3 .gc,.gm.n4 .gc{font-size:13px;overflow:visible}
+.gc sup{font-size:.62em;vertical-align:.5em;font-weight:600;margin-left:1px}
+.gc .cb{font-size:.72em;font-weight:500}
+.gc .slash{color:var(--line);font-weight:400}
+.gc .nc{font-size:.72em}
+.gc .bad{color:var(--danger);text-decoration:underline wavy}
+.gm .sim{font-family:var(--f-music);font-size:26px;margin:auto;line-height:1}
+.irealbox{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px;padding:10px;background:var(--bg);border-radius:8px}
+.ir-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ir-lbl{font-size:13px;color:var(--muted)}
+.block .irealbox textarea,.backup textarea{border:1px solid var(--rule);background:var(--surface);border-radius:6px;font-size:13px;padding:6px 8px;min-height:3.2em;overflow:auto;width:100%;font-family:ui-monospace,Menlo,monospace}
+a.btn{text-decoration:none;color:inherit}
+.g-row button{font-size:13px}
+.g-row button.mus{font-family:var(--f-music);font-size:24px}
+#gpal .pal-chord{display:flex}
+#gIn.err{border-color:var(--danger)}
+.version{font-size:12px;color:var(--muted);margin-top:18px}
+
 .pal-chord input{flex:1;min-width:0;border:1px solid var(--accent);border-radius:8px;padding:8px 10px;font-size:16px;background:var(--bg)}
 .pal-chord button{border:1px solid var(--rule);background:var(--bg);border-radius:8px;padding:0 12px}
 .pal-chord button.ok{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
@@ -182,6 +223,33 @@ svg .selbg{fill:var(--sel);opacity:.14}
       <button type="button" data-act="next" aria-label="Note suivante">&#9654;</button>
       <button type="button" data-act="undo" aria-label="Annuler" style="font-size:20px">&#8630;</button>
       <button type="button" data-act="del" aria-label="Effacer" style="font-size:20px">&#9003;</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="gpal" hidden>
+  <div class="pal-inner">
+    <div class="pal-info"><span id="gInfo"></span><button id="gDone" type="button">Terminé</button></div>
+    <div class="pal-chord">
+      <input id="gIn" placeholder="Accords : Bb7 Eb7 · | = mesure suivante" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next">
+      <button id="gOk" class="ok" type="button" aria-label="Mesure suivante">&#8629;</button>
+    </div>
+    <div class="pal-row g-row">
+      <button type="button" data-g="sec">Section</button>
+      <button type="button" data-g="end">Volta</button>
+      <button type="button" class="mus" data-g="rs" aria-label="Début de reprise">&#x1D106;</button>
+      <button type="button" class="mus" data-g="re" aria-label="Fin de reprise">&#x1D107;</button>
+      <button type="button" class="mus" data-g="dbl" aria-label="Double barre">&#x1D101;</button>
+      <button type="button" class="mus" data-g="fin" aria-label="Barre de fin">&#x1D102;</button>
+    </div>
+    <div class="pal-row g-row">
+      <button type="button" data-g="prev" aria-label="Mesure précédente">&#9664;</button>
+      <button type="button" data-g="next" aria-label="Mesure suivante">&#9654;</button>
+      <button type="button" class="mus" data-g="sim" aria-label="Répéter la mesure précédente">&#x1D10E;</button>
+      <button type="button" data-g="ins">+ Mes.</button>
+      <button type="button" data-g="del">Suppr.</button>
+      <button type="button" data-g="undo" aria-label="Annuler" style="font-size:20px">&#8630;</button>
     </div>
   </div>
 </div>
@@ -473,7 +541,7 @@ function preview(b,i){
 let playing=null;
 function stopPlay(){
   if(!playing)return;playing.timers.forEach(clearTimeout);playing.nodes.forEach(n=>{try{n.stop()}catch(e){}});
-  const id=playing.id;playing=null;playIdx=null;redrawStaff(id);updatePlayBtn(id);
+  const id=playing.id;playing=null;playIdx=null;redrawStaff(id);redrawGrid(id);updatePlayBtn(id);
 }
 function play(b){
   const was=playing&&playing.id===b.id;stopPlay();if(was)return;
@@ -502,7 +570,7 @@ function updatePlayBtn(id){const btn=document.querySelector(`[data-play="${id}"]
 const app=document.getElementById('app');
 function render(){if(view.name==='note'&&notes[view.id])renderNote();else{view={name:'list',id:null};renderList();}}
 function fmtDate(ts){try{return new Date(ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}catch(e){return ''}}
-function noteSummary(n){const st=n.blocks.filter(b=>b.type==='staff');const r=st.filter(b=>b.clef==='rhythm').length,p=st.length-r;const parts=[];if(p)parts.push(p+(p>1?' portées':' portée'));if(r)parts.push(r+(r>1?' rythmes':' rythme'));return parts.join(' · ');}
+function noteSummary(n){const st=n.blocks.filter(b=>b.type==='staff');const r=st.filter(b=>b.clef==='rhythm').length,p=st.length-r;const parts=[];if(p)parts.push(p+(p>1?' portées':' portée'));if(r)parts.push(r+(r>1?' rythmes':' rythme'));const gr=n.blocks.filter(b=>b.type==='grid').length;if(gr)parts.push(gr+(gr>1?' grilles':' grille'));return parts.join(' · ');}
 
 function renderList(){
   stopPlay();activeId=null;sel=null;showPalette(false);
@@ -530,8 +598,16 @@ function renderList(){
     requestAnimationFrame(()=>{wrap.querySelectorAll('.card').forEach((c,k)=>{const n=list[k];const st=n.blocks.find(b=>b.type==='staff'&&b.items.length);const th=c.querySelector('.thumb');if(st&&th)th.innerHTML=staffSvg(st,th.clientWidth||300,{maxSystems:1}).svg;});});
   }
   const bk=document.createElement('div');bk.className='backup';
-  bk.innerHTML=`<div class="eyebrow">Sauvegarde</div><p>Tes notes restent sur ce téléphone. Exporte un fichier de temps en temps pour ne rien perdre.</p><div class="actions"><button class="btn" id="exp" type="button">Exporter</button><label class="btn" for="impIn">Importer</label><input type="file" id="impIn" accept="application/json,.json" hidden></div><div class="status" id="bkMsg"></div>`;
+  bk.innerHTML=`<div class="eyebrow">Sauvegarde</div><p>Tes notes restent sur ce téléphone. Exporte un fichier de temps en temps pour ne rien perdre.</p><div class="actions"><button class="btn" id="exp" type="button">Exporter</button><label class="btn" for="impIn">Importer</label><input type="file" id="impIn" accept="application/json,.json" hidden></div><div class="status" id="bkMsg"></div>
+  <div class="eyebrow" style="margin-top:18px">iReal Pro</div><p>Colle un lien <code>irealb://</code> (morceau ou playlist) pour créer une note par morceau.</p>
+  <textarea id="irList" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
+  <div class="actions" style="margin-top:8px"><button class="btn" id="irListGo" type="button">Importer d'iReal Pro</button><label class="btn" for="irListF">Ouvrir un fichier</label><input type="file" id="irListF" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
+  <div class="status" id="irMsg"></div>
+  <div class="version">Version ${APP_VERSION}</div>`;
   body.appendChild(bk);
+  const irGo=txt=>{const k=importIRealNotes(txt);if(!k){bk.querySelector('#irMsg').textContent='Aucun morceau iReal trouvé. Le lien doit commencer par irealb://.';return;}renderList();const m=app.querySelector('#irMsg');if(m)m.textContent=k+(k>1?' morceaux importés.':' morceau importé.');};
+  bk.querySelector('#irListGo').onclick=()=>irGo(bk.querySelector('#irList').value);
+  bk.querySelector('#irListF').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>irGo(String(r.result));r.readAsText(f);};
   bk.querySelector('#exp').onclick=()=>{const blob=new Blob([JSON.stringify({app:'carnet-portees',version:1,exported:Date.now(),notes},null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='carnet-portees-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);bk.querySelector('#bkMsg').textContent='Fichier exporté dans tes téléchargements.';};
   bk.querySelector('#impIn').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);const ns=d.notes||d;let k=0;Object.values(ns).forEach(n=>{if(n&&n.id&&Array.isArray(n.blocks)){const cur=notes[n.id];if(!cur||n.updated>=cur.updated){notes[n.id]=n;k++;}}});lsWrite();renderList();const m=app.querySelector('#bkMsg');if(m)m.textContent=k+(k>1?' notes importées.':' note importée.');}catch(err){bk.querySelector('#bkMsg').textContent="Ce fichier n'est pas une sauvegarde du carnet.";}};r.readAsText(f);};
   app.querySelector('#newNote').onclick=newNote;
@@ -556,7 +632,7 @@ function renderNote(keepScroll){
   app.innerHTML=`<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><span class="status" data-status>${statusText()}</span></header>
   <textarea class="title-in" id="titleIn" rows="1" placeholder="Titre de la note"></textarea>
   <div class="blocks" id="blocks"></div>
-  <div class="addbar"><button class="btn" data-add="text" type="button">+ Texte</button><button class="btn" data-add="staff" type="button">+ Portée</button><button class="btn" data-add="rhythm" type="button">+ Rythme</button></div>
+  <div class="addbar"><button class="btn" data-add="text" type="button">+ Texte</button><button class="btn" data-add="staff" type="button">+ Portée</button><button class="btn" data-add="rhythm" type="button">+ Rythme</button><button class="btn" data-add="grid" type="button">+ Grille</button></div>
   <div class="notefoot"><button class="btn ghost danger" id="delNote" type="button">Supprimer la note</button></div>`;
   const ti=app.querySelector('#titleIn');ti.value=n.title;autosize(ti);
   ti.addEventListener('focus',()=>{pushHist(n);setActive(null);});
@@ -568,26 +644,27 @@ function renderNote(keepScroll){
   app.querySelectorAll('[data-add]').forEach(btn=>btn.onclick=()=>addBlock(n,btn.dataset.add));
   const bl=app.querySelector('#blocks');
   n.blocks.forEach((b,bi)=>bl.appendChild(blockEl(n,b,bi)));
-  requestAnimationFrame(()=>{n.blocks.forEach(b=>{if(b.type==='staff')redrawStaff(b.id);});app.querySelectorAll('.block textarea').forEach(autosize);});
+  requestAnimationFrame(()=>{n.blocks.forEach(b=>{if(b.type==='staff')redrawStaff(b.id);if(b.type==='grid')redrawGrid(b.id);});app.querySelectorAll('.block textarea').forEach(autosize);});
   updateActive();
   if(keepScroll)window.scrollTo(0,sy);
 }
 function autosize(t){t.style.height='auto';t.style.height=t.scrollHeight+'px';}
 function addBlock(n,kind){
   pushHist(n);
-  const b=kind==='text'?{id:uid(),type:'text',text:''}:{id:uid(),type:'staff',clef:kind==='rhythm'?'rhythm':'treble',time:'4/4',tempo:100,swing:false,items:[]};
-  n.blocks.push(b);save(n);activeId=b.id;sel=null;renderNote(true);
+  const b=kind==='grid'?newGrid():kind==='text'?{id:uid(),type:'text',text:''}:{id:uid(),type:'staff',clef:kind==='rhythm'?'rhythm':'treble',time:'4/4',tempo:100,swing:false,items:[]};
+  n.blocks.push(b);save(n);activeId=b.id;sel=kind==='grid'?0:null;renderNote(true);
   const el=app.querySelector(`[data-block="${b.id}"]`);
   if(el){el.scrollIntoView({block:'center',behavior:'smooth'});if(kind==='text'){const t=el.querySelector('textarea');t&&t.focus();}}
 }
 function toolsHtml(){return `<div class="tools"><button type="button" data-tool="up" aria-label="Monter">&#8593;</button><button type="button" data-tool="down" aria-label="Descendre">&#8595;</button><button type="button" data-tool="del">Supprimer</button></div>`;}
 function blockEl(n,b,bi){
-  const el=document.createElement('div');el.className='block '+(b.type==='text'?'text':'staff');el.dataset.block=b.id;
+  const el=document.createElement('div');el.className='block '+(b.type==='text'?'text':b.type==='grid'?'gridblk':'staff');el.dataset.block=b.id;
   if(b.type==='text'){
     el.innerHTML=`<textarea rows="1" placeholder="${bi===0?'Écrivez ici…':'Texte'}" id="t_${b.id}"></textarea>`+toolsHtml();
     const t=el.querySelector('textarea');t.value=b.text;
     t.addEventListener('focus',()=>{pushHist(n);setActive(b.id);});
     t.addEventListener('input',()=>{b.text=t.value;autosize(t);save(n);});
+  }else if(b.type==='grid'){gridBlock(n,b,el);
   }else{
     const rh=b.clef==='rhythm';
     el.innerHTML=`<div class="shead"><span class="kind">${rh?'Rythme':'Portée'}</span>
@@ -619,11 +696,11 @@ function curNote(){return notes[view.id];}
 function blockById(id){const n=curNote();return n?n.blocks.find(b=>b.id===id):null;}
 function setActive(id){
   if(activeId===id)return;const prev=activeId;activeId=id;sel=null;
-  if(prev)redrawStaff(prev);if(id)redrawStaff(id);updateActive();
+  if(prev){redrawStaff(prev);redrawGrid(prev);}if(id){redrawStaff(id);redrawGrid(id);}updateActive();
 }
 function updateActive(){
   app.querySelectorAll('.block').forEach(el=>el.classList.toggle('active',el.dataset.block===activeId));
-  const b=activeId&&blockById(activeId);showPalette(!!(b&&b.type==='staff'));
+  const b=activeId&&blockById(activeId);showPalette(!!(b&&b.type==='staff'));showGPal(!!(b&&b.type==='grid'));
 }
 function redrawStaff(id){
   const b=blockById(id);if(!b||b.type!=='staff')return;
@@ -728,6 +805,337 @@ chordIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ap
 let rz=null;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(lsTimer);try{localStorage.setItem(LS,JSON.stringify(notes))}catch(e){}}});
 window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(view.name==='note'){const n=curNote();n&&n.blocks.forEach(b=>{if(b.type==='staff'){const w=app.querySelector(`[data-staff="${b.id}"]`);if(w&&w.clientWidth!==w._W)redrawStaff(b.id);}});}else renderList();},150);});
+
+/* ---------- grilles (iReal) ---------- */
+const APP_VERSION='1.3.0';
+const STYLES=['Medium Swing','Medium Up Swing','Up Tempo Swing','Slow Swing','Ballad','Jazz Waltz','Bossa Nova','Samba','Latin','Afro Cuban','Funk','Even 8ths','Rock','Pop','Blues','Gospel','Waltz'];
+const KEYS=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const PCN={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const pcOf=s=>PCN[s[0]]+(/[b♭]/.test(s.slice(1))?-1:/[#♯]/.test(s.slice(1))?1:0);
+const CH_RE=/^([A-G])([b#♭♯]?)([^/]*)(?:\/([A-G][b#♭♯]?))?$/;
+function gridToks(txt){
+  return txt.trim().split(/[\s,]+/).filter(Boolean).map(t=>{
+    if(/^(n|nc|n\.c\.?)$/i.test(t))return 'n';
+    if(t==='/')return '';
+    if(t==='%')return '%';
+    return /^[a-g]/.test(t)?t[0].toUpperCase()+t.slice(1):t;});
+}
+function chordOk(c){return c===''||c==='n'||c==='%'||CH_RE.test(c);}
+function chordHtml(c){
+  if(c==='')return '<span class="slash">/</span>';
+  if(c==='n')return '<span class="nc">N.C.</span>';
+  const m=CH_RE.exec(c);if(!m)return `<span class="bad">${esc(c)}</span>`;
+  let q=m[3].replace(/^(maj|Maj|MA|M(?=7|9|13|$)|\^)7?/,'Δ').replace(/^(min|mi|m(?!aj)|-)/,'–').replace(/^–(maj|Maj|Δ|\^)7?/,'–Δ')
+    .replace(/^(–7b5|m7b5|ø7?|h7?)/,'ø').replace(/^(dim|o|°)/,'°').replace(/^aug/,'+').replace(/b/g,'♭').replace(/#/g,'♯');
+  const acc=m[2].replace('b','♭').replace('#','♯');
+  const bass=m[4]?'/'+m[4].replace('b','♭').replace('#','♯'):'';
+  return `<span class="cr">${m[1]}${acc}</span>${q?`<sup>${esc(q)}</sup>`:''}${bass?`<span class="cb">${esc(bass)}</span>`:''}`;
+}
+function chordTones(c){
+  const m=CH_RE.exec(c);if(!m)return null;
+  const root=pcOf(m[1]+m[2]);const q=m[3].replace(/\s/g,'');
+  const isMaj=/^(maj|Maj|MA|M(?=7|9|13|$)|\^|Δ|∆)/.test(q);
+  const isHalf=/^(ø|h|m7b5|-7b5|mi7b5|min7b5)/.test(q);
+  const isDim=/^(dim|o|°)/.test(q);
+  const isMin=!isMaj&&!isHalf&&!isDim&&/^(min|mi|m|-)/.test(q);
+  const body=q.replace(/^(maj|Maj|MA|M|\^|Δ|∆|min|mi|m|-|ø|h|dim|o|°)/,'');
+  const minMaj=isMin&&/^(maj|Maj|\^|Δ)/.test(body);
+  let third=isMin||isHalf||isDim?3:4,fifth=7,sev=null;const ext=[];
+  const hasExt=/(7|9|11|13)/.test(body);
+  if(isMaj||minMaj)sev=11;else if(isHalf)sev=10;else if(isDim)sev=/7/.test(body)?9:null;else if(hasExt)sev=10;
+  if(/(^|[^1b#])6/.test(body)&&!/7/.test(body))sev=9;
+  if(/sus/.test(body))third=5;
+  if(isHalf||isDim||/b5/.test(body))fifth=6;
+  if(/\+|aug|#5/.test(q))fifth=8;
+  if(/b9/.test(body))ext.push(13);else if(/#9/.test(body))ext.push(15);else if(/9/.test(body))ext.push(14);
+  if(/#11/.test(body))ext.push(18);
+  if(/13/.test(body))ext.push(/b13/.test(body)?20:21);
+  if(/alt/.test(body)){ext.push(13,15);fifth=8;}
+  const iv=[third,sev,...ext];if(ext.length<2||sev==null)iv.push(fifth);
+  const bass=m[4]?pcOf(m[4]):root;
+  return {bass:40+mod(bass-4,12),notes:iv.filter(x=>x!=null).map(x=>{let n=48+root+x;while(n<52)n+=12;while(n>72)n-=12;return n;})};
+}
+function slotDurs(k,time){
+  const total=mlen(time),units=time.endsWith('/8')?Number(time.split('/')[0])/3:Number(time.split('/')[0]),u=total/units;
+  if(k>=units)return Array(k).fill(total/k);
+  const base=Math.floor(units/k),extra=units%k;return Array.from({length:k},(_,i)=>(base+(i<extra?1:0))*u);
+}
+function newGrid(){return {id:uid(),type:'grid',time:'4/4',key:'C',style:'Medium Swing',tempo:120,measures:[{ch:[]},{ch:[]},{ch:[]},{ch:[]}]};}
+
+/* rendu */
+function gridHtml(b,selI,playI){
+  const M=b.measures,ended=M.length&&M[M.length-1].fin;let h='<div class="grid">';
+  M.forEach((m,i)=>{
+    const prev=M[i-1];const c=['gm','n'+Math.min(4,m.ch.length)];
+    if(i===selI)c.push('sel');if(i===playI)c.push('play');
+    const special=prev&&(prev.re||prev.fin||prev.dbl);
+    if(m.rs)c.push('lb-rs');else if(special&&i%4!==0)c.push('lb-none');else if(m.sec||special)c.push('lb-dbl');
+    if(m.re)c.push('rb-re');else if(m.fin)c.push('rb-fin');else if(m.dbl)c.push('rb-dbl');
+    if(i%4===3||i===M.length-1&&ended)c.push('rb');
+    let inner;
+    if(m.ch.length===1&&m.ch[0]==='%')inner='<span class="sim" aria-label="Mesure répétée">\u{1D10E}</span>';
+    else inner=m.ch.map(x=>`<span class="gc">${chordHtml(x)}</span>`).join('');
+    h+=`<button type="button" class="${c.join(' ')}" data-gm="${i}">${m.sec?`<span class="sec">${esc(m.sec)}</span>`:''}${m.ending?`<span class="volta">${m.ending}.</span>`:''}<span class="gcs">${inner}</span></button>`;
+  });
+  if(!ended)h+=`<button type="button" class="gm add" data-gm="add" aria-label="Ajouter une mesure">+</button>`;
+  return h+'</div>';
+}
+function redrawGrid(id){
+  const b=blockById(id);if(!b||b.type!=='grid')return;
+  const w=app.querySelector(`[data-grid="${id}"]`);if(!w)return;
+  w.innerHTML=gridHtml(b,activeId===id?sel:null,playing&&playing.id===id?playIdx:null);
+  if(activeId===id)updateGPal();
+}
+function keyLabel(k){return k.endsWith('-')?k.slice(0,-1).replace('b','♭')+' mineur':k.replace('b','♭')+' majeur';}
+function gridBlock(n,b,el){
+  const keyOpts=KEYS.map(k=>`<option value="${k}">${keyLabel(k)}</option>`).join('')+KEYS.map(k=>`<option value="${k}-">${keyLabel(k+'-')}</option>`).join('');
+  const styles=STYLES.includes(b.style)?STYLES:[b.style,...STYLES];
+  el.innerHTML=`<div class="shead"><span class="kind">Grille</span>
+    <select data-f="key" aria-label="Tonalité">${keyOpts}</select>
+    <select data-f="time" aria-label="Mesure">${['4/4','3/4','2/4','5/4','6/8','12/8'].map(t=>`<option>${t}</option>`).join('')}</select>
+    <select data-f="style" aria-label="Style">${styles.map(s=>`<option>${esc(s)}</option>`).join('')}</select>
+    <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" aria-label="Tempo"></label>
+    <button type="button" class="chip" data-f="ireal" aria-expanded="false">iReal</button>
+    <button type="button" class="playbtn" data-play="${b.id}">&#9654; Écouter</button></div>
+    <div class="irealbox" hidden>
+      <div class="ir-actions"><a class="btn" data-ir="open" href="#">Ouvrir dans iReal Pro</a><button class="btn" type="button" data-ir="copy">Copier le lien</button></div>
+      <label class="ir-lbl" for="ir_${b.id}">Importer depuis iReal Pro : colle un lien <code>irealb://</code> (Partager &gt; iReal Pro format)</label>
+      <textarea id="ir_${b.id}" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
+      <div class="ir-actions"><button class="btn primary" type="button" data-ir="import">Remplacer cette grille</button><label class="btn" for="irf_${b.id}">Ouvrir un fichier</label><input type="file" id="irf_${b.id}" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
+      <div class="status ir-msg"></div>
+    </div>
+    <div class="gridwrap" data-grid="${b.id}"></div>`+toolsHtml();
+  const f=k=>el.querySelector(`[data-f=${k}]`);
+  f('key').value=b.key;f('time').value=b.time;f('style').value=b.style;f('tempo').value=b.tempo;
+  f('key').onchange=()=>{pushHist(n);b.key=f('key').value;save(n);};
+  f('time').onchange=()=>{pushHist(n);b.time=f('time').value;save(n);};
+  f('style').onchange=()=>{pushHist(n);b.style=f('style').value;save(n);};
+  f('tempo').onchange=()=>{const v=Math.max(30,Math.min(300,parseInt(f('tempo').value,10)||120));f('tempo').value=v;b.tempo=v;save(n);};
+  el.querySelector('[data-play]').onclick=()=>{setActive(b.id);playGrid(b);};
+  const box=el.querySelector('.irealbox'),msg=el.querySelector('.ir-msg'),ta=el.querySelector('textarea');
+  const link=()=>toIReal(n.title||'Sans titre',b);
+  f('ireal').onclick=()=>{box.hidden=!box.hidden;f('ireal').setAttribute('aria-expanded',!box.hidden);if(!box.hidden)el.querySelector('[data-ir=open]').href=link();};
+  el.querySelector('[data-ir=open]').addEventListener('click',e=>{e.currentTarget.href=link();});
+  el.querySelector('[data-ir=copy]').onclick=()=>{const l=link();
+    const done=()=>{msg.textContent='Lien copié. Colle-le dans un navigateur ou un message, puis ouvre-le pour l\'importer dans iReal Pro.';};
+    try{navigator.clipboard.writeText(l).then(done,()=>{ta.value=l;ta.select();msg.textContent='Copie bloquée : le lien est sélectionné ci-dessus, copie-le à la main.';});}catch(e){ta.value=l;ta.select();}};
+  const doImport=txt=>{const songs=parseIRealAll(txt);
+    if(!songs.length){msg.textContent='Aucun morceau iReal trouvé. Le lien doit commencer par irealb:// ou irealbook://.';return;}
+    const s=songs[0];pushHist(n);Object.assign(b,{time:s.time,key:s.key,style:s.style,tempo:s.tempo||b.tempo,measures:s.measures});
+    if(!n.title.trim())n.title=s.title;save(n);sel=null;renderNote(true);
+    const nb=app.querySelector(`[data-block="${b.id}"] .ir-msg`);
+    if(nb)nb.textContent=`« ${s.title} » importé (${s.measures.length} mesures)`+(songs.length>1?`. ${songs.length-1} autre(s) morceau(x) ignoré(s) : importe la playlist depuis l'écran d'accueil.`:'.');};
+  el.querySelector('[data-ir=import]').onclick=()=>doImport(ta.value);
+  el.querySelector('input[type=file]').onchange=e=>{const fl=e.target.files[0];if(!fl)return;const r=new FileReader();r.onload=()=>doImport(String(r.result));r.readAsText(fl);};
+  el.querySelector('.gridwrap').addEventListener('click',e=>{
+    const c=e.target.closest('[data-gm]');if(!c)return;
+    if(activeId!==b.id){const prev=activeId;activeId=b.id;sel=null;if(prev){redrawStaff(prev);redrawGrid(prev);}updateActive();}
+    if(c.dataset.gm==='add'){pushHist(n);b.measures.push({ch:[]});save(n);sel=b.measures.length-1;}
+    else{sel=Number(c.dataset.gm);}
+    gpalLoad(b);redrawGrid(b.id);gin.focus();
+  });
+}
+
+/* palette grille */
+const gpal=document.getElementById('gpal'),gin=document.getElementById('gIn');
+function gpalLoad(b){const m=sel!=null&&b.measures[sel];gin.value=m?m.ch.map(x=>x===''?'/':x==='n'?'NC':x).join(' '):'';gin.classList.remove('err');}
+function showGPal(on){
+  gpal.hidden=!on;
+  if(on){const b=blockById(activeId);if(sel==null&&b){sel=Math.max(0,b.measures.findIndex(m=>!m.ch.length));if(sel<0)sel=0;redrawGrid(b.id);}gpalLoad(b);updateGPal();}
+}
+function updateGPal(){
+  const b=activeId&&blockById(activeId);if(!b||b.type!=='grid')return;const m=sel!=null?b.measures[sel]:null;
+  const info=document.getElementById('gInfo');
+  info.textContent=m?`Mesure ${sel+1}`+(m.sec?` · section ${m.sec}`:'')+(m.ending?' · '+(m.ending===1?'1re':m.ending+'e')+' fin':'')+(gin.classList.contains('err')?' · accord non reconnu':''):'Touche une mesure';
+  gpal.querySelectorAll('[data-g]').forEach(x=>{const k=x.dataset.g;let on=false;
+    if(m){if(k==='sec')on=!!m.sec;if(k==='end')on=!!m.ending;if(k==='rs')on=!!m.rs;if(k==='re')on=!!m.re;if(k==='dbl')on=!!m.dbl;if(k==='fin')on=!!m.fin;}
+    if(k==='sec')x.textContent=m&&m.sec?'Section '+m.sec:'Section';
+    if(k==='end')x.textContent=m&&m.ending?m.ending+(m.ending===1?'re':'e')+' fin':'Volta';
+    x.setAttribute('aria-pressed',on);});
+  document.documentElement.style.setProperty('--pal-h',(gpal.offsetHeight||160)+'px');
+}
+function gApply(commit){
+  const n=curNote(),b=activeId&&blockById(activeId);if(!n||!b||sel==null)return;
+  const parts=gin.value.split('|');const first=gridToks(parts[0]);
+  const bad=gin.value.split(/[\s,|]+/).filter(Boolean).map(t=>/^(n|nc|n\.c\.?|\/)$/i.test(t)?'':t).some(t=>!chordOk(t));
+  gin.classList.toggle('err',bad);
+  b.measures[sel].ch=first;
+  if(commit&&parts.length>1){parts.slice(1).forEach((p,k)=>{const idx=sel+1+k;const ch=gridToks(p);if(idx<b.measures.length&&!b.measures[idx].ch.length)b.measures[idx].ch=ch;else b.measures.splice(idx,0,{ch});});sel+=parts.length-1;}
+  save(n);redrawGrid(b.id);updateGPal();
+}
+gin.addEventListener('focus',()=>{const n=curNote();n&&pushHist(n);});
+gin.addEventListener('input',()=>{if(!gin.value.includes('|'))gApply(false);});
+function gNext(){
+  const n=curNote(),b=activeId&&blockById(activeId);if(!b||sel==null)return;
+  gApply(true);
+  if(b.measures[sel].fin){gin.blur();return;}
+  if(sel>=b.measures.length-1){b.measures.push({ch:[]});save(n);}
+  sel++;gpalLoad(b);redrawGrid(b.id);
+  const c=app.querySelector(`[data-grid="${b.id}"] [data-gm="${sel}"]`);c&&c.scrollIntoView({block:'nearest'});
+}
+gin.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();gNext();}});
+document.getElementById('gOk').onclick=()=>{gNext();gin.focus();};
+document.getElementById('gDone').onclick=()=>{gin.blur();setActive(null);};
+const SECS=['','A','B','C','D','Intro'];
+gpal.addEventListener('click',e=>{
+  const x=e.target.closest('[data-g]');if(!x)return;const k=x.dataset.g;
+  const n=curNote(),b=activeId&&blockById(activeId);if(!n||!b)return;
+  if(k==='prev'||k==='next'){if(sel!=null)gApply(false);sel=sel==null?0:Math.max(0,Math.min(b.measures.length-1,sel+(k==='prev'?-1:1)));gpalLoad(b);redrawGrid(b.id);return;}
+  if(k==='undo'){undo();return;}
+  if(sel==null)return;const m=b.measures[sel];pushHist(n);
+  if(k==='sec'){m.sec=SECS[(SECS.indexOf(m.sec||'')+1)%SECS.length];if(!m.sec)delete m.sec;}
+  else if(k==='end'){m.ending=((m.ending||0)+1)%3;if(!m.ending)delete m.ending;}
+  else if(k==='sim'){m.ch=['%'];gpalLoad(b);}
+  else if(k==='ins'){b.measures.splice(sel+1,0,{ch:[]});sel++;gpalLoad(b);}
+  else if(k==='del'){if(b.measures.length>1){b.measures.splice(sel,1);sel=Math.min(sel,b.measures.length-1);gpalLoad(b);}}
+  else{const flag={rs:'rs',re:'re',dbl:'dbl',fin:'fin'}[k];if(flag){if(m[flag])delete m[flag];else{m[flag]=true;if(flag==='fin'){delete m.dbl;delete m.re;}if(flag==='re'||flag==='dbl'){delete m.fin;if(flag==='re')delete m.dbl;else delete m.re;}}}}
+  save(n);redrawGrid(b.id);
+});
+
+/* lecture grille */
+function gridOrder(M){
+  const order=[];let i=0,rsI=0,pass=1;const jumped=new Set();
+  while(i<M.length&&order.length<2000){
+    const m=M[i];
+    if(m.rs&&i!==rsI){rsI=i;pass=1;}
+    if(m.ending===1&&pass===2){const j=M.findIndex((x,k)=>k>i&&x.ending===2);if(j>0){i=j;continue;}}
+    order.push(i);
+    if(m.re&&!jumped.has(i)){jumped.add(i);i=rsI;pass=2;continue;}
+    if(m.fin)break;i++;
+  }
+  return order;
+}
+function pad(t,dur,midi,nodes){
+  const c=actx();if(!c)return;const f=440*Math.pow(2,(midi-69)/12);
+  const o=c.createOscillator(),o2=c.createOscillator(),lp=c.createBiquadFilter(),g=c.createGain();
+  o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;lp.type='lowpass';lp.frequency.value=Math.min(4000,f*3);
+  const end=t+Math.max(.1,dur*.92);const v=.075;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.setTargetAtTime(v*.55,t+.05,.25);g.gain.setTargetAtTime(0,end,.05);
+  o.connect(lp);o2.connect(lp);lp.connect(g);g.connect(c.destination);o.start(t);o2.start(t);o.stop(end+.3);o2.stop(end+.3);nodes.push(o,o2);
+}
+function playGrid(b){
+  const was=playing&&playing.id===b.id;stopPlay();if(was)return;
+  const c=actx();if(!c||!b.measures.length)return;
+  const spq=60/(b.tempo||120),ML=mlen(b.time);
+  const swingy=/swing|waltz|blues|gospel|ballad/i.test(b.style);
+  playing={id:b.id,timers:[],nodes:[]};
+  const t0=c.currentTime+.15;let q=0,last=null,prevCh=[];
+  gridOrder(b.measures).forEach(i=>{
+    let ch=b.measures[i].ch;if(ch.length===1&&ch[0]==='%')ch=prevCh;else if(!ch.length)ch=last?[last]:[];
+    prevCh=ch;
+    const durs=slotDurs(Math.max(1,ch.length),b.time);let qq=q;
+    ch.forEach((x,k)=>{const d=durs[k];
+      if(x==='n'){last=null;}
+      else{const cc=x===''?last:x;const tn=cc&&chordTones(cc);if(tn){last=cc;const ts=t0+qq*spq;
+        tone(ts,Math.min(d*spq,spq*2),tn.bass-12+12,playing.nodes);tn.notes.forEach(nm=>pad(ts,d*spq,nm,playing.nodes));}}
+      qq+=d;});
+    if(swingy&&!b.time.endsWith('/8'))for(let bt=1;bt<ML;bt+=2)perc(t0+(q+bt)*spq,false,playing.nodes);
+    playing.timers.push(setTimeout(()=>{playIdx=i;redrawGrid(b.id);},Math.max(0,(t0+q*spq-c.currentTime)*1000)));
+    q+=ML;
+  });
+  playing.timers.push(setTimeout(stopPlay,Math.max(0,(t0+q*spq-c.currentTime)*1000+200)));
+  updatePlayBtn(b.id);
+}
+
+/* iReal Pro */
+function obf50(s){const a=s.split('');for(let i=0;i<5;i++){a[49-i]=s[i];a[i]=s[49-i];}for(let i=10;i<24;i++){a[49-i]=s[i];a[i]=s[49-i];}return a.join('');}
+function irScramble(s){let r='',p=s;while(p.length>51){const t=p.slice(0,50);p=p.slice(50);r+=p.length<2?t:obf50(t);}return r+p;}
+function irUnscramble(s){return irScramble(s).replace(/XyQ/g,'   ').replace(/LZ/g,' |').replace(/Kcl/g,'| x');}
+function qToIReal(q){
+  let s=q.replace(/\s/g,'').replace(/[♭]/g,'b').replace(/[♯]/g,'#');
+  s=s.replace(/^(min|mi|m(?!aj)|–)/,'-');
+  s=s.replace(/(maj|Maj|MA|Δ|∆)/,'^').replace(/^M(?=7|9|13|$)/,'^');
+  if(s==='^'||s==='-^')s+='7';
+  s=s.replace(/^(ø7?|h(?!7)|-7b5)/,'h7').replace(/^(dim|°)/,'o').replace(/^aug/,'+');
+  return s;
+}
+function qFromIReal(q){
+  if(q.startsWith('^')){const r=q.slice(1);return 'maj'+(r===''?'7':r);}
+  q=q.replace(/^-\^(\d*)/,(m,d)=>'mMaj'+(d||'7')).replace(/^-/,'m').replace(/^h7?/,'m7b5').replace(/^o/,'dim');
+  return q;
+}
+function chordToIReal(c){
+  if(c==='%')return 'x';if(c==='n')return 'n';if(c==='')return 'p';
+  const m=CH_RE.exec(c);if(!m)return 'n';
+  return m[1]+m[2].replace('♭','b').replace('♯','#')+qToIReal(m[3])+(m[4]?'/'+m[4].replace('♭','b').replace('♯','#'):'');
+}
+const TIMES={'4/4':'T44','3/4':'T34','2/4':'T24','5/4':'T54','6/8':'T68','12/8':'T12'};
+function toIRealMusic(b){
+  const M=b.measures;let s=TIMES[b.time]||'T44';
+  M.forEach((m,i)=>{const p=M[i-1];
+    if(p){if(p.re)s+='}';else if(p.fin)s+='Z';else if(p.dbl||m.sec||m.rs)s+=']';else s+='|';}
+    if(m.sec)s+='*'+(m.sec==='Intro'?'i':m.sec[0]);
+    if(m.rs)s+='{';else if(!p||m.sec||p.dbl||p.fin)s+='[';
+    if(m.ending)s+='N'+m.ending;
+    const ch=m.ch.map(chordToIReal);
+    if(!ch.length)s+='    ';
+    else if(ch.length===1)s+=ch[0]+'   ';
+    else if(ch.length===2)s+=ch[0]+' '+ch[1]+' ';
+    else if(ch.length===3)s+=ch[0]+' '+ch[1]+','+ch[2];
+    else s+=ch.join(',');
+  });
+  const l=M[M.length-1];s+=l&&l.re?'}':' Z';
+  return s;
+}
+function toIReal(title,b){
+  const key=b.key||'C';
+  const fields=[title,'Unknown','',b.style||'Medium Swing',key,'','1r34LbKcu7'+irScramble(toIRealMusic(b)),'',String(b.tempo||0),'0'];
+  return 'irealb://'+fields.map(f=>encodeURIComponent(f)).join('=');
+}
+function parseIRealMusic(raw){
+  const M=[];let cur=null,pend={},time='4/4';const T={T44:'4/4',T34:'3/4',T24:'2/4',T54:'5/4',T68:'6/8',T12:'12/8',T64:'6/4'};
+  const open=()=>{if(!cur){cur={ch:[]};Object.assign(cur,pend);pend={};}return cur;};
+  const close=flag=>{if(cur){if(flag)cur[flag]=true;M.push(cur);cur=null;}else if(flag&&M.length)M[M.length-1][flag]=true;};
+  let s=raw.replace(/<[^>]*>/g,' ').replace(/\([^)]*\)/g,' ');let i=0;
+  while(i<s.length){
+    const r=s.slice(i);let mm;
+    if((mm=/^T(\d\d)/.exec(r))){const t=T['T'+mm[1]];if(t&&!M.length)time=t;i+=3;continue;}
+    if((mm=/^\*([A-Za-z])/.exec(r))){const v=mm[1]==='i'?'Intro':mm[1]==='V'?'Verse':mm[1].toUpperCase();if(cur&&!cur.ch.length)cur.sec=v;else pend.sec=v;i+=2;continue;}
+    if((mm=/^N([0-3])/.exec(r))){const v=Number(mm[1]);if(v)open().ending=v;i+=2;continue;}
+    const c0=r[0];
+    if(c0==='{'){close();pend.rs=true;i++;continue;}
+    if(c0==='['){close();i++;continue;}
+    if(c0==='|'){close();i++;continue;}
+    if(c0===']'){close('dbl');i++;continue;}
+    if(c0==='}'){close('re');i++;continue;}
+    if(c0==='Z'){close('fin');i++;continue;}
+    if(c0==='x'){open().ch=['%'];i++;continue;}
+    if(c0==='r'){close();M.push({ch:['%']},{ch:['%']});i++;continue;}
+    if(c0==='n'){open().ch.push('n');i++;continue;}
+    if(c0==='p'){open().ch.push('');i++;continue;}
+    if((mm=/^([A-GW])([b#]?)([\^\-ho+0-9b#susaldtd]*)(\/[A-G][b#]?)?/.exec(r))&&mm[0].length){
+      if(mm[1]==='W'){open().ch.push('');}else open().ch.push(mm[1]+mm[2]+qFromIReal(mm[3])+(mm[4]||''));
+      i+=mm[0].length;continue;}
+    i++;
+  }
+  close();
+  while(M.length&&!M[M.length-1].ch.length&&!M[M.length-1].sec)M.pop();
+  if(M.length&&M[M.length-1].fin===undefined&&!M[M.length-1].re)M[M.length-1].fin=true;
+  M.forEach(m=>{if(m.re&&m.fin)delete m.fin;});
+  return {time,measures:M};
+}
+function parseIRealAll(text){
+  const urls=String(text).match(/irealb(?:ook)?:\/\/[^"'\s<>]+/g)||[];const out=[];
+  urls.forEach(u=>{let d;try{d=decodeURIComponent(u.replace(/\+/g,'%20'));}catch(e){d=u;}
+    const isB=d.startsWith('irealb://');d=d.replace(/^irealb(?:ook)?:\/\//,'');
+    d.split('===').forEach(song=>{const p=song.split('=');if(p.length<6)return;
+      let mi=p.findIndex(x=>x.startsWith('1r34LbKcu7'));let music,style,key,tempo=0;
+      if(mi>=0){music=irUnscramble(p[mi].slice(10));style=p[mi-3]||'';key=p[mi-2]||'C';tempo=parseInt(p[mi+2],10)||0;}
+      else if(!isB){music=p[5];style=p[2];key=p[3];}else return;
+      const r=parseIRealMusic(music);if(!r.measures.length)return;
+      out.push({title:p[0]||'Sans titre',composer:p[1]||'',style:style||'Medium Swing',key:key||'C',tempo:tempo>=30&&tempo<=300?tempo:0,time:r.time,measures:r.measures});});});
+  return out;
+}
+function importIRealNotes(text){
+  const songs=parseIRealAll(text);
+  songs.forEach((s,k)=>{const g=newGrid();Object.assign(g,{time:s.time,key:s.key,style:s.style,tempo:s.tempo||120,measures:s.measures});
+    const n={id:uid(),title:s.title,updated:Date.now()+k,blocks:[{id:uid(),type:'text',text:s.composer&&s.composer!=='Unknown'?s.composer.split(' ').reverse().join(' '):''},g]};
+    notes[n.id]=n;save(n);});
+  return songs.length;
+}
+
+/* clavier : garder les palettes au-dessus */
+if(window.visualViewport){const vv=window.visualViewport;const fix=()=>{const kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);pal.style.bottom=gpal.style.bottom=kb+'px';};vv.addEventListener('resize',fix);vv.addEventListener('scroll',fix);}
 
 /* ---------- boot ---------- */
 notes=lsRead();
