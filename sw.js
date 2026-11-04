@@ -27,7 +27,7 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-1.6.1';
+const CACHE = 'inkline-1.7.0';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -40,7 +40,7 @@ const CORE = [
   './js/main.js', './js/util.js', './js/model.js', './js/pitch.js', './js/rhythm.js',
   './js/layout.js', './js/render-staff.js', './js/chords.js', './js/grid.js', './js/ireal.js',
   './js/audio.js', './js/storage.js', './js/history.js', './js/sanitize.js', './js/export.js', './js/pdf.js',
-  './js/ui/state.js', './js/ui/views.js', './js/ui/staff-ui.js', './js/ui/grid-ui.js', './js/ui/options.js',
+  './js/ui/state.js', './js/ui/views.js', './js/ui/staff-ui.js', './js/ui/grid-ui.js', './js/ui/options.js', './js/ui/list-view.js',
 ];
 
 self.addEventListener('install', (e) => {

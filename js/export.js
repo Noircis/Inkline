@@ -137,7 +137,7 @@ export async function noteToSvg(note) {
   // Titre (sur plusieurs lignes si besoin) et date.
   ctx.font = '700 30px "Bricolage Grotesque", sans-serif';
   wrap(ctx, note.title || 'Sans titre', CW).forEach((l) => { y += 34; body += `<text class="ttl" x="${PAD}" y="${y}">${esc(l)}</text>`; });
-  const date = new Date(note.updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const date = 'Créée le ' + new Date(note.created || note.updated).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
   y += 24;
   body += `<text class="foot" x="${PAD}" y="${y}">${esc(date)}</text>`;
   y += 12;

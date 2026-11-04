@@ -3,6 +3,16 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [1.7.0] - 2026-11-04
+
+### Ajouté
+- **Trois affichages de la liste**, au choix dans Options > Affichage des notes (choix mémorisé) :
+  - **Cartes** : l'affichage habituel ;
+  - **Mosaïque** : cartes carrées, 2 par ligne, avec un aperçu adapté au contenu (début de la portée en zoom, premiers accords d'une grille, ou début du texte) ;
+  - **Liste** : une ligne par note, avec titre, date de modification, date de création et résumé du contenu.
+- **Date de création** des notes, remplie automatiquement. Les notes existantes la reçoivent au premier lancement (approximée par leur date de modification, puis figée). Une note reçue garde sa date de création d'origine.
+- Les exports PNG et PDF affichent la date de création.
+
 ## [1.6.1] - 2026-11-04
 
 ### Corrigé

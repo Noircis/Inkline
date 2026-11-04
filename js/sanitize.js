@@ -128,6 +128,10 @@ export function sanitizeNote(r, opt = {}) {
   return {
     id: opt.freshIds ? uid() : id(r.id),
     title: str(r.title, LIMITS.title).replace(/\n/g, ' '),
+    // Notes d'avant la 1.7.0 : pas de date de création, on prend la date de
+    // modification (meilleure approximation disponible). main.js enregistre
+    // aussitôt le résultat, pour que cette date ne bouge plus ensuite.
+    created: isNum(r.created) ? r.created : isNum(r.updated) ? r.updated : Date.now(),
     updated: isNum(r.updated) ? r.updated : Date.now(),
     blocks: blocks.length ? blocks : [{ id: uid(), type: 'text', text: '' }],
   };

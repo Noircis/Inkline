@@ -6,6 +6,7 @@
  * Il regroupe ce qui concerne le carnet entier, pour garder l'accueil
  * dédié aux notes :
  *
+ * - **Affichage** : Cartes, Mosaïque ou Liste pour l'accueil ;
  * - **Carnet** : exporter une sauvegarde complète, importer un fichier
  *   (sauvegarde ou note reçue `.inkline`), date de la dernière sauvegarde ;
  * - **iReal Pro** : importer un lien, une playlist ou un fichier `.html` ;
@@ -26,6 +27,7 @@ import { flushSave, backupJson, importFile, getMeta, setMeta } from '../storage.
 import { sanitizeBlock } from '../sanitize.js';
 import { parseIRealAll, songToGrid } from '../ireal.js';
 import { download } from '../export.js';
+import { LIST_VIEWS } from './list-view.js';
 import { APP_VERSION, readFile, openNote, backToList, enterSubView } from './views.js';
 
 /** Nombre de jours sans sauvegarde avant d'afficher le rappel. */
@@ -73,12 +75,19 @@ function importIRealNotes(text) {
   songs.forEach((s, k) => {
     // Le compositeur iReal est au format « Nom Prénom » : on le remet dans l'ordre usuel.
     const composer = s.composer && s.composer !== 'Unknown' ? s.composer.split(' ').reverse().join(' ') : '';
-    const n = { id: uid(), title: s.title.slice(0, 200), updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer.slice(0, 200) }, sanitizeBlock(songToGrid(s))] };
+    const n = { id: uid(), title: s.title.slice(0, 200), created: Date.now() + k, updated: Date.now() + k, blocks: [{ id: uid(), type: 'text', text: composer.slice(0, 200) }, sanitizeBlock(songToGrid(s))] };
     state.notes[n.id] = n;
   });
   if (songs.length) flushSave(state.notes);
   return songs.length;
 }
+
+/** Pictogrammes des trois affichages (SVG en ligne, colorés par currentColor). */
+const VIEW_ICONS = {
+  cards: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="16" height="7" rx="1.5" fill="currentColor"/></svg>',
+  mosaic: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="12" y="3" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="7" height="7" rx="1.5" fill="currentColor"/><rect x="12" y="12" width="7" height="7" rx="1.5" fill="currentColor"/></svg>',
+  list: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="4" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="3" y="9.8" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="3" y="15.6" width="16" height="2.4" rx="1.2" fill="currentColor"/></svg>',
+};
 
 /** Chevron des lignes cliquables. */
 const CHEVRON = '<span class="opt-chev" aria-hidden="true">&#8250;</span>';
@@ -98,7 +107,12 @@ export function openOptions() {
  */
 export function renderOptions() {
   const meta = getMeta();
+  const current = meta.listView || 'cards';
   app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><h1 class="top-title">Options</h1></header>
+  <section class="opt">
+    <h2 class="eyebrow" id="viewLbl">Affichage des notes</h2>
+    <div class="seg" role="radiogroup" aria-labelledby="viewLbl">${LIST_VIEWS.map((v) => `<button type="button" role="radio" data-view="${v.key}" aria-checked="${v.key === current}">${VIEW_ICONS[v.key]}<span>${v.label}</span></button>`).join('')}</div>
+  </section>
   <section class="opt">
     <h2 class="eyebrow">Carnet</h2>
     <div class="opt-group">
@@ -128,6 +142,13 @@ export function renderOptions() {
   </section>`;
 
   app.querySelector('#back').onclick = backToList;
+  // Sélecteur d'affichage : mémorisé dans les métadonnées, appliqué au retour sur l'accueil.
+  app.querySelectorAll('[data-view]').forEach((b) => {
+    b.onclick = () => {
+      setMeta({ listView: b.dataset.view });
+      app.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+    };
+  });
   const msg = app.querySelector('#optMsg');
 
   app.querySelector('#optExport').onclick = () => {

@@ -33,6 +33,10 @@ import { render, showList } from './ui/views.js';
 import { redrawStaff } from './ui/staff-ui.js';
 
 state.notes = loadNotes();
+// loadNotes valide les notes et complète les champs manquants (date de
+// création des notes d'avant la 1.7.0). On réécrit tout de suite le résultat
+// pour figer ces valeurs : sinon elles seraient recalculées à chaque lancement.
+flushSave(state.notes);
 if (!getMeta().firstUse) setMeta({ firstUse: Date.now() }); // point de départ du rappel de sauvegarde
 // Au démarrage on est toujours sur la liste : une entrée d'historique laissée
 // par une session précédente (rechargement de la page) est neutralisée.

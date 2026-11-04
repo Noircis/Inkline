@@ -8,7 +8,7 @@
  *
  * ```
  * notes : { [id]: Note }
- * Note  = { id, title, updated, blocks: Block[] }
+ * Note  = { id, title, created, updated, blocks: Block[] }
  * Block = TextBlock | StaffBlock | GridBlock     (union discriminée par `type`)
  * ```
  *
@@ -130,6 +130,9 @@ import { uid } from './util.js';
  * @typedef {Object} Note
  * @property {string} id
  * @property {string} title
+ * @property {number} created Horodatage (ms) de création, rempli automatiquement et
+ *   jamais modifié ensuite. Pour les notes antérieures à la 1.7.0 (qui n'avaient
+ *   pas ce champ), il a été initialisé avec la date de dernière modification.
  * @property {number} updated Horodatage (ms) de dernière modification, utilisé pour
  *   trier la liste et pour résoudre les conflits à l'import (le plus récent gagne).
  * @property {Block[]} blocks
@@ -205,7 +208,8 @@ export function beatUnit(time) {
  * @returns {Note}
  */
 export function newNote() {
-  return { id: uid(), title: '', updated: Date.now(), blocks: [newTextBlock()] };
+  const now = Date.now();
+  return { id: uid(), title: '', created: now, updated: now, blocks: [newTextBlock()] };
 }
 
 /** @returns {TextBlock} */
@@ -239,7 +243,7 @@ export function newGridBlock() {
  */
 export function exampleNote() {
   return {
-    id: uid(), title: 'Exemple · motif sur Bb blues', updated: Date.now(),
+    id: uid(), title: 'Exemple · motif sur Bb blues', created: Date.now(), updated: Date.now(),
     blocks: [
       { id: uid(), type: 'text', text: 'Motif de deux mesures, à développer en question / réponse. Essayer plus lent.' },
       {

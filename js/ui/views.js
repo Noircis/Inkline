@@ -22,7 +22,7 @@
 import { state, app, curNote, blockById, touch } from './state.js';
 import { esc } from '../util.js';
 import { newNote as makeNote, newTextBlock, newStaffBlock, newGridBlock, exampleNote } from '../model.js';
-import { flushSave } from '../storage.js';
+import { flushSave, getMeta } from '../storage.js';
 import { noteToInkline, noteToPng, noteToPdf, shareOrDownload, slug } from '../export.js';
 import { pushSnapshot, popSnapshot } from '../history.js';
 import * as audio from '../audio.js';
@@ -30,9 +30,10 @@ import { staffSvg } from '../render-staff.js';
 import { staffBlockEl, redrawStaff, showStaffPalette } from './staff-ui.js';
 import { gridBlockEl, redrawGrid, showGridPalette } from './grid-ui.js';
 import { openOptions, renderOptions, backupDue } from './options.js';
+import { renderNoteList } from './list-view.js';
 
 /** Version affichée en bas de l'accueil (à garder alignée sur CHANGELOG.md). */
-export const APP_VERSION = '1.6.1';
+export const APP_VERSION = '1.7.0';
 
 /**
  * Affiche l'écran courant.
@@ -78,34 +79,13 @@ export function backToList() {
   else showList();
 }
 
-/** Date courte en français (« 4 nov. »). */
-function fmtDate(ts) {
-  try { return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); } catch (e) { return ''; }
-}
-
-/**
- * Résumé du contenu d'une note pour la liste (« 1 portée · 2 grilles »).
- * @param {module:model~Note} n
- * @returns {string}
- */
-function noteSummary(n) {
-  const st = n.blocks.filter((b) => b.type === 'staff');
-  const r = st.filter((b) => b.clef === 'rhythm').length;
-  const p = st.length - r;
-  const gr = n.blocks.filter((b) => b.type === 'grid').length;
-  const parts = [];
-  if (p) parts.push(p + (p > 1 ? ' portées' : ' portée'));
-  if (r) parts.push(r + (r > 1 ? ' rythmes' : ' rythme'));
-  if (gr) parts.push(gr + (gr > 1 ? ' grilles' : ' grille'));
-  return parts.join(' · ');
-}
-
 /** Icône de roue crantée (SVG : le caractère ⚙ s'afficherait en emoji coloré sur Android). */
 const GEAR = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M19.84 10.41 L22.42 10.74 L22.42 13.26 L19.84 13.59 L18.67 16.42 L20.26 18.48 L18.48 20.26 L16.42 18.67 L13.59 19.84 L13.26 22.42 L10.74 22.42 L10.41 19.84 L7.58 18.67 L5.52 20.26 L3.74 18.48 L5.33 16.42 L4.16 13.59 L1.58 13.26 L1.58 10.74 L4.16 10.41 L5.33 7.58 L3.74 5.52 L5.52 3.74 L7.58 5.33 L10.41 4.16 L10.74 1.58 L13.26 1.58 L13.59 4.16 L16.42 5.33 L18.48 3.74 L20.26 5.52 L18.67 7.58 Z M15.4 12 A3.4 3.4 0 1 0 8.6 12 A3.4 3.4 0 1 0 15.4 12 Z"/></svg>';
 
 /**
- * Écran liste : notes triées par date de modification, avec la vignette de
- * la première portée. La roue crantée ouvre {@link module:ui/options|les options}.
+ * Écran liste : notes triées par date de modification, dans l'affichage
+ * choisi dans les Options ({@link module:ui/list-view|ui/list-view}).
+ * La roue crantée ouvre {@link module:ui/options|les options}.
  */
 export function renderList() {
   audio.stop();
@@ -127,29 +107,8 @@ export function renderList() {
     body.querySelector('#newNote2').onclick = newNote;
     body.querySelector('#tryEx').onclick = () => { const n = exampleNote(); state.notes[n.id] = n; touch(n); openNote(n.id); };
   } else {
-    const wrap = document.createElement('div');
-    wrap.className = 'list';
-    list.forEach((n) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'card';
-      const txt = (n.blocks.find((b) => b.type === 'text' && b.text.trim()) || {}).text || '';
-      const sum = noteSummary(n);
-      btn.innerHTML = `<h3>${esc(n.title || 'Sans titre')}</h3><div class="meta"><span>${fmtDate(n.updated)}</span>${sum ? `<span>${sum}</span>` : ''}</div>${txt ? `<p class="snip">${esc(txt.split('\n')[0])}</p>` : ''}<div class="thumb"></div>`;
-      btn.onclick = () => openNote(n.id);
-      wrap.appendChild(btn);
-    });
-    body.appendChild(wrap);
-    // Vignettes après le layout, pour connaître la largeur réelle.
-    requestAnimationFrame(() => {
-      wrap.querySelectorAll('.card').forEach((c, k) => {
-        const st = list[k].blocks.find((b) => b.type === 'staff' && b.items.length);
-        const th = c.querySelector('.thumb');
-        if (st && th) th.innerHTML = staffSvg(st, th.clientWidth || 300, { maxSystems: 1 }).svg;
-      });
-    });
+    renderNoteList(body, list, getMeta().listView || 'cards', openNote);
   }
-
   app.querySelector('#optBtn').onclick = openOptions;
   app.querySelector('#newNote').onclick = newNote;
 }

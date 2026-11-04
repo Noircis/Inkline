@@ -127,6 +127,8 @@ export function importFile(notes, text) {
   if (d && d.kind === 'note' && d.note) {
     const n = sanitizeNote(d.note, { freshIds: true });
     if (!n) throw new Error('note invalide');
+    // La note reçue garde sa date de création d'origine ; elle est « modifiée »
+    // maintenant (elle remonte en tête de liste).
     n.updated = Date.now();
     notes[n.id] = n;
     return { kind: 'note', count: 1, firstId: n.id };
@@ -147,6 +149,7 @@ export function importFile(notes, text) {
  * @typedef {Object} Meta
  * @property {number} [firstUse] Horodatage de la première ouverture de l'app.
  * @property {number} [lastExport] Horodatage du dernier « Exporter le carnet ».
+ * @property {'cards'|'mosaic'|'list'} [listView] Affichage de la liste choisi dans les Options.
  */
 
 /**
@@ -157,7 +160,8 @@ export function getMeta() {
   try {
     const m = JSON.parse(localStorage.getItem(META_KEY) || '{}') || {};
     const num = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);
-    return { firstUse: num(m.firstUse), lastExport: num(m.lastExport) };
+    const views = ['cards', 'mosaic', 'list'];
+    return { firstUse: num(m.firstUse), lastExport: num(m.lastExport), listView: views.includes(m.listView) ? m.listView : undefined };
   } catch (e) { return {}; }
 }
 

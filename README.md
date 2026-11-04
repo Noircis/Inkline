@@ -46,7 +46,8 @@ js/
     views.js          écrans liste et note, gestion des blocs
     staff-ui.js       bloc portée : toucher, palette
     grid-ui.js        bloc grille : saisie, palette, panneau iReal
-    options.js        écran Options : sauvegarde, import, iReal, à propos
+    options.js        écran Options : affichage, sauvegarde, import, iReal, à propos
+    list-view.js      affichages de la liste : Cartes, Mosaïque, Liste
 tests/                tests unitaires des modules purs
 docs/                 documentation générée (npm run docs)
 ```
@@ -81,7 +82,7 @@ Voir le module `model` pour le détail des types. En bref :
 - les durées sont en **noires** (point ×1.5, triolet ×2/3) ;
 - les champs optionnels sont absents plutôt que `false`.
 
-Le format est rétrocompatible : une note créée en 1.0 s'ouvre en 1.5.
+Le format est rétrocompatible : une note créée en 1.0 s'ouvre dans la dernière version. Chaque note porte une date de création (`created`) et de modification (`updated`) ; pour les notes antérieures à la 1.7.0, la date de création a été initialisée avec la date de modification.
 
 Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 'note', version: 1, note }`.
 
