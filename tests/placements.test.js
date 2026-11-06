@@ -1,7 +1,7 @@
 // Tests de l'entraînement rythmique (2.3) : génération et écriture des placements.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { combinations, placementItems, SLOTS } from '../js/placements.js';
+import { combinations, placementItems, placementSeries, seriesBlock, SLOTS } from '../js/placements.js';
 import { qlen } from '../js/model.js';
 
 const write = (pos) =>
@@ -51,4 +51,27 @@ test('chaque mesure générée dure exactement 4 noires', () => {
       const total = placementItems(pos).reduce((s, it) => s + qlen(it), 0);
       assert.equal(total, 4, `positions ${pos}`);
     });
+});
+
+test('séries : regroupées par position de la première note ; une seule série pour une note', () => {
+  assert.equal(placementSeries(1).length, 1);
+  assert.equal(placementSeries(1)[0].length, 8);
+  const two = placementSeries(2);
+  assert.deepEqual(
+    two.map((s) => s.length),
+    [7, 6, 5, 4, 3, 2, 1],
+  );
+  two.forEach((s) => assert.ok(s.every((pos) => pos[0] === s[0][0])));
+  assert.equal(placementSeries(8).length, 1);
+});
+
+test('seriesBlock : une mesure par placement, réglages de lecture repris', () => {
+  const s = placementSeries(2)[0];
+  const b = seriesBlock(s, { tempo: 90, swing: true }, 'x');
+  assert.equal(
+    b.items.reduce((t, it) => t + qlen(it), 0),
+    4 * s.length,
+  );
+  assert.equal(b.tempo, 90);
+  assert.equal(b.swing, true);
 });

@@ -30,7 +30,7 @@
 
 import { staffEvents } from './rhythm.js';
 import { resolveMidis } from './pitch.js';
-import { mlen } from './model.js';
+import { mlen, beatUnit } from './model.js';
 import { gridPlayOrder, slotDurations } from './grid.js';
 import { chordTones } from './chords.js';
 
@@ -173,6 +173,30 @@ function perc(t, accent, nodes) {
 }
 
 /**
+ * Clic de métronome : bref et aigu (onde triangle), pour se distinguer du
+ * « tic » plus grave des lignes rythmiques ({@link perc}).
+ * @param {number} t Instant audio (s).
+ * @param {boolean} accent Clic accentué (plus aigu et plus fort).
+ * @param {AudioScheduledSourceNode[]} [nodes]
+ */
+function click(t, accent, nodes) {
+  const c = audioContext();
+  if (!c) return;
+  const o = c.createOscillator();
+  const g = c.createGain();
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(accent ? 2600 : 1900, t);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(accent ? 0.55 : 0.3, t + 0.002);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+  o.connect(g);
+  g.connect(c.destination);
+  o.start(t);
+  o.stop(t + 0.06);
+  if (nodes) nodes.push(o);
+}
+
+/**
  * Fait entendre un élément de portée isolé (retour sonore à la saisie).
  * @param {module:model~StaffBlock} b
  * @param {number} i
@@ -248,16 +272,52 @@ function at(p, c, t, fn) {
 }
 
 /**
+ * Options de lecture d'une portée (utilisées par l'entraînement).
+ * @typedef {Object} PlayOptions
+ * @property {boolean} [countIn] Une mesure de décompte (tous les temps) avant de commencer.
+ * @property {?Array.<boolean>} [beats] Métronome : temps de la mesure qui cliquent
+ *   (`[true, false, true, false]` = 1 et 3). Absent : pas de métronome.
+ * @property {boolean} [accent] Accentuer le clic du premier temps.
+ * @property {boolean} [mute] Ne pas jouer le rythme lui-même (métronome seul) ;
+ *   le surlignage suit quand même la lecture.
+ */
+
+/** Décompte : tous les temps cliquent. */
+const EVERY_BEAT = Array(16).fill(true);
+
+/**
+ * Programme les clics de métronome de `measures` mesures à partir de `t0`.
+ * @param {Playback} p
+ * @param {number} t0 Instant audio du début (s).
+ * @param {number} measures Nombre de mesures.
+ * @param {string} time Chiffrage.
+ * @param {number} spq Secondes par noire.
+ * @param {Array.<boolean>} beats Temps qui cliquent.
+ * @param {boolean} accent
+ */
+function metronome(p, t0, measures, time, spq, beats, accent) {
+  const beat = beatUnit(time);
+  const perMeasure = Math.round(mlen(time) / beat);
+  for (let m = 0; m < measures; m++)
+    for (let k = 0; k < perMeasure; k++)
+      if (beats[k]) click(t0 + (m * perMeasure + k) * beat * spq, accent && k === 0, p.nodes);
+}
+
+/**
  * Joue une portée (bascule lecture/arrêt).
  *
  * Les événements viennent de {@link module:rhythm.staffEvents|staffEvents} (reprises,
  * liaisons, triolets et swing déjà résolus) ; il ne reste qu'à convertir les
  * noires en secondes : `secondes = noires × 60 / tempo`.
  *
+ * Avec des {@link PlayOptions} (entraînement) : mesure de décompte, métronome
+ * sur les temps choisis, rythme coupé.
+ *
  * @param {module:model~StaffBlock} b
  * @param {PlayCallbacks} cb
+ * @param {PlayOptions} [opt={}]
  */
-export function playStaff(b, cb) {
+export function playStaff(b, cb, opt = {}) {
   if (!b.items.length) {
     stop();
     return;
@@ -266,11 +326,16 @@ export function playStaff(b, cb) {
   if (!r) return;
   const { c, p } = r;
   const spq = 60 / (b.tempo || 120); // secondes par noire
-  const t0 = c.currentTime + 0.12; // petite marge pour que la 1re note ne soit pas tronquée
+  const start = c.currentTime + 0.12; // petite marge pour que la 1re note ne soit pas tronquée
+  const bar = mlen(b.time) * spq; // durée d'une mesure (s)
+  if (opt.countIn) metronome(p, start, 1, b.time, spq, EVERY_BEAT, !!opt.accent);
+  const t0 = opt.countIn ? start + bar : start;
   const { events, total } = staffEvents(b);
+  if (opt.beats)
+    metronome(p, t0, Math.ceil(total / mlen(b.time) - 1e-9), b.time, spq, opt.beats, !!opt.accent);
   events.forEach((ev) => {
     const ts = t0 + ev.start * spq;
-    if (!ev.rest && !ev.held) {
+    if (!ev.rest && !ev.held && !opt.mute) {
       if (b.clef === 'rhythm') perc(ts, ev.downbeat, p.nodes);
       else tone(ts, (ev.end - ev.start) * spq, ev.midi, p.nodes);
     }

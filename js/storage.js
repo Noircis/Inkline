@@ -427,18 +427,54 @@ export function importFile(notes, text, folders = {}) {
  * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
  * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
  * @property {boolean} [autoFold] Option « Réduire automatiquement les blocs longs » (2.2).
- * @property {{notes: number, tempo: number}} [drill] Derniers réglages de l'entraînement Rythme (2.3).
+ * @property {module:storage~DrillSettings} [drill] Derniers réglages de l'entraînement Rythme (2.3).
  */
 
 /**
- * Valide les réglages de l'entraînement Rythme.
+ * Réglages de l'entraînement Rythme.
+ * @typedef {Object} DrillSettings
+ * @property {number} notes Notes par mesure (1 à 8).
+ * @property {number} tempo
+ * @property {boolean} swing
+ * @property {Array.<boolean>} beats Temps où le métronome clique (4 valeurs).
+ * @property {boolean} accent Accent sur le 1.
+ * @property {boolean} countIn Mesure de décompte.
+ * @property {boolean} mute Couper le rythme (métronome seul).
+ */
+
+/** Réglages par défaut de l'entraînement Rythme. */
+export const DRILL_DEFAULTS = Object.freeze({
+  notes: 1,
+  tempo: 80,
+  swing: false,
+  beats: [true, true, true, true],
+  accent: false,
+  countIn: true,
+  mute: false,
+});
+
+/**
+ * Valide les réglages de l'entraînement Rythme (valeurs par défaut pour ce qui manque).
  * @param {*} r
- * @returns {{notes: number, tempo: number}|undefined}
+ * @returns {DrillSettings|undefined}
  */
 function drillOf(r) {
   if (!r || typeof r !== 'object') return undefined;
+  const d = DRILL_DEFAULTS;
   const int = (v, lo, hi, def) => (Number.isInteger(v) && v >= lo && v <= hi ? v : def);
-  return { notes: int(r.notes, 1, 8, 1), tempo: int(r.tempo, 30, 300, 80) };
+  const bool = (v, def) => (typeof v === 'boolean' ? v : def);
+  return {
+    notes: int(r.notes, 1, 8, d.notes),
+    tempo: int(r.tempo, 30, 300, d.tempo),
+    swing: bool(r.swing, d.swing),
+    beats:
+      Array.isArray(r.beats) && r.beats.length === 4 && r.beats.every((x) => typeof x === 'boolean')
+        ? r.beats.slice()
+        : d.beats.slice(),
+    accent: bool(r.accent, d.accent),
+    countIn: bool(r.countIn, d.countIn),
+    mute: bool(r.mute, d.mute),
+  };
 }
 
 /**

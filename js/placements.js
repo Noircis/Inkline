@@ -13,7 +13,8 @@
  * Pour `n` notes, on génère toutes les façons de choisir `n` positions parmi 8
  * ({@link module:placements.combinations|combinations}) : 8 pour une note,
  * 28 pour deux, 56 pour trois, 70 pour quatre… puis on écrit chaque placement
- * selon les règles d'usage ({@link module:placements.placementItems|placementItems}).
+ * selon les règles d'usage ({@link module:placements.placementItems|placementItems}),
+ * et on les regroupe en séries ({@link module:placements.groupSeries|groupSeries}).
  *
  * ## Règles d'écriture (croches)
  *
@@ -37,9 +38,6 @@ export const SLOTS = 8;
 
 /** Positions par temps (croches). */
 const PER_BEAT = 2;
-
-/** Comptage de chaque position, pour l'affichage. */
-export const COUNT_LABELS = ['1', 'et', '2', 'et', '3', 'et', '4', 'et'];
 
 /**
  * Toutes les façons de choisir `k` positions parmi `n`, dans l'ordre
@@ -106,21 +104,52 @@ export function placementItems(positions) {
 }
 
 /**
- * Bloc ligne rythmique (prêt à dessiner et à jouer) pour un placement.
- * @param {Array.<number>} positions
- * @param {number} tempo
+ * Regroupe des placements en **séries** : une série réunit les placements
+ * dont la première note est à la même position (ils sont déjà consécutifs
+ * dans l'ordre de {@link combinations}). Cas particulier : avec une seule
+ * note, chaque placement serait seul dans sa série ; on les réunit tous en
+ * une seule.
+ *
+ * @param {Array.<Array.<number>>} placements
+ * @returns {Array.<Array.<Array.<number>>>} Liste de séries, chacune une liste de placements.
+ */
+export function groupSeries(placements) {
+  if (placements.length && placements[0].length === 1) return [placements];
+  const series = [];
+  placements.forEach((pos) => {
+    const last = series[series.length - 1];
+    if (last && last[0][0] === pos[0]) last.push(pos);
+    else series.push([pos]);
+  });
+  return series;
+}
+
+/**
+ * Séries d'exercices pour `notes` notes par mesure.
+ * @param {number} notes
+ * @returns {Array.<Array.<Array.<number>>>}
+ */
+export function placementSeries(notes) {
+  return groupSeries(combinations(SLOTS, notes));
+}
+
+/**
+ * Bloc ligne rythmique (prêt à dessiner et à jouer) pour une série : ses
+ * placements à la suite, une mesure chacun.
+ * @param {Array.<Array.<number>>} series
+ * @param {{tempo: number, swing: boolean}} play Réglages de lecture.
  * @param {string} id
  * @returns {module:model~StaffBlock}
  */
-export function placementBlock(positions, tempo, id) {
+export function seriesBlock(series, play, id) {
   return {
     id,
     type: 'staff',
     clef: 'rhythm',
     time: '4/4',
-    tempo,
-    swing: false,
-    justify: true, // la mesure occupe toute la largeur (lecture plus aérée)
-    items: placementItems(positions),
+    tempo: play.tempo,
+    swing: play.swing,
+    justify: true, // dernière ligne étirée comme les autres (lecture régulière)
+    items: series.flatMap(placementItems),
   };
 }

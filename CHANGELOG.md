@@ -3,6 +3,36 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.4.0] - 2026-11-06
+
+Entraînement rythmique : séries, swing et métronome.
+
+### Ajouté
+
+- **Séries** : les placements sont regroupés selon la position de la première note, chaque série sur une seule portée (plusieurs lignes si besoin) dans une carte numérotée. Avec une seule note par mesure, les 8 placements forment une seule série.
+- **Écouter** joue toute la série.
+- **Swing** : les croches sont jouées swing.
+- **Métronome** :
+  - tu choisis les temps qui cliquent (1, 2, 3, 4 ; par exemple seulement 2 et 4) ;
+  - accent sur le 1 (optionnel) ;
+  - mesure de décompte avant de démarrer (optionnelle) ;
+  - « Couper le rythme » : seul le métronome joue, pour jouer les rythmes soi-même. La lecture continue de surligner les notes.
+- Tous ces réglages sont mémorisés.
+
+### Modifié
+
+- Le comptage « 1 et 2 et… » au-dessus des mesures est retiré.
+- Le clic de métronome a un son distinct de celui des lignes rythmiques.
+
+### Corrigé
+
+- Le bouton « Swing » des portées dans les notes avait repris, depuis la 2.0, le style des puces de dossiers (fond sombre). Il retrouve son style d'origine.
+
+### Développement
+
+- `audio.playStaff` accepte des options de lecture (décompte, temps du métronome, accent, rythme coupé).
+- `placements.js` : `groupSeries`, `placementSeries`, `seriesBlock`. 2 tests de plus, 64 au total.
+
 ## [2.3.0] - 2026-11-06
 
 Première brique de l'**entraînement** : les placements rythmiques.

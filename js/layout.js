@@ -163,19 +163,20 @@ function breakIntoSystems(measures, widths, W, rh) {
  * - ligne trop pleine : on comprime (`< 1`) ;
  * - ligne pleine non finale : on étire jusqu'au bord, au plus ×{@link MAX_STRETCH} ;
  * - dernière ligne : largeur naturelle, sauf fin de motif remplie à plus de
- *   50 %, ou bloc à justifier entièrement (`justify`, mesures d'entraînement).
+ *   50 %, ou bloc `justify` (entraînement) : la dernière ligne est alors
+ *   étirée comme les autres (au plus ×{@link MAX_STRETCH}).
  * @param {System} sys
  * @param {number} W
  * @param {boolean} isLast
  * @param {boolean} ended Le motif se termine par une barre de fin.
- * @param {boolean} [justify=false] Étirer aussi la dernière ligne jusqu'au bord.
+ * @param {boolean} [justify=false] Étirer aussi la dernière ligne, comme les autres.
  * @returns {number}
  */
 function stretchFactor(sys, W, isLast, ended, justify = false) {
   const avail = W - sys.start - 4;
   if (sys.used > avail) return avail / sys.used;
   if (!isLast && sys.used > 0) return Math.min(avail / sys.used, MAX_STRETCH);
-  if (isLast && justify && sys.used > 0) return avail / sys.used;
+  if (isLast && justify && sys.used > 0) return Math.min(avail / sys.used, MAX_STRETCH);
   if (isLast && ended && sys.used > avail * 0.5) return avail / sys.used;
   return 1;
 }
