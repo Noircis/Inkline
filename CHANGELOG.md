@@ -3,6 +3,16 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.4.1] - 2026-11-06
+
+### Corrigé
+
+- **Doubles croches en swing** (signalé par un utilisateur) : à l'écoute, quatre doubles croches sur un temps étaient jouées inégales (1/3, 1/3, 1/6, 1/6 du temps), parce que la déformation du swing, pensée pour les croches, s'appliquait aussi à elles. Désormais, le swing ne s'applique qu'aux temps écrits en croches ; un temps qui contient des doubles croches (ou une croche pointée suivie d'une double) est joué droit, comme on le fait en jazz pour un passage en doubles. L'écriture n'est pas concernée.
+
+### Développement
+
+- `rhythm.straightBeats` : temps à jouer droits malgré le swing. 1 test de plus, 65 au total.
+
 ## [2.4.0] - 2026-11-06
 
 Entraînement rythmique : séries, swing et métronome.

@@ -107,3 +107,19 @@ test('staffEvents : le swing ne déforme pas les triolets', () => {
   assert.ok(Math.abs(events[1].start - 2 / 3) < 1e-9); // croche swing
   assert.ok(Math.abs(events[3].start - (1 + 1 / 3)) < 1e-9); // triolet intact
 });
+
+test('staffEvents : en swing, les doubles croches restent égales (temps joué droit)', () => {
+  const starts = (items) =>
+    staffEvents(staff(items, { swing: true })).events.map((e) => Math.round(e.start * 1000) / 1000);
+  // Temps 1 : quatre doubles (droit) ; temps 2 : deux croches (swing).
+  assert.deepEqual(
+    starts([n('16'), n('16'), n('16'), n('16'), n('8'), n('8')]),
+    [0, 0.25, 0.5, 0.75, 1, 1.667],
+  );
+  // Croche + deux doubles : le temps contient des doubles, il est joué droit.
+  assert.deepEqual(starts([n('8'), n('16'), n('16'), n('8'), n('8')]), [0, 0.5, 0.75, 1, 1.667]);
+  // Croche pointée + double : la double tombe au 3/4 du temps, droit aussi.
+  assert.deepEqual(starts([n('8', { dot: true }), n('16'), n('q')]), [0, 0.75, 1]);
+  // Syncope en croches (croche, noire, croche) : swing normal.
+  assert.deepEqual(starts([n('8'), n('q'), n('8')]), [0, 0.667, 1.667]);
+});

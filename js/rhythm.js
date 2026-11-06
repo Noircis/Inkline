@@ -275,6 +275,38 @@ export function swingWarp(q) {
 }
 
 /**
+ * Temps à jouer **droits** malgré le swing : ceux où une note (hors triolet)
+ * commence ou finit ailleurs que sur le temps ou sur la croche du levé.
+ *
+ * Pourquoi : {@link swingWarp} est pensé pour des croches. Appliqué à des
+ * doubles croches, il les rendait inégales (1/3, 1/3, 1/6, 1/6 du temps au
+ * lieu de quatre quarts égaux). En jazz, un passage en doubles croches dans
+ * un morceau swing se joue droit (comme en « double time ») : seuls les
+ * temps écrits en croches sont swingués.
+ *
+ * @param {module:model~StaffItem[]} items
+ * @param {number[]} order Ordre de lecture ({@link staffPlayOrder}).
+ * @returns {Set.<number>} Index des temps (en noires depuis le début de la lecture).
+ */
+export function straightBeats(items, order) {
+  const out = new Set();
+  const onGrid = (t) => {
+    const r = t - Math.floor(t + 1e-9);
+    return Math.abs(r) < 1e-6 || Math.abs(r - 0.5) < 1e-6 || Math.abs(r - 1) < 1e-6;
+  };
+  let q = 0;
+  order.forEach((i) => {
+    const it = items[i];
+    const start = q;
+    q = snap(q + qlen(it));
+    if (it.tup) return;
+    if (!onGrid(start)) out.add(Math.floor(start + 1e-9));
+    if (!onGrid(q)) out.add(Math.floor(q + 1e-9));
+  });
+  return out;
+}
+
+/**
  * Un événement sonore d'une portée, prêt à être programmé par l'audio.
  * Les temps sont en **noires** depuis le début ; l'audio les convertit en
  * secondes avec le tempo.
@@ -299,8 +331,10 @@ export function swingWarp(q) {
  * 3. liaisons : si l'élément précédent dans l'ordre de lecture est la note
  *    juste avant dans la partition et qu'elle est liée, on prolonge sa fin au
  *    lieu de déclencher une nouvelle note ;
- * 4. swing : on applique {@link swingWarp} à toutes les positions **sauf**
- *    celles des notes de triolet (déjà ternaires, les déformer les fausserait).
+ * 4. swing : on applique {@link swingWarp} temps par temps, **seulement aux
+ *    temps écrits en croches** ({@link straightBeats}) : un temps qui contient
+ *    des doubles croches (ou un point qui tombe au quart de temps) est joué
+ *    droit. Les notes de triolet ne sont jamais déformées (déjà ternaires).
  *    Le swing n'est pas appliqué en mesure composée (x/8).
  *
  * @param {module:model~StaffBlock} b
@@ -312,7 +346,8 @@ export function staffEvents(b) {
   const order = staffPlayOrder(items);
   const ML = mlen(b.time);
   const swing = b.swing && !b.time.endsWith('/8');
-  const warp = (t, tup) => (swing && !tup ? swingWarp(t) : t);
+  const straight = swing ? straightBeats(items, order) : new Set();
+  const warp = (t, tup) => (swing && !tup && !straight.has(Math.floor(t + 1e-9)) ? swingWarp(t) : t);
   /** @type {StaffEvent[]} */
   const events = [];
   let q = 0;
