@@ -3,6 +3,28 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.3.0] - 2026-11-06
+
+Première brique de l'**entraînement** : les placements rythmiques.
+
+### Ajouté
+
+- **Section Entraînement**, ouverte par l'icône de métronome sur l'accueil. Elle regroupera les exercices ; le premier est Rythme › Placements.
+- **Placements** : tu choisis le nombre de notes par mesure (1 à 8) et l'appli génère toutes les façons de les placer sur les 8 croches d'une mesure de 4/4 (8 placements pour une note, 28 pour deux, 56 pour trois, 70 pour quatre…).
+  - Écriture d'usage : noire sur le temps, demi-soupir + croche sur le contretemps, deux croches ligaturées sur un temps plein, pas de syncope, demi-pause seulement sur les temps 1-2 ou 3-4.
+  - Chaque placement affiche le comptage (« 1 et 2 et… ») avec les positions jouées en gras, et peut être écouté au tempo choisi.
+  - Le nombre de notes et le tempo sont mémorisés.
+  - Doubles croches et triolets sont annoncés (« bientôt »), pas encore disponibles.
+- Le bouton retour d'Android remonte d'un écran à la fois (Placements → Entraînement → accueil).
+
+### Développement
+
+- `js/placements.js` : génération des combinaisons et règles d'écriture, en fonctions pures.
+- `js/ui/training.js` : écrans Entraînement et Placements.
+- Mise en page : option `justify` pour étirer une mesure sur toute la largeur (utilisée par les placements, sans effet sur les notes).
+- Navigation : écrans enfants (`goChild`) et historique qui mémorise l'écran.
+- 4 tests (`tests/placements.test.js`), dont la vérification que chacune des 255 mesures générées dure exactement 4 temps. 62 tests au total.
+
 ## [2.2.0] - 2026-11-04
 
 Blocs longs réduits : une longue portée ou une longue grille ne prend plus tout l'écran.

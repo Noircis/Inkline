@@ -162,17 +162,20 @@ function breakIntoSystems(measures, widths, W, rh) {
  * Facteur d'étirement d'une ligne (étape 4, justification).
  * - ligne trop pleine : on comprime (`< 1`) ;
  * - ligne pleine non finale : on étire jusqu'au bord, au plus ×{@link MAX_STRETCH} ;
- * - dernière ligne : largeur naturelle, sauf fin de motif remplie à plus de 50 %.
+ * - dernière ligne : largeur naturelle, sauf fin de motif remplie à plus de
+ *   50 %, ou bloc à justifier entièrement (`justify`, mesures d'entraînement).
  * @param {System} sys
  * @param {number} W
  * @param {boolean} isLast
  * @param {boolean} ended Le motif se termine par une barre de fin.
+ * @param {boolean} [justify=false] Étirer aussi la dernière ligne jusqu'au bord.
  * @returns {number}
  */
-function stretchFactor(sys, W, isLast, ended) {
+function stretchFactor(sys, W, isLast, ended, justify = false) {
   const avail = W - sys.start - 4;
   if (sys.used > avail) return avail / sys.used;
   if (!isLast && sys.used > 0) return Math.min(avail / sys.used, MAX_STRETCH);
+  if (isLast && justify && sys.used > 0) return avail / sys.used;
   if (isLast && ended && sys.used > avail * 0.5) return avail / sys.used;
   return 1;
 }
@@ -187,15 +190,16 @@ function stretchFactor(sys, W, isLast, ended) {
  * @param {number} W
  * @param {boolean} rh
  * @param {boolean} ended
+ * @param {boolean} [justify=false]
  * @returns {{pos: ItemPos[], bars: Array.<{sys: number, x: number, type: string}>, starts: Array.<{sys: number, x: number}>, measureCount: number}}
  */
-function placeSystems(systems, items, widths, W, rh, ended) {
+function placeSystems(systems, items, widths, W, rh, ended, justify = false) {
   const pos = [];
   const bars = [];
   const starts = [];
   let measureCount = 0;
   systems.forEach((sys, si) => {
-    const sc = stretchFactor(sys, W, si === systems.length - 1, ended);
+    const sc = stretchFactor(sys, W, si === systems.length - 1, ended, justify);
     sys.firstMeasure = measureCount + 1;
     let x = sys.start;
     sys.ms.forEach(({ m }) => {
@@ -238,7 +242,7 @@ export function layout(b, W, active = false) {
   const ended = items.length > 0 && items[items.length - 1].bar === 'final';
 
   const systems = breakIntoSystems(segmentMeasures(items, b.time), widths, W, rh);
-  const { pos, bars, starts, measureCount } = placeSystems(systems, items, widths, W, rh, ended);
+  const { pos, bars, starts, measureCount } = placeSystems(systems, items, widths, W, rh, ended, !!b.justify);
 
   // Zone d'ajout : après la dernière mesure, ou sur une nouvelle ligne vide
   // s'il ne reste pas assez de place (en édition seulement).

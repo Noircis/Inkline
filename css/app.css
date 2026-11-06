@@ -1643,3 +1643,101 @@ a.btn {
     transition: none;
   }
 }
+
+/* 12. Entraînement (2.3) */
+.nsel {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.nsel button {
+  min-height: 42px;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.nsel button[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.seg-sm button {
+  min-height: 44px;
+  gap: 1px;
+}
+.seg button:disabled {
+  opacity: 0.45;
+}
+.seg button small {
+  font-size: 11px;
+  font-weight: 500;
+}
+.drill-bar {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+.drill-bar .grow {
+  flex: 1;
+}
+.drill-bar .tempo {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+}
+.drill-bar .tempo .mus {
+  font-family: var(--f-music);
+  font-size: 18px;
+}
+.drill-bar input {
+  width: 64px;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.drills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.drill {
+  padding: 10px 12px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.drill-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drill-n {
+  min-width: 22px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.drill-count {
+  display: flex;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.drill-count .hit {
+  color: var(--ink);
+  font-weight: 700;
+}
+.drill-staff {
+  margin-top: 4px;
+}

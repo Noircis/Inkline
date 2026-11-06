@@ -27,7 +27,7 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-2.2.0';
+const CACHE = 'inkline-2.3.0';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -66,6 +66,7 @@ const CORE = [
   './js/folders.js',
   './js/search.js',
   './js/folding.js',
+  './js/placements.js',
   './js/ui/state.js',
   './js/ui/nav.js',
   './js/ui/common.js',
@@ -75,6 +76,7 @@ const CORE = [
   './js/ui/folder-sheet.js',
   './js/ui/icons.js',
   './js/ui/fold.js',
+  './js/ui/training.js',
   './js/ui/staff-ui.js',
   './js/ui/grid-ui.js',
   './js/ui/options.js',

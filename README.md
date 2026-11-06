@@ -53,6 +53,7 @@ js/
   folders.js          dossiers : modèle, sélection, compteurs, suppression
   search.js           recherche (titres, textes, accords) et tri
   folding.js          règle d'affichage réduit des blocs longs
+  placements.js       entraînement rythmique : génération et écriture des placements
   export.js           partage d'une note : .inkline, PNG, PDF
   pdf.js              générateur PDF minimal (images JPEG)
   history.js          annulation (instantanés)
@@ -66,6 +67,7 @@ js/
     note.js           écran note : titre, dossier, épingle, blocs, partage
     folder-sheet.js   éditeur de dossier (panneau du bas)
     fold.js           blocs longs réduits : bouton, fondu, toucher
+    training.js       écrans Entraînement et Placements
     staff-ui.js       bloc portée : toucher, palette
     grid-ui.js        bloc grille : saisie, palette, panneau iReal
     options.js        écran Options : affichage, dossiers, sauvegarde, import, iReal, à propos
@@ -78,7 +80,7 @@ docs/                 documentation générée (npm run docs)
 
 Le code est séparé en deux couches :
 
-- **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale et d'organisation.
+- **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale et d'organisation.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`) : branche la logique sur le navigateur.
 
 Les écrans (`ui/home`, `ui/note`, `ui/options`) et les blocs musicaux (`ui/staff-ui`, `ui/grid-ui`) **s'enregistrent** au chargement auprès de deux registres, `ui/nav` et `ui/blocks`, qui les appellent ensuite par leur nom. Ces registres n'importent aucun écran : le graphe d'imports est sans cycle (voir le module `main`).

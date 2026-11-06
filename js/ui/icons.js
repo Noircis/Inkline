@@ -18,3 +18,7 @@ export const GEAR =
 /** Loupe du champ de recherche. */
 export const LOUPE =
   '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13zM15.4 15.4 20 20"/></svg>';
+
+/** Métronome (bouton Entraînement de l'accueil). */
+export const METRONOME =
+  '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round" d="M9.2 3h5.6l4.2 18H5L9.2 3zM6.6 15h10.8M12 15l5.5-9.5"/></svg>';

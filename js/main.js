@@ -21,6 +21,7 @@
  *  │               └─ ui/options         (rappel de sauvegarde)
  *  ├─ ui/note ─────── export ── pdf
  *  ├─ ui/options ──── ireal
+ *  ├─ ui/training ─── placements
  *  ├─ ui/staff-ui ─── render-staff ── layout ── rhythm ── pitch ── model ── util
  *  ├─ ui/grid-ui ──── grid ── chords
  *  │
@@ -47,13 +48,14 @@
 
 import { state, app } from './ui/state.js';
 import { loadAll, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
-import { renderScreen, showList } from './ui/nav.js';
+import { renderScreen, onHistoryBack } from './ui/nav.js';
 import { redrawStaff } from './ui/staff-ui.js';
 // Imports pour leur effet : chaque module s'enregistre auprès de ui/nav ou ui/blocks.
 import './ui/grid-ui.js';
 import './ui/home.js';
 import './ui/note.js';
 import './ui/options.js';
+import './ui/training.js';
 
 // Chargement asynchrone (IndexedDB) : `await` au niveau du module. Le reste
 // de ce fichier, dont le premier rendu, ne s'exécute qu'une fois le carnet
@@ -77,10 +79,8 @@ if (getMeta().dataVersion !== 2) setMeta({ dataVersion: 2 }); // format 2.0 (dos
 if (history.state && history.state.inkline) history.replaceState(null, '');
 renderScreen();
 
-// Bouton retour d'Android (ou du navigateur) : d'un sous-écran vers la liste.
-window.addEventListener('popstate', () => {
-  if (state.view.name !== 'list') showList();
-});
+// Bouton retour d'Android (ou du navigateur) : vers l'écran précédent.
+window.addEventListener('popstate', (e) => onHistoryBack(e.state));
 requestPersistence();
 
 // Polices web chargées après le premier rendu : les largeurs de texte des SVG

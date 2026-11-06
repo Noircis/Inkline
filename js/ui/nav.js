@@ -14,12 +14,17 @@
  *
  * ## Bouton retour d'Android
  *
- * L'accueil est l'écran racine ; note et options sont des « sous-écrans ».
- * En entrant dans un sous-écran, on ajoute UNE entrée à l'historique du
- * navigateur (`history.pushState`). Le bouton retour d'Android déclenche alors
- * un événement `popstate` (écouté dans `main.js`) qui ramène à l'accueil, au
- * lieu de fermer l'app. Passer d'un sous-écran à un autre remplace l'entrée
- * (`replaceState`) : l'historique ne fait jamais plus d'un niveau.
+ * L'accueil est l'écran racine ; note, options et entraînement sont des
+ * « sous-écrans ». En entrant dans un sous-écran, on ajoute une entrée à
+ * l'historique du navigateur (`history.pushState`) qui mémorise l'écran. Le
+ * bouton retour d'Android déclenche alors un événement `popstate` (écouté dans
+ * `main.js`) qui réaffiche l'écran mémorisé dans l'entrée précédente (ou
+ * l'accueil), au lieu de fermer l'app.
+ *
+ * - {@link module:ui/nav.go|go} ouvre un sous-écran de premier niveau ;
+ *   passer d'un sous-écran à un autre **remplace** l'entrée (`replaceState`).
+ * - {@link module:ui/nav.goChild|goChild} ouvre un écran **enfant** (Rythme
+ *   dans Entraînement) : nouvelle entrée, le retour revient au parent.
  */
 
 import { state } from './state.js';
@@ -41,8 +46,13 @@ import { state } from './state.js';
 const screens = {};
 
 /**
+ * Noms d'écrans.
+ * @typedef {'list'|'note'|'options'|'training'|'rhythm'} ScreenName
+ */
+
+/**
  * Enregistre un écran.
- * @param {'list'|'note'|'options'} name
+ * @param {ScreenName} name
  * @param {ScreenRenderer} fn
  */
 export function registerScreen(name, fn) {
@@ -61,26 +71,58 @@ export function renderScreen(opts = {}) {
 }
 
 /**
- * À appeler en entrant dans un sous-écran (note, options).
+ * À appeler en entrant dans un sous-écran de premier niveau.
+ * @param {ScreenName} name
+ * @param {string|null} id
  */
-export function enterSubView() {
-  if (history.state && history.state.inkline) history.replaceState({ inkline: 1 }, '');
-  else history.pushState({ inkline: 1 }, '');
+function enterSubView(name, id) {
+  const entry = { inkline: 1, view: name, id };
+  if (history.state && history.state.inkline) history.replaceState(entry, '');
+  else history.pushState(entry, '');
 }
 
 /**
- * Ouvre un écran : historique, état, rendu, retour en haut de page.
- * @param {'list'|'note'|'options'} name
- * @param {string|null} [id=null] Note à afficher (écran `note`).
- * @param {RenderOptions} [opts={}]
+ * Affiche un écran (sans toucher à l'historique).
+ * @param {ScreenName} name
+ * @param {string|null} id
+ * @param {RenderOptions} opts
  */
-export function go(name, id = null, opts = {}) {
-  if (name !== 'list') enterSubView();
+function show(name, id, opts) {
   state.view = { name, id };
   state.activeId = null;
   state.sel = null;
   renderScreen(opts);
   window.scrollTo(0, 0);
+}
+
+/**
+ * Ouvre un sous-écran de premier niveau : historique, état, rendu, retour en haut de page.
+ * @param {ScreenName} name
+ * @param {string|null} [id=null] Note à afficher (écran `note`).
+ * @param {RenderOptions} [opts={}]
+ */
+export function go(name, id = null, opts = {}) {
+  if (name !== 'list') enterSubView(name, id);
+  show(name, id, opts);
+}
+
+/**
+ * Ouvre un écran enfant du sous-écran courant : le retour ramènera au parent.
+ * @param {ScreenName} name
+ */
+export function goChild(name) {
+  history.pushState({ inkline: 1, view: name, id: null }, '');
+  show(name, null, {});
+}
+
+/**
+ * Bouton retour d'Android (`popstate`) : réaffiche l'écran mémorisé dans
+ * l'entrée d'historique où l'on revient, ou l'accueil.
+ * @param {*} entry `history.state` après le retour.
+ */
+export function onHistoryBack(entry) {
+  if (entry && entry.inkline && entry.view) show(entry.view, entry.id || null, {});
+  else if (state.view.name !== 'list') showList();
 }
 
 /**
@@ -102,9 +144,9 @@ export function showList() {
 }
 
 /**
- * Retour à l'accueil depuis un sous-écran : on recule dans l'historique si
- * on y a ajouté une entrée (le `popstate` affichera l'accueil), sinon on
- * affiche directement l'accueil.
+ * Bouton « retour » d'un écran : on recule dans l'historique si on y a ajouté
+ * une entrée (le `popstate` affichera l'écran précédent), sinon on affiche
+ * directement l'accueil.
  */
 export function backToList() {
   if (history.state && history.state.inkline) history.back();

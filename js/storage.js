@@ -427,7 +427,19 @@ export function importFile(notes, text, folders = {}) {
  * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
  * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
  * @property {boolean} [autoFold] Option « Réduire automatiquement les blocs longs » (2.2).
+ * @property {{notes: number, tempo: number}} [drill] Derniers réglages de l'entraînement Rythme (2.3).
  */
+
+/**
+ * Valide les réglages de l'entraînement Rythme.
+ * @param {*} r
+ * @returns {{notes: number, tempo: number}|undefined}
+ */
+function drillOf(r) {
+  if (!r || typeof r !== 'object') return undefined;
+  const int = (v, lo, hi, def) => (Number.isInteger(v) && v >= lo && v <= hi ? v : def);
+  return { notes: int(r.notes, 1, 8, 1), tempo: int(r.tempo, 30, 300, 80) };
+}
 
 /**
  * Garde seulement les tris valides d'un objet `{ sélection: tri }`.
@@ -463,6 +475,7 @@ export function getMeta() {
       dataVersion: num(m.dataVersion),
       storage: m.storage === 'idb' ? 'idb' : undefined,
       autoFold: m.autoFold === true ? true : undefined,
+      drill: drillOf(m.drill),
     };
   } catch (e) {
     return {};
