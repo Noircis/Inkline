@@ -27,7 +27,7 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-2.5.0';
+const CACHE = 'inkline-2.5.1';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -45,7 +45,10 @@ const CORE = [
   './fonts/noto-music-music-400-normal.woff2',
   './icon-192.png',
   './icon-512.png',
-  './icon-maskable.png',
+  './icon-maskable-192.png',
+  './icon-maskable-512.png',
+  './apple-touch-icon.png',
+  './inkline-icon.svg',
   './js/main.js',
   './js/util.js',
   './js/model.js',

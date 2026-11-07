@@ -35,6 +35,7 @@ css/fonts.css         déclaration des polices hébergées
 fonts/                polices woff2 (licence SIL OFL)
 sw.js                 service worker (hors ligne)
 manifest.webmanifest  nom, icônes, mode « standalone »
+icon-*.png, apple-touch-icon.png, inkline-icon*.svg   icônes (any, maskable, iOS, SVG source)
 js/
   main.js             point d'entrée
   util.js             utilitaires (uid, mod, échappement…)

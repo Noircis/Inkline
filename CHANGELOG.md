@@ -3,6 +3,13 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.5.1] - 2026-11-07
+
+### Modifié
+
+- **Nouvelle icône** dessinée par Nathan : portée, note et plume, sur fond crème. Versions arrondie (« any »), plein cadre pour les icônes adaptatives d'Android (« maskable », 192 et 512 px), icône pour iOS (180 px) et SVG (onglet du navigateur).
+- L'écran de démarrage de l'appli installée prend le fond crème de l'icône.
+
 ## [2.5.0] - 2026-11-07
 
 Saisie des portées repensée, et armures.
