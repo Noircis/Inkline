@@ -38,6 +38,11 @@ import { scheduleSave } from '../storage.js';
  *   de portée **ou** index de mesure de grille, selon le type du bloc. Un seul
  *   bloc est actif à la fois, il n'y a donc pas d'ambiguïté ; `setActive`
  *   remet `sel` à `null` à chaque changement de bloc.
+ * @property {'write'|'edit'} mode Mode des portées (2.5) : Écrire (la palette
+ *   règle la prochaine note, on insère au curseur) ou Modifier (la palette
+ *   modifie la note sélectionnée).
+ * @property {number|null} cursor Mode Écrire : index de l'élément devant
+ *   lequel la prochaine note sera insérée ; `null` = en fin de portée.
  * @property {number|null} playIdx Élément ou mesure en cours de lecture.
  * @property {InputSettings} input
  */
@@ -50,6 +55,8 @@ export const state = {
   view: { name: 'list', id: null },
   activeId: null,
   sel: null,
+  mode: 'write',
+  cursor: null,
   playIdx: null,
   input: { d: 'q', dot: false, rest: false, acc: null, rs: false, tie: false, tup: false },
 };

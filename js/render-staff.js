@@ -35,7 +35,7 @@
  */
 
 import { esc, mod } from './util.js';
-import { layout, geom, yOfStep, HALF_SPACE } from './layout.js';
+import { layout, geom, yOfStep, HALF_SPACE, KEY_ACC_W, INSERT_GAP } from './layout.js';
 import { beamGroups, tupletGroups } from './rhythm.js';
 
 /** Remplace `b` et `#` par les vrais signes ♭ et ♯ dans un accord chiffré. */
@@ -89,6 +89,35 @@ function accSvg(a, x, y) {
 }
 
 /**
+ * Positions (`s`, clé de sol) des altérations de l'armure, dans l'ordre où
+ * on les écrit. En clé de fa, tout est deux positions plus bas.
+ */
+const KEY_POS = {
+  sharp: [8, 5, 9, 6, 3, 7, 4], // fa5 do5 sol5 ré5 la4 mi5 si4
+  flat: [4, 7, 3, 6, 2, 5, 1], // si4 mi5 la4 ré5 sol4 do5 fa4
+};
+
+/** Abscisse de la première altération de l'armure (juste après la clé). */
+const KEY_X = 36;
+
+/**
+ * Dessine l'armure d'une ligne.
+ * @param {module:model~StaffBlock} b
+ * @param {module:layout~Layout} L
+ * @param {module:layout~SystemGeom} g
+ * @returns {string}
+ */
+function keySigSvg(b, L, g) {
+  const ks = b.ks || 0;
+  if (!ks || b.clef === 'rhythm') return '';
+  const shift = b.clef === 'bass' ? -2 : 0;
+  const list = (ks > 0 ? KEY_POS.sharp : KEY_POS.flat).slice(0, Math.abs(ks));
+  return list
+    .map((s, k) => accSvg(ks > 0 ? 1 : -1, KEY_X + k * KEY_ACC_W, yOfStep(L, g, s + shift)))
+    .join('');
+}
+
+/**
  * Dessine une barre de mesure.
  * @param {string} type `'single'`, `'double'`, `'final'`, `'rep'` (fin de reprise).
  * @param {number} x Abscisse de la barre (bord droit pour les barres composées).
@@ -138,7 +167,8 @@ function tieSvg(x1, x2, y, dir) {
  * @typedef {Object} StaffSvgOptions
  * @property {number|null} [sel] Index de l'élément sélectionné (surligné).
  * @property {number|null} [play] Index de l'élément en cours de lecture.
- * @property {boolean} [cursor] Afficher la zone et le curseur d'ajout (bloc en édition).
+ * @property {boolean} [cursor] Afficher la zone et le curseur d'ajout (bloc en édition, mode Écrire).
+ * @property {?number} [insertAt] Curseur d'insertion devant cet élément (avec `cursor`) ; absent : en fin de portée.
  * @property {number} [maxSystems] Limiter le nombre de lignes (vignettes de la liste).
  */
 
@@ -210,12 +240,14 @@ function drawStaffLines(ctx) {
         b.clef === 'bass'
           ? `<text class="clef" x="4" y="${g.staffTop + 30}" font-size="38">\u{1D122}</text>`
           : `<text class="clef" x="3" y="${g.staffTop + 30}" font-size="38">\u{1D11E}</text>`;
+      out += keySigSvg(b, L, g);
     }
     if (sys === 0) {
       const [num, den] = b.time.split('/').map(esc);
+      const tx = 46 + L.ksw;
       out += L.rh
         ? `<text class="t" x="34" y="${g.line - 3}" font-size="15" text-anchor="middle">${num}</text><text class="t" x="34" y="${g.line + 14}" font-size="15" text-anchor="middle">${den}</text>`
-        : `<text class="t" x="46" y="${g.staffTop + 17}" font-size="21" text-anchor="middle">${num}</text><text class="t" x="46" y="${g.staffTop + 37}" font-size="21" text-anchor="middle">${den}</text>`;
+        : `<text class="t" x="${tx}" y="${g.staffTop + 17}" font-size="21" text-anchor="middle">${num}</text><text class="t" x="${tx}" y="${g.staffTop + 37}" font-size="21" text-anchor="middle">${den}</text>`;
     } else if (system.ms.length) {
       out += `<text class="mnum" x="2" y="${L.rh ? g.line - 16 : g.staffTop - 8}">${system.firstMeasure}</text>`;
     }
@@ -547,8 +579,19 @@ function drawTuplets(ctx) {
  */
 function drawAppendZone(ctx) {
   const { L, W } = ctx;
-  if (!ctx.opt.cursor || L.appendX == null || L.appendSys >= ctx.sysCount)
-    return { background: '', cursor: '' };
+  if (!ctx.opt.cursor) return { background: '', cursor: '' };
+  if (L.insertX != null && L.insertSys < ctx.sysCount) {
+    // Curseur d'insertion au milieu de la portée : zone étroite dans le trou ouvert.
+    const g = geom(L, L.insertSys);
+    const y1 = L.rh ? g.line - 18 : g.staffTop - 10;
+    const y2 = L.rh ? g.line + 18 : g.staffBottom + 10;
+    const half = INSERT_GAP / 2;
+    return {
+      background: `<rect class="cursorbg" x="${L.insertX - half}" y="${y1}" width="${INSERT_GAP}" height="${y2 - y1}" rx="4"/>`,
+      cursor: `<line class="cursor" x1="${L.insertX}" x2="${L.insertX}" y1="${y1}" y2="${y2}"/>`,
+    };
+  }
+  if (L.appendX == null || L.appendSys >= ctx.sysCount) return { background: '', cursor: '' };
   const g = geom(L, L.appendSys);
   const y1 = L.rh ? g.line - 18 : g.staffTop - 10;
   const y2 = L.rh ? g.line + 18 : g.staffBottom + 10;
@@ -573,7 +616,7 @@ function drawAppendZone(ctx) {
  *   en page utilisée (réutilisée par l'appelant pour le hit-testing).
  */
 export function staffSvg(b, W, opt = {}) {
-  const L = layout(b, W, !!opt.cursor);
+  const L = layout(b, W, !!opt.cursor, opt.cursor ? (opt.insertAt ?? null) : null);
   const sysCount = opt.maxSystems ? Math.min(opt.maxSystems, L.systems.length) : L.systems.length;
   const height = sysCount * L.SH;
   /** @type {RenderContext} */

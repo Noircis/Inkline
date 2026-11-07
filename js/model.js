@@ -86,6 +86,7 @@ import { uid } from './util.js';
  * @property {number} tempo Tempo en noires par minute.
  * @property {boolean} swing Croches swing à la lecture.
  * @property {StaffItem[]} items Éléments dans l'ordre.
+ * @property {number} [ks] Armure (2.5) : nombre de dièses (> 0) ou de bémols (< 0), de -7 à 7. Absente : pas d'armure.
  * @property {boolean} [justify] Étirer la dernière ligne jusqu'au bord (blocs générés de l'entraînement ; jamais enregistré).
  * @property {'open'|'closed'} [fold] Choix manuel d'affichage d'un bloc long (2.2) : déplié ou réduit. Absent : l'option « Réduire automatiquement » décide.
  */

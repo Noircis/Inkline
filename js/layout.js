@@ -53,6 +53,12 @@ const PAD_R = 8;
 /** Largeur (px) réservée au signe de début de reprise `‖:`. */
 const REPEAT_START_W = 16;
 
+/** Largeur (px) d'une altération de l'armure. */
+export const KEY_ACC_W = 9;
+
+/** Largeur (px) du trou ouvert devant la note où le curseur d'insertion est placé. */
+export const INSERT_GAP = 34;
+
 /** Facteur d'étirement maximal d'une ligne justifiée. */
 const MAX_STRETCH = 2.4;
 
@@ -83,6 +89,9 @@ const MAX_STRETCH = 2.4;
  * @property {ItemPos[]} pos Une position par élément, même index que `items`.
  * @property {Array.<{sys:number, x:number, type:string}>} bars Barres de fin de mesure.
  * @property {Array.<{sys:number, x:number}>} starts Débuts de reprise.
+ * @property {number} ksw Largeur de l'armure (0 sans armure).
+ * @property {?number} insertSys Ligne du curseur d'insertion (s'il est placé avant une note).
+ * @property {?number} insertX Abscisse du curseur d'insertion, `null` s'il est en fin de portée.
  * @property {number} appendSys Ligne de la zone d'ajout.
  * @property {number|null} appendX Abscisse de la zone d'ajout, `null` si le
  *   motif est terminé par une barre de fin.
@@ -106,10 +115,27 @@ function itemWidth(it, rh) {
   return w;
 }
 
-/** Abscisse de début de la musique : la 1re ligne porte la clé ET le chiffrage, les suivantes seulement la clé. */
-function systemStart(rh, isFirst) {
-  if (isFirst) return rh ? 46 : 64;
-  return rh ? 30 : 44;
+/**
+ * Abscisse de début de la musique : la 1re ligne porte la clé, l'armure ET le
+ * chiffrage, les suivantes la clé et l'armure.
+ * @param {boolean} rh
+ * @param {boolean} isFirst
+ * @param {number} [ksw=0] Largeur de l'armure.
+ * @returns {number}
+ */
+function systemStart(rh, isFirst, ksw = 0) {
+  if (isFirst) return (rh ? 46 : 64) + ksw;
+  return (rh ? 30 : 44) + ksw;
+}
+
+/**
+ * Largeur de l'armure (px).
+ * @param {module:model~StaffBlock} b
+ * @returns {number}
+ */
+export function keySigWidth(b) {
+  const n = b.clef === 'rhythm' ? 0 : Math.abs(b.ks || 0);
+  return n ? n * KEY_ACC_W + 4 : 0;
 }
 
 /**
@@ -118,8 +144,8 @@ function systemStart(rh, isFirst) {
  * @param {boolean} rh
  * @returns {System}
  */
-function newSystem(systems, rh) {
-  const sys = { start: systemStart(rh, systems.length === 0), ms: [], used: 0, end: 0, firstMeasure: 1 };
+function newSystem(systems, rh, ksw = 0) {
+  const sys = { start: systemStart(rh, systems.length === 0, ksw), ms: [], used: 0, end: 0, firstMeasure: 1 };
   systems.push(sys);
   return sys;
 }
@@ -145,13 +171,13 @@ function measureWidth(m, widths) {
  * @param {boolean} rh
  * @returns {System[]}
  */
-function breakIntoSystems(measures, widths, W, rh) {
+function breakIntoSystems(measures, widths, W, rh, ksw = 0) {
   const systems = [];
-  let sys = newSystem(systems, rh);
+  let sys = newSystem(systems, rh, ksw);
   measures.forEach((m) => {
     const w = measureWidth(m, widths);
     const avail = W - sys.start - 4;
-    if (sys.ms.length && sys.used + w > avail) sys = newSystem(systems, rh);
+    if (sys.ms.length && sys.used + w > avail) sys = newSystem(systems, rh, ksw);
     sys.ms.push({ m, w });
     sys.used += w;
   });
@@ -194,8 +220,9 @@ function stretchFactor(sys, W, isLast, ended, justify = false) {
  * @param {boolean} [justify=false]
  * @returns {{pos: ItemPos[], bars: Array.<{sys: number, x: number, type: string}>, starts: Array.<{sys: number, x: number}>, measureCount: number}}
  */
-function placeSystems(systems, items, widths, W, rh, ended, justify = false) {
+function placeSystems(systems, items, widths, W, rh, ended, justify = false, gapAt = null) {
   const pos = [];
+  let insert = null;
   const bars = [];
   const starts = [];
   let measureCount = 0;
@@ -213,7 +240,14 @@ function placeSystems(systems, items, widths, W, rh, ended, justify = false) {
       }
       m.idx.forEach((i) => {
         const it = items[i];
-        const w = widths[i] * sc;
+        let w = widths[i] * sc;
+        if (i === gapAt) {
+          // Curseur d'insertion devant cet élément : on ouvre un trou.
+          const gap = INSERT_GAP * Math.min(1, sc);
+          insert = { sys: si, x: x + gap / 2 };
+          x += gap;
+          w -= gap;
+        }
         // La tête est décalée à droite de sa zone pour laisser la place à l'altération.
         const headOffset = (it.a != null && !it.r && !rh ? 12 : 0) + 8;
         pos[i] = { sys: si, x: x + headOffset * Math.min(1, sc), x0: x, x1: x + w };
@@ -224,7 +258,7 @@ function placeSystems(systems, items, widths, W, rh, ended, justify = false) {
     });
     sys.end = x;
   });
-  return { pos, bars, starts, measureCount };
+  return { pos, bars, starts, measureCount, insert };
 }
 
 /**
@@ -234,22 +268,35 @@ function placeSystems(systems, items, widths, W, rh, ended, justify = false) {
  * @param {number} W Largeur disponible en px.
  * @param {boolean} [active=false] Bloc en cours d'édition : on garantit alors
  *   une zone d'ajout assez large, quitte à ouvrir une nouvelle ligne vide.
+ * @param {?number} [insertAt=null] Curseur d'insertion placé devant cet
+ *   élément : un trou de {@link INSERT_GAP} px y est ouvert (mode Écrire).
  * @returns {Layout}
  */
-export function layout(b, W, active = false) {
+export function layout(b, W, active = false, insertAt = null) {
   const rh = b.clef === 'rhythm';
   const items = b.items;
-  const widths = items.map((it) => itemWidth(it, rh));
+  const gapAt = insertAt != null && insertAt >= 0 && insertAt < items.length ? insertAt : null;
+  const widths = items.map((it, i) => itemWidth(it, rh) + (i === gapAt ? INSERT_GAP : 0));
   const ended = items.length > 0 && items[items.length - 1].bar === 'final';
+  const ksw = keySigWidth(b);
 
-  const systems = breakIntoSystems(segmentMeasures(items, b.time), widths, W, rh);
-  const { pos, bars, starts, measureCount } = placeSystems(systems, items, widths, W, rh, ended, !!b.justify);
+  const systems = breakIntoSystems(segmentMeasures(items, b.time), widths, W, rh, ksw);
+  const { pos, bars, starts, measureCount, insert } = placeSystems(
+    systems,
+    items,
+    widths,
+    W,
+    rh,
+    ended,
+    !!b.justify,
+    gapAt,
+  );
 
   // Zone d'ajout : après la dernière mesure, ou sur une nouvelle ligne vide
   // s'il ne reste pas assez de place (en édition seulement).
   let last = systems[systems.length - 1];
   if (active && !ended && W - last.end < 48) {
-    last = newSystem(systems, rh);
+    last = newSystem(systems, rh, ksw);
     last.end = last.start;
     last.firstMeasure = measureCount + 1;
   }
@@ -262,6 +309,9 @@ export function layout(b, W, active = false) {
     pos,
     bars,
     starts,
+    ksw,
+    insertSys: insert ? insert.sys : null,
+    insertX: insert ? insert.x : null,
     appendSys: systems.length - 1,
     appendX,
     ended,

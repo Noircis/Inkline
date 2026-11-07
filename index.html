@@ -38,11 +38,16 @@
     <div id="palette" hidden>
       <div class="pal-inner">
         <div class="pal-info">
-          <span id="palInfo"></span>
+          <div class="modesw" role="radiogroup" aria-label="Mode">
+            <button type="button" role="radio" data-mode="write" aria-checked="true">Écrire</button>
+            <button type="button" role="radio" data-mode="edit" aria-checked="false">Modifier</button>
+          </div>
+          <span class="grow"></span>
           <button type="button" class="icon" data-act="undo" aria-label="Annuler">&#8630;</button>
           <button type="button" class="icon" data-act="del" aria-label="Effacer la note">&#9003;</button>
           <button id="palDone" type="button">Terminé</button>
         </div>
+        <div class="pal-hint" id="palInfo" role="status"></div>
         <div class="pal-chord" id="chordBar" hidden>
           <input
             id="chordIn"

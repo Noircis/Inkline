@@ -123,6 +123,7 @@ export function sanitizeBlock(r) {
           .filter(Boolean)
       : [];
     const st = { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
+    if (clef !== 'rhythm' && Number.isInteger(r.ks) && r.ks !== 0 && Math.abs(r.ks) <= 7) st.ks = r.ks;
     if (FOLDS.includes(r.fold)) st.fold = r.fold;
     return st;
   }

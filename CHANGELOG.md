@@ -3,6 +3,29 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.5.0] - 2026-11-07
+
+Saisie des portées repensée, et armures.
+
+### Ajouté
+
+- **Deux modes de saisie**, choisis en haut de la palette, comme le mode « N » de MuseScore :
+  - **Écrire** (par défaut) : la palette règle toujours la prochaine note. Un curseur d'insertion indique où elle arrivera. Toucher une note y place le curseur, sans rien modifier : on peut **insérer une note au milieu** de la portée, dans la zone bleue qui s'ouvre. ◀ ▶ déplacent le curseur, ⌫ efface la note juste avant lui.
+  - **Modifier** : toucher une note la sélectionne, la palette la modifie, ◀ ▶ passent à la voisine, toucher plus haut ou plus bas la déplace.
+  - Passer de l'un à l'autre se fait d'un toucher et reprend là où on en était (la note avant le curseur devient la sélection, et inversement). « Terminé » ne sert plus qu'à fermer la palette.
+- **Armure** pour les portées (pas les lignes rythmiques) : de 7 bémols à 7 dièses, choisie dans l'en-tête du bloc, avec la tonalité majeure et mineure correspondante. Elle est dessinée au début de chaque ligne, prise en compte à l'écoute, et une altération écrite la remplace jusqu'à la barre (un bécarre annule le dièse de l'armure). Le nom de la note sélectionnée en tient compte.
+
+### Modifié
+
+- La ligne d'aide de la palette passe sous la rangée des modes.
+
+### Développement
+
+- `pitch` : `keyAcc`, `degreeOf`, ordres des dièses et des bémols ; `resolveMidis` applique l'armure.
+- `layout` : largeur de l'armure (`ksw`) et trou d'insertion (`insertAt`, `insertX`).
+- `render-staff` : dessin de l'armure ; zone d'insertion au curseur.
+- 7 tests de plus (armure, insertion, validation). 71 au total.
+
 ## [2.4.1] - 2026-11-06
 
 ### Corrigé

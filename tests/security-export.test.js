@@ -1,7 +1,7 @@
 // Tests de la validation des données importées et du PDF.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { sanitizeNote, sanitizeNotes } from '../js/sanitize.js';
+import { sanitizeNote, sanitizeNotes, sanitizeBlock } from '../js/sanitize.js';
 import { importFile, noteFileJson } from '../js/storage.js';
 import { buildPdf } from '../js/pdf.js';
 import { paginate, parseFontFaces } from '../js/export.js';
@@ -121,4 +121,15 @@ test('parseFontFaces : le vrai fonts.css donne ses 7 polices (export des images)
     parseFontFaces('@font-face{src:url(\'a.woff2\')}@font-face {\n src: url( "b.woff2" ) }').length,
     2,
   );
+});
+
+test('sanitize : armure entière de -7 à 7, ignorée sur une ligne rythmique', () => {
+  const blk = (extra) => sanitizeBlock({ type: 'staff', clef: 'treble', time: '4/4', items: [], ...extra });
+  assert.equal(blk({ ks: 3 }).ks, 3);
+  assert.equal(blk({ ks: -7 }).ks, -7);
+  assert.ok(!('ks' in blk({ ks: 8 })));
+  assert.ok(!('ks' in blk({ ks: 1.5 })));
+  assert.ok(!('ks' in blk({ ks: '2' })));
+  assert.ok(!('ks' in blk({ ks: 0 })));
+  assert.ok(!('ks' in blk({ ks: 2, clef: 'rhythm' })));
 });

@@ -74,6 +74,7 @@ export function setActive(id) {
   const prev = state.activeId;
   state.activeId = id;
   state.sel = null;
+  state.cursor = null; // un bloc qu'on ouvre se complète par la fin
   if (prev) redrawBlock(prev);
   if (id) redrawBlock(id);
   updateActive();

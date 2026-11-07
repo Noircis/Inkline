@@ -15,10 +15,19 @@
  * - clé de sol : 1re ligne = mi 4 (degré 2, octave 4)
  * - clé de fa  : 1re ligne = sol 2 (degré 4, octave 2)
  *
+ * ## Armure (2.5)
+ *
+ * Le champ `ks` d'une portée compte les dièses (positif) ou les bémols
+ * (négatif) de l'armure, de -7 à 7. Les altérations de l'armure s'ajoutent
+ * dans l'ordre du cycle des quintes : fa do sol ré la mi si pour les dièses,
+ * si mi la ré sol do fa pour les bémols. Elles valent pour toutes les
+ * octaves ({@link module:pitch.keyAcc|keyAcc}).
+ *
  * ## Altérations
  *
  * Comme en gravure classique, une altération écrite vaut **jusqu'à la fin de
- * la mesure** pour la même position. La table `carry` est remise à zéro à
+ * la mesure** pour la même position ; elle remplace celle de l'armure (un
+ * bécarre annule le dièse de l'armure). La table `carry` est remise à zéro à
  * chaque barre de mesure. Une note **liée** à la précédente garde la hauteur
  * de celle-ci, même par-dessus une barre (règle d'écriture standard).
  */
@@ -37,6 +46,40 @@ const SEMITONES = [0, 2, 4, 5, 7, 9, 11];
  * @type {Object.<string, {L:number, O:number}>}
  */
 const CLEF_BASE = { treble: { L: 2, O: 4 }, bass: { L: 4, O: 2 } };
+
+/** Degrés recevant un dièse, dans l'ordre de l'armure : fa do sol ré la mi si. */
+export const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6];
+
+/** Degrés recevant un bémol, dans l'ordre de l'armure : si mi la ré sol do fa. */
+export const FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3];
+
+/**
+ * Degré de la gamme (0 = do … 6 = si) d'une position de portée.
+ * @param {string} clef
+ * @param {number} s
+ * @returns {number}
+ */
+export function degreeOf(clef, s) {
+  const b = CLEF_BASE[clef] || CLEF_BASE.treble;
+  return mod(b.L + s, 7);
+}
+
+/**
+ * Altération imposée par l'armure à une position (toutes octaves).
+ * @example
+ * keyAcc('treble', 8, 1)   // 1 : fa 5 est dièse en sol majeur
+ * keyAcc('treble', 4, -2)  // -1 : si est bémol en si♭ majeur
+ * @param {string} clef
+ * @param {number} s
+ * @param {number} [ks=0] Armure : nombre de dièses (> 0) ou de bémols (< 0).
+ * @returns {number} -1, 0 ou 1.
+ */
+export function keyAcc(clef, s, ks = 0) {
+  if (!ks) return 0;
+  const d = degreeOf(clef, s);
+  if (ks > 0) return SHARP_ORDER.slice(0, ks).includes(d) ? 1 : 0;
+  return FLAT_ORDER.slice(0, -ks).includes(d) ? -1 : 0;
+}
 
 /**
  * Numéro MIDI d'une position de portée.
@@ -62,16 +105,19 @@ export function midiOf(clef, s, acc) {
 
 /**
  * Nom lisible d'une position (affiché dans la palette quand une note est sélectionnée).
+ * Sans altération écrite, c'est l'armure qui décide.
  *
  * @param {string} clef
  * @param {number} s
  * @param {number} [a] Altération écrite.
+ * @param {number} [ks=0] Armure.
  * @returns {string} Par exemple `"Si♭ 4"`.
  */
-export function pitchName(clef, s, a) {
+export function pitchName(clef, s, a, ks = 0) {
   const b = CLEF_BASE[clef] || CLEF_BASE.treble;
   const t = b.L + s;
-  const acc = a == null ? '' : a === -1 ? '♭' : a === 1 ? '♯' : '♮';
+  const eff = a == null ? keyAcc(clef, s, ks) : a;
+  const acc = eff === -1 ? '♭' : eff === 1 ? '♯' : a === 0 ? '♮' : '';
   return NOTE_NAMES[mod(t, 7)] + acc + ' ' + (b.O + Math.floor(t / 7));
 }
 
@@ -108,7 +154,7 @@ export function resolveMidis(b) {
         m = out[i - 1];
       } else {
         if (it.a != null) carry[it.s] = it.a;
-        m = midiOf(b.clef, it.s, carry[it.s] ?? 0);
+        m = midiOf(b.clef, it.s, carry[it.s] ?? keyAcc(b.clef, it.s, b.ks));
       }
     }
     out.push(m);
