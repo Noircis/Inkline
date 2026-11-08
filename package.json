@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "check": "prettier --check . && eslint . && node --test tests/*.test.js",
     "docs": "jsdoc -c jsdoc.json",
-    "serve": "python3 -m http.server 8080"
+    "serve": "python3 -m http.server 8080",
+    "dev": "node scripts/dev.mjs"
   },
   "devDependencies": {
     "@eslint/js": "9.13.0",

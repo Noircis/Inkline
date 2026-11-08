@@ -13,6 +13,7 @@ npm run lint       # analyse du code (ESLint)
 npm run format     # formatage automatique (Prettier)
 npm run check      # format + lint + tests : à lancer avant chaque commit
 npm run docs       # génère la documentation dans docs/
+npm run dev        # aperçu en direct sur http://localhost:5500 (rechargement automatique)
 npm run serve      # sert l'app sur http://localhost:8080
 ```
 
@@ -20,13 +21,15 @@ L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur stati
 
 ## Environnement de développement
 
-Le projet est réglé pour **Visual Studio Code** (dossier `.vscode/`, partagé dans le dépôt) :
+Le projet est réglé pour **Visual Studio Code** (dossier `.vscode/`, partagé dans le dépôt) : à l'ouverture, VS Code propose les extensions conseillées, **ESLint** (erreurs soulignées en direct) et **Prettier** (formatage à chaque enregistrement, avec les réglages du projet).
 
-- à l'ouverture, VS Code propose les extensions conseillées : **ESLint** (erreurs soulignées en direct), **Prettier** (formatage à chaque enregistrement, avec les réglages du projet) et **Live Server** (aperçu dans le navigateur, rechargé à chaque enregistrement) ;
-- Live Server : bouton « Go Live » en bas à droite, l'appli s'ouvre sur `http://127.0.0.1:5500/` ;
-- dans Chrome, outils de développement (F12) › **Application › Service workers** › cocher **« Update on reload »** : sinon le service worker sert l'ancienne version depuis son cache ;
-- pour simuler un téléphone : icône téléphone/tablette en haut à gauche des outils de développement ;
-- pour déboguer sur un vrai téléphone Android (débogage USB activé) : `chrome://inspect` dans Chrome sur l'ordinateur.
+**Aperçu en direct** : `npm run dev` (dans le terminal de VS Code, Ctrl+ù), puis ouvrir `http://localhost:5500/`. Chaque enregistrement recharge la page.
+
+- Dans VS Code même : Ctrl+Maj+P › « Simple Browser: Show » › `http://localhost:5500/`, puis glisser l'onglet à côté du code.
+- Le serveur de développement (`scripts/dev.mjs`, sans dépendance) neutralise le service worker : pas de version en cache à purger.
+- L'extension « Live Server » ne convient pas : elle injecte un script dans la page, que la Content Security Policy bloque.
+- Pour simuler un téléphone : outils de développement de Chrome (F12) › icône téléphone/tablette.
+- Pour déboguer sur un vrai téléphone Android (débogage USB activé) : `chrome://inspect` dans Chrome sur l'ordinateur.
 
 ## Conventions de code
 

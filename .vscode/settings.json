@@ -8,7 +8,5 @@
   "search.exclude": {
     "docs": true,
     "node_modules": true
-  },
-  "liveServer.settings.port": 5500,
-  "liveServer.settings.ignoreFiles": ["docs/**", "node_modules/**", ".vscode/**", "tests/**"]
+  }
 }
