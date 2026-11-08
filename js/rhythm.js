@@ -17,7 +17,7 @@
  */
 
 import { EPS, snap } from './util.js';
-import { qlen, writtenLen, mlen, beatUnit } from './model.js';
+import { qlen, writtenLen, mlen, groupStarts } from './model.js';
 import { resolveMidis } from './pitch.js';
 
 /**
@@ -182,10 +182,19 @@ function tupletIndex(groups, count) {
  *
  * @param {module:model~StaffItem[]} items
  * @param {string} time
+ * @param {Array.<number>} [meter] Groupement des croches (2.8, voir {@link module:model.meterGroups|meterGroups}).
  * @returns {number[][]} Groupes d'index (longueur ≥ 2).
  */
-export function beamGroups(items, time) {
-  const BU = beatUnit(time);
+export function beamGroups(items, time, meter) {
+  const starts = groupStarts({ time, groups: meter });
+  /** Groupe (temps) qui contient la position `q` de la mesure. */
+  const end = mlen(time);
+  const groupAt = (q) => {
+    if (q >= end - EPS) return starts.length + Math.floor(q - end + EPS); // mesure trop pleine
+    let k = 0;
+    while (k + 1 < starts.length && starts[k + 1] <= q + EPS) k++;
+    return k;
+  };
   const measures = segmentMeasures(items, time);
   const tIdx = tupletIndex(tupletGroups(items, time), items.length);
   /** @type {number[][]} */
@@ -201,7 +210,7 @@ export function beamGroups(items, time) {
     };
     m.idx.forEach((i) => {
       const it = items[i];
-      const beat = Math.floor(snap(pos) / BU + EPS);
+      const beat = groupAt(snap(pos));
       // Clé de regroupement : même temps ET même triolet (ou hors triolet).
       const key = tIdx[i] >= 0 ? 't' + tIdx[i] : 'b' + beat;
       if (!it.r && (it.d === '8' || it.d === '16')) {

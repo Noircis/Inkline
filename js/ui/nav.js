@@ -47,7 +47,7 @@ const screens = {};
 
 /**
  * Noms d'écrans.
- * @typedef {'list'|'note'|'options'|'training'|'rhythm'} ScreenName
+ * @typedef {'list'|'note'|'options'|'training'|'rhythm'|'gen'|'genPlay'} ScreenName
  */
 
 /**

@@ -88,6 +88,7 @@ import { uid } from './util.js';
  * @property {boolean} swing Croches swing à la lecture.
  * @property {StaffItem[]} items Éléments dans l'ordre.
  * @property {number} [ks] Armure (2.5) : nombre de dièses (> 0) ou de bémols (< 0), de -7 à 7. Absente : pas d'armure.
+ * @property {Array.<number>} [groups] Groupement des croches dans la mesure (2.8), ex. `[2, 2, 3]` pour un 7/8 « 2+2+3 ». Décide des ligatures et des clics du métronome. Absent : {@link module:model.defaultGroups|defaultGroups}. Pour l'instant seulement sur les blocs générés de l'entraînement.
  * @property {boolean} [justify] Étirer la dernière ligne jusqu'au bord (blocs générés de l'entraînement ; jamais enregistré).
  * @property {'open'|'closed'} [fold] Choix manuel d'affichage d'un bloc long (2.2) : déplié ou réduit. Absent : l'option « Réduire automatiquement » décide.
  */
@@ -206,6 +207,66 @@ export function mlen(time) {
  */
 export function beatUnit(time) {
   return time.endsWith('/8') ? 1.5 : 1;
+}
+
+/**
+ * Groupement par défaut des croches d'une mesure (2.8) : des paires en x/4
+ * (un temps = deux croches), des groupes de 3 en mesure composée (6/8, 9/8,
+ * 12/8, 3/8), et pour les mesures asymétriques des paires terminées par un
+ * groupe de 3 (5/8 = 2+3, 7/8 = 2+2+3).
+ *
+ * @example
+ * defaultGroups('4/4') // [2, 2, 2, 2]
+ * defaultGroups('6/8') // [3, 3]
+ * defaultGroups('7/8') // [2, 2, 3]
+ *
+ * @param {string} time
+ * @returns {Array.<number>} Tailles des groupes, en croches.
+ */
+export function defaultGroups(time) {
+  const [n, d] = time.split('/').map(Number);
+  const eighths = (n * 8) / d;
+  if (d !== 8) return Array(Math.max(1, Math.round(eighths / 2))).fill(2);
+  if (n % 3 === 0) return Array(n / 3).fill(3);
+  const g = Array(Math.floor((n - 3) / 2)).fill(2);
+  g.push(3);
+  return g;
+}
+
+/**
+ * Groupement effectif d'un bloc : `b.groups` s'il couvre exactement la
+ * mesure (groupes de 2 ou 3 croches), sinon {@link defaultGroups}.
+ * @param {{time: string, groups: (Array.<number>|undefined)}} b
+ * @returns {Array.<number>}
+ */
+export function meterGroups(b) {
+  const g = b.groups;
+  const eighths = mlen(b.time) * 2;
+  if (
+    Array.isArray(g) &&
+    g.length &&
+    g.every((x) => x === 2 || x === 3) &&
+    g.reduce((s, x) => s + x, 0) === eighths
+  )
+    return g;
+  return defaultGroups(b.time);
+}
+
+/**
+ * Début de chaque groupe dans la mesure, en noires.
+ * @example
+ * groupStarts({ time: '7/8', groups: [2, 3, 2] }) // [0, 1, 2.5]
+ * @param {{time: string, groups: (Array.<number>|undefined)}} b
+ * @returns {Array.<number>}
+ */
+export function groupStarts(b) {
+  const out = [];
+  let q = 0;
+  meterGroups(b).forEach((g) => {
+    out.push(q);
+    q += g / 2;
+  });
+  return out;
 }
 
 /**

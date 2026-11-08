@@ -21,7 +21,7 @@
  *  │               └─ ui/options         (rappel de sauvegarde)
  *  ├─ ui/note ─────── export ── pdf
  *  ├─ ui/options ──── ireal
- *  ├─ ui/training ─── placements
+ *  ├─ ui/training, ui/exercises ── ui/drill-kit, exercise ── placements
  *  ├─ ui/staff/* ──── render-staff ── layout ── rhythm ── pitch ── model ── util
  *  ├─ ui/grid-ui ──── grid ── chords
  *  │
@@ -56,6 +56,7 @@ import './ui/home.js';
 import './ui/note.js';
 import './ui/options.js';
 import './ui/training.js';
+import './ui/exercises.js';
 
 // Chargement asynchrone (IndexedDB) : `await` au niveau du module. Le reste
 // de ce fichier, dont le premier rendu, ne s'exécute qu'une fois le carnet

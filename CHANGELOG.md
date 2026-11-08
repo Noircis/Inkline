@@ -3,6 +3,33 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.0] - 2026-11-08
+
+### Ajouté
+
+- **Exercices aléatoires** (Entraînement › Rythme) : 4, 8 ou 12 mesures à lire, tirées au hasard.
+  - Réglages : mesure, longueur, nombre de notes par mesure (de… à…), positions permises pour la première note de chaque mesure (choisies en notation), subdivision (croches ; doubles et triolets plus tard).
+  - Écran de lecture : l'exercice en grand, son numéro (↻ pour un autre), une barre en bas avec le tempo (− / +), le swing, la **lecture en boucle** et les réglages du métronome (⚙).
+  - Un exercice est décidé par ses réglages et son numéro : le même numéro redonne le même exercice.
+- **Toutes les mesures dans les Placements** : 2/4, 3/4, 4/4, 5/4, 3/8, 6/8, 9/8, 12/8, 5/8 (2+3 ou 3+2), 7/8 (2+2+3, 2+3+2 ou 3+2+2).
+  - Mesures composées : chaque temps de 3 croches s'écrit selon l'usage (noire pointée, croche + noire, demi-soupir + deux croches…), deux temps vides voisins deviennent une demi-pause pointée.
+  - Mesures asymétriques : écrites groupe par groupe, ligatures et métronome suivent le groupement choisi (7/8 en 2+2+3 : trois clics inégaux).
+  - Le métronome mémorise les temps choisis pour chaque mesure.
+
+### Modifié
+
+- **Placements en sections repliables** : une section par position de la première note, titrée en notation (silences puis croche), sans texte de comptage (il reste lu par les lecteurs d'écran). Seule la première est dépliée ; « Tout déplier / Tout replier » ; ▶ joue une section même repliée (et la déplie). En-tête : « 28 mesures · 7 départs ».
+- Les portées des sections ne sont dessinées qu'à l'ouverture, et la lecture ne redessine plus toute la série à chaque note : les grosses séries (924 mesures en 12/8 à six notes) restent fluides. Pendant la lecture, la page suit la note jouée.
+- Le tempo reste donné à la noire dans toutes les mesures.
+- Le swing n'est proposé qu'en mesure simple (x/4).
+
+### Technique
+
+- Nouveaux modules : `exercise` (tirage, pur), `ui/exercises`, `ui/drill-kit` (pièces communes de l'entraînement).
+- `model` : `defaultGroups`, `meterGroups`, `groupStarts` ; champ de bloc `groups` (groupement des croches). Ligatures (`beamGroups`) et métronome s'appuient dessus ; sorties identiques à la 2.7 pour les mesures déjà existantes.
+- `audio.playStaff` : option `loop`.
+- Réglages : `meta.drill` (mesure, temps du métronome par mesure, boucle ; l'ancien format est repris) et `meta.gen`.
+
 ## [2.7.0] - 2026-11-08
 
 Version de nettoyage : aucun changement visible. Vérifié : sorties des moteurs identiques, captures d'écran identiques au pixel près (18 écrans, clair et sombre) à la 2.6.1, exports PNG identiques.

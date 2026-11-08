@@ -2,11 +2,13 @@
  * @module ui/training
  * @description
  * **Entraînement** (depuis la 2.3) : un écran d'accueil des exercices
- * (`training`), puis un écran par exercice. Le premier est **Rythme ›
- * Placements** (`rhythm`) : toutes les façons de placer n croches dans une
- * mesure de 4/4, regroupées en séries (même position de la première note),
- * écrites proprement et jouées avec un métronome réglable (temps qui
- * cliquent, accent, décompte, rythme coupé pour jouer soi-même).
+ * (`training`), puis un écran par exercice.
+ *
+ * - **Rythme › Placements** (`rhythm`) : toutes les façons de placer n
+ *   croches dans une mesure (toutes les mesures depuis la 2.8), en sections
+ *   repliables selon la position de la première note, écrites proprement et
+ *   jouées avec un métronome réglable.
+ * - **Rythme › Exercices aléatoires** (2.8) : voir {@link module:ui/exercises|ui/exercises}.
  *
  * La logique (génération, règles d'écriture) est dans le module pur
  * {@link module:placements|placements} ; ce module ne fait que l'interface.
@@ -17,33 +19,25 @@
 
 import { app } from './state.js';
 import { esc } from '../util.js';
-import { getMeta, setMeta, DRILL_DEFAULTS } from '../storage.js';
 import { staffSvg } from '../render-staff.js';
-import { placementSeries, seriesBlock, SLOTS } from '../placements.js';
+import { placementSeries, seriesBlock, meterOf, slotsOf, startGlyphs, startLabel } from '../placements.js';
 import * as audio from '../audio.js';
 import { registerScreen, goChild, backToList } from './nav.js';
-import { updatePlayBtn } from './common.js';
 import { hideAllPalettes } from './blocks.js';
-
-/** Subdivisions proposées (seules les croches sont disponibles pour l'instant). */
-const SUBDIVISIONS = [
-  { key: '8', label: 'Croches', ready: true },
-  { key: '16', label: 'Doubles', ready: false },
-  { key: '3', label: 'Triolets', ready: false },
-];
-
-/** Séries affichées : id → bloc ligne rythmique. Recréé à chaque génération. */
-let drills = new Map();
-
-/**
- * En-tête commun aux écrans d'entraînement.
- * @param {string} back Libellé du bouton retour.
- * @param {string} title
- * @returns {string}
- */
-function header(back, title) {
-  return `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(back)}</button><div class="grow"></div><h1 class="top-title">${esc(title)}</h1></header>`;
-}
+import {
+  header,
+  settings,
+  updateSettings,
+  playOptions,
+  meterChips,
+  subdivisionSeg,
+  toggle,
+  tempoField,
+  metronomeControls,
+  bindPlayControls,
+  updatePlay,
+  highlight,
+} from './drill-kit.js';
 
 /**
  * Écran d'accueil de l'entraînement : la liste des exercices.
@@ -56,39 +50,22 @@ function renderTraining() {
     <h2 class="eyebrow">Rythme</h2>
     <div class="opt-group">
       <button class="opt-row" type="button" id="goPlacements"><span>Placements<small>Toutes les façons de placer des notes dans une mesure, à lire et à jouer</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
+      <button class="opt-row" type="button" id="goExercises"><span>Exercices aléatoires<small>4, 8 ou 12 mesures à lire, tirées au hasard selon vos réglages</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
     </div>
   </section>`;
   app.querySelector('#back').addEventListener('click', backToList);
   app.querySelector('#goPlacements').addEventListener('click', () => goChild('rhythm'));
+  app.querySelector('#goExercises').addEventListener('click', () => goChild('gen'));
 }
 
 registerScreen('training', renderTraining);
 
 /**
- * Réglages courants de l'exercice (mémorisés entre deux visites).
- * @returns {module:storage~DrillSettings}
+ * Sections affichées : id → bloc ligne rythmique, et état déplié. Recréé à
+ * chaque génération.
+ * @type {Map<string, {block: module:model~StaffBlock, open: boolean, drawn: boolean}>}
  */
-function settings() {
-  return getMeta().drill || { ...DRILL_DEFAULTS, beats: DRILL_DEFAULTS.beats.slice() };
-}
-
-/**
- * Modifie et mémorise des réglages.
- * @param {Object} patch
- */
-function updateSettings(patch) {
-  setMeta({ drill: { ...settings(), ...patch } });
-}
-
-/**
- * Bouton bascule (`aria-pressed`) pour un réglage booléen.
- * @param {string} key
- * @param {string} label
- * @param {boolean} on
- * @returns {string}
- */
-const toggle = (key, label, on) =>
-  `<button type="button" class="chip" data-opt="${key}" aria-pressed="${on}">${esc(label)}</button>`;
+let sections = new Map();
 
 /**
  * Écran Rythme › Placements.
@@ -97,135 +74,167 @@ function renderPlacements() {
   audio.stop();
   hideAllPalettes();
   const s = settings();
+  const m = meterOf(s.meter);
+  const slots = slotsOf(m);
   app.innerHTML = `${header('Entraînement', 'Placements')}
   <section class="opt">
+    <h2 class="eyebrow">Mesure</h2>
+    ${meterChips(m.key)}
     <h2 class="eyebrow">Notes par mesure</h2>
     <div class="nsel" role="radiogroup" aria-label="Notes par mesure">${Array.from(
-      { length: SLOTS },
+      { length: slots },
       (_, i) =>
         `<button type="button" role="radio" data-n="${i + 1}" aria-checked="${i + 1 === s.notes}">${i + 1}</button>`,
     ).join('')}</div>
     <h2 class="eyebrow">Subdivision</h2>
-    <div class="seg seg-sm" role="radiogroup" aria-label="Subdivision">${SUBDIVISIONS.map(
-      (d) =>
-        `<button type="button" role="radio" aria-checked="${d.key === '8'}"${d.ready ? '' : ' disabled'}>${esc(d.label)}${d.ready ? '' : '<small>bientôt</small>'}</button>`,
-    ).join('')}</div>
+    ${subdivisionSeg()}
     <h2 class="eyebrow">Lecture</h2>
-    <div class="drill-row"><label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" id="drillTempo" value="${s.tempo}" aria-label="Tempo"></label>${toggle('swing', 'Swing', s.swing)}${toggle('mute', 'Couper le rythme', s.mute)}</div>
+    <div class="drill-row">${tempoField(s.tempo)}${toggle('swing', 'Swing', s.swing, m.kind !== 'simple')}</div>
     <h2 class="eyebrow">Métronome</h2>
-    <div class="drill-row"><span class="drill-lbl">Temps</span><div class="beats" role="group" aria-label="Temps du métronome">${s.beats
-      .map(
-        (on, k) =>
-          `<button type="button" data-beat="${k}" aria-pressed="${on}" aria-label="Temps ${k + 1}">${k + 1}</button>`,
-      )
-      .join('')}</div></div>
-    <div class="drill-row">${toggle('accent', 'Accent sur le 1', s.accent)}${toggle('countIn', 'Décompte', s.countIn)}</div>
-    <div class="drill-bar"><span class="listbar-lbl" id="drillCount"></span></div>
+    ${metronomeControls(m)}
+    <div class="drill-bar"><span class="listbar-lbl" id="drillCount"></span><button type="button" class="btn ghost small" id="foldAll"></button></div>
   </section>
   <div class="drills" id="drills"></div>`;
 
   app.querySelector('#back').addEventListener('click', backToList);
+  app.querySelectorAll('[data-meter]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const nm = meterOf(/** @type {HTMLElement} */ (b).dataset.meter);
+      updateSettings({ meter: nm.key, notes: Math.min(settings().notes, slotsOf(nm)) });
+      renderPlacements();
+    }),
+  );
   app.querySelectorAll('[data-n]').forEach((b) =>
     b.addEventListener('click', () => {
       updateSettings({ notes: Number(/** @type {HTMLElement} */ (b).dataset.n) });
       app.querySelectorAll('[data-n]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
-      renderDrills();
+      renderSections();
     }),
   );
-  const tp = /** @type {HTMLInputElement} */ (app.querySelector('#drillTempo'));
-  tp.addEventListener('change', () => {
-    const v = Math.max(30, Math.min(300, parseInt(tp.value, 10) || 80));
-    tp.value = String(v);
-    updateSettings({ tempo: v });
-    applyPlaySettings();
+  bindPlayControls(app, m, applyPlaySettings);
+  app.querySelector('#foldAll').addEventListener('click', () => {
+    const open = [...sections.values()].some((x) => !x.open);
+    sections.forEach((_, id) => setOpen(id, open));
+    updateFoldAll();
   });
-  app.querySelectorAll('[data-opt]').forEach((b) =>
-    b.addEventListener('click', () => {
-      const key = /** @type {HTMLElement} */ (b).dataset.opt;
-      const on = !settings()[key];
-      updateSettings({ [key]: on });
-      b.setAttribute('aria-pressed', String(on));
-      applyPlaySettings();
-    }),
-  );
-  app.querySelectorAll('[data-beat]').forEach((b) =>
-    b.addEventListener('click', () => {
-      const beats = settings().beats.slice();
-      const k = Number(/** @type {HTMLElement} */ (b).dataset.beat);
-      beats[k] = !beats[k];
-      updateSettings({ beats });
-      b.setAttribute('aria-pressed', String(beats[k]));
-      audio.stop();
-    }),
-  );
   // Les SVG ont besoin de la largeur réelle : on les dessine après la mise en page.
-  requestAnimationFrame(renderDrills);
+  requestAnimationFrame(renderSections);
 }
 
 registerScreen('rhythm', renderPlacements);
 
 /**
- * Reporte tempo et swing sur les séries affichées. Une lecture en cours est
- * arrêtée : elle a été programmée avec les anciens réglages.
+ * Reporte tempo et swing sur les séries affichées.
  */
 function applyPlaySettings() {
   const { tempo, swing } = settings();
-  audio.stop();
-  drills.forEach((b) => {
-    b.tempo = tempo;
-    b.swing = swing;
+  sections.forEach(({ block }) => {
+    block.tempo = tempo;
+    block.swing = swing && meterOf(settings().meter).kind === 'simple';
   });
 }
 
 /**
- * Génère et affiche les séries pour le nombre de notes choisi.
+ * Génère les sections pour le nombre de notes et la mesure choisis. Seule la
+ * première est dépliée ; les portées ne sont dessinées qu'à l'ouverture (en
+ * 12/8, six notes donnent 924 mesures).
  */
-function renderDrills() {
+function renderSections() {
   audio.stop();
   const s = settings();
-  const series = placementSeries(s.notes);
+  const m = meterOf(s.meter);
+  const series = placementSeries(s.notes, m);
   const measures = series.reduce((t, x) => t + x.length, 0);
+  const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
   app.querySelector('#drillCount').textContent =
     series.length > 1
-      ? `${series.length} séries · ${measures} mesures`
-      : `${measures} mesure${measures > 1 ? 's' : ''}`;
-  drills = new Map();
+      ? `${plural(measures, 'mesure')} · ${plural(series.length, 'départ')}`
+      : plural(measures, 'mesure');
+  sections = new Map();
+  const single = s.notes === 1;
   const list = app.querySelector('#drills');
   list.innerHTML = series
     .map((sr, i) => {
       const id = 'drill' + i;
-      drills.set(id, seriesBlock(sr, s, id));
-      return `<div class="drill"><div class="drill-head"><span class="drill-n">${i + 1}</span><span class="drill-sub">${sr.length} mesure${sr.length > 1 ? 's' : ''}</span><button type="button" class="playbtn" data-play="${id}">&#9654; Écouter</button></div><div class="drill-staff" data-drill="${id}"></div></div>`;
+      sections.set(id, { block: seriesBlock(sr, s, id, m), open: i === 0, drawn: false });
+      const p = sr[0][0];
+      const title = single
+        ? '<span class="drill-all">Toutes les positions</span>'
+        : `<span class="drill-start mus" aria-hidden="true">${startGlyphs(p, m)}</span><span class="sr">Départ sur ${esc(startLabel(p, m))}</span>`;
+      return `<div class="drill" data-sec="${id}"><div class="drill-head"><button type="button" class="drill-tog" data-tog="${id}" aria-expanded="false" aria-controls="ds_${id}"><span class="drill-chev" aria-hidden="true"></span>${title}<span class="drill-sub">${plural(sr.length, 'mesure')}</span></button><button type="button" class="playbtn round" data-play="${id}" aria-label="Écouter">&#9654;</button></div><div class="drill-staff" id="ds_${id}" data-drill="${id}" hidden></div></div>`;
     })
     .join('');
-  drills.forEach((b, id) => {
-    redrawDrill(id);
-    list.querySelector(`[data-play="${id}"]`).addEventListener('click', () => {
-      const o = settings();
-      audio.playStaff(
-        b,
-        {
-          onStep: (i) => redrawDrill(id, i),
-          onEnd: () => {
-            redrawDrill(id);
-            updatePlayBtn(id);
-          },
-        },
-        { countIn: o.countIn, beats: o.beats.some(Boolean) ? o.beats : null, accent: o.accent, mute: o.mute },
-      );
-      updatePlayBtn(id);
+  sections.forEach((sec, id) => {
+    list.querySelector(`[data-tog="${id}"]`).addEventListener('click', () => {
+      setOpen(id, !sections.get(id).open);
+      updateFoldAll();
     });
+    list.querySelector(`[data-play="${id}"]`).addEventListener('click', () => play(id));
+    setOpen(id, sec.open);
   });
+  updateFoldAll();
 }
 
 /**
- * Dessine une série.
+ * Déplie ou replie une section (et dessine sa portée la première fois).
  * @param {string} id
- * @param {?number} [playIdx] Élément en cours de lecture.
+ * @param {boolean} open
  */
-function redrawDrill(id, playIdx = null) {
-  const b = drills.get(id);
+function setOpen(id, open) {
+  const sec = sections.get(id);
   const el = /** @type {HTMLElement} */ (app.querySelector(`[data-drill="${id}"]`));
-  if (!b || !el) return;
-  el.innerHTML = staffSvg(b, Math.max(220, el.clientWidth || 300), { play: playIdx }).svg;
+  if (!sec || !el) return;
+  sec.open = open;
+  el.hidden = !open;
+  app.querySelector(`[data-tog="${id}"]`).setAttribute('aria-expanded', String(open));
+  if (open && !sec.drawn) {
+    sec.drawn = true;
+    draw(id);
+  }
+  if (!open && audio.isPlaying(id)) audio.stop();
+}
+
+/** Libellé du bouton « Tout déplier / Tout replier ». */
+function updateFoldAll() {
+  const btn = app.querySelector('#foldAll');
+  if (!btn) return;
+  btn.hidden = sections.size < 2;
+  btn.textContent = [...sections.values()].some((x) => !x.open) ? 'Tout déplier' : 'Tout replier';
+}
+
+/**
+ * Joue une section (et la déplie si elle était repliée).
+ * @param {string} id
+ */
+function play(id) {
+  const sec = sections.get(id);
+  if (!sec) return;
+  if (!sec.open) {
+    setOpen(id, true);
+    updateFoldAll();
+  }
+  const el = app.querySelector(`[data-drill="${id}"]`);
+  audio.playStaff(
+    sec.block,
+    {
+      onStep: (i) => highlight(el, i),
+      onEnd: () => {
+        highlight(el, null);
+        updatePlay(id, false);
+      },
+    },
+    playOptions(meterOf(settings().meter)),
+  );
+  updatePlay(id, false);
+}
+
+/**
+ * Dessine la portée d'une section.
+ * @param {string} id
+ */
+function draw(id) {
+  const sec = sections.get(id);
+  const el = /** @type {HTMLElement} */ (app.querySelector(`[data-drill="${id}"]`));
+  if (!sec || !el) return;
+  el.innerHTML = staffSvg(sec.block, Math.max(220, el.clientWidth || 300)).svg;
 }

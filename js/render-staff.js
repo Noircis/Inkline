@@ -282,7 +282,7 @@ function drawBars(ctx) {
 function beamGroupsBySystem(ctx) {
   const { L } = ctx;
   const groups = [];
-  beamGroups(ctx.items, ctx.b.time).forEach((group) => {
+  beamGroups(ctx.items, ctx.b.time, ctx.b.groups).forEach((group) => {
     let cur = [];
     group.forEach((i) => {
       if (cur.length && L.pos[i].sys !== L.pos[cur[0]].sys) {

@@ -59,6 +59,7 @@
 import { sanitizeNote, sanitizeNotes, sanitizeFolders } from './sanitize.js';
 import { SORT_KEYS } from './search.js';
 import { openDb, getAll, write, STORES } from './db.js';
+import { METERS, meterOf, slotsOf } from './placements.js';
 
 /** Clé `localStorage` du carnet jusqu'à la 2.0 (historique : ne pas changer). */
 const STORAGE_KEY = 'carnet-portees-v1';
@@ -428,30 +429,60 @@ export function importFile(notes, text, folders = {}) {
  * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
  * @property {boolean} [autoFold] Option « Réduire automatiquement les blocs longs » (2.2).
  * @property {module:storage~DrillSettings} [drill] Derniers réglages de l'entraînement Rythme (2.3).
+ * @property {module:storage~GenSettings} [gen] Derniers réglages des exercices aléatoires (2.8).
  */
 
 /**
- * Réglages de l'entraînement Rythme.
+ * Réglages de l'entraînement Rythme, communs aux Placements et aux exercices
+ * aléatoires (sauf `notes` et `meter`, propres aux Placements).
  * @typedef {Object} DrillSettings
- * @property {number} notes Notes par mesure (1 à 8).
- * @property {number} tempo
+ * @property {number} notes Notes par mesure (1 à 12).
+ * @property {string} meter Mesure des Placements (clé de {@link module:placements.METERS|METERS}, 2.8).
+ * @property {number} tempo Tempo à la noire.
  * @property {boolean} swing
- * @property {Array.<boolean>} beats Temps où le métronome clique (4 valeurs).
+ * @property {Object.<string, Array.<boolean>>} beats Temps où le métronome
+ *   clique, par mesure (2.8 ; un tableau de 4 avant). Absent pour une mesure :
+ *   tous les temps.
  * @property {boolean} accent Accent sur le 1.
  * @property {boolean} countIn Mesure de décompte.
  * @property {boolean} mute Couper le rythme (métronome seul).
+ * @property {boolean} loop Lecture en boucle (exercices aléatoires, 2.8).
  */
 
 /** Réglages par défaut de l'entraînement Rythme. */
 export const DRILL_DEFAULTS = Object.freeze({
   notes: 1,
+  meter: '4/4',
   tempo: 80,
   swing: false,
-  beats: [true, true, true, true],
+  beats: Object.freeze({}),
   accent: false,
   countIn: true,
   mute: false,
+  loop: false,
 });
+
+const int = (v, lo, hi, def) => (Number.isInteger(v) && v >= lo && v <= hi ? v : def);
+const bool = (v, def) => (typeof v === 'boolean' ? v : def);
+const meterKey = (v) => (METERS.some((m) => m.key === v) ? v : '4/4');
+
+/**
+ * Valide les temps du métronome par mesure. Accepte l'ancien format (2.3 à
+ * 2.7 : un tableau de 4, pour le 4/4).
+ * @param {*} r
+ * @returns {Object.<string, Array.<boolean>>}
+ */
+function beatsOf(r) {
+  if (Array.isArray(r)) r = { '4/4': r };
+  const out = {};
+  if (!r || typeof r !== 'object') return out;
+  METERS.forEach((m) => {
+    const v = r[m.key];
+    if (Array.isArray(v) && v.length === m.groups.length && v.every((x) => typeof x === 'boolean'))
+      out[m.key] = v.slice();
+  });
+  return out;
+}
 
 /**
  * Valide les réglages de l'entraînement Rythme (valeurs par défaut pour ce qui manque).
@@ -461,19 +492,68 @@ export const DRILL_DEFAULTS = Object.freeze({
 function drillOf(r) {
   if (!r || typeof r !== 'object') return undefined;
   const d = DRILL_DEFAULTS;
-  const int = (v, lo, hi, def) => (Number.isInteger(v) && v >= lo && v <= hi ? v : def);
-  const bool = (v, def) => (typeof v === 'boolean' ? v : def);
+  const meter = meterKey(r.meter);
   return {
-    notes: int(r.notes, 1, 8, d.notes),
+    notes: int(r.notes, 1, slotsOf(meterOf(meter)), d.notes),
+    meter,
     tempo: int(r.tempo, 30, 300, d.tempo),
     swing: bool(r.swing, d.swing),
-    beats:
-      Array.isArray(r.beats) && r.beats.length === 4 && r.beats.every((x) => typeof x === 'boolean')
-        ? r.beats.slice()
-        : d.beats.slice(),
+    beats: beatsOf(r.beats),
     accent: bool(r.accent, d.accent),
     countIn: bool(r.countIn, d.countIn),
     mute: bool(r.mute, d.mute),
+    loop: bool(r.loop, d.loop),
+  };
+}
+
+/**
+ * Réglages des exercices aléatoires (2.8).
+ * @typedef {Object} GenSettings
+ * @property {string} meter Mesure (clé de {@link module:placements.METERS|METERS}).
+ * @property {number} measures Longueur de l'exercice : 4, 8 ou 12 mesures.
+ * @property {number} min Notes par mesure, au moins.
+ * @property {number} max Notes par mesure, au plus.
+ * @property {Object.<string, Array.<number>>} starts Positions permises pour
+ *   la première note, par mesure. Absent pour une mesure : toutes.
+ * @property {number} seed Numéro du dernier exercice.
+ */
+
+/** Réglages par défaut des exercices aléatoires. */
+export const GEN_DEFAULTS = Object.freeze({
+  meter: '4/4',
+  measures: 4,
+  min: 2,
+  max: 3,
+  starts: Object.freeze({}),
+  seed: 1,
+});
+
+/**
+ * Valide les réglages des exercices aléatoires.
+ * @param {*} r
+ * @returns {GenSettings|undefined}
+ */
+function genOf(r) {
+  if (!r || typeof r !== 'object') return undefined;
+  const d = GEN_DEFAULTS;
+  const meter = meterKey(r.meter);
+  const slots = slotsOf(meterOf(meter));
+  const min = int(r.min, 1, slots, Math.min(d.min, slots));
+  const starts = {};
+  if (r.starts && typeof r.starts === 'object')
+    METERS.forEach((m) => {
+      const v = r.starts[m.key];
+      const n = slotsOf(m);
+      if (Array.isArray(v) && v.length && v.every((x) => Number.isInteger(x) && x >= 0 && x < n))
+        starts[m.key] = [...new Set(v)].sort((a, b) => a - b);
+    });
+  return {
+    meter,
+    measures: [4, 8, 12].includes(r.measures) ? r.measures : d.measures,
+    min,
+    max: int(r.max, min, slots, Math.max(min, Math.min(d.max, slots))),
+    starts,
+    seed: int(r.seed, 1, 9999, d.seed),
   };
 }
 
@@ -512,6 +592,7 @@ export function getMeta() {
       storage: m.storage === 'idb' ? 'idb' : undefined,
       autoFold: m.autoFold === true ? true : undefined,
       drill: drillOf(m.drill),
+      gen: genOf(m.gen),
     };
   } catch (e) {
     return {};

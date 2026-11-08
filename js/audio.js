@@ -30,7 +30,7 @@
 
 import { staffEvents } from './rhythm.js';
 import { resolveMidis } from './pitch.js';
-import { mlen, beatUnit } from './model.js';
+import { mlen, groupStarts } from './model.js';
 import { gridPlayOrder, slotDurations } from './grid.js';
 import { chordTones } from './chords.js';
 
@@ -280,6 +280,8 @@ function at(p, c, t, fn) {
  * @property {boolean} [accent] Accentuer le clic du premier temps.
  * @property {boolean} [mute] Ne pas jouer le rythme lui-même (métronome seul) ;
  *   le surlignage suit quand même la lecture.
+ * @property {boolean} [loop] Rejouer en boucle jusqu'à l'arrêt (2.8), sans
+ *   nouveau décompte. Chaque passage dure un nombre entier de mesures.
  */
 
 /** Décompte : tous les temps cliquent. */
@@ -287,20 +289,24 @@ const EVERY_BEAT = Array(16).fill(true);
 
 /**
  * Programme les clics de métronome de `measures` mesures à partir de `t0`.
+ * Un clic par groupe de croches ({@link module:model.groupStarts|groupStarts}) :
+ * chaque temps en x/4, chaque noire pointée en x/8, et en 7/8 « 2+2+3 » trois
+ * clics inégaux.
  * @param {Playback} p
  * @param {number} t0 Instant audio du début (s).
  * @param {number} measures Nombre de mesures.
- * @param {string} time Chiffrage.
+ * @param {module:model~StaffBlock} b Chiffrage et groupement.
  * @param {number} spq Secondes par noire.
  * @param {Array.<boolean>} beats Temps qui cliquent.
  * @param {boolean} accent
  */
-function metronome(p, t0, measures, time, spq, beats, accent) {
-  const beat = beatUnit(time);
-  const perMeasure = Math.round(mlen(time) / beat);
+function metronome(p, t0, measures, b, spq, beats, accent) {
+  const starts = groupStarts(b);
+  const ML = mlen(b.time);
   for (let m = 0; m < measures; m++)
-    for (let k = 0; k < perMeasure; k++)
-      if (beats[k]) click(t0 + (m * perMeasure + k) * beat * spq, accent && k === 0, p.nodes);
+    starts.forEach((q, k) => {
+      if (beats[k]) click(t0 + (m * ML + q) * spq, accent && k === 0, p.nodes);
+    });
 }
 
 /**
@@ -328,20 +334,33 @@ export function playStaff(b, cb, opt = {}) {
   const spq = 60 / (b.tempo || 120); // secondes par noire
   const start = c.currentTime + 0.12; // petite marge pour que la 1re note ne soit pas tronquée
   const bar = mlen(b.time) * spq; // durée d'une mesure (s)
-  if (opt.countIn) metronome(p, start, 1, b.time, spq, EVERY_BEAT, !!opt.accent);
-  const t0 = opt.countIn ? start + bar : start;
+  if (opt.countIn) metronome(p, start, 1, b, spq, EVERY_BEAT, !!opt.accent);
   const { events, total } = staffEvents(b);
-  if (opt.beats)
-    metronome(p, t0, Math.ceil(total / mlen(b.time) - 1e-9), b.time, spq, opt.beats, !!opt.accent);
-  events.forEach((ev) => {
-    const ts = t0 + ev.start * spq;
-    if (!ev.rest && !ev.held && !opt.mute) {
-      if (b.clef === 'rhythm') perc(ts, ev.downbeat, p.nodes);
-      else tone(ts, (ev.end - ev.start) * spq, ev.midi, p.nodes);
-    }
-    at(p, c, ts, () => cb.onStep(ev.i));
-  });
-  at(p, c, t0 + total * spq + 0.15, stop);
+  const measures = Math.ceil(total / mlen(b.time) - 1e-9);
+  let mark = 0; // nœuds audio du passage précédent (voir plus bas)
+  /** Programme un passage complet à partir de `t0`. */
+  const pass = (t0) => {
+    // En boucle, on oublie les nœuds d'il y a deux passages (déjà terminés).
+    const old = mark;
+    mark = p.nodes.length;
+    if (opt.beats) metronome(p, t0, measures, b, spq, opt.beats, !!opt.accent);
+    events.forEach((ev) => {
+      const ts = t0 + ev.start * spq;
+      if (!ev.rest && !ev.held && !opt.mute) {
+        if (b.clef === 'rhythm') perc(ts, ev.downbeat, p.nodes);
+        else tone(ts, (ev.end - ev.start) * spq, ev.midi, p.nodes);
+      }
+      at(p, c, ts, () => cb.onStep(ev.i));
+    });
+    p.nodes.splice(0, old);
+    mark -= old;
+    const end = t0 + measures * mlen(b.time) * spq;
+    // Boucle : le passage suivant est programmé un peu avant la fin, pour
+    // qu'il commence pile sur la mesure (sans décompte).
+    if (opt.loop) at(p, c, end - 0.3, () => current === p && pass(end));
+    else at(p, c, t0 + total * spq + 0.15, stop);
+  };
+  pass(opt.countIn ? start + bar : start);
 }
 
 /**
