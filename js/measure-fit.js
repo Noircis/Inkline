@@ -50,6 +50,9 @@
 import { EPS, snap } from './util.js';
 import { DUR, qlen, mlen, beatUnit } from './model.js';
 
+/** Plus petite valeur écrite (double croche), en noires. */
+const GRID = Math.min(...Object.values(DUR));
+
 /** Valeurs simples, de la plus longue à la plus courte. */
 const PLAIN = Object.entries(DUR)
   .map(([d, v]) => ({ d, v }))
@@ -271,7 +274,27 @@ function materialize(events, time) {
       vals = segs.map((sg) => decompose(sg.start, sg.len, allowDot, beat, ev.rest));
     }
     if (vals.some((v) => !v)) {
-      keep(ev); // durée non exprimable : on ne touche à rien
+      // Durée non exprimable. Une note d'origine est gardée telle quelle ; un
+      // silence calculé (compensation) n'a pas de morceaux d'origine fiables
+      // (ce n'est qu'un modèle) : on le réécrit ci-dessous.
+      if (!ev.gen) {
+        keep(ev);
+        return;
+      }
+      // Silence calculé qui tombe hors de la grille (après une double croche
+      // pointée, par exemple) : on l'écrit d'un bloc, sans le couper à la barre,
+      // plutôt que de perdre sa durée.
+      const whole = decompose(0, ev.len, allowDot, beat, ev.rest);
+      if (whole) {
+        ev.orig = whole.map((v, k) => {
+          const piece = { ...baseProps(first, k === 0), d: v.d };
+          if (v.dot) piece.dot = true;
+          if (k < whole.length - 1) piece.auto = true;
+          else if (last.bar) piece.bar = last.bar;
+          return piece;
+        });
+        keep(ev);
+      }
       return;
     }
     // 3. Morceaux, liés entre eux.
@@ -341,21 +364,23 @@ export function resizeEvent(items, time, i, value) {
   const newLen = qlen(single);
   events[k] = { orig: [single], len: newLen, rest: !!single.r, tup: !!single.tup, from: ev.from };
 
-  // Avec un triolet (avant ou après), pas de compensation : la différence
-  // n'est en général pas exprimable en valeurs simples. La suite se décale.
+  // Pas de compensation quand la différence ne s'écrit pas en valeurs simples
+  // (triolet avant ou après, ou moins d'une double croche : double croche ⇄
+  // double croche pointée, 1/8 de temps). La suite se décale alors, et
+  // l'opération inverse la ramène : rien ne s'accumule.
   if (!ev.tup && !value.tup) {
     const diff = snap(oldLen - newLen);
-    if (diff > EPS) {
+    if (diff > EPS && isMult(diff, GRID)) {
       // Raccourcir : un silence comble la différence. La barre manuelle et la
       // liaison éventuelles passent après lui (la liaison n'a plus de sens).
-      const restItem = { d: 'q', r: true };
+      const restItem = { d: (singleValue(diff, false) || { d: 'q' }).d, r: true }; // modèle : réécrit (gen)
       if (single.bar) {
         restItem.bar = single.bar;
         delete single.bar;
       }
       delete single.tie;
       events.splice(k + 1, 0, { orig: [restItem], len: diff, rest: true, tup: false, gen: true, from: -1 });
-    } else if (diff < -EPS) {
+    } else if (diff < -EPS && isMult(-diff, GRID)) {
       // Allonger : on mange les silences qui suivent.
       let extra = -diff;
       const j = k + 1;
@@ -370,6 +395,9 @@ export function resizeEvent(items, time, i, value) {
             break;
           }
         } else {
+          // On n'entame un silence que si son reste s'écrit (multiple de la
+          // double croche) ; sinon on s'arrête là et la suite se décale.
+          if (!isMult(snap(r.len - extra), GRID)) break;
           r.len = snap(r.len - extra);
           r.gen = true;
           extra = 0;

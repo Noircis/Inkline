@@ -144,3 +144,69 @@ test('sanitize : les morceaux automatiques sont conservés au rechargement', () 
   assert.equal(show(b.items), 'q q h~+ h');
   assert.ok(!sanitizeBlock({ type: 'staff', items: [n('8', { tup: 3, auto: true })] }).items[0].auto);
 });
+
+/** Durée totale d'une portée, en noires. */
+const total = (items) => Math.round(items.reduce((t, it) => t + qlen(it), 0) * 1e6) / 1e6;
+
+test('bug 2.6.0 : basculer le point en boucle ne rajoute pas de temps (toutes les valeurs)', () => {
+  const contexts = {
+    seule: (x) => [x],
+    'avant des notes': (x) => [x, n('q'), n('q'), n('h')],
+    'avant des silences': (x) => [x, r('q'), r('h')],
+    'sur un contretemps': (x) => [n('8'), x, n('q'), r('h')],
+  };
+  ['w', 'h', 'q', '8', '16'].forEach((d) =>
+    Object.entries(contexts).forEach(([ctx, make]) => {
+      const i = ctx === 'sur un contretemps' ? 1 : 0;
+      let items = fit(make(n(d)));
+      const start = total(items);
+      let afterTwo = null;
+      for (let k = 0; k < 12; k++) {
+        const cur = items[i];
+        const res = resizeEvent(items, '4/4', i, { d: cur.d, dot: !cur.dot });
+        items = res.items;
+        // Jamais plus que la différence de durée demandée (ici, une demi-valeur).
+        assert.ok(Math.abs(total(items) - start) <= qlen({ d }) / 2 + 1e-9, `${d} ${ctx} étape ${k}`);
+        if (k === 1) afterTwo = total(items);
+        // Cycle stable : après un aller-retour, chaque aller-retour redonne la même durée.
+        if (k % 2 === 1) assert.equal(total(items), afterTwo, `${d} ${ctx} : cycle stable (étape ${k})`);
+      }
+    }),
+  );
+});
+
+test('resizeEvent (fuzz) : la durée totale ne varie jamais plus que la note modifiée', () => {
+  const vals = ['w', 'h', 'q', '8', '16'];
+  let seed = 7;
+  const rnd = (k) => {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed % k;
+  };
+  for (let trial = 0; trial < 300; trial++) {
+    let items = fit(
+      Array.from({ length: 1 + rnd(6) }, () => {
+        const it = { d: vals[rnd(5)] };
+        if (rnd(3) === 0) it.r = true;
+        else it.s = 4;
+        if (rnd(4) === 0) it.dot = true;
+        return it;
+      }),
+    );
+    for (let step = 0; step < 6; step++) {
+      const i = rnd(items.length);
+      const before = total(items);
+      const start = chainStart(items, i);
+      let oldLen = 0;
+      for (let k = start; k <= chainEnd(items, i); k++) oldLen += qlen(items[k]);
+      const value = { d: vals[rnd(5)], dot: rnd(3) === 0 };
+      const res = resizeEvent(items, '4/4', i, value);
+      const delta = Math.abs(qlen(value) - oldLen);
+      assert.ok(
+        Math.abs(total(res.items) - before) <= delta + 1e-9,
+        `essai ${trial}.${step} : ${show(items)} → ${show(res.items)}`,
+      );
+      res.items.forEach((it) => assert.ok(!(it.r && it.tie)));
+      items = res.items;
+    }
+  }
+});

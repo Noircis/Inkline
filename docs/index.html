@@ -75,9 +75,20 @@ npm run lint       # analyse du code (ESLint)
 npm run format     # formatage automatique (Prettier)
 npm run check      # format + lint + tests : à lancer avant chaque commit
 npm run docs       # génère la documentation dans docs/
+npm run dev        # aperçu en direct sur http://localhost:5500 (rechargement automatique)
 npm run serve      # sert l'app sur http://localhost:8080
 </code></pre>
 <p>L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur statique HTTPS convient (GitHub Pages, par exemple).</p>
+<h2>Environnement de développement</h2>
+<p>Le projet est réglé pour <strong>Visual Studio Code</strong> (dossier <code>.vscode/</code>, partagé dans le dépôt) : à l'ouverture, VS Code propose les extensions conseillées, <strong>ESLint</strong> (erreurs soulignées en direct) et <strong>Prettier</strong> (formatage à chaque enregistrement, avec les réglages du projet).</p>
+<p><strong>Aperçu en direct</strong> : <code>npm run dev</code> (dans le terminal de VS Code, Ctrl+ù), puis ouvrir <code>http://localhost:5500/</code>. Chaque enregistrement recharge la page.</p>
+<ul>
+<li>Dans VS Code même : Ctrl+Maj+P › « Simple Browser: Show » › <code>http://localhost:5500/</code>, puis glisser l'onglet à côté du code.</li>
+<li>Le serveur de développement (<code>scripts/dev.mjs</code>, sans dépendance) neutralise le service worker : pas de version en cache à purger.</li>
+<li>L'extension « Live Server » ne convient pas : elle injecte un script dans la page, que la Content Security Policy bloque.</li>
+<li>Pour simuler un téléphone : outils de développement de Chrome (F12) › icône téléphone/tablette.</li>
+<li>Pour déboguer sur un vrai téléphone Android (débogage USB activé) : <code>chrome://inspect</code> dans Chrome sur l'ordinateur.</li>
+</ul>
 <h2>Conventions de code</h2>
 <ul>
 <li><strong>Formatage</strong> : Prettier (<code>.prettierrc.json</code>), lignes de 110 caractères au plus. Ne pas formater à la main : <code>npm run format</code>.</li>

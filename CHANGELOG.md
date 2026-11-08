@@ -3,6 +3,24 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.6.1] - 2026-11-08
+
+### Corrigé
+
+- **Durée qui grossit à l'infini** (mode Modifier) : basculer le point d'une double croche plusieurs fois de suite ajoutait un temps à chaque bascule. La différence entre une double croche et une double croche pointée (1/8 de temps) ne s'écrit pas en silences ; le silence de compensation, impossible à écrire, était alors remplacé par erreur par un soupir entier. Désormais :
+  - une différence plus petite qu'une double croche n'est pas compensée : la suite se décale, et l'opération inverse la ramène ;
+  - un silence n'est entamé que si ce qu'il en reste s'écrit ;
+  - un silence de compensation qui tombe hors de la grille est écrit d'un bloc au lieu d'être perdu ou faussé.
+
+### Ajouté
+
+- **Environnement de développement** : réglages VS Code partagés (`.vscode/`), et `npm run dev`, un serveur d'aperçu qui recharge l'appli à chaque enregistrement (compatible avec la Content Security Policy, contrairement à l'extension Live Server).
+
+### Tests
+
+- Toutes les valeurs (ronde à double croche) dans quatre contextes : basculer le point 12 fois ne fait jamais varier la durée de plus d'une demi-valeur, et chaque aller-retour redonne la même durée.
+- Test aléatoire (fuzz) : 300 portées au hasard, 6 changements de durée chacune ; la durée totale ne varie jamais plus que la note modifiée. Vérifié aussi hors suite sur 144 000 opérations et 6 chiffrages (dont 3/4, 6/8, 12/8), avec en plus la stabilité de la remise en mesure. 87 tests au total.
+
 ## [2.6.0] - 2026-11-08
 
 Mise en mesure automatique : liaisons aux barres et compensation par des silences.
