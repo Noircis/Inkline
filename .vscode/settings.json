@@ -1,0 +1,14 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.rulers": [110],
+  "eslint.validate": ["javascript"],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "search.exclude": {
+    "docs": true,
+    "node_modules": true
+  },
+  "liveServer.settings.port": 5500,
+  "liveServer.settings.ignoreFiles": ["docs/**", "node_modules/**", ".vscode/**", "tests/**"]
+}

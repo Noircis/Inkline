@@ -18,6 +18,16 @@ npm run serve      # sert l'app sur http://localhost:8080
 
 L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur statique HTTPS convient (GitHub Pages, par exemple).
 
+## Environnement de développement
+
+Le projet est réglé pour **Visual Studio Code** (dossier `.vscode/`, partagé dans le dépôt) :
+
+- à l'ouverture, VS Code propose les extensions conseillées : **ESLint** (erreurs soulignées en direct), **Prettier** (formatage à chaque enregistrement, avec les réglages du projet) et **Live Server** (aperçu dans le navigateur, rechargé à chaque enregistrement) ;
+- Live Server : bouton « Go Live » en bas à droite, l'appli s'ouvre sur `http://127.0.0.1:5500/` ;
+- dans Chrome, outils de développement (F12) › **Application › Service workers** › cocher **« Update on reload »** : sinon le service worker sert l'ancienne version depuis son cache ;
+- pour simuler un téléphone : icône téléphone/tablette en haut à gauche des outils de développement ;
+- pour déboguer sur un vrai téléphone Android (débogage USB activé) : `chrome://inspect` dans Chrome sur l'ordinateur.
+
 ## Conventions de code
 
 - **Formatage** : Prettier (`.prettierrc.json`), lignes de 110 caractères au plus. Ne pas formater à la main : `npm run format`.

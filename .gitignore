@@ -1,1 +1,7 @@
 node_modules/
+
+# VS Code : on partage les réglages du projet et les extensions conseillées,
+# pas le reste (état personnel de l'éditeur).
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
