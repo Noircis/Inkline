@@ -288,7 +288,7 @@ export function swingWarp(q) {
  * @param {number[]} order Ordre de lecture ({@link staffPlayOrder}).
  * @returns {Set.<number>} Index des temps (en noires depuis le début de la lecture).
  */
-export function straightBeats(items, order) {
+function straightBeats(items, order) {
   const out = new Set();
   const onGrid = (t) => {
     const r = t - Math.floor(t + 1e-9);

@@ -1,0 +1,249 @@
+/* Inkline · Grilles d'accords. */
+
+/* 6. Grilles d'accords */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  row-gap: 16px;
+  padding-top: 12px;
+  margin-top: 4px;
+}
+.gm {
+  position: relative;
+  min-height: 54px;
+  border: 0;
+  border-left: 1.5px solid var(--ink);
+  background: transparent;
+  padding: 8px 4px 4px 7px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  border-radius: 0;
+  color: var(--ink);
+}
+.gm.rb {
+  border-right: 1.5px solid var(--ink);
+}
+.gm.lb-none {
+  border-left: 0;
+}
+.gm.lb-dbl {
+  border-left: 4px double var(--ink);
+}
+.gm.lb-rs {
+  border-left: 4px solid var(--ink);
+  padding-left: 12px;
+}
+.gm.lb-rs::before,
+.gm.rb-re::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 14px;
+  transform: translateY(-50%);
+  background: radial-gradient(circle, var(--ink) 1.6px, transparent 1.9px) 0 0/4px 7px repeat-y;
+}
+.gm.lb-rs::before {
+  left: 3px;
+}
+.gm.rb-re {
+  border-right: 4px solid var(--ink);
+  padding-right: 10px;
+}
+.gm.rb-re::after {
+  right: 3px;
+}
+.gm.rb-dbl {
+  border-right: 4px double var(--ink);
+}
+.gm.rb-fin {
+  border-right: 5px solid var(--ink);
+  padding-right: 9px;
+}
+.gm.rb-fin::after {
+  content: '';
+  position: absolute;
+  right: 3px;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: var(--ink);
+}
+.gm.sel {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.gm.play {
+  background: var(--accent-soft);
+}
+.gm.add {
+  border: 1.5px dashed var(--rule);
+  border-radius: 6px;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 22px;
+  margin-left: 6px;
+  padding: 0;
+}
+.gm .sec {
+  position: absolute;
+  top: -10px;
+  left: -3px;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 11px;
+  background: var(--ink);
+  color: var(--surface);
+  padding: 0 4px;
+  border-radius: 3px;
+  line-height: 16px;
+  z-index: 1;
+}
+.gm .volta {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  right: 2px;
+  height: 10px;
+  border-top: 1.5px solid var(--ink);
+  border-left: 1.5px solid var(--ink);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 3px;
+  line-height: 1;
+}
+.gcs {
+  display: flex;
+  width: 100%;
+  gap: 3px;
+  min-width: 0;
+}
+.gc {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.1;
+}
+.gm.n2 .gc {
+  font-size: 15px;
+}
+.gm.n3 .gcs,
+.gm.n4 .gcs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  row-gap: 3px;
+  column-gap: 2px;
+}
+.gm.n3 .gc,
+.gm.n4 .gc {
+  font-size: 13px;
+  overflow: visible;
+}
+.gc sup {
+  font-size: 0.62em;
+  vertical-align: 0.5em;
+  font-weight: 600;
+  margin-left: 1px;
+}
+.gc .cb {
+  font-size: 0.72em;
+  font-weight: 500;
+}
+.gc .slash {
+  color: var(--line);
+  font-weight: 400;
+}
+.gc .nc {
+  font-size: 0.72em;
+}
+.gc .bad {
+  color: var(--danger);
+  text-decoration: underline wavy;
+}
+.gm .sim {
+  font-family: var(--f-music);
+  font-size: 26px;
+  margin: auto;
+  line-height: 1;
+}
+.irealbox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0 4px;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.ir-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ir-lbl {
+  font-size: 13px;
+  color: var(--muted);
+}
+.block .irealbox textarea {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 13px;
+  padding: 6px 8px;
+  min-height: 3.2em;
+  overflow: auto;
+  width: 100%;
+  font-family: ui-monospace, Menlo, monospace;
+}
+a.btn {
+  text-decoration: none;
+  color: inherit;
+}
+.g-row button {
+  font-size: 13px;
+}
+.g-row button.mus {
+  font-family: var(--f-music);
+  font-size: 24px;
+}
+#gpal .pal-chord {
+  display: flex;
+}
+#gIn.err {
+  border-color: var(--danger);
+}
+
+.pal-chord input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 16px;
+  background: var(--bg);
+}
+.pal-chord button {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 0 12px;
+}
+.pal-chord button.ok {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .block {
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+}

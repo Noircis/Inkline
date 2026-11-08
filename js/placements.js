@@ -14,7 +14,7 @@
  * ({@link module:placements.combinations|combinations}) : 8 pour une note,
  * 28 pour deux, 56 pour trois, 70 pour quatre… puis on écrit chaque placement
  * selon les règles d'usage ({@link module:placements.placementItems|placementItems}),
- * et on les regroupe en séries ({@link module:placements.groupSeries|groupSeries}).
+ * et on les regroupe en séries ({@link module:placements~groupSeries|groupSeries}).
  *
  * ## Règles d'écriture (croches)
  *
@@ -113,7 +113,7 @@ export function placementItems(positions) {
  * @param {Array.<Array.<number>>} placements
  * @returns {Array.<Array.<Array.<number>>>} Liste de séries, chacune une liste de placements.
  */
-export function groupSeries(placements) {
+function groupSeries(placements) {
   if (placements.length && placements[0].length === 1) return [placements];
   const series = [];
   placements.forEach((pos) => {

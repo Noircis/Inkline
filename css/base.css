@@ -1,0 +1,211 @@
+/*
+ * Inkline · feuilles de style.
+ *
+ * Une feuille par zone de l'appli, chargées par index.html dans cet ordre
+ * (l'ordre compte : à spécificité égale, la dernière règle l'emporte) :
+ *
+ *   base         réinitialisation, jetons de thème (couleurs, polices) : clair
+ *                par défaut, sombre via prefers-color-scheme ou [data-theme="dark"]
+ *   list         accueil : en-tête, liste des notes
+ *   note         écran note et blocs
+ *   staff        portées : dessin SVG (couleurs via les jetons), palettes
+ *   grid         grilles d'accords
+ *   share        partage d'une note
+ *   options      roue crantée et écran Options
+ *   list-views   affichages de la liste : Cartes, Mosaïque, Liste
+ *   folders      dossiers, recherche, tri, éditeur de dossier (2.0)
+ *   fold         blocs longs réduits (2.2)
+ *   training     entraînement (2.3)
+ *   staff-modes  modes de saisie des portées, armure (2.5)
+ *
+ * Aucune couleur n'est écrite en dur hors des jetons (base.css).
+ */
+
+/* 1. Réinitialisation */
+:root {
+  color-scheme: light;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+}
+img {
+  max-width: 100%;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* 2. Jetons de thème. Mise en page : une colonne étroite de blocs, palette fixée en bas pendant l'édition. */
+:root {
+  --bg: #f2f4f8;
+  --surface: #ffffff;
+  --ink: #151a25;
+  --muted: #5b6477;
+  --line: #8d96a9;
+  --rule: #dce1ea;
+  --accent: #2b47c9;
+  --accent-soft: #e3e8fb;
+  --sel: #d58300;
+  --danger: #c2362b;
+  --f-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-music: 'Noto Music', 'Noto Sans Symbols 2', 'Segoe UI Symbol', serif;
+  --pal-h: 0px;
+  /* Couleurs des dossiers (2.0) : on ne stocke que la clé, la teinte suit le thème. */
+  --fc-red: #d23c3c;
+  --fc-orange: #e07316;
+  --fc-yellow: #c99a06;
+  --fc-green: #2f9e4f;
+  --fc-teal: #148f8f;
+  --fc-blue: #2f6ee0;
+  --fc-purple: #8a4fd6;
+  --fc-gray: #7c8496;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0f1218;
+    --surface: #171b24;
+    --ink: #e7eaf1;
+    --muted: #9aa3b5;
+    --line: #6e778a;
+    --rule: #2a303c;
+    --accent: #93a6ff;
+    --accent-soft: #222a48;
+    --sel: #ffb52e;
+    --danger: #ff7466;
+    --fc-red: #ff6b6b;
+    --fc-orange: #ff9a45;
+    --fc-yellow: #f2c84b;
+    --fc-green: #5fd07e;
+    --fc-teal: #3fc9c9;
+    --fc-blue: #6f9dff;
+    --fc-purple: #b88cff;
+    --fc-gray: #a3abbc;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #0f1218;
+  --surface: #171b24;
+  --ink: #e7eaf1;
+  --muted: #9aa3b5;
+  --line: #6e778a;
+  --rule: #2a303c;
+  --accent: #93a6ff;
+  --accent-soft: #222a48;
+  --sel: #ffb52e;
+  --danger: #ff7466;
+  --fc-red: #ff6b6b;
+  --fc-orange: #ff9a45;
+  --fc-yellow: #f2c84b;
+  --fc-green: #5fd07e;
+  --fc-teal: #3fc9c9;
+  --fc-blue: #6f9dff;
+  --fc-purple: #b88cff;
+  --fc-gray: #a3abbc;
+  color-scheme: dark;
+}
+html,
+body {
+  background: var(--bg);
+}
+body {
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--bg);
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(32px + var(--pal-h));
+}
+.top {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 10px;
+  min-height: 52px;
+}
+.top .grow {
+  flex: 1;
+  min-width: 0;
+}
+.brand {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0;
+}
+.status {
+  font-size: 12px;
+  color: var(--muted);
+}
+.btn {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+  font-weight: 600;
+}
+.btn.ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.btn.danger {
+  color: var(--danger);
+}
+.btn.confirm {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--surface);
+}

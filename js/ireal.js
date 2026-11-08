@@ -231,114 +231,127 @@ export function toIRealLink(title, b) {
  * @returns {{time: string, measures: module:model~GridMeasure[]}}
  */
 export function parseIRealMusic(raw) {
-  /** @type {module:model~GridMeasure[]} */
-  const M = [];
-  let cur = null;
-  let pend = {};
-  let time = '4/4';
-  const open = () => {
-    if (!cur) {
-      cur = { ch: [], ...pend };
-      pend = {};
-    }
-    return cur;
-  };
-  const close = (flag) => {
-    if (cur) {
-      if (flag) cur[flag] = true;
-      M.push(cur);
-      cur = null;
-    } else if (flag && M.length) M[M.length - 1][flag] = true; // barre juste après une autre barre
-  };
-  const s = raw.replace(/<[^>]*>/g, ' ').replace(/\([^)]*\)/g, ' ');
+  const p = newParser();
+  const src = raw.replace(/<[^>]*>/g, ' ').replace(/\([^)]*\)/g, ' ');
   let i = 0;
-  while (i < s.length) {
-    const r = s.slice(i);
-    let mm;
-    if ((mm = /^T(\d\d)/.exec(r))) {
-      const t = TOKEN_TO_TIME['T' + mm[1]];
-      if (t && !M.length) time = t;
-      i += 3;
-      continue;
+  while (i < src.length) i += readToken(p, src.slice(i));
+  p.close();
+  return { time: p.time, measures: tidy(p.M) };
+}
+
+/**
+ * État du lecteur iReal : mesures déjà lues, mesure en cours, attributs en
+ * attente (section, début de reprise, qui s'appliqueront à la prochaine
+ * mesure), chiffrage.
+ * @typedef {Object} IRealParser
+ * @property {module:model~GridMeasure[]} M
+ * @property {?module:model~GridMeasure} cur
+ * @property {Object} pend
+ * @property {string} time
+ * @property {function(): module:model~GridMeasure} open Mesure en cours (créée au besoin).
+ * @property {function(string=)} close Ferme la mesure en cours, avec un drapeau éventuel.
+ */
+
+/**
+ * Crée l'état du lecteur.
+ * @returns {IRealParser}
+ */
+function newParser() {
+  const p = { M: [], cur: null, pend: {}, time: '4/4' };
+  p.open = () => {
+    if (!p.cur) {
+      p.cur = { ch: [], ...p.pend };
+      p.pend = {};
     }
-    if ((mm = /^\*([A-Za-z])/.exec(r))) {
-      const v = mm[1] === 'i' ? 'Intro' : mm[1] === 'V' ? 'Verse' : mm[1].toUpperCase();
-      if (cur && !cur.ch.length) cur.sec = v;
-      else pend.sec = v;
-      i += 2;
-      continue;
-    }
-    if ((mm = /^N([0-3])/.exec(r))) {
-      const v = Number(mm[1]);
-      if (v) open().ending = v;
-      i += 2;
-      continue;
-    }
-    const c0 = r[0];
-    if (c0 === '{') {
-      close();
-      pend.rs = true;
-      i++;
-      continue;
-    }
-    if (c0 === '[' || c0 === '|') {
-      close();
-      i++;
-      continue;
-    }
-    if (c0 === ']') {
-      close('dbl');
-      i++;
-      continue;
-    }
-    if (c0 === '}') {
-      close('re');
-      i++;
-      continue;
-    }
-    if (c0 === 'Z') {
-      close('fin');
-      i++;
-      continue;
-    }
-    if (c0 === 'x') {
-      open().ch = ['%'];
-      i++;
-      continue;
-    }
-    if (c0 === 'r') {
-      close();
-      M.push({ ch: ['%'] }, { ch: ['%'] });
-      i++;
-      continue;
-    }
-    if (c0 === 'n') {
-      open().ch.push('n');
-      i++;
-      continue;
-    }
-    if (c0 === 'p') {
-      open().ch.push('');
-      i++;
-      continue;
-    }
-    if ((mm = /^([A-GW])([b#]?)([\^\-ho+0-9b#susaldt]*)(\/[A-G][b#]?)?/.exec(r)) && mm[0].length) {
-      // W = « fondamentale invisible » (accord prolongé avec nouvelle basse) : on garde une case vide.
-      if (mm[1] === 'W') open().ch.push('');
-      else open().ch.push(mm[1] + mm[2] + qualityFromIReal(mm[3]) + (mm[4] || ''));
-      i += mm[0].length;
-      continue;
-    }
-    i++; // jeton ignoré : espace, virgule, Y, S, Q, f, l, s, U…
+    return p.cur;
+  };
+  p.close = (flag) => {
+    if (p.cur) {
+      if (flag) p.cur[flag] = true;
+      p.M.push(p.cur);
+      p.cur = null;
+    } else if (flag && p.M.length) p.M[p.M.length - 1][flag] = true; // barre juste après une autre barre
+  };
+  return p;
+}
+
+/**
+ * Jetons d'un caractère : barres, reprises, mesures de répétition, accords
+ * « pas de changement » (`n`) et cases vides (`p`).
+ * @type {Object.<string, function(IRealParser)>}
+ */
+const SINGLE = {
+  '{': (p) => {
+    p.close();
+    p.pend.rs = true;
+  },
+  '[': (p) => p.close(),
+  '|': (p) => p.close(),
+  ']': (p) => p.close('dbl'),
+  '}': (p) => p.close('re'),
+  Z: (p) => p.close('fin'),
+  x: (p) => {
+    p.open().ch = ['%'];
+  },
+  r: (p) => {
+    p.close();
+    p.M.push({ ch: ['%'] }, { ch: ['%'] });
+  },
+  n: (p) => p.open().ch.push('n'),
+  p: (p) => p.open().ch.push(''),
+};
+
+/** Accord iReal : fondamentale (W = invisible), altération, qualité, basse. */
+const CHORD_TOKEN = /^([A-GW])([b#]?)([\^\-ho+0-9b#susaldt]*)(\/[A-G][b#]?)?/;
+
+/**
+ * Lit un jeton en tête de `r` et met à jour le lecteur.
+ * @param {IRealParser} p
+ * @param {string} r Reste du texte.
+ * @returns {number} Nombre de caractères consommés (au moins 1).
+ */
+function readToken(p, r) {
+  let mm;
+  if ((mm = /^T(\d\d)/.exec(r))) {
+    const t = TOKEN_TO_TIME['T' + mm[1]];
+    if (t && !p.M.length) p.time = t;
+    return 3;
   }
-  close();
-  // Nettoyage : mesures vides finales, barre de fin implicite.
+  if ((mm = /^\*([A-Za-z])/.exec(r))) {
+    const v = mm[1] === 'i' ? 'Intro' : mm[1] === 'V' ? 'Verse' : mm[1].toUpperCase();
+    if (p.cur && !p.cur.ch.length) p.cur.sec = v;
+    else p.pend.sec = v;
+    return 2;
+  }
+  if ((mm = /^N([0-3])/.exec(r))) {
+    if (Number(mm[1])) p.open().ending = Number(mm[1]);
+    return 2;
+  }
+  if (SINGLE[r[0]]) {
+    SINGLE[r[0]](p);
+    return 1;
+  }
+  if ((mm = CHORD_TOKEN.exec(r)) && mm[0].length) {
+    // W = « fondamentale invisible » (accord prolongé avec nouvelle basse) : on garde une case vide.
+    p.open().ch.push(mm[1] === 'W' ? '' : mm[1] + mm[2] + qualityFromIReal(mm[3]) + (mm[4] || ''));
+    return mm[0].length;
+  }
+  return 1; // jeton ignoré : espace, virgule, Y, S, Q, f, l, s, U…
+}
+
+/**
+ * Nettoyage final : mesures vides en fin de morceau retirées, barre de fin
+ * implicite (sauf si le morceau finit par une reprise).
+ * @param {module:model~GridMeasure[]} M
+ * @returns {module:model~GridMeasure[]}
+ */
+function tidy(M) {
   while (M.length && !M[M.length - 1].ch.length && !M[M.length - 1].sec) M.pop();
   if (M.length && !M[M.length - 1].re) M[M.length - 1].fin = true;
   M.forEach((m) => {
     if (m.re && m.fin) delete m.fin;
   });
-  return { time, measures: M };
+  return M;
 }
 
 /**

@@ -1,0 +1,181 @@
+/* Inkline · Écran note et blocs. */
+
+/* 3. Structure : note et blocs */
+[hidden] {
+  display: none !important;
+}
+.title-in {
+  width: 100%;
+  border: 0;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.15;
+  padding: 4px 0 10px;
+  outline: none;
+}
+.title-in::placeholder {
+  color: var(--line);
+}
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.block {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+.block.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.block.text {
+  background: transparent;
+  border-color: transparent;
+  padding: 2px 2px;
+}
+.block.text.active {
+  background: var(--surface);
+  border-color: var(--rule);
+  box-shadow: none;
+}
+.block textarea {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 4px 2px;
+  display: block;
+  min-height: 1.5em;
+  overflow: hidden;
+}
+.block textarea::placeholder {
+  color: var(--line);
+}
+.shead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.shead .kind {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin-right: 2px;
+}
+.shead select,
+.shead input {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 6px;
+  padding: 4px 6px;
+  min-height: 32px;
+  font-size: 14px;
+}
+.shead input[type='number'] {
+  width: 62px;
+}
+.shead .tempo {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+}
+.shead .tempo .mus {
+  font-family: var(--f-music);
+  font-size: 18px;
+}
+.chip {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 4px 10px;
+  min-height: 32px;
+  font-size: 13px;
+}
+.chip[aria-pressed='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.playbtn {
+  margin-left: auto;
+  border: 0;
+  background: var(--accent);
+  color: var(--surface);
+  border-radius: 999px;
+  min-height: 34px;
+  padding: 0 14px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.playbtn.on {
+  background: var(--ink);
+}
+.staff-wrap {
+  overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.staff-wrap svg {
+  display: block;
+}
+.tools {
+  display: none;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.block.active .tools {
+  display: flex;
+}
+.tools button {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 6px;
+  min-height: 32px;
+  min-width: 38px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+.tools .confirm {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--surface);
+}
+.addbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.addbar .btn {
+  flex: 1;
+  justify-content: center;
+  min-width: 70px;
+  padding: 8px 6px;
+}
+.notefoot {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}

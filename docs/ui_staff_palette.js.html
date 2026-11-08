@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>ui/staff/palette.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~click">click</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li><li data-type='method'><a href="module-audio.html#~metronome">metronome</a></li><li data-type='method'><a href="module-audio.html#~perc">perc</a></li><li data-type='method'><a href="module-audio.html#~tone">tone</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordParts">chordParts</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#~pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-db.html">db</a><ul class='members'><li data-type='member'><a href="module-db.html#.STORES">STORES</a></li><li data-type='member'><a href="module-db.html#~DB_NAME">DB_NAME</a></li><li data-type='member'><a href="module-db.html#~DB_VERSION">DB_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-db.html#.getAll">getAll</a></li><li data-type='method'><a href="module-db.html#.openDb">openDb</a></li><li data-type='method'><a href="module-db.html#.write">write</a></li><li data-type='method'><a href="module-db.html#~done">done</a></li></ul></li><li><a href="module-export.html">export</a><ul class='methods'><li data-type='method'><a href="module-export.html#.download">download</a></li><li data-type='method'><a href="module-export.html#.noteToInkline">noteToInkline</a></li><li data-type='method'><a href="module-export.html#.noteToPdf">noteToPdf</a></li><li data-type='method'><a href="module-export.html#.noteToPng">noteToPng</a></li><li data-type='method'><a href="module-export.html#.paginate">paginate</a></li><li data-type='method'><a href="module-export.html#.parseFontFaces">parseFontFaces</a></li><li data-type='method'><a href="module-export.html#.shareOrDownload">shareOrDownload</a></li><li data-type='method'><a href="module-export.html#.slug">slug</a></li><li data-type='method'><a href="module-export.html#~caption">caption</a></li><li data-type='method'><a href="module-export.html#~embeddedFontCss">embeddedFontCss</a></li><li data-type='method'><a href="module-export.html#~noteToSvg">noteToSvg</a></li><li data-type='method'><a href="module-export.html#~rasterize">rasterize</a></li><li data-type='method'><a href="module-export.html#~toBlob">toBlob</a></li><li data-type='method'><a href="module-export.html#~wrap">wrap</a></li></ul></li><li><a href="module-folders.html">folders</a><ul class='members'><li data-type='member'><a href="module-folders.html#.ALL">ALL</a></li><li data-type='member'><a href="module-folders.html#.COLOR_KEYS">COLOR_KEYS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_COLORS">FOLDER_COLORS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_NAME_MAX">FOLDER_NAME_MAX</a></li><li data-type='member'><a href="module-folders.html#.UNFILED">UNFILED</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folders.html#.cleanFolderName">cleanFolderName</a></li><li data-type='method'><a href="module-folders.html#.countByFolder">countByFolder</a></li><li data-type='method'><a href="module-folders.html#.deleteFolder">deleteFolder</a></li><li data-type='method'><a href="module-folders.html#.folderOf">folderOf</a></li><li data-type='method'><a href="module-folders.html#.inSelection">inSelection</a></li><li data-type='method'><a href="module-folders.html#.newFolder">newFolder</a></li><li data-type='method'><a href="module-folders.html#.sortedFolders">sortedFolders</a></li></ul></li><li><a href="module-folding.html">folding</a><ul class='members'><li data-type='member'><a href="module-folding.html#.FOLD_MIN_LINES">FOLD_MIN_LINES</a></li><li data-type='member'><a href="module-folding.html#.FOLD_PREVIEW_LINES">FOLD_PREVIEW_LINES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folding.html#.shouldFold">shouldFold</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li><li data-type='member'><a href="module-grid.html#~SVG_GAP">SVG_GAP</a></li><li data-type='member'><a href="module-grid.html#~SVG_ROW">SVG_ROW</a></li><li data-type='member'><a href="module-grid.html#~SVG_TOP">SVG_TOP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridSvg">gridSvg</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li><li data-type='method'><a href="module-grid.html#~svgBarlines">svgBarlines</a></li><li data-type='method'><a href="module-grid.html#~svgChords">svgChords</a></li><li data-type='method'><a href="module-grid.html#~svgDots">svgDots</a></li><li data-type='method'><a href="module-grid.html#~svgLabels">svgLabels</a></li><li data-type='method'><a href="module-grid.html#~svgVline">svgVline</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.discardSnapshot">discardSnapshot</a></li><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#~newParser">newParser</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li><li data-type='method'><a href="module-ireal.html#~qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#~readToken">readToken</a></li><li data-type='method'><a href="module-ireal.html#~tidy">tidy</a></li><li data-type='method'><a href="module-ireal.html#~unscramble">unscramble</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#.INSERT_GAP">INSERT_GAP</a></li><li data-type='member'><a href="module-layout.html#.KEY_ACC_W">KEY_ACC_W</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~breakIntoSystems">breakIntoSystems</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li><li data-type='method'><a href="module-layout.html#~keySigWidth">keySigWidth</a></li><li data-type='method'><a href="module-layout.html#~measureWidth">measureWidth</a></li><li data-type='method'><a href="module-layout.html#~newSystem">newSystem</a></li><li data-type='method'><a href="module-layout.html#~placeSystems">placeSystems</a></li><li data-type='method'><a href="module-layout.html#~stretchFactor">stretchFactor</a></li><li data-type='method'><a href="module-layout.html#~systemStart">systemStart</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-measure-fit.html">measure-fit</a><ul class='methods'><li data-type='method'><a href="module-measure-fit.html#.chainEnd">chainEnd</a></li><li data-type='method'><a href="module-measure-fit.html#.chainStart">chainStart</a></li><li data-type='method'><a href="module-measure-fit.html#.decompose">decompose</a></li><li data-type='method'><a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a></li><li data-type='method'><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a></li><li data-type='method'><a href="module-measure-fit.html#.singleValue">singleValue</a></li><li data-type='method'><a href="module-measure-fit.html#~baseProps">baseProps</a></li><li data-type='method'><a href="module-measure-fit.html#~cutAtBars">cutAtBars</a></li><li data-type='method'><a href="module-measure-fit.html#~eventsOf">eventsOf</a></li><li data-type='method'><a href="module-measure-fit.html#~isMult">isMult</a></li><li data-type='method'><a href="module-measure-fit.html#~materialize">materialize</a></li><li data-type='method'><a href="module-measure-fit.html#~piecesFrom">piecesFrom</a></li><li data-type='method'><a href="module-measure-fit.html#~valuesFor">valuesFor</a></li></ul></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pdf.html">pdf</a><ul class='members'><li data-type='member'><a href="module-pdf.html#.A4">A4</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pdf.html#.buildPdf">buildPdf</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='methods'><li data-type='method'><a href="module-pitch.html#.keyAcc">keyAcc</a></li><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li><li data-type='method'><a href="module-pitch.html#~degreeOf">degreeOf</a></li></ul></li><li><a href="module-placements.html">placements</a><ul class='members'><li data-type='member'><a href="module-placements.html#.SLOTS">SLOTS</a></li><li data-type='member'><a href="module-placements.html#~PER_BEAT">PER_BEAT</a></li></ul><ul class='methods'><li data-type='method'><a href="module-placements.html#.combinations">combinations</a></li><li data-type='method'><a href="module-placements.html#.placementItems">placementItems</a></li><li data-type='method'><a href="module-placements.html#.placementSeries">placementSeries</a></li><li data-type='method'><a href="module-placements.html#.seriesBlock">seriesBlock</a></li><li data-type='method'><a href="module-placements.html#~groupSeries">groupSeries</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#~accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#~barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#~beamGroupsBySystem">beamGroupsBySystem</a></li><li data-type='method'><a href="module-render-staff.html#~drawAppendZone">drawAppendZone</a></li><li data-type='method'><a href="module-render-staff.html#~drawBars">drawBars</a></li><li data-type='method'><a href="module-render-staff.html#~drawBeams">drawBeams</a></li><li data-type='method'><a href="module-render-staff.html#~drawItems">drawItems</a></li><li data-type='method'><a href="module-render-staff.html#~drawNote">drawNote</a></li><li data-type='method'><a href="module-render-staff.html#~drawStaffLines">drawStaffLines</a></li><li data-type='method'><a href="module-render-staff.html#~drawTies">drawTies</a></li><li data-type='method'><a href="module-render-staff.html#~drawTuplets">drawTuplets</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li><li data-type='method'><a href="module-render-staff.html#~freeStem">freeStem</a></li><li data-type='method'><a href="module-render-staff.html#~isVisible">isVisible</a></li><li data-type='method'><a href="module-render-staff.html#~keySigSvg">keySigSvg</a></li><li data-type='method'><a href="module-render-staff.html#~ledgerLines">ledgerLines</a></li><li data-type='method'><a href="module-render-staff.html#~restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#~tieSvg">tieSvg</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li><li data-type='method'><a href="module-rhythm.html#~straightBeats">straightBeats</a></li><li data-type='method'><a href="module-rhythm.html#~tupletIndex">tupletIndex</a></li></ul></li><li><a href="module-sanitize.html">sanitize</a><ul class='methods'><li data-type='method'><a href="module-sanitize.html#.sanitizeBlock">sanitizeBlock</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeFolders">sanitizeFolders</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNote">sanitizeNote</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a></li><li data-type='method'><a href="module-sanitize.html#~item">item</a></li><li data-type='method'><a href="module-sanitize.html#~measure">measure</a></li><li data-type='method'><a href="module-sanitize.html#~sanitizeFolder">sanitizeFolder</a></li></ul></li><li><a href="module-search.html">search</a><ul class='members'><li data-type='member'><a href="module-search.html#.SORT_KEYS">SORT_KEYS</a></li><li data-type='member'><a href="module-search.html#.SORT_MODES">SORT_MODES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-search.html#.matchNote">matchNote</a></li><li data-type='method'><a href="module-search.html#.normalize">normalize</a></li><li data-type='method'><a href="module-search.html#.sortNotes">sortNotes</a></li><li data-type='method'><a href="module-search.html#~searchableText">searchableText</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.DRILL_DEFAULTS">DRILL_DEFAULTS</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_VERSION">BACKUP_VERSION</a></li><li data-type='member'><a href="module-storage.html#~FOLDERS_KEY">FOLDERS_KEY</a></li><li data-type='member'><a href="module-storage.html#~META_KEY">META_KEY</a></li><li data-type='member'><a href="module-storage.html#~NOTE_APP">NOTE_APP</a></li><li data-type='member'><a href="module-storage.html#~SAVE_DELAY">SAVE_DELAY</a></li><li data-type='member'><a href="module-storage.html#~STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~backend">backend</a></li><li data-type='member'><a href="module-storage.html#~db">db</a></li><li data-type='member'><a href="module-storage.html#~dirty">dirty</a></li><li data-type='member'><a href="module-storage.html#~fullPending">fullPending</a></li><li data-type='member'><a href="module-storage.html#~saved">saved</a></li><li data-type='member'><a href="module-storage.html#~savedLocal">savedLocal</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.getMeta">getMeta</a></li><li data-type='method'><a href="module-storage.html#.importFile">importFile</a></li><li data-type='method'><a href="module-storage.html#.loadAll">loadAll</a></li><li data-type='method'><a href="module-storage.html#.noteFileJson">noteFileJson</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.saveFolders">saveFolders</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#.setMeta">setMeta</a></li><li data-type='method'><a href="module-storage.html#.storageBackend">storageBackend</a></li><li data-type='method'><a href="module-storage.html#~drillOf">drillOf</a></li><li data-type='method'><a href="module-storage.html#~migrateFromLocal">migrateFromLocal</a></li><li data-type='method'><a href="module-storage.html#~readDb">readDb</a></li><li data-type='method'><a href="module-storage.html#~readLocal">readLocal</a></li><li data-type='method'><a href="module-storage.html#~sortsOf">sortsOf</a></li><li data-type='method'><a href="module-storage.html#~writeChanges">writeChanges</a></li></ul></li><li><a href="module-ui_blocks.html">ui/blocks</a><ul class='methods'><li data-type='method'><a href="module-ui_blocks.html#.blockKind">blockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.hideAllPalettes">hideAllPalettes</a></li><li data-type='method'><a href="module-ui_blocks.html#.redrawBlock">redrawBlock</a></li><li data-type='method'><a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_blocks.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_blocks.html#.updateActive">updateActive</a></li></ul></li><li><a href="module-ui_common.html">ui/common</a><ul class='members'><li data-type='member'><a href="module-ui_common.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_common.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_common.html#.confirmTap">confirmTap</a></li><li data-type='method'><a href="module-ui_common.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_common.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_common.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_common.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_common.html#.updatePlayBtn">updatePlayBtn</a></li></ul></li><li><a href="module-ui_fold.html">ui/fold</a><ul class='methods'><li data-type='method'><a href="module-ui_fold.html#.applyFold">applyFold</a></li><li data-type='method'><a href="module-ui_fold.html#.guardFoldedTaps">guardFoldedTaps</a></li><li data-type='method'><a href="module-ui_fold.html#.isFolded">isFolded</a></li><li data-type='method'><a href="module-ui_fold.html#~toggleFold">toggleFold</a></li></ul></li><li><a href="module-ui_folder-sheet.html">ui/folder-sheet</a><ul class='methods'><li data-type='method'><a href="module-ui_folder-sheet.html#.openFolderSheet">openFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~bindDelete">bindDelete</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~closeFolderSheet">closeFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~sheetHtml">sheetHtml</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindGridSettings">bindGridSettings</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindIRealPanel">bindIRealPanel</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindMeasureSelection">bindMeasureSelection</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockHtml">gridBlockHtml</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~importIntoGrid">importIntoGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~updateGridPalette">updateGridPalette</a></li></ul></li><li><a href="module-ui_home.html">ui/home</a><ul class='members'><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_home.html#~chipsHtml">chipsHtml</a></li><li data-type='method'><a href="module-ui_home.html#~currentSelection">currentSelection</a></li><li data-type='method'><a href="module-ui_home.html#~editFolder">editFolder</a></li><li data-type='method'><a href="module-ui_home.html#~emptyHtml">emptyHtml</a></li><li data-type='method'><a href="module-ui_home.html#~newNote">newNote</a></li><li data-type='method'><a href="module-ui_home.html#~plural">plural</a></li><li data-type='method'><a href="module-ui_home.html#~refreshResults">refreshResults</a></li><li data-type='method'><a href="module-ui_home.html#~renderHome">renderHome</a></li><li data-type='method'><a href="module-ui_home.html#~renderOnboarding">renderOnboarding</a></li><li data-type='method'><a href="module-ui_home.html#~select">select</a></li><li data-type='method'><a href="module-ui_home.html#~sortFor">sortFor</a></li></ul></li><li><a href="module-ui_icons.html">ui/icons</a><ul class='members'><li data-type='member'><a href="module-ui_icons.html#.GEAR">GEAR</a></li><li data-type='member'><a href="module-ui_icons.html#.LOUPE">LOUPE</a></li><li data-type='member'><a href="module-ui_icons.html#.METRONOME">METRONOME</a></li><li data-type='member'><a href="module-ui_icons.html#.PIN_ICON">PIN_ICON</a></li></ul></li><li><a href="module-ui_list-view.html">ui/list-view</a><ul class='members'><li data-type='member'><a href="module-ui_list-view.html#.LIST_VIEWS">LIST_VIEWS</a></li><li data-type='member'><a href="module-ui_list-view.html#~MOSAIC_STAFF_W">MOSAIC_STAFF_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_list-view.html#.noteSummary">noteSummary</a></li><li data-type='method'><a href="module-ui_list-view.html#.relativeDate">relativeDate</a></li><li data-type='method'><a href="module-ui_list-view.html#.renderNoteList">renderNoteList</a></li><li data-type='method'><a href="module-ui_list-view.html#~chordsPreview">chordsPreview</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstStaff">firstStaff</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstText">firstText</a></li><li data-type='method'><a href="module-ui_list-view.html#~folderTag">folderTag</a></li><li data-type='method'><a href="module-ui_list-view.html#~itemHtml">itemHtml</a></li><li data-type='method'><a href="module-ui_list-view.html#~shortDate">shortDate</a></li></ul></li><li><a href="module-ui_nav.html">ui/nav</a><ul class='methods'><li data-type='method'><a href="module-ui_nav.html#.backToList">backToList</a></li><li data-type='method'><a href="module-ui_nav.html#.go">go</a></li><li data-type='method'><a href="module-ui_nav.html#.goChild">goChild</a></li><li data-type='method'><a href="module-ui_nav.html#.onHistoryBack">onHistoryBack</a></li><li data-type='method'><a href="module-ui_nav.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_nav.html#.registerScreen">registerScreen</a></li><li data-type='method'><a href="module-ui_nav.html#.renderScreen">renderScreen</a></li><li data-type='method'><a href="module-ui_nav.html#~enterSubView">enterSubView</a></li><li data-type='method'><a href="module-ui_nav.html#~show">show</a></li><li data-type='method'><a href="module-ui_nav.html#~showList">showList</a></li></ul></li><li><a href="module-ui_note.html">ui/note</a><ul class='methods'><li data-type='method'><a href="module-ui_note.html#~addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangement">bindArrangement</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangementSelect">bindArrangementSelect</a></li><li data-type='method'><a href="module-ui_note.html#~bindShare">bindShare</a></li><li data-type='method'><a href="module-ui_note.html#~bindTitle">bindTitle</a></li><li data-type='method'><a href="module-ui_note.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_note.html#~folderSelectHtml">folderSelectHtml</a></li><li data-type='method'><a href="module-ui_note.html#~renderNote">renderNote</a></li></ul></li><li><a href="module-ui_options.html">ui/options</a><ul class='methods'><li data-type='method'><a href="module-ui_options.html#.backupDue">backupDue</a></li><li data-type='method'><a href="module-ui_options.html#~aboutHtml">aboutHtml</a></li><li data-type='method'><a href="module-ui_options.html#~bindDisplay">bindDisplay</a></li><li data-type='method'><a href="module-ui_options.html#~bindFolders">bindFolders</a></li><li data-type='method'><a href="module-ui_options.html#~bindIReal">bindIReal</a></li><li data-type='method'><a href="module-ui_options.html#~bindNotebook">bindNotebook</a></li><li data-type='method'><a href="module-ui_options.html#~displayHtml">displayHtml</a></li><li data-type='method'><a href="module-ui_options.html#~foldersHtml">foldersHtml</a></li><li data-type='method'><a href="module-ui_options.html#~importChosenFile">importChosenFile</a></li><li data-type='method'><a href="module-ui_options.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_options.html#~irealHtml">irealHtml</a></li><li data-type='method'><a href="module-ui_options.html#~lastExportLabel">lastExportLabel</a></li><li data-type='method'><a href="module-ui_options.html#~notebookHtml">notebookHtml</a></li><li data-type='method'><a href="module-ui_options.html#~renderOptions">renderOptions</a></li></ul></li><li><a href="module-ui_staff_bars.html">ui/staff/bars</a><ul class='members'><li data-type='member'><a href="module-ui_staff_bars.html#.barBar">barBar</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_staff_bars.html#.applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff_bars.html#.syncBarMenu">syncBarMenu</a></li></ul></li><li><a href="module-ui_staff_chord.html">ui/staff/chord</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_chord.html#.closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#.openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#~applyChord">applyChord</a></li></ul></li><li><a href="module-ui_staff_index.html">ui/staff/index</a></li><li><a href="module-ui_staff_input.html">ui/staff/input</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_input.html#.setMode">setMode</a></li><li data-type='method'><a href="module-ui_staff_input.html#.staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff_input.html#~insertNote">insertNote</a></li><li data-type='method'><a href="module-ui_staff_input.html#~moveNote">moveNote</a></li><li data-type='method'><a href="module-ui_staff_input.html#~newItem">newItem</a></li></ul></li><li><a href="module-ui_staff_palette.html">ui/staff/palette</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_palette.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~erase">erase</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~helpText">helpText</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~onAccidental">onAccidental</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~onDuration">onDuration</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~resizeSel">resizeSel</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~setInput">setInput</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~shownValues">shownValues</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~step">step</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~toggleRestOf">toggleRestOf</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~updateStaffPalette">updateStaffPalette</a></li></ul></li><li><a href="module-ui_staff_shared.html">ui/staff/shared</a><ul class='members'><li data-type='member'><a href="module-ui_staff_shared.html#.hooks">hooks</a></li><li data-type='member'><a href="module-ui_staff_shared.html#.staffUi">staffUi</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_staff_shared.html#.activeStaff">activeStaff</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.clampCursor">clampCursor</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.flash">flash</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.insertIndex">insertIndex</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.logicalValue">logicalValue</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.refit">refit</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.targetIndex">targetIndex</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.withSel">withSel</a></li></ul></li><li><a href="module-ui_staff_view.html">ui/staff/view</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_view.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff_view.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff_view.html#~bindSelect">bindSelect</a></li><li data-type='method'><a href="module-ui_staff_view.html#~headerHtml">headerHtml</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.saveArrangement">saveArrangement</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_training.html">ui/training</a><ul class='methods'><li data-type='method'><a href="module-ui_training.html#~applyPlaySettings">applyPlaySettings</a></li><li data-type='method'><a href="module-ui_training.html#~header">header</a></li><li data-type='method'><a href="module-ui_training.html#~redrawDrill">redrawDrill</a></li><li data-type='method'><a href="module-ui_training.html#~renderDrills">renderDrills</a></li><li data-type='method'><a href="module-ui_training.html#~renderPlacements">renderPlacements</a></li><li data-type='method'><a href="module-ui_training.html#~renderTraining">renderTraining</a></li><li data-type='method'><a href="module-ui_training.html#~settings">settings</a></li><li data-type='method'><a href="module-ui_training.html#~toggle">toggle</a></li><li data-type='method'><a href="module-ui_training.html#~updateSettings">updateSettings</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ui/staff/palette.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module ui/staff/palette
+ * @description
+ * **Palette** des portées, fixée en bas d'écran : mode (Écrire / Modifier),
+ * valeurs, point, triolet, silence, liaison, altérations, barres, accord
+ * chiffré, navigation, annuler, effacer.
+ *
+ * Chaque bouton agit selon le mode :
+ * - **Écrire** : il règle la **prochaine** note
+ *   (voir {@link module:ui/state~InputSettings|InputSettings}) ;
+ * - **Modifier** : il modifie la **note sélectionnée**. Changer sa durée
+ *   garde la suite en place (compensation par des silences, voir
+ *   {@link module:measure-fit.resizeEvent|resizeEvent}).
+ *
+ * Toute modification est précédée de `pushSnapshot` (annulation) et suivie de
+ * `touch` (sauvegarde), d'une remise en mesure et d'un redessin.
+ */
+
+import { state, touch } from '../state.js';
+import { pitchName } from '../../pitch.js';
+import { resizeEvent, chainStart, chainEnd } from '../../measure-fit.js';
+import { pushSnapshot } from '../../history.js';
+import * as audio from '../../audio.js';
+import { syncPaletteSpace } from '../common.js';
+import { setActive, undo } from '../blocks.js';
+import { hooks, staffUi, flash, activeStaff, refit, insertIndex, logicalValue, withSel } from './shared.js';
+import { setMode } from './input.js';
+import { barBar, applyBar, syncBarMenu } from './bars.js';
+import { openChord, closeChord } from './chord.js';
+
+const pal = /** @type {HTMLElement} */ (document.getElementById('palette'));
+
+/** Glyphes Unicode des boutons de valeur, en mode note et en mode silence. */
+const GLYPHS = {
+  note: { w: '\u{1D15D}', h: '\u{1D15E}', q: '\u{1D15F}', 8: '\u{1D160}', 16: '\u{1D161}' },
+  rest: { w: '\u{1D13B}', h: '\u{1D13C}', q: '\u{1D13D}', 8: '\u{1D13E}', 16: '\u{1D13F}' },
+};
+
+/** Noms accessibles des boutons de valeur. */
+const LABELS = {
+  note: { w: 'Ronde', h: 'Blanche', q: 'Noire', 8: 'Croche', 16: 'Double croche' },
+  rest: { w: 'Pause', h: 'Demi-pause', q: 'Soupir', 8: 'Demi-soupir', 16: 'Quart de soupir' },
+};
+
+/**
+ * Affiche ou cache la palette de portée.
+ * @param {boolean} on
+ */
+export function showStaffPalette(on) {
+  if (!on) {
+    closeChord();
+    barBar.hidden = true;
+  }
+  pal.hidden = !on;
+  if (on) updateStaffPalette();
+}
+
+/**
+ * Valeurs que la palette doit montrer : celles de la note sélectionnée (mode
+ * Modifier ; une note coupée par une barre montre sa valeur entière), sinon
+ * les réglages de saisie.
+ * @param {module:model~StaffBlock} b
+ * @returns {{sel: ?Object, d: string, dot: boolean, rest: boolean, acc: ?number, tup: boolean, tie: boolean}}
+ */
+function shownValues(b) {
+  const inp = state.input;
+  const sel =
+    state.mode === 'edit' &amp;&amp; state.sel != null &amp;&amp; b.items[state.sel]
+      ? { ...b.items[state.sel], ...logicalValue(b, state.sel) }
+      : null;
+  if (!sel) return { sel, d: inp.d, dot: inp.dot, rest: inp.rest, acc: inp.acc, tup: inp.tup, tie: inp.tie };
+  return {
+    sel,
+    d: sel.d,
+    dot: !!sel.dot,
+    rest: !!sel.r,
+    acc: sel.a ?? null,
+    tup: !!sel.tup,
+    tie: !!b.items[chainEnd(b.items, state.sel)].tie &amp;&amp; !b.items[chainEnd(b.items, state.sel)].auto,
+  };
+}
+
+/**
+ * Message d'aide, du plus spécifique au plus général.
+ * @param {module:model~StaffBlock} b
+ * @param {ReturnType&lt;shownValues>} v
+ * @returns {string}
+ */
+function helpText(b, v) {
+  if (staffUi.notice) return staffUi.notice;
+  const inp = state.input;
+  const rh = b.clef === 'rhythm';
+  const last = b.items[b.items.length - 1];
+  if (v.sel) {
+    if (v.sel.r) return 'Silence sélectionné';
+    if (rh) return 'Note sélectionnée';
+    return pitchName(b.clef, v.sel.s, v.sel.a, b.ks) + ' · touche plus haut ou plus bas pour la déplacer';
+  }
+  if (state.mode === 'edit') return 'Touche une note pour la modifier';
+  if (state.cursor != null) return `Insertion avant la note ${state.cursor + 1} · touche la zone bleue`;
+  if (last &amp;&amp; last.bar === 'final') return 'Motif terminé · retire la barre de fin pour continuer';
+  if (inp.tie) return 'Liaison · la prochaine note prolonge la précédente';
+  if (inp.rs) return 'La prochaine note ouvrira une reprise';
+  if (v.rest) return 'Mode silence (' + LABELS.rest[v.d].toLowerCase() + ') · touche la zone bleue';
+  if (inp.tup) return 'Mode triolet · touche la zone bleue';
+  return rh ? 'Touche la zone bleue pour ajouter' : 'Touche la portée dans la zone bleue pour ajouter';
+}
+
+/**
+ * Met la palette en accord avec le mode, la sélection ou les réglages de
+ * saisie : boutons enfoncés, glyphes (note ou silence), message d'aide.
+ */
+function updateStaffPalette() {
+  const a = activeStaff();
+  if (!a) return;
+  const { b } = a;
+  const editing = state.mode === 'edit';
+  const v = shownValues(b);
+  const kind = v.rest ? 'rest' : 'note';
+
+  pal.querySelectorAll('[data-mode]').forEach((x) => {
+    x.setAttribute('aria-checked', String(/** @type {HTMLElement} */ (x).dataset.mode === state.mode));
+  });
+  pal
+    .querySelector('[data-act=del]')
+    .setAttribute(
+      'aria-label',
+      editing ? 'Effacer la note sélectionnée' : 'Effacer la note avant le curseur',
+    );
+  pal.querySelectorAll('[data-dur]').forEach((x) => {
+    const k = /** @type {HTMLElement} */ (x).dataset.dur;
+    x.setAttribute('aria-pressed', String(k === v.d));
+    x.textContent = GLYPHS[kind][k];
+    x.setAttribute('aria-label', LABELS[kind][k]);
+    x.classList.toggle('restmode', v.rest);
+  });
+  const press = (sel, on) => pal.querySelector(sel).setAttribute('aria-pressed', String(on));
+  press('[data-act=dot]', v.dot);
+  press('[data-act=rest]', v.rest);
+  press('[data-act=tup]', v.tup);
+  press('[data-act=tie]', v.tie);
+  press('[data-act=bar]', !barBar.hidden);
+  pal.querySelectorAll('[data-acc]').forEach((x) => {
+    /** @type {HTMLElement} */ (x).hidden = b.clef === 'rhythm';
+    x.setAttribute('aria-pressed', String(v.acc != null &amp;&amp; String(v.acc) === x.dataset.acc));
+  });
+  syncBarMenu(b, v.sel);
+  document.getElementById('palInfo').textContent = helpText(b, v);
+  syncPaletteSpace();
+}
+
+hooks.refreshPalette = updateStaffPalette;
+
+// ---------- Actions ----------
+
+/**
+ * Mode Modifier : change la durée de la note sélectionnée, en gardant la
+ * suite à sa place ({@link module:measure-fit.resizeEvent|resizeEvent}).
+ * @param {function({d: string, dot: boolean, tup: boolean}): {d: string, dot: boolean, tup: boolean}} change
+ * @returns {boolean} `false` hors mode Modifier ou sans sélection.
+ */
+function resizeSel(change) {
+  if (state.mode !== 'edit') return false;
+  const a = activeStaff();
+  if (!a || state.sel == null || !a.b.items[state.sel]) return false;
+  const { n, b } = a;
+  const value = change(logicalValue(b, state.sel));
+  const res = resizeEvent(b.items, b.time, state.sel, value);
+  if (value.tup &amp;&amp; res.tupCross.has(res.index)) {
+    flash('Un triolet ne peut pas passer la barre de mesure');
+    return true;
+  }
+  pushSnapshot(n);
+  b.items = res.items;
+  state.sel = res.index;
+  touch(n);
+  hooks.redraw(b.id);
+  audio.previewItem(b, state.sel);
+  return true;
+}
+
+/**
+ * Bascule un réglage de saisie (mode Écrire) puis rafraîchit la palette.
+ * @param {function(module:ui/state~InputSettings)} fn
+ */
+function setInput(fn) {
+  fn(state.input);
+  updateStaffPalette();
+}
+
+/**
+ * Liaison : en mode Modifier, sur la note sélectionnée (la note suivante
+ * prend sa hauteur et perd son altération) ; en mode Écrire, la prochaine
+ * note sera liée à celle qui précède le curseur.
+ * @param {module:model~StaffBlock} b
+ */
+function toggleTie(b) {
+  const done = withSel((first, blk) => {
+    // La liaison de l'utilisateur part de la fin de la note logique.
+    const it = blk.items[chainEnd(blk.items, state.sel)];
+    if (it.r || it.auto) return;
+    if (it.tie) {
+      delete it.tie;
+      return;
+    }
+    it.tie = true;
+    const next = blk.items[chainEnd(blk.items, state.sel) + 1];
+    if (next &amp;&amp; !next.r) {
+      next.s = it.s;
+      delete next.a;
+    }
+  });
+  if (done) audio.previewItem(b, state.sel);
+  else {
+    const prev = b.items[insertIndex(b) - 1];
+    if (prev &amp;&amp; !prev.r) setInput((inp) => (inp.tie = !inp.tie));
+  }
+}
+
+/**
+ * Note ⇄ silence (toute la note logique, tous ses morceaux).
+ * @param {module:model~StaffItem} it Premier morceau.
+ * @param {module:model~StaffBlock} blk
+ */
+function toggleRestOf(it, blk) {
+  const toNote = !!it.r;
+  for (let k = state.sel; k &lt;= chainEnd(blk.items, state.sel); k++) {
+    const p = blk.items[k];
+    if (toNote) {
+      delete p.r;
+      if (blk.clef !== 'rhythm') p.s = it.s ?? 4;
+      if (p.auto) p.tie = true;
+    } else {
+      p.r = true;
+      delete p.tie;
+      delete p.a;
+    }
+  }
+}
+
+/**
+ * ◀ ▶ : déplace le curseur (Écrire) ou la sélection (Modifier), d'une note
+ * logique à l'autre (jamais au milieu d'une note coupée).
+ * @param {module:model~StaffBlock} b
+ * @param {boolean} back
+ */
+function step(b, back) {
+  if (!b.items.length) return;
+  if (state.mode === 'write') {
+    const cur = insertIndex(b);
+    const c = back
+      ? cur > 0
+        ? chainStart(b.items, cur - 1)
+        : 0
+      : cur &lt; b.items.length
+        ? chainEnd(b.items, cur) + 1
+        : cur;
+    state.cursor = c >= b.items.length ? null : c;
+    hooks.redraw(b.id);
+    return;
+  }
+  if (state.sel == null) state.sel = chainStart(b.items, back ? b.items.length - 1 : 0);
+  else if (back) state.sel = chainStart(b.items, Math.max(0, state.sel - 1));
+  else {
+    const nx = chainEnd(b.items, state.sel) + 1;
+    if (nx &lt; b.items.length) state.sel = nx;
+  }
+  hooks.redraw(b.id);
+  audio.previewItem(b, state.sel);
+}
+
+/**
+ * ⌫ : en mode Écrire, efface la note juste avant le curseur ; en mode
+ * Modifier, la note sélectionnée (à défaut, la dernière). Une note coupée
+ * s'efface en entier.
+ * @param {module:model~Note} n
+ * @param {module:model~StaffBlock} b
+ */
+function erase(n, b) {
+  if (!b.items.length) return;
+  const write = state.mode === 'write';
+  const last = write
+    ? insertIndex(b) - 1
+    : state.sel != null
+      ? chainEnd(b.items, state.sel)
+      : b.items.length - 1;
+  if (last &lt; 0) return;
+  const i = chainStart(b.items, last);
+  pushSnapshot(n);
+  b.items.splice(i, last - i + 1);
+  if (write &amp;&amp; state.cursor != null) state.cursor = i;
+  // Une liaison qui menait à la note supprimée n'a plus de sens.
+  if (b.items[i - 1] &amp;&amp; b.items[i - 1].tie &amp;&amp; (!b.items[i] || b.items[i].r)) delete b.items[i - 1].tie;
+  if (state.sel != null)
+    state.sel = b.items.length ? chainStart(b.items, Math.min(i, b.items.length - 1)) : null;
+  if (state.cursor != null &amp;&amp; state.cursor >= b.items.length) state.cursor = null;
+  refit(b);
+  touch(n);
+  hooks.redraw(b.id);
+}
+
+/**
+ * Boutons `data-act` de la palette.
+ * @type {Object.&lt;string, function(module:model~Note, module:model~StaffBlock)>}
+ */
+const ACTIONS = {
+  bar: () => {
+    barBar.hidden = !barBar.hidden;
+    if (!barBar.hidden) closeChord();
+    updateStaffPalette();
+  },
+  dot: () => resizeSel((v) => ({ ...v, dot: !v.dot })) || setInput((inp) => (inp.dot = !inp.dot)),
+  tup: () => resizeSel((v) => ({ ...v, tup: !v.tup })) || setInput((inp) => (inp.tup = !inp.tup)),
+  tie: (n, b) => toggleTie(b),
+  rest: () => withSel(toggleRestOf) || setInput((inp) => (inp.rest = !inp.rest)),
+  prev: (n, b) => step(b, true),
+  next: (n, b) => step(b, false),
+  undo: () => undo(),
+  del: (n, b) => erase(n, b),
+  chord: (n, b) => b.items.length &amp;&amp; openChord(b),
+};
+
+/**
+ * Bouton de valeur (ronde… double croche).
+ * @param {string} d
+ */
+function onDuration(d) {
+  if (!resizeSel((v) => ({ ...v, d }))) setInput((inp) => (inp.d = /** @type {any} */ (d)));
+}
+
+/**
+ * Bouton d'altération (♭ ♮ ♯).
+ * @param {module:model~StaffBlock} b
+ * @param {number} a
+ */
+function onAccidental(b, a) {
+  const done = withSel((it) => {
+    if (it.r) return;
+    if (it.a === a) delete it.a;
+    else it.a = a;
+  });
+  if (done) audio.previewItem(b, state.sel);
+  else setInput((inp) => (inp.acc = inp.acc === a ? null : a));
+}
+
+// Câblage, une seule fois au chargement du module.
+pal.addEventListener('click', (e) => {
+  const btn = /** @type {HTMLElement} */ (e.target).closest('button');
+  const a = activeStaff();
+  if (!btn || !a) return;
+  if (btn.dataset.mode) setMode(/** @type {'write'|'edit'} */ (btn.dataset.mode));
+  else if (btn.dataset.bar) applyBar(btn.dataset.bar);
+  else if (btn.dataset.dur) onDuration(btn.dataset.dur);
+  else if (btn.hasAttribute('data-acc')) onAccidental(a.b, Number(btn.dataset.acc));
+  else if (ACTIONS[btn.dataset.act]) ACTIONS[btn.dataset.act](a.n, a.b);
+});
+document.getElementById('palDone').onclick = () => setActive(null);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

@@ -6,7 +6,7 @@
  *
  * C'est une fonction pure : même entrée, même sortie, sans DOM. Le rendu SVG
  * ({@link module:render-staff|render-staff}) **et** le hit-testing (le toucher de
- * l'utilisateur, dans {@link module:ui/staff-ui|ui/staff-ui}) appellent tous deux
+ * l'utilisateur, dans {@link module:ui/staff/input|ui/staff/input}) appellent tous deux
  * {@link module:layout.layout|layout} avec les mêmes paramètres : ils sont donc
  * cohérents par construction.
  *
@@ -133,7 +133,7 @@ function systemStart(rh, isFirst, ksw = 0) {
  * @param {module:model~StaffBlock} b
  * @returns {number}
  */
-export function keySigWidth(b) {
+function keySigWidth(b) {
   const n = b.clef === 'rhythm' ? 0 : Math.abs(b.ks || 0);
   return n ? n * KEY_ACC_W + 4 : 0;
 }

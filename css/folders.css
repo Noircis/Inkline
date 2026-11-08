@@ -1,0 +1,356 @@
+/* Inkline · Dossiers, recherche et tri (2.0). */
+
+/* 10. Dossiers, recherche et tri (2.0) */
+.fc-red {
+  --fc: var(--fc-red);
+}
+.fc-orange {
+  --fc: var(--fc-orange);
+}
+.fc-yellow {
+  --fc: var(--fc-yellow);
+}
+.fc-green {
+  --fc: var(--fc-green);
+}
+.fc-teal {
+  --fc: var(--fc-teal);
+}
+.fc-blue {
+  --fc: var(--fc-blue);
+}
+.fc-purple {
+  --fc: var(--fc-purple);
+}
+.fc-gray {
+  --fc: var(--fc-gray);
+}
+.fdot {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--fc, var(--line));
+}
+.fdot.none {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Recherche */
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+.search-ico {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  color: var(--muted);
+  pointer-events: none;
+}
+.search input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 40px 8px 38px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.search input::-webkit-search-cancel-button {
+  display: none;
+}
+.search input::placeholder {
+  color: var(--muted);
+}
+.search-clear {
+  position: absolute;
+  right: 4px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 22px;
+  line-height: 1;
+}
+/* Barre de dossiers : défile horizontalement, déborde jusqu'aux bords de l'écran. */
+.chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 10px -16px 0;
+  padding: 2px 16px 4px;
+  scroll-padding-inline: 16px;
+  transition: opacity 0.15s;
+}
+.chips::-webkit-scrollbar {
+  display: none;
+}
+.chips.dim {
+  opacity: 0.45;
+}
+.chips .chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  max-width: 70vw;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chips .chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chips .chip-n {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.chips .chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.chips .chip[aria-pressed='true'] .chip-n {
+  color: inherit;
+  opacity: 0.7;
+}
+.chips .chip[aria-pressed='true'] .fdot {
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.chips .chip-add {
+  color: var(--accent);
+  border-style: dashed;
+  font-weight: 600;
+}
+/* Ligne au-dessus de la liste : contexte, Modifier, tri */
+.listbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  min-height: 40px;
+}
+.listbar .grow {
+  flex: 1;
+}
+.listbar-lbl {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.btn.small {
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--accent);
+}
+.sort select {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 2px;
+  max-width: 48vw;
+}
+.empty-mini {
+  margin-top: 6px;
+  padding: 22px 16px;
+  text-align: center;
+  color: var(--muted);
+  border: 1px dashed var(--rule);
+  border-radius: 10px;
+}
+.empty-mini p {
+  margin: 0 0 10px;
+}
+.empty-mini .hint {
+  font-size: 13px;
+}
+/* Étiquettes de dossier et épingle dans la liste */
+.ftag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  max-width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.ftag .fdot {
+  width: 8px;
+  height: 8px;
+}
+.row-sub .ftag {
+  margin-right: 6px;
+}
+.pin {
+  display: inline-flex;
+  vertical-align: -2px;
+  margin-right: 5px;
+  color: var(--sel);
+}
+.pin svg {
+  width: 14px;
+  height: 14px;
+}
+/* Écran note : dossier et épingle */
+.note-folder {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 6px;
+  padding: 2px 4px 2px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.note-folder select {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 2px;
+  max-width: 60vw;
+}
+.pin-btn {
+  color: var(--muted);
+}
+.pin-btn[aria-pressed='true'] {
+  color: var(--sel);
+  border-color: var(--sel);
+}
+/* Options : lignes de dossier */
+.opt-row .opt-folder {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+.opt-row .opt-folder > span:last-child {
+  display: flex;
+  flex-direction: column;
+}
+/* Éditeur de dossier (panneau qui monte du bas) */
+.sheet-back {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.35);
+  animation: sheet-fade 0.15s ease-out;
+}
+.sheet {
+  width: 100%;
+  max-width: 720px;
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+  padding: 18px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -6px 24px rgb(0 0 0 / 0.18);
+  animation: sheet-up 0.2s ease-out;
+}
+.sheet h2 {
+  margin: 0 0 12px;
+  font-family: var(--f-display);
+  font-size: 19px;
+}
+.fs-lbl {
+  display: block;
+  margin: 10px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.sheet input[type='text'] {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+  max-width: 400px;
+}
+.swatch {
+  aspect-ratio: 1;
+  min-width: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--fc);
+}
+.swatch[aria-checked='true'] {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--fc);
+}
+.sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+.sheet-actions .grow {
+  flex: 1;
+}
+.fs-msg {
+  margin: 8px 0 0;
+  min-height: 1em;
+  font-size: 13px;
+  color: var(--danger);
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(30%);
+    opacity: 0;
+  }
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet-back {
+    animation: none;
+  }
+}

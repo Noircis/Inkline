@@ -1,0 +1,106 @@
+/* Inkline · Roue crantée et écran Options. */
+
+/* 8. Accueil : roue crantée, et écran Options */
+.icon-btn {
+  position: relative;
+  padding: 8px 10px;
+  color: var(--ink);
+}
+.icon-btn .dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--sel);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.top-title {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 18px;
+}
+.opt {
+  margin-top: 14px;
+}
+.opt .eyebrow {
+  margin: 0 0 6px 2px;
+}
+.opt-group {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.opt-pad {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+}
+.opt-row.static {
+  cursor: default;
+}
+.opt-row + .opt-row {
+  border-top: 1px solid var(--rule);
+} /* séparateur entre deux lignes consécutives */
+.opt-row span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.opt-row small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.opt-chev {
+  font-size: 24px;
+  line-height: 1;
+  color: var(--line);
+}
+.opt-note {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--rule);
+}
+.opt-note.due {
+  color: var(--sel);
+  font-weight: 600;
+}
+.opt-pad textarea {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 13px;
+  padding: 6px 8px;
+  min-height: 3.2em;
+  width: 100%;
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--ink);
+}
+.opt .status {
+  margin: 6px 2px 0;
+}

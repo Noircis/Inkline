@@ -22,7 +22,7 @@
  *  ├─ ui/note ─────── export ── pdf
  *  ├─ ui/options ──── ireal
  *  ├─ ui/training ─── placements
- *  ├─ ui/staff-ui ─── render-staff ── layout ── rhythm ── pitch ── model ── util
+ *  ├─ ui/staff/* ──── render-staff ── layout ── rhythm ── pitch ── model ── util
  *  ├─ ui/grid-ui ──── grid ── chords
  *  │
  *  │  socle commun à tous les écrans (n'importe aucun écran) :
@@ -36,7 +36,7 @@
  *  └─ history
  * ```
  *
- * Les écrans (`home`, `note`, `options`) et les blocs (`staff-ui`,
+ * Les écrans (`home`, `note`, `options`) et les blocs (`ui/staff`,
  * `grid-ui`) **s'enregistrent** auprès de `ui/nav` et `ui/blocks` au
  * chargement : la navigation les appelle par leur nom, sans les importer.
  * Le graphe d'imports est ainsi sans cycle. C'est pourquoi `main` importe
@@ -49,7 +49,7 @@
 import { state, app } from './ui/state.js';
 import { loadAll, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
 import { renderScreen, onHistoryBack } from './ui/nav.js';
-import { redrawStaff } from './ui/staff-ui.js';
+import { redrawStaff } from './ui/staff/index.js';
 // Imports pour leur effet : chaque module s'enregistre auprès de ui/nav ou ui/blocks.
 import './ui/grid-ui.js';
 import './ui/home.js';

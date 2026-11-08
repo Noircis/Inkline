@@ -27,14 +27,25 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-2.6.1';
+const CACHE = 'inkline-2.7.0';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/app.css',
+  './css/base.css',
+  './css/list.css',
+  './css/note.css',
+  './css/staff.css',
+  './css/grid.css',
+  './css/share.css',
+  './css/options.css',
+  './css/list-views.css',
+  './css/folders.css',
+  './css/fold.css',
+  './css/training.css',
+  './css/staff-modes.css',
   './css/fonts.css',
   './fonts/bricolage-grotesque-latin-600-normal.woff2',
   './fonts/bricolage-grotesque-latin-700-normal.woff2',
@@ -81,7 +92,13 @@ const CORE = [
   './js/ui/icons.js',
   './js/ui/fold.js',
   './js/ui/training.js',
-  './js/ui/staff-ui.js',
+  './js/ui/staff/index.js',
+  './js/ui/staff/shared.js',
+  './js/ui/staff/view.js',
+  './js/ui/staff/input.js',
+  './js/ui/staff/palette.js',
+  './js/ui/staff/bars.js',
+  './js/ui/staff/chord.js',
   './js/ui/grid-ui.js',
   './js/ui/options.js',
   './js/ui/list-view.js',

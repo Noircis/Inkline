@@ -1,0 +1,40 @@
+# Intégration continue : à chaque push et pull request, GitHub vérifie le
+# projet (formatage, analyse, tests unitaires, tests d'interface). Le résultat
+# s'affiche à côté de chaque commit : coche verte ou croix rouge.
+name: Vérifications
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Dépendances de développement
+        run: npm ci
+
+      - name: Formatage, analyse, tests unitaires
+        run: npm run check
+
+      - name: Navigateur pour les tests d'interface
+        run: npx playwright install --with-deps chromium
+
+      - name: Tests d'interface
+        run: npm run test:e2e
+
+      - name: Rapport en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-tests-interface
+          path: test-results/
+          retention-days: 7

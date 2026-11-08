@@ -8,7 +8,7 @@
  * gestionnaires d'événements sont branchés sur les éléments créés. Les blocs
  * texte sont gérés ici ; les blocs portée et grille sont délégués, via le
  * registre de {@link module:ui/blocks|ui/blocks}, à
- * {@link module:ui/staff-ui|ui/staff-ui} et {@link module:ui/grid-ui|ui/grid-ui}.
+ * {@link module:ui/staff/index|ui/staff} et {@link module:ui/grid-ui|ui/grid-ui}.
  */
 
 import { state, app, curNote, touch, saveArrangement } from './state.js';

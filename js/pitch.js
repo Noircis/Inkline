@@ -48,10 +48,10 @@ const SEMITONES = [0, 2, 4, 5, 7, 9, 11];
 const CLEF_BASE = { treble: { L: 2, O: 4 }, bass: { L: 4, O: 2 } };
 
 /** Degrés recevant un dièse, dans l'ordre de l'armure : fa do sol ré la mi si. */
-export const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6];
+const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6];
 
 /** Degrés recevant un bémol, dans l'ordre de l'armure : si mi la ré sol do fa. */
-export const FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3];
+const FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3];
 
 /**
  * Degré de la gamme (0 = do … 6 = si) d'une position de portée.
@@ -59,7 +59,7 @@ export const FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3];
  * @param {number} s
  * @returns {number}
  */
-export function degreeOf(clef, s) {
+function degreeOf(clef, s) {
   const b = CLEF_BASE[clef] || CLEF_BASE.treble;
   return mod(b.L + s, 7);
 }

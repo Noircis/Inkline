@@ -2,6 +2,10 @@
 //
 //   npm run dev        puis ouvrir http://localhost:5500/
 //
+// Avec --static, il sert l'appli telle qu'en production (service worker
+// compris, sans rechargement automatique) : c'est le mode utilisé par les
+// tests d'interface (npm run test:e2e). --port=NNNN change le port.
+//
 // Pourquoi pas l'extension « Live Server » ? Elle injecte un script *dans* la
 // page (script « inline »), que la Content Security Policy d'Inkline bloque à
 // juste titre (script-src 'self'). Ici, on injecte un script *externe*
@@ -19,7 +23,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PORT = Number(process.env.PORT) || 5500;
+const args = process.argv.slice(2);
+const STATIC = args.includes('--static');
+const portArg = args.find((a) => a.startsWith('--port='));
+const PORT = Number(portArg ? portArg.slice(7) : process.env.PORT) || 5500;
 const IGNORED = ['node_modules', '.git', 'docs', 'tests', '.vscode'];
 
 const TYPES = {
@@ -50,22 +57,22 @@ const clients = new Set();
 
 const server = http.createServer((req, res) => {
   const url = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  if (url === '/__dev/events') {
+  if (!STATIC && url === '/__dev/events') {
     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' });
     res.write(': connecté\n\n');
     clients.add(res);
     req.on('close', () => clients.delete(res));
     return;
   }
-  if (url === '/__dev/reload.js') return send(res, 200, TYPES['.js'], RELOAD_JS);
-  if (url === '/sw.js') return send(res, 200, TYPES['.js'], NO_SW);
+  if (!STATIC && url === '/__dev/reload.js') return send(res, 200, TYPES['.js'], RELOAD_JS);
+  if (!STATIC && url === '/sw.js') return send(res, 200, TYPES['.js'], NO_SW);
 
   const file = path.join(ROOT, url.endsWith('/') ? url + 'index.html' : url);
   if (!file.startsWith(ROOT)) return send(res, 403, 'text/plain', 'Interdit');
   fs.readFile(file, (err, data) => {
     if (err) return send(res, 404, 'text/plain; charset=utf-8', 'Introuvable : ' + url);
     const type = TYPES[path.extname(file)] || 'application/octet-stream';
-    if (type.startsWith('text/html'))
+    if (!STATIC && type.startsWith('text/html'))
       data = data.toString().replace('</body>', '<script src="/__dev/reload.js"></script></body>');
     send(res, 200, type, data);
   });
@@ -78,16 +85,20 @@ function send(res, status, type, body) {
 
 // Surveille les fichiers ; plusieurs événements rapprochés = un seul rechargement.
 let timer = null;
-fs.watch(ROOT, { recursive: true }, (event, name) => {
-  if (!name || IGNORED.some((d) => name.split(path.sep)[0] === d)) return;
-  clearTimeout(timer);
-  timer = setTimeout(() => {
-    console.log('↻ ' + name);
-    clients.forEach((c) => c.write('data: reload\n\n'));
-  }, 120);
-});
+if (!STATIC)
+  fs.watch(ROOT, { recursive: true }, (event, name) => {
+    if (!name || IGNORED.some((d) => name.split(path.sep)[0] === d)) return;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      console.log('↻ ' + name);
+      clients.forEach((c) => c.write('data: reload\n\n'));
+    }, 120);
+  });
 
 server.listen(PORT, () => {
-  console.log(`Inkline en développement : http://localhost:${PORT}/`);
-  console.log('Chaque enregistrement recharge la page. Ctrl+C pour arrêter.');
+  if (STATIC) console.log(`Inkline (mode statique) : http://localhost:${PORT}/`);
+  else {
+    console.log(`Inkline en développement : http://localhost:${PORT}/`);
+    console.log('Chaque enregistrement recharge la page. Ctrl+C pour arrêter.');
+  }
 });

@@ -7,15 +7,17 @@ Application web progressive (PWA) **sans framework ni étape de build** : des mo
 ## Démarrage
 
 ```bash
-npm install        # outils de développement uniquement (JSDoc, Prettier, ESLint, fake-indexeddb)
-npm test           # tests unitaires (node:test, aucune dépendance)
+npm install        # outils de développement uniquement (JSDoc, Prettier, ESLint, Playwright…)
+npm test           # tests unitaires (node:test)
+npm run test:e2e   # tests d'interface dans un vrai navigateur (Playwright)
 npm run lint       # analyse du code (ESLint)
 npm run format     # formatage automatique (Prettier)
 npm run check      # format + lint + tests : à lancer avant chaque commit
 npm run docs       # génère la documentation dans docs/
 npm run dev        # aperçu en direct sur http://localhost:5500 (rechargement automatique)
-npm run serve      # sert l'app sur http://localhost:8080
 ```
+
+La première fois sur un ordinateur, avant `npm run test:e2e` : `npx playwright install chromium` (télécharge le navigateur des tests).
 
 L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur statique HTTPS convient (GitHub Pages, par exemple).
 
@@ -31,6 +33,12 @@ Le projet est réglé pour **Visual Studio Code** (dossier `.vscode/`, partagé 
 - Pour simuler un téléphone : outils de développement de Chrome (F12) › icône téléphone/tablette.
 - Pour déboguer sur un vrai téléphone Android (débogage USB activé) : `chrome://inspect` dans Chrome sur l'ordinateur.
 
+## Tests et intégration continue
+
+- **Tests unitaires** (`tests/*.test.js`, `npm test`) : les modules purs (rythme, mise en page, mise en mesure, accords, iReal, stockage…), dont un test aléatoire sur la mise en mesure.
+- **Tests d'interface** (`tests/e2e/*.spec.js`, `npm run test:e2e`) : Playwright pilote un vrai Chromium au format téléphone et rejoue les parcours importants (saisie sur une portée, modes, mise en mesure, dossiers, recherche, sauvegarde, blocs réduits, partage, entraînement, hors ligne). Les coordonnées des touchers sont calculées par le moteur de mise en page de l'appli : les tests ne dépendent pas des pixels. Le serveur est lancé tout seul (`scripts/dev.mjs --static`).
+- **Intégration continue** (`.github/workflows/check.yml`) : à chaque push, GitHub lance `npm run check` puis les tests d'interface. Résultat dans l'onglet **Actions** du dépôt, et en coche verte ou croix rouge à côté de chaque commit. En cas d'échec, les captures et traces sont jointes au rapport.
+
 ## Conventions de code
 
 - **Formatage** : Prettier (`.prettierrc.json`), lignes de 110 caractères au plus. Ne pas formater à la main : `npm run format`.
@@ -43,7 +51,7 @@ Le projet est réglé pour **Visual Studio Code** (dossier `.vscode/`, partagé 
 
 ```
 index.html            balisage des palettes, CSP, chargement de js/main.js
-css/app.css           feuille de style (thème clair/sombre par jetons)
+css/*.css             feuilles de style par zone (ordre et thème : voir css/base.css)
 css/fonts.css         déclaration des polices hébergées
 fonts/                polices woff2 (licence SIL OFL)
 sw.js                 service worker (hors ligne)
@@ -83,7 +91,8 @@ js/
     folder-sheet.js   éditeur de dossier (panneau du bas)
     fold.js           blocs longs réduits : bouton, fondu, toucher
     training.js       écrans Entraînement et Placements
-    staff-ui.js       bloc portée : toucher, palette
+    staff/            bloc portée : index (enregistrement), view (en-tête, dessin),
+                      input (toucher, modes), palette, bars, chord, shared (socle commun)
     grid-ui.js        bloc grille : saisie, palette, panneau iReal
     options.js        écran Options : affichage, dossiers, sauvegarde, import, iReal, à propos
     list-view.js      affichages de la liste : Cartes, Mosaïque, Liste
@@ -98,7 +107,7 @@ Le code est séparé en deux couches :
 - **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `measure-fit`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale et d'organisation.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`) : branche la logique sur le navigateur.
 
-Les écrans (`ui/home`, `ui/note`, `ui/options`) et les blocs musicaux (`ui/staff-ui`, `ui/grid-ui`) **s'enregistrent** au chargement auprès de deux registres, `ui/nav` et `ui/blocks`, qui les appellent ensuite par leur nom. Ces registres n'importent aucun écran : le graphe d'imports est sans cycle (voir le module `main`).
+Les écrans (`ui/home`, `ui/note`, `ui/options`) et les blocs musicaux (`ui/staff`, `ui/grid-ui`) **s'enregistrent** au chargement auprès de deux registres, `ui/nav` et `ui/blocks`, qui les appellent ensuite par leur nom. Ces registres n'importent aucun écran : le graphe d'imports est sans cycle (voir le module `main`).
 
 Le rendu suit un modèle _immediate mode_ : l'état est modifié, puis la partie concernée de l'écran est régénérée (template strings → `innerHTML`, SVG en chaîne). Pas de DOM virtuel ni de réactivité : à cette échelle, c'est le plus simple, et c'est assez rapide.
 

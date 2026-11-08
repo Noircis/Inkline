@@ -209,7 +209,7 @@ export function sanitizeNotes(r) {
  * @param {*} r
  * @returns {module:folders~Folder|null}
  */
-export function sanitizeFolder(r) {
+function sanitizeFolder(r) {
   if (!r || typeof r !== 'object') return null;
   const name = cleanFolderName(isStr(r.name) ? r.name : '');
   if (!name) return null;

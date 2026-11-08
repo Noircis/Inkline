@@ -1,0 +1,129 @@
+/* Inkline · Entraînement (2.3). */
+
+/* 12. Entraînement (2.3) */
+.nsel {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.nsel button {
+  min-height: 42px;
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.nsel button[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.seg-sm {
+  margin-bottom: 14px;
+}
+.seg-sm button {
+  min-height: 44px;
+  gap: 1px;
+}
+.seg button:disabled {
+  opacity: 0.45;
+}
+.seg button small {
+  font-size: 11px;
+  font-weight: 500;
+}
+.drill-bar {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+.drills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.drill {
+  padding: 10px 12px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.drill-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drill-n {
+  min-width: 22px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.drill-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+.drill-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.drill-row .tempo {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+  margin-right: 4px;
+}
+.drill-row .tempo .mus {
+  font-family: var(--f-music);
+  font-size: 18px;
+}
+.drill-row input {
+  width: 64px;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+}
+.drill-row .chip {
+  min-height: 36px;
+  padding: 4px 12px;
+}
+.drill-lbl {
+  font-size: 13px;
+  color: var(--muted);
+  margin-right: 2px;
+}
+.beats {
+  display: flex;
+  gap: 6px;
+}
+.beats button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+}
+.beats button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+}
+.drill-staff {
+  margin-top: 4px;
+}

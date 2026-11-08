@@ -53,7 +53,7 @@ export function normalize(s) {
  * @param {module:model~Note} note
  * @returns {string}
  */
-export function searchableText(note) {
+function searchableText(note) {
   const parts = [note.title];
   note.blocks.forEach((b) => {
     if (b.type === 'text') parts.push(b.text);

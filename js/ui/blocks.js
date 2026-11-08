@@ -13,7 +13,7 @@
  * ({@link module:ui/blocks.registerBlockKind|registerBlockKind}) avec trois
  * fonctions : construire l'élément, le redessiner, montrer/cacher la palette.
  * L'écran note et ce module les appellent par le type du bloc, sans importer
- * `staff-ui` ni `grid-ui` : pas d'import circulaire.
+ * `ui/staff` ni `grid-ui` : pas d'import circulaire.
  */
 
 import { state, app, curNote, blockById, touch } from './state.js';

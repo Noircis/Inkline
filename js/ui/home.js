@@ -48,7 +48,7 @@ const plural = (k, word) => `${k} ${word}${k > 1 ? 's' : ''}`;
  * ramène sur « Toutes ».
  * @returns {string}
  */
-export function currentSelection() {
+function currentSelection() {
   const f = getMeta().folder;
   if (f === UNFILED || (f && state.folders[f])) return f;
   return ALL;

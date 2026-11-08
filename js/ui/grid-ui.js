@@ -226,7 +226,7 @@ function bindMeasureSelection(n, b, el) {
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} el
  */
-export function gridBlockEl(n, b, el) {
+function gridBlockEl(n, b, el) {
   el.innerHTML = gridBlockHtml(b);
   bindGridSettings(n, b, el);
   bindIRealPanel(n, b, el);
@@ -269,7 +269,7 @@ function loadInput(b) {
  * place sur la première mesure vide (là où l'on veut écrire).
  * @param {boolean} on
  */
-export function showGridPalette(on) {
+function showGridPalette(on) {
   gpal.hidden = !on;
   if (!on) return;
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));

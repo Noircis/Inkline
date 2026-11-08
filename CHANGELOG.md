@@ -3,6 +3,32 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.7.0] - 2026-11-08
+
+Version de nettoyage : aucun changement visible. Vérifié : sorties des moteurs identiques, captures d'écran identiques au pixel près (18 écrans, clair et sombre) à la 2.6.1, exports PNG identiques.
+
+### Ajouté
+
+- **Tests d'interface dans le dépôt** (`tests/e2e/`, `npm run test:e2e`) : 17 parcours rejoués dans un vrai navigateur avec Playwright (saisie et modes, mise en mesure, armure, triolets, rechargement, migration, dossiers, recherche, tri, sauvegarde, blocs réduits, partage PNG / PDF / .inkline, entraînement et métronome, hors ligne).
+- **Intégration continue** (GitHub Actions) : `npm run check` et les tests d'interface à chaque push.
+- `scripts/dev.mjs --static` : sert l'appli telle qu'en production (utilisé par les tests).
+
+### Modifié
+
+- **Bloc portée découpé** : `ui/staff-ui.js` (839 lignes) devient le dossier `ui/staff/` : `index` (enregistrement), `view` (en-tête, dessin), `input` (toucher, modes), `palette`, `bars`, `chord`, `shared` (socle commun). Le graphe des modules reste sans cycle.
+- **Fonctions longues découpées** : écran Options (une fonction par section), éditeur de dossier, palette de portée (table d'actions), lecteur iReal (table de jetons), mise en mesure (`cutAtBars`, `valuesFor`, `piecesFrom`). Les deux derniers ont été comparés à la 2.6.1 sur des dizaines de milliers d'entrées aléatoires : sorties identiques.
+- **Feuilles de style par zone** : `css/app.css` (1 806 lignes) devient 12 fichiers chargés dans le même ordre (l'ordre est documenté dans `css/base.css`).
+- 14 exports qui ne servaient qu'à leur propre module sont redevenus privés.
+
+### Corrigé
+
+- Refus d'un triolet qui passerait la barre : l'état d'avant est maintenant restauré entièrement (une liaison retirée sur la note précédente revenait mal).
+- Le sous-menu des barres indique correctement la barre d'une note coupée par une barre de mesure.
+
+### Retiré
+
+- `npm run serve` (il demandait Python) : remplacé par `npm run dev`.
+
 ## [2.6.1] - 2026-11-08
 
 ### Corrigé

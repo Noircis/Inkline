@@ -19,7 +19,7 @@
  * Les morceaux créés par ce découpage sont marqués `auto: true` (« ce morceau
  * continue dans l'élément suivant ») ; pour une note, ils portent aussi
  * `tie: true`, ce qui suffit au dessin et à l'audio. Une suite de morceaux
- * `auto` forme une **note logique** ({@link module:measure-fit.eventsOf|eventsOf}).
+ * `auto` forme une **note logique** ({@link module:measure-fit~eventsOf|eventsOf}).
  * Les liaisons posées par l'utilisateur n'ont pas `auto` : on n'y touche jamais.
  *
  * Après chaque modification, {@link module:measure-fit.normalizeStaff|normalizeStaff}
@@ -155,7 +155,7 @@ export function decompose(start, len, allowDot, beat = 1, rest = false) {
  * @param {module:model~StaffItem[]} items
  * @returns {FitEvent[]}
  */
-export function eventsOf(items) {
+function eventsOf(items) {
   const out = [];
   for (let i = 0; i < items.length; ) {
     let j = i;
@@ -214,7 +214,87 @@ function baseProps(it, first) {
 }
 
 /**
+ * Découpe une durée aux barres de mesure.
+ * @param {number} pos Position de départ dans la mesure.
+ * @param {number} len Durée.
+ * @param {number} ML Capacité de la mesure.
+ * @returns {{segs: Array.<{start: number, len: number}>, end: number}} Segments, et
+ *   position dans la mesure après le dernier.
+ */
+function cutAtBars(pos, len, ML) {
+  const segs = [];
+  let p = pos;
+  let rem = len;
+  while (rem > EPS) {
+    const take = Math.min(rem, ML - p);
+    segs.push({ start: p, len: take });
+    p = snap(p + take);
+    rem = snap(rem - take);
+    if (p >= ML - EPS) p = 0;
+  }
+  return { segs, end: p };
+}
+
+/**
+ * Valeurs écrites d'une note logique découpée en segments : une valeur
+ * unique si elle tient dans un segment et s'écrit d'un seul signe, sinon les
+ * valeurs usuelles de chaque segment ({@link decompose}).
+ * @param {FitEvent} ev
+ * @param {Array.<{start: number, len: number}>} segs
+ * @param {{beat: number, compound: boolean}} ctx
+ * @returns {?Array.<{d: string, dot: boolean}>} `null` si un segment ne s'écrit pas.
+ */
+function valuesFor(ev, segs, ctx) {
+  const allowDot = !ev.rest || ctx.compound;
+  if (segs.length === 1) {
+    const one = singleValue(ev.len, allowDot);
+    if (one) return [one];
+  }
+  const vals = segs.map((sg) => decompose(sg.start, sg.len, allowDot, ctx.beat, ev.rest));
+  return vals.some((v) => !v) ? null : vals.flat();
+}
+
+/**
+ * Morceaux d'une note logique à partir de ses valeurs : liés entre eux
+ * (`auto`, et `tie` pour une note) ; altération, accord et début de reprise
+ * sur le premier ; liaison de l'utilisateur et barre sur le dernier.
+ * @param {FitEvent} ev
+ * @param {Array.<{d: string, dot: boolean}>} vals
+ * @returns {module:model~StaffItem[]}
+ */
+function piecesFrom(ev, vals) {
+  const first = ev.orig[0];
+  const last = ev.orig[ev.orig.length - 1];
+  return vals.map((v, k) => {
+    const piece = { ...baseProps(first, k === 0), d: v.d };
+    if (v.dot) piece.dot = true;
+    if (k < vals.length - 1) {
+      piece.auto = true;
+      if (!ev.rest) piece.tie = true;
+    } else {
+      if (last.tie && !last.auto && !ev.rest) piece.tie = true;
+      if (last.bar) piece.bar = last.bar;
+    }
+    return piece;
+  });
+}
+
+/**
  * Réécrit une suite de notes logiques en éléments, coupés aux barres.
+ *
+ * Pour chaque note logique :
+ * 1. un triolet, ou une note seule qui tient dans sa mesure, est **gardé tel
+ *    quel** (l'écriture de l'utilisateur est respectée) ;
+ * 2. sinon, elle est découpée aux barres ({@link cutAtBars}) et réécrite en
+ *    valeurs usuelles ({@link valuesFor}, {@link piecesFrom}) ;
+ * 3. si ce n'est pas possible (durée hors de la grille des doubles croches),
+ *    une note d'origine est gardée telle quelle ; un silence calculé est
+ *    écrit d'un bloc, sans coupure, plutôt que de perdre sa durée.
+ *
+ * La position dans la mesure suit les règles de
+ * {@link module:rhythm.segmentMeasures|segmentMeasures} (début de reprise et
+ * barre manuelle remettent le compteur à zéro).
+ *
  * @param {FitEvent[]} events
  * @param {string} time
  * @returns {{items: module:model~StaffItem[], starts: number[], tupCross: Set.<number>}}
@@ -223,95 +303,37 @@ function baseProps(it, first) {
  */
 function materialize(events, time) {
   const ML = mlen(time);
-  const beat = beatUnit(time);
-  const compound = time.endsWith('/8');
+  const ctx = { beat: beatUnit(time), compound: time.endsWith('/8') };
   const items = [];
   const starts = [];
   const tupCross = new Set();
   let pos = 0;
 
-  const keep = (ev) => {
-    ev.orig.forEach((it) => {
-      const i = items.length;
-      items.push({ ...it });
+  /** Ajoute des éléments tels quels, en suivant la position dans la mesure. */
+  const keep = (list) => {
+    list.forEach((it) => {
       const end = snap(pos + qlen(it));
-      if (it.tup && end > ML + EPS) tupCross.add(i);
+      if (it.tup && end > ML + EPS) tupCross.add(items.length);
+      items.push({ ...it });
       pos = it.bar || end >= ML - EPS ? 0 : end;
     });
   };
 
   events.forEach((ev) => {
-    const first = ev.orig[0];
-    const last = ev.orig[ev.orig.length - 1];
-    if (first.rs) pos = 0;
+    if (ev.orig[0].rs) pos = 0;
     starts.push(items.length);
-    if (ev.tup) {
-      keep(ev);
+    if (ev.tup) return keep(ev.orig);
+    const { segs, end } = cutAtBars(pos, ev.len, ML);
+    if (segs.length === 1 && ev.orig.length === 1 && !ev.gen) return keep(ev.orig);
+    const vals = valuesFor(ev, segs, ctx);
+    if (vals) {
+      items.push(...piecesFrom(ev, vals));
+      pos = ev.orig[ev.orig.length - 1].bar ? 0 : end;
       return;
     }
-    // 1. Découpage aux barres.
-    const segs = [];
-    let p = pos;
-    let rem = ev.len;
-    while (rem > EPS) {
-      const take = Math.min(rem, ML - p);
-      segs.push({ start: p, len: take });
-      p = snap(p + take);
-      rem = snap(rem - take);
-      if (p >= ML - EPS) p = 0;
-    }
-    // 2. Valeurs de chaque segment.
-    const allowDot = !ev.rest || compound;
-    let vals;
-    if (segs.length === 1 && ev.orig.length === 1 && !ev.gen) {
-      keep(ev); // ni coupée ni recollée : écrite telle que l'utilisateur l'a voulue
-      return;
-    }
-    if (segs.length === 1) {
-      const one = singleValue(ev.len, allowDot);
-      vals = [one ? [one] : decompose(segs[0].start, segs[0].len, allowDot, beat, ev.rest)];
-    } else {
-      vals = segs.map((sg) => decompose(sg.start, sg.len, allowDot, beat, ev.rest));
-    }
-    if (vals.some((v) => !v)) {
-      // Durée non exprimable. Une note d'origine est gardée telle quelle ; un
-      // silence calculé (compensation) n'a pas de morceaux d'origine fiables
-      // (ce n'est qu'un modèle) : on le réécrit ci-dessous.
-      if (!ev.gen) {
-        keep(ev);
-        return;
-      }
-      // Silence calculé qui tombe hors de la grille (après une double croche
-      // pointée, par exemple) : on l'écrit d'un bloc, sans le couper à la barre,
-      // plutôt que de perdre sa durée.
-      const whole = decompose(0, ev.len, allowDot, beat, ev.rest);
-      if (whole) {
-        ev.orig = whole.map((v, k) => {
-          const piece = { ...baseProps(first, k === 0), d: v.d };
-          if (v.dot) piece.dot = true;
-          if (k < whole.length - 1) piece.auto = true;
-          else if (last.bar) piece.bar = last.bar;
-          return piece;
-        });
-        keep(ev);
-      }
-      return;
-    }
-    // 3. Morceaux, liés entre eux.
-    const flat = vals.flat();
-    flat.forEach((v, k) => {
-      const piece = { ...baseProps(first, k === 0), d: v.d };
-      if (v.dot) piece.dot = true;
-      if (k < flat.length - 1) {
-        piece.auto = true;
-        if (!ev.rest) piece.tie = true;
-      } else {
-        if (last.tie && !last.auto && !ev.rest) piece.tie = true;
-        if (last.bar) piece.bar = last.bar;
-      }
-      items.push(piece);
-    });
-    pos = last.bar ? 0 : p;
+    if (!ev.gen) return keep(ev.orig);
+    const whole = decompose(0, ev.len, !ev.rest || ctx.compound, ctx.beat, ev.rest);
+    if (whole) keep(piecesFrom(ev, whole));
   });
   return { items, starts, tupCross };
 }

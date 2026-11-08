@@ -19,7 +19,12 @@ export default [
   },
   { files: ['sw.js'], languageOptions: { sourceType: 'script', globals: globals.serviceworker } },
   {
-    files: ['tests/**/*.js', 'scripts/**/*.mjs', 'eslint.config.js'],
+    files: ['tests/**/*.js', 'scripts/**/*.mjs', 'eslint.config.js', 'playwright.config.js'],
     languageOptions: { sourceType: 'module', globals: globals.node },
+  },
+  {
+    // Tests d'interface : du code Node qui fait exécuter du code dans la page.
+    files: ['tests/e2e/**/*.js'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 ];

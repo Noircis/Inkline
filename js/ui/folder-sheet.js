@@ -17,21 +17,13 @@ import { flushSave, saveFolders } from '../storage.js';
 import { confirmTap } from './common.js';
 
 /**
- * Ouvre l'éditeur.
- *
- * @param {module:folders~Folder|null} folder Dossier à modifier, ou `null` pour en créer un.
- * @param {function((module:folders~Folder|null))} [onDone] Appelé à la fermeture avec
- *   le dossier enregistré, ou `null` (annulé ou supprimé).
+ * HTML du panneau.
+ * @param {boolean} editing Modification (sinon création).
+ * @param {string} color Couleur cochée.
+ * @returns {string}
  */
-export function openFolderSheet(folder, onDone = () => {}) {
-  closeFolderSheet();
-  const editing = !!folder;
-  const color = editing ? folder.color : FOLDER_COLORS[(Object.keys(state.folders).length + 5) % 8].key;
-  const count = editing ? Object.values(state.notes).filter((n) => n.folder === folder.id).length : 0;
-  const back = document.createElement('div');
-  back.className = 'sheet-back';
-  back.id = 'folderSheet';
-  back.innerHTML = `<form class="sheet" role="dialog" aria-modal="true" aria-labelledby="fsTitle" novalidate>
+function sheetHtml(editing, color) {
+  return `<form class="sheet" role="dialog" aria-modal="true" aria-labelledby="fsTitle" novalidate>
     <h2 id="fsTitle">${editing ? 'Modifier le dossier' : 'Nouveau dossier'}</h2>
     <label class="fs-lbl" for="fsName">Nom</label>
     <input id="fsName" type="text" maxlength="${FOLDER_NAME_MAX}" autocomplete="off" placeholder="Harmonie, Répertoire, Cours de piano…">
@@ -48,14 +40,48 @@ export function openFolderSheet(folder, onDone = () => {}) {
     </div>
     <p class="fs-msg" id="fsMsg" role="status"></p>
   </form>`;
+}
+
+/**
+ * Branche la suppression en deux temps : les notes du dossier passent dans
+ * « Non classées », aucune n'est supprimée.
+ * @param {HTMLElement} back Fond du panneau.
+ * @param {module:folders~Folder} folder
+ * @param {function((module:folders~Folder|null))} close
+ */
+function bindDelete(back, folder, close) {
+  const del = /** @type {HTMLButtonElement} */ (back.querySelector('#fsDel'));
+  const count = Object.values(state.notes).filter((n) => n.folder === folder.id).length;
+  const armed = count ? `Supprimer (${count} note${count > 1 ? 's' : ''} → Non classées)` : 'Confirmer';
+  del.addEventListener('click', () =>
+    confirmTap(del, armed, () => {
+      deleteFolder(folder.id, state.notes, state.folders);
+      saveFolders(state.folders);
+      flushSave(state.notes);
+      close(null);
+    }),
+  );
+}
+
+/**
+ * Ouvre l'éditeur.
+ *
+ * @param {module:folders~Folder|null} folder Dossier à modifier, ou `null` pour en créer un.
+ * @param {function((module:folders~Folder|null))} [onDone] Appelé à la fermeture avec
+ *   le dossier enregistré, ou `null` (annulé ou supprimé).
+ */
+export function openFolderSheet(folder, onDone = () => {}) {
+  closeFolderSheet();
+  const editing = !!folder;
+  let picked = editing ? folder.color : FOLDER_COLORS[(Object.keys(state.folders).length + 5) % 8].key;
+  const back = document.createElement('div');
+  back.className = 'sheet-back';
+  back.id = 'folderSheet';
+  back.innerHTML = sheetHtml(editing, picked);
   app.appendChild(back);
 
-  const form = /** @type {HTMLFormElement} */ (back.querySelector('form'));
   const name = /** @type {HTMLInputElement} */ (back.querySelector('#fsName'));
-  const msg = back.querySelector('#fsMsg');
   name.value = editing ? folder.name : '';
-  let picked = color;
-
   const close = (result) => {
     back.remove();
     onDone(result);
@@ -70,12 +96,11 @@ export function openFolderSheet(folder, onDone = () => {}) {
       back.querySelectorAll('[data-color]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
     });
   });
-
-  form.addEventListener('submit', (e) => {
+  back.querySelector('form').addEventListener('submit', (e) => {
     e.preventDefault();
     const clean = cleanFolderName(name.value);
     if (!clean) {
-      msg.textContent = 'Donne un nom au dossier.';
+      back.querySelector('#fsMsg').textContent = 'Donne un nom au dossier.';
       name.focus();
       return;
     }
@@ -86,21 +111,7 @@ export function openFolderSheet(folder, onDone = () => {}) {
     saveFolders(state.folders);
     close(f);
   });
-
-  const del = /** @type {HTMLButtonElement} */ (back.querySelector('#fsDel'));
-  if (del)
-    del.addEventListener('click', () =>
-      confirmTap(
-        del,
-        count ? `Supprimer (${count} note${count > 1 ? 's' : ''} → Non classées)` : 'Confirmer',
-        () => {
-          deleteFolder(folder.id, state.notes, state.folders);
-          saveFolders(state.folders);
-          flushSave(state.notes);
-          close(null);
-        },
-      ),
-    );
+  if (editing) bindDelete(back, folder, close);
 
   // Sur la création, le clavier s'ouvre directement ; en modification, on
   // évite qu'il cache le panneau (on modifie souvent seulement la couleur).
@@ -108,7 +119,7 @@ export function openFolderSheet(folder, onDone = () => {}) {
 }
 
 /** Ferme l'éditeur s'il est ouvert (sans rappel). */
-export function closeFolderSheet() {
+function closeFolderSheet() {
   const el = document.getElementById('folderSheet');
   if (el) el.remove();
 }

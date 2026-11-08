@@ -1,0 +1,215 @@
+/* Inkline · Portées : dessin SVG et palettes. */
+
+/* 4. SVG des portées */
+svg .l {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+svg .bar {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+svg .f {
+  fill: var(--ink);
+}
+svg .s {
+  stroke: var(--ink);
+  fill: none;
+}
+svg .h {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+svg .t {
+  fill: var(--ink);
+  font-family: var(--f-display);
+  font-weight: 700;
+}
+svg .clef {
+  fill: var(--ink);
+  font-family: var(--f-music);
+}
+svg .chord {
+  fill: var(--ink);
+  font-family: var(--f-body);
+  font-weight: 600;
+  font-size: 14px;
+}
+svg .mnum {
+  fill: var(--muted);
+  font-size: 10px;
+  font-family: var(--f-body);
+}
+svg .cursor {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+svg .cursorbg {
+  fill: var(--accent-soft);
+}
+svg .it.sel .f,
+svg .it.sel .chord {
+  fill: var(--sel);
+}
+svg .it.sel .s {
+  stroke: var(--sel);
+}
+svg .it.sel .h {
+  stroke: var(--sel);
+}
+svg .it.play .f,
+svg .it.play .chord {
+  fill: var(--accent);
+}
+svg .it.play .s,
+svg .it.play .h {
+  stroke: var(--accent);
+}
+svg .selbg {
+  fill: var(--sel);
+  opacity: 0.14;
+}
+svg .tup {
+  fill: var(--ink);
+  font-family: var(--f-body);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* 5. Palettes */
+#palette,
+#gpal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+  box-shadow: 0 -6px 20px rgba(10, 15, 30, 0.12);
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(10px, env(safe-area-inset-left, 0px));
+  padding-right: max(10px, env(safe-area-inset-right, 0px));
+}
+.pal-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+}
+.pal-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  min-height: 32px;
+}
+.pal-info span {
+  flex: 1;
+  min-width: 0;
+}
+.pal-info .icon {
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 8px;
+  min-width: 40px;
+  min-height: 32px;
+  font-size: 18px;
+  padding: 0;
+}
+.pal-info button {
+  border: 0;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0 14px;
+  min-height: 32px;
+}
+.pal-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 5px;
+}
+.pal-row button {
+  min-height: 46px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 15px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.pal-row button.mus {
+  font-family: var(--f-music);
+  font-size: 26px;
+  line-height: 1;
+}
+.pal-row button.restmode {
+  color: var(--accent);
+}
+.pal-row button.restmode[aria-pressed='true'] {
+  color: var(--surface);
+}
+.pal-row button.accb {
+  font-size: 22px;
+}
+.pal-row button.tupb {
+  font-family: var(--f-body);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 18px;
+}
+.pal-row button.tieb svg {
+  display: block;
+}
+.pal-row button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+.pal-bars {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+.pal-bars button {
+  min-height: 52px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+  min-width: 0;
+  line-height: 1.1;
+}
+.pal-bars button .mus {
+  font-family: var(--f-music);
+  font-size: 24px;
+  line-height: 1;
+}
+.pal-bars button[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+.pal-chord {
+  display: flex;
+  gap: 6px;
+}

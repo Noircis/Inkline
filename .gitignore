@@ -1,4 +1,6 @@
 node_modules/
+test-results/
+playwright-report/
 
 # VS Code : on partage les réglages du projet et les extensions conseillées,
 # pas le reste (état personnel de l'éditeur).

@@ -137,7 +137,7 @@ export function openNote(id, focusTitle) {
 /**
  * Affiche l'accueil (sans toucher à l'historique).
  */
-export function showList() {
+function showList() {
   state.view = { name: 'list', id: null };
   renderScreen();
   window.scrollTo(0, 0);

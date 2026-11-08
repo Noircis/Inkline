@@ -29,7 +29,7 @@
  */
 
 /** Nom de la base. */
-export const DB_NAME = 'inkline';
+const DB_NAME = 'inkline';
 
 /** Version du schéma (magasins). À augmenter pour toute modification de structure. */
 const DB_VERSION = 1;

@@ -130,24 +130,28 @@ function foldersHtml() {
 }
 
 /**
- * Dessine l'écran Options.
+ * HTML de la section Affichage.
+ * @param {module:storage~Meta} meta
+ * @returns {string}
  */
-function renderOptions() {
-  const meta = getMeta();
+function displayHtml(meta) {
   const current = meta.listView || 'cards';
-  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><h1 class="top-title">Options</h1></header>
-  <section class="opt">
+  return `<section class="opt">
     <h2 class="eyebrow" id="viewLbl">Affichage des notes</h2>
     <div class="seg" role="radiogroup" aria-labelledby="viewLbl">${LIST_VIEWS.map((v) => `<button type="button" role="radio" data-view="${v.key}" aria-checked="${v.key === current}">${VIEW_ICONS[v.key]}<span>${v.label}</span></button>`).join('')}</div>
-  <div class="opt-group opt-gap">
+    <div class="opt-group opt-gap">
       <label class="opt-row" for="optFold"><span>Réduire automatiquement les blocs longs<small>Portées, rythmes et grilles de ${FOLD_MIN_LINES} lignes ou plus : seules les ${FOLD_PREVIEW_LINES} premières sont affichées</small></span><input type="checkbox" class="switch" id="optFold"${meta.autoFold ? ' checked' : ''}></label>
     </div>
-  </section>
-  <section class="opt">
-    <h2 class="eyebrow">Dossiers</h2>
-    <div class="opt-group" id="optFolders">${foldersHtml()}</div>
-  </section>
-  <section class="opt">
+  </section>`;
+}
+
+/**
+ * HTML de la section Carnet (sauvegarde, import).
+ * @param {module:storage~Meta} meta
+ * @returns {string}
+ */
+function notebookHtml(meta) {
+  return `<section class="opt">
     <h2 class="eyebrow">Carnet</h2>
     <div class="opt-group">
       <button class="opt-row" id="optExport" type="button"><span>Exporter le carnet<small>Sauvegarde des notes et des dossiers (.json)</small></span>${CHEVRON}</button>
@@ -156,8 +160,15 @@ function renderOptions() {
       <p class="opt-note${backupDue() ? ' due' : ''}" id="optLast">${esc(lastExportLabel(meta.lastExport))}</p>
     </div>
     <div class="status" id="optMsg" role="status"></div>
-  </section>
-  <section class="opt">
+  </section>`;
+}
+
+/**
+ * HTML de la section iReal Pro.
+ * @returns {string}
+ */
+function irealHtml() {
+  return `<section class="opt">
     <h2 class="eyebrow">iReal Pro</h2>
     <div class="opt-group opt-pad">
       <label class="ir-lbl" for="optIr">Colle un lien <code>irealb://</code> (morceau ou playlist) : une note est créée par morceau.</label>
@@ -165,8 +176,15 @@ function renderOptions() {
       <div class="ir-actions"><button class="btn primary" id="optIrGo" type="button">Importer</button><label class="btn" for="optIrFile">Ouvrir un fichier iReal</label><input type="file" id="optIrFile" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
     </div>
     <div class="status" id="optIrMsg" role="status"></div>
-  </section>
-  <section class="opt">
+  </section>`;
+}
+
+/**
+ * HTML de la section À propos.
+ * @returns {string}
+ */
+function aboutHtml() {
+  return `<section class="opt">
     <h2 class="eyebrow">À propos</h2>
     <div class="opt-group">
       <div class="opt-row static"><span>Inkline<small>Version ${esc(APP_VERSION)} · stockage ${storageBackend() === 'idb' ? 'IndexedDB' : 'localStorage'}</small></span></div>
@@ -174,8 +192,10 @@ function renderOptions() {
       <a class="opt-row" href="docs/" target="_blank" rel="noopener"><span>Documentation du code<small>Générée avec JSDoc</small></span>${CHEVRON}</a>
     </div>
   </section>`;
+}
 
-  app.querySelector('#back').onclick = backToList;
+/** Branche la section Affichage. */
+function bindDisplay() {
   // Sélecteur d'affichage : mémorisé dans les métadonnées, appliqué au retour sur l'accueil.
   app.querySelectorAll('[data-view]').forEach((b) => {
     b.onclick = () => {
@@ -183,20 +203,50 @@ function renderOptions() {
       app.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
     };
   });
-  app.querySelectorAll('[data-folder]').forEach((b) => {
-    b.addEventListener('click', () =>
-      openFolderSheet(state.folders[/** @type {HTMLElement} */ (b).dataset.folder], () =>
-        renderScreen({ keepScroll: true }),
-      ),
-    );
-  });
-  app
-    .querySelector('#optNewFolder')
-    .addEventListener('click', () => openFolderSheet(null, () => renderScreen({ keepScroll: true })));
   const fold = /** @type {HTMLInputElement} */ (app.querySelector('#optFold'));
   fold.onchange = () => setMeta({ autoFold: fold.checked || undefined });
-  const msg = app.querySelector('#optMsg');
+}
 
+/** Branche la section Dossiers. */
+function bindFolders() {
+  const reopen = () => renderScreen({ keepScroll: true });
+  app.querySelectorAll('[data-folder]').forEach((b) => {
+    b.addEventListener('click', () =>
+      openFolderSheet(state.folders[/** @type {HTMLElement} */ (b).dataset.folder], reopen),
+    );
+  });
+  app.querySelector('#optNewFolder').addEventListener('click', () => openFolderSheet(null, reopen));
+}
+
+/**
+ * Importe un fichier choisi dans les Options : une note reçue est ouverte
+ * directement ; une sauvegarde est fusionnée, avec un compte rendu.
+ * @param {string} text
+ */
+function importChosenFile(text) {
+  const msg = app.querySelector('#optMsg');
+  try {
+    const nf = Object.keys(state.folders).length;
+    const r = importFile(state.notes, text, state.folders);
+    flushSave(state.notes);
+    saveFolders(state.folders);
+    if (r.kind === 'note') {
+      openNote(r.firstId);
+      return;
+    }
+    const added = Object.keys(state.folders).length - nf;
+    renderScreen({ keepScroll: true }); // la section Dossiers a pu changer
+    app.querySelector('#optMsg').textContent =
+      r.count +
+      (r.count > 1 ? ' notes importées' : ' note importée') +
+      (added ? `, ${added} dossier${added > 1 ? 's' : ''} ajouté${added > 1 ? 's' : ''}.` : '.');
+  } catch (err) {
+    msg.textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
+  }
+}
+
+/** Branche la section Carnet. */
+function bindNotebook() {
   app.querySelector('#optExport').onclick = () => {
     download(
       new Blob([backupJson(state.notes, state.folders)], { type: 'application/json' }),
@@ -206,47 +256,50 @@ function renderOptions() {
     const last = app.querySelector('#optLast');
     last.textContent = lastExportLabel(Date.now());
     last.classList.remove('due');
-    msg.textContent = 'Fichier enregistré dans tes téléchargements.';
+    app.querySelector('#optMsg').textContent = 'Fichier enregistré dans tes téléchargements.';
   };
-
   // Pas de filtre « accept » : Android grise les extensions qu'il ne connaît
   // pas (.inkline). Le contenu est vérifié par importFile.
-  app.querySelector('#optImport').onchange = (e) =>
-    readFile(e, (text) => {
-      try {
-        const nf = Object.keys(state.folders).length;
-        const r = importFile(state.notes, text, state.folders);
-        flushSave(state.notes);
-        saveFolders(state.folders);
-        if (r.kind === 'note') {
-          openNote(r.firstId);
-          return;
-        } // note reçue : on l'ouvre directement
-        const added = Object.keys(state.folders).length - nf;
-        renderScreen({ keepScroll: true }); // la section Dossiers a pu changer
-        app.querySelector('#optMsg').textContent =
-          r.count +
-          (r.count > 1 ? ' notes importées' : ' note importée') +
-          (added ? `, ${added} dossier${added > 1 ? 's' : ''} ajouté${added > 1 ? 's' : ''}.` : '.');
-      } catch (err) {
-        msg.textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
-      }
-    });
+  app.querySelector('#optImport').onchange = (e) => readFile(e, importChosenFile);
+}
 
-  const irMsg = app.querySelector('#optIrMsg');
+/** Branche la section iReal Pro. */
+function bindIReal() {
+  const field = /** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr'));
   const irGo = (txt) => {
     const k = importIRealNotes(txt);
-    irMsg.textContent = k
+    app.querySelector('#optIrMsg').textContent = k
       ? k +
         (k > 1
           ? ' morceaux importés : ils sont dans tes notes.'
           : ' morceau importé : il est dans tes notes.')
       : 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb://.';
-    if (k) /** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr')).value = '';
+    if (k) field.value = '';
   };
-  app.querySelector('#optIrGo').onclick = () =>
-    irGo(/** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr')).value);
+  app.querySelector('#optIrGo').onclick = () => irGo(field.value);
   app.querySelector('#optIrFile').onchange = (e) => readFile(e, irGo);
+}
+
+/**
+ * Dessine l'écran Options : une fonction par section pour le HTML, une par
+ * section pour le branchement des événements.
+ */
+function renderOptions() {
+  const meta = getMeta();
+  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><h1 class="top-title">Options</h1></header>
+  ${displayHtml(meta)}
+  <section class="opt">
+    <h2 class="eyebrow">Dossiers</h2>
+    <div class="opt-group" id="optFolders">${foldersHtml()}</div>
+  </section>
+  ${notebookHtml(meta)}
+  ${irealHtml()}
+  ${aboutHtml()}`;
+  app.querySelector('#back').onclick = backToList;
+  bindDisplay();
+  bindFolders();
+  bindNotebook();
+  bindIReal();
 }
 
 registerScreen('options', renderOptions);
