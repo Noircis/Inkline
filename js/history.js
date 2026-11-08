@@ -46,3 +46,14 @@ export function popSnapshot(n) {
   n.blocks = s.b;
   return true;
 }
+
+/**
+ * Oublie le dernier instantané sans le restaurer : pour une action commencée
+ * puis refusée (par exemple un triolet qui traverserait une barre), annulée à
+ * la main par l'appelant.
+ * @param {module:model~Note} n
+ */
+export function discardSnapshot(n) {
+  const h = stacks[n.id];
+  if (h && h.length) h.pop();
+}

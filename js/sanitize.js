@@ -78,6 +78,7 @@ function item(r, rhythm) {
   if (r.rs === true) it.rs = true;
   if (r.tie === true && !it.r) it.tie = true;
   if (r.tup === 3) it.tup = 3;
+  if (r.auto === true && !it.tup) it.auto = true; // morceau d'une note coupée à la barre (2.6)
   return it;
 }
 

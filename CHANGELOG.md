@@ -3,6 +3,32 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.6.0] - 2026-11-08
+
+Mise en mesure automatique : liaisons aux barres et compensation par des silences.
+
+### Ajouté
+
+- **Liaisons automatiques aux barres de mesure** : une note qui déborde de sa mesure est coupée à la barre et liée à la suite. Noire, noire, ronde en 4/4 donne noire, noire, blanche⁀ | blanche. Le reste est écrit en valeurs usuelles (points compris), sur plusieurs mesures si besoin. Les silences sont coupés de la même façon, sans liaison.
+  - Le découpage se refait après chaque modification (insertion, suppression, changement de durée ou de mesure) : une note coupée redevient entière si elle tient de nouveau dans sa mesure.
+  - On ne coupe qu'aux barres : à l'intérieur d'une mesure, l'écriture reste celle de l'utilisateur (syncopes comprises).
+  - Les liaisons posées à la main ne sont jamais touchées.
+  - Une note coupée se comporte comme une seule note : la toucher la sélectionne en entier (surlignée en entier), la palette affiche sa valeur totale, ⌫ l'efface en entier, et le curseur d'insertion ne se place jamais au milieu.
+- **Compensation par des silences** (mode Modifier), comme dans MuseScore :
+  - raccourcir une note ajoute un silence de la différence (noire → croche + demi-soupir) : la suite reste à sa place ;
+  - allonger une note mange d'abord les silences qui la suivent (l'aller-retour noire → croche → noire redonne la mesure de départ) ; s'il n'y en a pas assez, la suite se décale et les barres sont recoupées.
+- **Changer la mesure** (4/4 → 3/4…) recoupe toute la portée.
+- **Triolets** : un triolet ne peut pas traverser une barre. L'ajout est refusé, avec un message dans la palette.
+
+### Détails
+
+- Les portées écrites avant la 2.6 ne sont pas modifiées à l'ouverture : elles sont remises en mesure à la première modification.
+- Format : les morceaux créés automatiquement portent `auto: true` (et `tie: true` pour une note). Les versions précédentes les affichent comme des notes liées normales.
+
+### Développement
+
+- `js/measure-fit.js` : notes logiques, découpage aux barres, écriture des durées (`decompose`), compensation (`resizeEvent`). Fonctions pures, 14 tests (`tests/measure-fit.test.js`). 85 tests au total.
+
 ## [2.5.1] - 2026-11-07
 
 ### Modifié

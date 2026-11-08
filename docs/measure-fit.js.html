@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>measure-fit.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~click">click</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li><li data-type='method'><a href="module-audio.html#~metronome">metronome</a></li><li data-type='method'><a href="module-audio.html#~perc">perc</a></li><li data-type='method'><a href="module-audio.html#~tone">tone</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordParts">chordParts</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#~pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li></ul></li><li><a href="module-db.html">db</a><ul class='members'><li data-type='member'><a href="module-db.html#.DB_NAME">DB_NAME</a></li><li data-type='member'><a href="module-db.html#.STORES">STORES</a></li><li data-type='member'><a href="module-db.html#~DB_VERSION">DB_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-db.html#.getAll">getAll</a></li><li data-type='method'><a href="module-db.html#.openDb">openDb</a></li><li data-type='method'><a href="module-db.html#.write">write</a></li><li data-type='method'><a href="module-db.html#~done">done</a></li></ul></li><li><a href="module-export.html">export</a><ul class='methods'><li data-type='method'><a href="module-export.html#.download">download</a></li><li data-type='method'><a href="module-export.html#.noteToInkline">noteToInkline</a></li><li data-type='method'><a href="module-export.html#.noteToPdf">noteToPdf</a></li><li data-type='method'><a href="module-export.html#.noteToPng">noteToPng</a></li><li data-type='method'><a href="module-export.html#.paginate">paginate</a></li><li data-type='method'><a href="module-export.html#.parseFontFaces">parseFontFaces</a></li><li data-type='method'><a href="module-export.html#.shareOrDownload">shareOrDownload</a></li><li data-type='method'><a href="module-export.html#.slug">slug</a></li><li data-type='method'><a href="module-export.html#~caption">caption</a></li><li data-type='method'><a href="module-export.html#~embeddedFontCss">embeddedFontCss</a></li><li data-type='method'><a href="module-export.html#~noteToSvg">noteToSvg</a></li><li data-type='method'><a href="module-export.html#~rasterize">rasterize</a></li><li data-type='method'><a href="module-export.html#~toBlob">toBlob</a></li><li data-type='method'><a href="module-export.html#~wrap">wrap</a></li></ul></li><li><a href="module-folders.html">folders</a><ul class='members'><li data-type='member'><a href="module-folders.html#.ALL">ALL</a></li><li data-type='member'><a href="module-folders.html#.COLOR_KEYS">COLOR_KEYS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_COLORS">FOLDER_COLORS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_NAME_MAX">FOLDER_NAME_MAX</a></li><li data-type='member'><a href="module-folders.html#.UNFILED">UNFILED</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folders.html#.cleanFolderName">cleanFolderName</a></li><li data-type='method'><a href="module-folders.html#.countByFolder">countByFolder</a></li><li data-type='method'><a href="module-folders.html#.deleteFolder">deleteFolder</a></li><li data-type='method'><a href="module-folders.html#.folderOf">folderOf</a></li><li data-type='method'><a href="module-folders.html#.inSelection">inSelection</a></li><li data-type='method'><a href="module-folders.html#.newFolder">newFolder</a></li><li data-type='method'><a href="module-folders.html#.sortedFolders">sortedFolders</a></li></ul></li><li><a href="module-folding.html">folding</a><ul class='members'><li data-type='member'><a href="module-folding.html#.FOLD_MIN_LINES">FOLD_MIN_LINES</a></li><li data-type='member'><a href="module-folding.html#.FOLD_PREVIEW_LINES">FOLD_PREVIEW_LINES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folding.html#.shouldFold">shouldFold</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li><li data-type='member'><a href="module-grid.html#~SVG_GAP">SVG_GAP</a></li><li data-type='member'><a href="module-grid.html#~SVG_ROW">SVG_ROW</a></li><li data-type='member'><a href="module-grid.html#~SVG_TOP">SVG_TOP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridSvg">gridSvg</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li><li data-type='method'><a href="module-grid.html#~svgBarlines">svgBarlines</a></li><li data-type='method'><a href="module-grid.html#~svgChords">svgChords</a></li><li data-type='method'><a href="module-grid.html#~svgDots">svgDots</a></li><li data-type='method'><a href="module-grid.html#~svgLabels">svgLabels</a></li><li data-type='method'><a href="module-grid.html#~svgVline">svgVline</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.discardSnapshot">discardSnapshot</a></li><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li><li data-type='method'><a href="module-ireal.html#~qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#~unscramble">unscramble</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#.INSERT_GAP">INSERT_GAP</a></li><li data-type='member'><a href="module-layout.html#.KEY_ACC_W">KEY_ACC_W</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.keySigWidth">keySigWidth</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~breakIntoSystems">breakIntoSystems</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li><li data-type='method'><a href="module-layout.html#~measureWidth">measureWidth</a></li><li data-type='method'><a href="module-layout.html#~newSystem">newSystem</a></li><li data-type='method'><a href="module-layout.html#~placeSystems">placeSystems</a></li><li data-type='method'><a href="module-layout.html#~stretchFactor">stretchFactor</a></li><li data-type='method'><a href="module-layout.html#~systemStart">systemStart</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-measure-fit.html">measure-fit</a><ul class='methods'><li data-type='method'><a href="module-measure-fit.html#.chainEnd">chainEnd</a></li><li data-type='method'><a href="module-measure-fit.html#.chainStart">chainStart</a></li><li data-type='method'><a href="module-measure-fit.html#.decompose">decompose</a></li><li data-type='method'><a href="module-measure-fit.html#.eventsOf">eventsOf</a></li><li data-type='method'><a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a></li><li data-type='method'><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a></li><li data-type='method'><a href="module-measure-fit.html#.singleValue">singleValue</a></li><li data-type='method'><a href="module-measure-fit.html#~baseProps">baseProps</a></li><li data-type='method'><a href="module-measure-fit.html#~isMult">isMult</a></li><li data-type='method'><a href="module-measure-fit.html#~materialize">materialize</a></li></ul></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pdf.html">pdf</a><ul class='members'><li data-type='member'><a href="module-pdf.html#.A4">A4</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pdf.html#.buildPdf">buildPdf</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.FLAT_ORDER">FLAT_ORDER</a></li><li data-type='member'><a href="module-pitch.html#.SHARP_ORDER">SHARP_ORDER</a></li><li data-type='member'><a href="module-pitch.html#~CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#~NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.degreeOf">degreeOf</a></li><li data-type='method'><a href="module-pitch.html#.keyAcc">keyAcc</a></li><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li></ul></li><li><a href="module-placements.html">placements</a><ul class='members'><li data-type='member'><a href="module-placements.html#.SLOTS">SLOTS</a></li><li data-type='member'><a href="module-placements.html#~PER_BEAT">PER_BEAT</a></li></ul><ul class='methods'><li data-type='method'><a href="module-placements.html#.combinations">combinations</a></li><li data-type='method'><a href="module-placements.html#.groupSeries">groupSeries</a></li><li data-type='method'><a href="module-placements.html#.placementItems">placementItems</a></li><li data-type='method'><a href="module-placements.html#.placementSeries">placementSeries</a></li><li data-type='method'><a href="module-placements.html#.seriesBlock">seriesBlock</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#~accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#~barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#~beamGroupsBySystem">beamGroupsBySystem</a></li><li data-type='method'><a href="module-render-staff.html#~drawAppendZone">drawAppendZone</a></li><li data-type='method'><a href="module-render-staff.html#~drawBars">drawBars</a></li><li data-type='method'><a href="module-render-staff.html#~drawBeams">drawBeams</a></li><li data-type='method'><a href="module-render-staff.html#~drawItems">drawItems</a></li><li data-type='method'><a href="module-render-staff.html#~drawNote">drawNote</a></li><li data-type='method'><a href="module-render-staff.html#~drawStaffLines">drawStaffLines</a></li><li data-type='method'><a href="module-render-staff.html#~drawTies">drawTies</a></li><li data-type='method'><a href="module-render-staff.html#~drawTuplets">drawTuplets</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li><li data-type='method'><a href="module-render-staff.html#~freeStem">freeStem</a></li><li data-type='method'><a href="module-render-staff.html#~isVisible">isVisible</a></li><li data-type='method'><a href="module-render-staff.html#~keySigSvg">keySigSvg</a></li><li data-type='method'><a href="module-render-staff.html#~ledgerLines">ledgerLines</a></li><li data-type='method'><a href="module-render-staff.html#~restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#~tieSvg">tieSvg</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.straightBeats">straightBeats</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li><li data-type='method'><a href="module-rhythm.html#~tupletIndex">tupletIndex</a></li></ul></li><li><a href="module-sanitize.html">sanitize</a><ul class='methods'><li data-type='method'><a href="module-sanitize.html#.sanitizeBlock">sanitizeBlock</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeFolder">sanitizeFolder</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeFolders">sanitizeFolders</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNote">sanitizeNote</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a></li><li data-type='method'><a href="module-sanitize.html#~item">item</a></li><li data-type='method'><a href="module-sanitize.html#~measure">measure</a></li></ul></li><li><a href="module-search.html">search</a><ul class='members'><li data-type='member'><a href="module-search.html#.SORT_KEYS">SORT_KEYS</a></li><li data-type='member'><a href="module-search.html#.SORT_MODES">SORT_MODES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-search.html#.matchNote">matchNote</a></li><li data-type='method'><a href="module-search.html#.normalize">normalize</a></li><li data-type='method'><a href="module-search.html#.searchableText">searchableText</a></li><li data-type='method'><a href="module-search.html#.sortNotes">sortNotes</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.DRILL_DEFAULTS">DRILL_DEFAULTS</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_VERSION">BACKUP_VERSION</a></li><li data-type='member'><a href="module-storage.html#~FOLDERS_KEY">FOLDERS_KEY</a></li><li data-type='member'><a href="module-storage.html#~META_KEY">META_KEY</a></li><li data-type='member'><a href="module-storage.html#~NOTE_APP">NOTE_APP</a></li><li data-type='member'><a href="module-storage.html#~SAVE_DELAY">SAVE_DELAY</a></li><li data-type='member'><a href="module-storage.html#~STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~backend">backend</a></li><li data-type='member'><a href="module-storage.html#~db">db</a></li><li data-type='member'><a href="module-storage.html#~dirty">dirty</a></li><li data-type='member'><a href="module-storage.html#~fullPending">fullPending</a></li><li data-type='member'><a href="module-storage.html#~saved">saved</a></li><li data-type='member'><a href="module-storage.html#~savedLocal">savedLocal</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.getMeta">getMeta</a></li><li data-type='method'><a href="module-storage.html#.importFile">importFile</a></li><li data-type='method'><a href="module-storage.html#.loadAll">loadAll</a></li><li data-type='method'><a href="module-storage.html#.noteFileJson">noteFileJson</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.saveFolders">saveFolders</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#.setMeta">setMeta</a></li><li data-type='method'><a href="module-storage.html#.storageBackend">storageBackend</a></li><li data-type='method'><a href="module-storage.html#~drillOf">drillOf</a></li><li data-type='method'><a href="module-storage.html#~migrateFromLocal">migrateFromLocal</a></li><li data-type='method'><a href="module-storage.html#~readDb">readDb</a></li><li data-type='method'><a href="module-storage.html#~readLocal">readLocal</a></li><li data-type='method'><a href="module-storage.html#~sortsOf">sortsOf</a></li><li data-type='method'><a href="module-storage.html#~writeChanges">writeChanges</a></li></ul></li><li><a href="module-ui_blocks.html">ui/blocks</a><ul class='methods'><li data-type='method'><a href="module-ui_blocks.html#.blockKind">blockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.hideAllPalettes">hideAllPalettes</a></li><li data-type='method'><a href="module-ui_blocks.html#.redrawBlock">redrawBlock</a></li><li data-type='method'><a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_blocks.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_blocks.html#.updateActive">updateActive</a></li></ul></li><li><a href="module-ui_common.html">ui/common</a><ul class='members'><li data-type='member'><a href="module-ui_common.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_common.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_common.html#.confirmTap">confirmTap</a></li><li data-type='method'><a href="module-ui_common.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_common.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_common.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_common.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_common.html#.updatePlayBtn">updatePlayBtn</a></li></ul></li><li><a href="module-ui_fold.html">ui/fold</a><ul class='methods'><li data-type='method'><a href="module-ui_fold.html#.applyFold">applyFold</a></li><li data-type='method'><a href="module-ui_fold.html#.guardFoldedTaps">guardFoldedTaps</a></li><li data-type='method'><a href="module-ui_fold.html#.isFolded">isFolded</a></li><li data-type='method'><a href="module-ui_fold.html#~toggleFold">toggleFold</a></li></ul></li><li><a href="module-ui_folder-sheet.html">ui/folder-sheet</a><ul class='methods'><li data-type='method'><a href="module-ui_folder-sheet.html#.closeFolderSheet">closeFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#.openFolderSheet">openFolderSheet</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#.showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindGridSettings">bindGridSettings</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindIRealPanel">bindIRealPanel</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindMeasureSelection">bindMeasureSelection</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockHtml">gridBlockHtml</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~importIntoGrid">importIntoGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~updateGridPalette">updateGridPalette</a></li></ul></li><li><a href="module-ui_home.html">ui/home</a><ul class='members'><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_home.html#.currentSelection">currentSelection</a></li><li data-type='method'><a href="module-ui_home.html#~chipsHtml">chipsHtml</a></li><li data-type='method'><a href="module-ui_home.html#~editFolder">editFolder</a></li><li data-type='method'><a href="module-ui_home.html#~emptyHtml">emptyHtml</a></li><li data-type='method'><a href="module-ui_home.html#~newNote">newNote</a></li><li data-type='method'><a href="module-ui_home.html#~plural">plural</a></li><li data-type='method'><a href="module-ui_home.html#~refreshResults">refreshResults</a></li><li data-type='method'><a href="module-ui_home.html#~renderHome">renderHome</a></li><li data-type='method'><a href="module-ui_home.html#~renderOnboarding">renderOnboarding</a></li><li data-type='method'><a href="module-ui_home.html#~select">select</a></li><li data-type='method'><a href="module-ui_home.html#~sortFor">sortFor</a></li></ul></li><li><a href="module-ui_icons.html">ui/icons</a><ul class='members'><li data-type='member'><a href="module-ui_icons.html#.GEAR">GEAR</a></li><li data-type='member'><a href="module-ui_icons.html#.LOUPE">LOUPE</a></li><li data-type='member'><a href="module-ui_icons.html#.METRONOME">METRONOME</a></li><li data-type='member'><a href="module-ui_icons.html#.PIN_ICON">PIN_ICON</a></li></ul></li><li><a href="module-ui_list-view.html">ui/list-view</a><ul class='members'><li data-type='member'><a href="module-ui_list-view.html#.LIST_VIEWS">LIST_VIEWS</a></li><li data-type='member'><a href="module-ui_list-view.html#~MOSAIC_STAFF_W">MOSAIC_STAFF_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_list-view.html#.noteSummary">noteSummary</a></li><li data-type='method'><a href="module-ui_list-view.html#.relativeDate">relativeDate</a></li><li data-type='method'><a href="module-ui_list-view.html#.renderNoteList">renderNoteList</a></li><li data-type='method'><a href="module-ui_list-view.html#~chordsPreview">chordsPreview</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstStaff">firstStaff</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstText">firstText</a></li><li data-type='method'><a href="module-ui_list-view.html#~folderTag">folderTag</a></li><li data-type='method'><a href="module-ui_list-view.html#~itemHtml">itemHtml</a></li><li data-type='method'><a href="module-ui_list-view.html#~shortDate">shortDate</a></li></ul></li><li><a href="module-ui_nav.html">ui/nav</a><ul class='methods'><li data-type='method'><a href="module-ui_nav.html#.backToList">backToList</a></li><li data-type='method'><a href="module-ui_nav.html#.go">go</a></li><li data-type='method'><a href="module-ui_nav.html#.goChild">goChild</a></li><li data-type='method'><a href="module-ui_nav.html#.onHistoryBack">onHistoryBack</a></li><li data-type='method'><a href="module-ui_nav.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_nav.html#.registerScreen">registerScreen</a></li><li data-type='method'><a href="module-ui_nav.html#.renderScreen">renderScreen</a></li><li data-type='method'><a href="module-ui_nav.html#.showList">showList</a></li><li data-type='method'><a href="module-ui_nav.html#~enterSubView">enterSubView</a></li><li data-type='method'><a href="module-ui_nav.html#~show">show</a></li></ul></li><li><a href="module-ui_note.html">ui/note</a><ul class='methods'><li data-type='method'><a href="module-ui_note.html#~addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangement">bindArrangement</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangementSelect">bindArrangementSelect</a></li><li data-type='method'><a href="module-ui_note.html#~bindShare">bindShare</a></li><li data-type='method'><a href="module-ui_note.html#~bindTitle">bindTitle</a></li><li data-type='method'><a href="module-ui_note.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_note.html#~folderSelectHtml">folderSelectHtml</a></li><li data-type='method'><a href="module-ui_note.html#~renderNote">renderNote</a></li></ul></li><li><a href="module-ui_options.html">ui/options</a><ul class='members'><li data-type='member'><a href="module-ui_options.html#.value">value</a></li><li data-type='member'><a href="module-ui_options.html#.value">value</a></li><li data-type='member'><a href="module-ui_options.html#~BACKUP_REMINDER_DAYS">BACKUP_REMINDER_DAYS</a></li><li data-type='member'><a href="module-ui_options.html#~CHANGELOG_URL">CHANGELOG_URL</a></li><li data-type='member'><a href="module-ui_options.html#~CHEVRON">CHEVRON</a></li><li data-type='member'><a href="module-ui_options.html#~VIEW_ICONS">VIEW_ICONS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_options.html#.backupDue">backupDue</a></li><li data-type='method'><a href="module-ui_options.html#~foldersHtml">foldersHtml</a></li><li data-type='method'><a href="module-ui_options.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_options.html#~lastExportLabel">lastExportLabel</a></li><li data-type='method'><a href="module-ui_options.html#~renderOptions">renderOptions</a></li></ul></li><li><a href="module-ui_staff-ui.html">ui/staff-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_staff-ui.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~clampCursor">clampCursor</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~flash">flash</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~insertIndex">insertIndex</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~insertNote">insertNote</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~logicalValue">logicalValue</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~refit">refit</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~resizeSel">resizeSel</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~setMode">setMode</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~staffTap">staffTap</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~targetIndex">targetIndex</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~updateStaffPalette">updateStaffPalette</a></li><li data-type='method'><a href="module-ui_staff-ui.html#~withSel">withSel</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.saveArrangement">saveArrangement</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_training.html">ui/training</a><ul class='methods'><li data-type='method'><a href="module-ui_training.html#~applyPlaySettings">applyPlaySettings</a></li><li data-type='method'><a href="module-ui_training.html#~header">header</a></li><li data-type='method'><a href="module-ui_training.html#~redrawDrill">redrawDrill</a></li><li data-type='method'><a href="module-ui_training.html#~renderDrills">renderDrills</a></li><li data-type='method'><a href="module-ui_training.html#~renderPlacements">renderPlacements</a></li><li data-type='method'><a href="module-ui_training.html#~renderTraining">renderTraining</a></li><li data-type='method'><a href="module-ui_training.html#~settings">settings</a></li><li data-type='method'><a href="module-ui_training.html#~toggle">toggle</a></li><li data-type='method'><a href="module-ui_training.html#~updateSettings">updateSettings</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">measure-fit.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module measure-fit
+ * @description
+ * **Mise en mesure automatique** (depuis la 2.6). Fonctions pures.
+ *
+ * ## Le problème
+ *
+ * Inkline stocke une portée comme une **suite d'éléments** ; les barres de
+ * mesure se placent d'elles-mêmes ({@link module:rhythm.segmentMeasures|segmentMeasures}).
+ * Une note peut donc « déborder » de sa mesure : noire, noire, ronde en 4/4.
+ * La gravure correcte coupe la ronde à la barre et lie les deux morceaux :
+ *
+ * ```
+ * noire noire ronde   →   noire noire blanche⁀ | blanche
+ * ```
+ *
+ * ## Notes logiques et liaisons automatiques
+ *
+ * Les morceaux créés par ce découpage sont marqués `auto: true` (« ce morceau
+ * continue dans l'élément suivant ») ; pour une note, ils portent aussi
+ * `tie: true`, ce qui suffit au dessin et à l'audio. Une suite de morceaux
+ * `auto` forme une **note logique** ({@link module:measure-fit.eventsOf|eventsOf}).
+ * Les liaisons posées par l'utilisateur n'ont pas `auto` : on n'y touche jamais.
+ *
+ * Après chaque modification, {@link module:measure-fit.normalizeStaff|normalizeStaff}
+ * **recolle** les notes logiques puis les **recoupe** aux barres actuelles :
+ * insérer une note au début décale toutes les barres, et le découpage suit.
+ * Une note qui ne traverse aucune barre reste écrite comme l'utilisateur l'a
+ * voulu (syncopes comprises) : on ne coupe qu'aux barres.
+ *
+ * ## Compensation par des silences (mode Modifier)
+ *
+ * {@link module:measure-fit.resizeEvent|resizeEvent} change la durée d'une
+ * note en gardant la suite à sa place, comme MuseScore :
+ * - raccourcir ajoute un silence de la différence (noire → croche + demi-soupir) ;
+ * - allonger **mange** d'abord les silences qui suivent ; s'il n'y en a pas
+ *   assez, la suite se décale (et les barres sont recoupées).
+ *
+ * ## Écriture des durées
+ *
+ * Une durée quelconque est écrite avec les valeurs usuelles
+ * ({@link module:measure-fit.decompose|decompose}) : on prend à chaque fois
+ * la plus grande valeur qui tient et qui tombe « juste » (une blanche commence
+ * sur un temps pair, une noire sur un temps…). Points autorisés pour les
+ * notes ; pour les silences, seulement en mesure composée (6/8, 12/8).
+ *
+ * Les triolets ne sont jamais coupés ni recollés.
+ */
+
+import { EPS, snap } from './util.js';
+import { DUR, qlen, mlen, beatUnit } from './model.js';
+
+/** Valeurs simples, de la plus longue à la plus courte. */
+const PLAIN = Object.entries(DUR)
+  .map(([d, v]) => ({ d, v }))
+  .sort((a, b) => b.v - a.v);
+
+/**
+ * Une note logique : un élément seul, ou une suite de morceaux `auto`.
+ * @typedef {Object} FitEvent
+ * @property {module:model~StaffItem[]} orig Morceaux d'origine (copies).
+ * @property {number} len Durée totale en noires.
+ * @property {boolean} rest Silence.
+ * @property {boolean} tup Contient un triolet (jamais coupé).
+ * @property {boolean} [gen] Durée calculée : à réécrire (pas de morceaux d'origine à garder).
+ * @property {number} from Index du premier morceau dans la suite d'origine (-1 si créé).
+ */
+
+/**
+ * `x` est-il un multiple de `a` (à l'arrondi près) ?
+ * @param {number} x
+ * @param {number} a
+ * @returns {boolean}
+ */
+function isMult(x, a) {
+  const r = x / a;
+  return Math.abs(r - Math.round(r)) &lt; 1e-6;
+}
+
+/**
+ * Valeur unique (avec point éventuel) d'une durée, si elle existe.
+ * @example
+ * singleValue(3, true)   // { d: 'h', dot: true }
+ * singleValue(2.5, true) // null
+ * @param {number} len Durée en noires.
+ * @param {boolean} allowDot
+ * @returns {?{d: string, dot: boolean}}
+ */
+export function singleValue(len, allowDot) {
+  for (const p of PLAIN) {
+    if (Math.abs(p.v - len) &lt; EPS) return { d: p.d, dot: false };
+    if (allowDot &amp;&amp; Math.abs(p.v * 1.5 - len) &lt; EPS) return { d: p.d, dot: true };
+  }
+  return null;
+}
+
+/**
+ * Écrit une durée en valeurs usuelles, à partir d'une position dans la mesure.
+ *
+ * Algorithme glouton « aligné » : à chaque pas, la plus grande valeur qui
+ * tient dans ce qui reste et qui tombe juste :
+ * - une valeur d'un temps ou plus commence sur un temps (pour les silences,
+ *   plus strictement, sur un multiple d'elle-même : une demi-pause en 4/4 sur
+ *   le 1 ou le 3, jamais sur le 2, pour que le milieu de la mesure reste lisible) ;
+ * - une valeur plus courte qu'un temps commence sur un multiple d'elle-même
+ *   (du double de sa valeur simple si elle est pointée : croche pointée sur
+ *   le temps, pas sur le contretemps) et ne déborde pas sur le temps suivant :
+ *   on complète le temps en cours avant d'avancer.
+ *
+ * À défaut, la plus grande valeur simple qui tient.
+ *
+ * @example
+ * decompose(0.5, 1.5, false) // croche puis noire : [{d:'8'}, {d:'q'}]
+ * decompose(1, 3, true)      // blanche pointée sur le 2e temps
+ * @param {number} start Position de départ dans la mesure (noires).
+ * @param {number} len Durée à écrire (noires).
+ * @param {boolean} allowDot
+ * @param {number} [beat=1] Durée d'un temps en noires (1,5 en 6/8).
+ * @param {boolean} [rest=false] Écrire des silences (alignement strict).
+ * @returns {?Array.&lt;{d: string, dot: boolean}>} `null` si la durée n'est pas
+ *   exprimable (reste plus petit qu'une double croche, par exemple après un triolet).
+ */
+export function decompose(start, len, allowDot, beat = 1, rest = false) {
+  /** @type {Array.&lt;{d: string, dot: boolean, v: number, b: number}>} */
+  const cands = [];
+  PLAIN.forEach((p) => {
+    if (allowDot) cands.push({ d: p.d, dot: true, v: p.v * 1.5, b: p.v });
+    cands.push({ d: p.d, dot: false, v: p.v, b: p.v });
+  });
+  cands.sort((a, b) => b.v - a.v);
+  const out = [];
+  let s = start;
+  let rem = len;
+  for (let guard = 0; rem > EPS &amp;&amp; guard &lt; 64; guard++) {
+    const fits = (c) => c.v &lt;= rem + EPS;
+    const aligned = (c) =>
+      c.v >= beat - EPS
+        ? isMult(s, rest ? c.v : beat)
+        : isMult(s, c.dot ? 2 * c.b : c.b) &amp;&amp;
+          Math.floor(s / beat + 1e-9) === Math.floor((s + c.v) / beat - 1e-9);
+    const pick = cands.find((c) => fits(c) &amp;&amp; aligned(c)) || cands.find((c) => fits(c) &amp;&amp; !c.dot);
+    if (!pick) return null;
+    out.push({ d: pick.d, dot: pick.dot });
+    s = snap(s + pick.v);
+    rem = snap(rem - pick.v);
+  }
+  return rem > EPS ? null : out;
+}
+
+/**
+ * Regroupe les éléments en notes logiques.
+ * @param {module:model~StaffItem[]} items
+ * @returns {FitEvent[]}
+ */
+export function eventsOf(items) {
+  const out = [];
+  for (let i = 0; i &lt; items.length; ) {
+    let j = i;
+    while (items[j].auto &amp;&amp; j + 1 &lt; items.length &amp;&amp; !items[j].tup) j++;
+    const orig = items.slice(i, j + 1).map((it) => ({ ...it }));
+    out.push({
+      orig,
+      len: snap(orig.reduce((t, it) => t + qlen(it), 0)),
+      rest: !!orig[0].r,
+      tup: orig.some((it) => it.tup),
+      from: i,
+    });
+    i = j + 1;
+  }
+  return out;
+}
+
+/**
+ * Premier morceau de la note logique qui contient l'élément `i`.
+ * @param {module:model~StaffItem[]} items
+ * @param {number} i
+ * @returns {number}
+ */
+export function chainStart(items, i) {
+  while (i > 0 &amp;&amp; items[i - 1] &amp;&amp; items[i - 1].auto) i--;
+  return i;
+}
+
+/**
+ * Dernier morceau de la note logique qui contient l'élément `i`.
+ * @param {module:model~StaffItem[]} items
+ * @param {number} i
+ * @returns {number}
+ */
+export function chainEnd(items, i) {
+  while (items[i] &amp;&amp; items[i].auto &amp;&amp; i + 1 &lt; items.length) i++;
+  return i;
+}
+
+/**
+ * Propriétés d'un morceau, hors durée et liens.
+ * @param {module:model~StaffItem} it
+ * @param {boolean} first Premier morceau (garde altération, accord, début de reprise).
+ * @returns {Object}
+ */
+function baseProps(it, first) {
+  // eslint-disable-next-line no-unused-vars
+  const { d, dot, tie, auto, bar, a, c, rs, ...rest } = it;
+  const out = { ...rest };
+  if (first) {
+    if (a != null) out.a = a;
+    if (c) out.c = c;
+    if (rs) out.rs = true;
+  }
+  return out;
+}
+
+/**
+ * Réécrit une suite de notes logiques en éléments, coupés aux barres.
+ * @param {FitEvent[]} events
+ * @param {string} time
+ * @returns {{items: module:model~StaffItem[], starts: number[], tupCross: Set.&lt;number>}}
+ *   `starts[k]` : index du premier morceau de l'événement k ; `tupCross` :
+ *   index des triolets qui traversent une barre.
+ */
+function materialize(events, time) {
+  const ML = mlen(time);
+  const beat = beatUnit(time);
+  const compound = time.endsWith('/8');
+  const items = [];
+  const starts = [];
+  const tupCross = new Set();
+  let pos = 0;
+
+  const keep = (ev) => {
+    ev.orig.forEach((it) => {
+      const i = items.length;
+      items.push({ ...it });
+      const end = snap(pos + qlen(it));
+      if (it.tup &amp;&amp; end > ML + EPS) tupCross.add(i);
+      pos = it.bar || end >= ML - EPS ? 0 : end;
+    });
+  };
+
+  events.forEach((ev) => {
+    const first = ev.orig[0];
+    const last = ev.orig[ev.orig.length - 1];
+    if (first.rs) pos = 0;
+    starts.push(items.length);
+    if (ev.tup) {
+      keep(ev);
+      return;
+    }
+    // 1. Découpage aux barres.
+    const segs = [];
+    let p = pos;
+    let rem = ev.len;
+    while (rem > EPS) {
+      const take = Math.min(rem, ML - p);
+      segs.push({ start: p, len: take });
+      p = snap(p + take);
+      rem = snap(rem - take);
+      if (p >= ML - EPS) p = 0;
+    }
+    // 2. Valeurs de chaque segment.
+    const allowDot = !ev.rest || compound;
+    let vals;
+    if (segs.length === 1 &amp;&amp; ev.orig.length === 1 &amp;&amp; !ev.gen) {
+      keep(ev); // ni coupée ni recollée : écrite telle que l'utilisateur l'a voulue
+      return;
+    }
+    if (segs.length === 1) {
+      const one = singleValue(ev.len, allowDot);
+      vals = [one ? [one] : decompose(segs[0].start, segs[0].len, allowDot, beat, ev.rest)];
+    } else {
+      vals = segs.map((sg) => decompose(sg.start, sg.len, allowDot, beat, ev.rest));
+    }
+    if (vals.some((v) => !v)) {
+      keep(ev); // durée non exprimable : on ne touche à rien
+      return;
+    }
+    // 3. Morceaux, liés entre eux.
+    const flat = vals.flat();
+    flat.forEach((v, k) => {
+      const piece = { ...baseProps(first, k === 0), d: v.d };
+      if (v.dot) piece.dot = true;
+      if (k &lt; flat.length - 1) {
+        piece.auto = true;
+        if (!ev.rest) piece.tie = true;
+      } else {
+        if (last.tie &amp;&amp; !last.auto &amp;&amp; !ev.rest) piece.tie = true;
+        if (last.bar) piece.bar = last.bar;
+      }
+      items.push(piece);
+    });
+    pos = last.bar ? 0 : p;
+  });
+  return { items, starts, tupCross };
+}
+
+/**
+ * Remet une portée en mesure : recolle les notes logiques et les recoupe aux
+ * barres actuelles. Sans débordement ni morceau automatique, la portée est
+ * rendue à l'identique.
+ *
+ * @param {module:model~StaffItem[]} items
+ * @param {string} time
+ * @returns {{items: module:model~StaffItem[], startOf: number[], tupCross: Set.&lt;number>}}
+ *   `startOf[i]` : nouvel index du premier morceau de la note logique qui
+ *   contenait l'ancien élément `i` (et `startOf[items.length]` = nouvelle longueur).
+ */
+export function normalizeStaff(items, time) {
+  const events = eventsOf(items);
+  const res = materialize(events, time);
+  const startOf = new Array(items.length + 1);
+  events.forEach((ev, k) => {
+    for (let i = ev.from; i &lt; ev.from + ev.orig.length; i++) startOf[i] = res.starts[k];
+  });
+  startOf[items.length] = res.items.length;
+  return { items: res.items, startOf, tupCross: res.tupCross };
+}
+
+/**
+ * Change la durée de la note logique qui contient l'élément `i`, en gardant
+ * la suite à sa place quand c'est possible (voir l'en-tête du module).
+ *
+ * @param {module:model~StaffItem[]} items
+ * @param {string} time
+ * @param {number} i Un morceau de la note à modifier.
+ * @param {{d: string, dot: (boolean|undefined), tup: (boolean|undefined)}} value Nouvelle valeur.
+ * @returns {{items: module:model~StaffItem[], index: number, tupCross: Set.&lt;number>}}
+ *   `index` : nouvel index du premier morceau de la note modifiée.
+ */
+export function resizeEvent(items, time, i, value) {
+  const events = eventsOf(items);
+  const k = events.findIndex((ev) => i >= ev.from &amp;&amp; i &lt; ev.from + ev.orig.length);
+  const ev = events[k];
+  const first = ev.orig[0];
+  const last = ev.orig[ev.orig.length - 1];
+  const single = { ...baseProps(first, true), d: value.d };
+  if (value.dot) single.dot = true;
+  if (value.tup) single.tup = 3;
+  if (last.tie &amp;&amp; !last.auto &amp;&amp; !single.r) single.tie = true;
+  if (last.bar) single.bar = last.bar;
+  const oldLen = ev.len;
+  const newLen = qlen(single);
+  events[k] = { orig: [single], len: newLen, rest: !!single.r, tup: !!single.tup, from: ev.from };
+
+  // Avec un triolet (avant ou après), pas de compensation : la différence
+  // n'est en général pas exprimable en valeurs simples. La suite se décale.
+  if (!ev.tup &amp;&amp; !value.tup) {
+    const diff = snap(oldLen - newLen);
+    if (diff > EPS) {
+      // Raccourcir : un silence comble la différence. La barre manuelle et la
+      // liaison éventuelles passent après lui (la liaison n'a plus de sens).
+      const restItem = { d: 'q', r: true };
+      if (single.bar) {
+        restItem.bar = single.bar;
+        delete single.bar;
+      }
+      delete single.tie;
+      events.splice(k + 1, 0, { orig: [restItem], len: diff, rest: true, tup: false, gen: true, from: -1 });
+    } else if (diff &lt; -EPS) {
+      // Allonger : on mange les silences qui suivent.
+      let extra = -diff;
+      const j = k + 1;
+      while (extra > EPS &amp;&amp; events[j] &amp;&amp; events[j].rest &amp;&amp; !events[j].tup &amp;&amp; !events[j].orig[0].rs) {
+        const r = events[j];
+        const rLast = r.orig[r.orig.length - 1];
+        if (r.len &lt;= extra + EPS) {
+          extra = snap(extra - r.len);
+          events.splice(j, 1);
+          if (rLast.bar) {
+            single.bar = rLast.bar; // la barre qui fermait le silence ferme maintenant la note
+            break;
+          }
+        } else {
+          r.len = snap(r.len - extra);
+          r.gen = true;
+          extra = 0;
+        }
+      }
+    }
+  }
+  const res = materialize(events, time);
+  return { items: res.items, index: res.starts[k], tupCross: res.tupCross };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

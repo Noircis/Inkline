@@ -166,6 +166,7 @@ function tieSvg(x1, x2, y, dir) {
  * Options de rendu.
  * @typedef {Object} StaffSvgOptions
  * @property {number|null} [sel] Index de l'élément sélectionné (surligné).
+ * @property {number|null} [selEnd] Dernier élément surligné (note coupée en plusieurs morceaux) ; par défaut `sel`.
  * @property {number|null} [play] Index de l'élément en cours de lecture.
  * @property {boolean} [cursor] Afficher la zone et le curseur d'ajout (bloc en édition, mode Écrire).
  * @property {?number} [insertAt] Curseur d'insertion devant cet élément (avec `cursor`) ; absent : en fin de portée.
@@ -483,9 +484,11 @@ function drawItems(ctx) {
     if (!isVisible(ctx, i)) return;
     const p = L.pos[i];
     const g = geom(L, p.sys);
-    const cls = 'it' + (opt.sel === i ? ' sel' : '') + (opt.play === i ? ' play' : '');
+    // Une note coupée par une barre (morceaux automatiques) est surlignée en entier.
+    const selected = opt.sel != null && i >= opt.sel && i <= (opt.selEnd ?? opt.sel);
+    const cls = 'it' + (selected ? ' sel' : '') + (opt.play === i ? ' play' : '');
     let s = `<g class="${cls}">`;
-    if (opt.sel === i) {
+    if (selected) {
       const top = L.rh ? g.line - 26 : g.staffTop - 14;
       s += `<rect class="selbg" x="${p.x0}" y="${top}" width="${p.x1 - p.x0}" height="${L.rh ? 52 : 68}" rx="4"/>`;
     }

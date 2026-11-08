@@ -27,7 +27,7 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-2.5.1';
+const CACHE = 'inkline-2.6.0';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -70,6 +70,7 @@ const CORE = [
   './js/search.js',
   './js/folding.js',
   './js/placements.js',
+  './js/measure-fit.js',
   './js/ui/state.js',
   './js/ui/nav.js',
   './js/ui/common.js',

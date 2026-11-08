@@ -44,9 +44,11 @@ const KEY_SIGS = [
 import { state, app, curNote, blockById, touch } from './state.js';
 import { TIME_SIGNATURES } from '../model.js';
 import { pitchName } from '../pitch.js';
+import { normalizeStaff, resizeEvent, chainStart, chainEnd, singleValue } from '../measure-fit.js';
+import { qlen } from '../model.js';
 import { staffSvg } from '../render-staff.js';
 import { layout, geom, stepFromY, INSERT_GAP } from '../layout.js';
-import { pushSnapshot } from '../history.js';
+import { pushSnapshot, discardSnapshot } from '../history.js';
 import * as audio from '../audio.js';
 import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks } from './common.js';
 import { setActive, undo, registerBlockKind } from './blocks.js';
@@ -113,6 +115,7 @@ export function staffBlockEl(n, b, el) {
   ms.onchange = () => {
     pushSnapshot(n);
     b.time = ms.value;
+    refit(b); // tout est recoupé selon la nouvelle mesure
     touch(n);
     redrawStaff(b.id);
   };
@@ -163,6 +166,7 @@ export function redrawStaff(id) {
     // En mode Écrire, rien n'est sélectionné ; on surligne seulement la note
     // dont on saisit l'accord chiffré.
     sel: isAct ? (write ? (chordTarget ? chordTarget.i : null) : state.sel) : null,
+    selEnd: isAct && !write && state.sel != null && b.items[state.sel] ? chainEnd(b.items, state.sel) : null,
     play: audio.isPlaying(id) ? state.playIdx : null,
     cursor: write,
     insertAt: write ? state.cursor : null,
@@ -184,6 +188,88 @@ function clampCursor(b) {
 }
 
 /**
+ * Remet la portée en mesure après une modification (liaisons automatiques aux
+ * barres, voir {@link module:measure-fit|measure-fit}) et recale la sélection
+ * et le curseur sur les nouveaux index.
+ * @param {module:model~StaffBlock} b
+ * @returns {{startOf: number[], tupCross: Set.<number>}}
+ */
+function refit(b) {
+  const res = normalizeStaff(b.items, b.time);
+  if (state.sel != null) state.sel = res.startOf[state.sel] ?? null;
+  if (state.cursor != null) {
+    const c = res.startOf[state.cursor];
+    state.cursor = c == null || c >= res.items.length ? null : c;
+  }
+  b.items = res.items;
+  return res;
+}
+
+/** Message ponctuel affiché dans la ligne d'aide de la palette (refus d'une action). */
+let notice = '';
+let noticeTimer = null;
+
+/**
+ * Affiche un message dans la ligne d'aide pendant quelques secondes.
+ * @param {string} text
+ */
+function flash(text) {
+  notice = text;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => {
+    notice = '';
+    updateStaffPalette();
+  }, 3500);
+  updateStaffPalette();
+}
+
+/**
+ * Valeur (durée écrite) de la note logique qui commence en `i` : celle de
+ * l'élément s'il est seul, sinon la valeur unique équivalente à la somme de
+ * ses morceaux (une ronde coupée en blanche⁀blanche vaut une ronde), à défaut
+ * celle du premier morceau.
+ * @param {module:model~StaffBlock} b
+ * @param {number} i
+ * @returns {{d: string, dot: boolean, tup: boolean}}
+ */
+function logicalValue(b, i) {
+  const a = chainStart(b.items, i);
+  const z = chainEnd(b.items, i);
+  const first = b.items[a];
+  if (a === z) return { d: first.d, dot: !!first.dot, tup: !!first.tup };
+  let len = 0;
+  for (let k = a; k <= z; k++) len += qlen(b.items[k]);
+  const one = singleValue(len, true);
+  return one ? { ...one, tup: false } : { d: first.d, dot: !!first.dot, tup: false };
+}
+
+/**
+ * Mode Modifier : change la durée de la note sélectionnée, en gardant la
+ * suite à sa place ({@link module:measure-fit.resizeEvent|resizeEvent}).
+ * @param {function({d: string, dot: boolean, tup: boolean}): {d: string, dot: boolean, tup: boolean}} change
+ * @returns {boolean} `false` hors mode Modifier ou sans sélection.
+ */
+function resizeSel(change) {
+  if (state.mode !== 'edit') return false;
+  const n = curNote();
+  const b = /** @type {module:model~StaffBlock} */ (blockById(state.activeId));
+  if (!n || !b || state.sel == null || !b.items[state.sel]) return false;
+  const value = change(logicalValue(b, state.sel));
+  const res = resizeEvent(b.items, b.time, state.sel, value);
+  if (value.tup && res.tupCross.has(res.index)) {
+    flash('Un triolet ne peut pas passer la barre de mesure');
+    return true;
+  }
+  pushSnapshot(n);
+  b.items = res.items;
+  state.sel = res.index;
+  touch(n);
+  redrawStaff(b.id);
+  audio.previewItem(b, state.sel);
+  return true;
+}
+
+/**
  * Position d'insertion effective : index de l'élément devant lequel la
  * prochaine note arrivera (`items.length` = à la fin).
  * @param {module:model~StaffBlock} b
@@ -194,16 +280,16 @@ function insertIndex(b) {
 }
 
 /**
- * Élément auquel s'appliquent les barres et l'accord chiffré : la note
- * sélectionnée en mode Modifier, la note juste avant le curseur en mode Écrire
- * (à défaut, la dernière ou la première).
+ * Note logique à laquelle s'appliquent les barres et l'accord chiffré : la
+ * note sélectionnée en mode Modifier, la note juste avant le curseur en mode
+ * Écrire (à défaut, la dernière ou la première). Renvoie son premier morceau.
  * @param {module:model~StaffBlock} b
  * @returns {number} -1 si la portée est vide.
  */
 function targetIndex(b) {
   if (!b.items.length) return -1;
   if (state.mode === 'edit') return state.sel != null ? state.sel : b.items.length - 1;
-  return Math.max(0, insertIndex(b) - 1);
+  return chainStart(b.items, Math.max(0, insertIndex(b) - 1));
 }
 
 /**
@@ -216,12 +302,12 @@ function targetIndex(b) {
  * @param {number} at Index d'insertion.
  */
 function insertNote(n, b, L, g, y, at) {
-  pushSnapshot(n);
   const inp = state.input;
   /** @type {module:model~StaffItem} */
   const it = { d: inp.d };
   if (inp.dot) it.dot = true;
   if (inp.tup) it.tup = 3;
+  pushSnapshot(n);
   const prev = b.items[at - 1];
   // Une liaison qui partait de la note précédente visait l'ancienne voisine :
   // elle n'a plus de sens si l'on insère une autre note entre les deux.
@@ -237,15 +323,27 @@ function insertNote(n, b, L, g, y, at) {
     if (inp.acc != null) it.a = inp.acc;
   }
   if (inp.rs) it.rs = true;
+  const before = b.items.slice();
+  const cursorBefore = state.cursor;
   b.items.splice(at, 0, it);
+  // Le curseur reste juste après la note insérée : on peut enchaîner.
+  if (state.cursor != null) state.cursor = at + 1;
+  const res = refit(b);
+  const idx = res.startOf[at];
+  if (it.tup && res.tupCross.has(idx)) {
+    // Refus : un triolet ne peut pas être coupé par une barre.
+    b.items = before;
+    state.cursor = cursorBefore;
+    discardSnapshot(n);
+    flash('Un triolet ne peut pas passer la barre de mesure');
+    return;
+  }
   // Réglages « à usage unique » consommés ; triolet et silence restent actifs.
   inp.acc = null;
   inp.rs = false;
   inp.tie = false;
-  // Le curseur reste juste après la note insérée : on peut enchaîner.
-  if (state.cursor != null) state.cursor = at + 1 < b.items.length ? at + 1 : null;
   touch(n);
-  audio.previewItem(b, at);
+  audio.previewItem(b, idx);
 }
 
 /**
@@ -292,30 +390,31 @@ function staffTap(n, b, e) {
     if (L.insertX != null && si === L.insertSys && Math.abs(x - L.insertX) <= INSERT_GAP / 2 + 2) {
       insertNote(n, b, L, g, y, state.cursor);
     } else if (hit >= 0) {
-      state.cursor = hit;
+      state.cursor = chainStart(b.items, hit); // jamais au milieu d'une note coupée
     } else if (inAppend) {
       if (state.cursor != null) state.cursor = null;
       else insertNote(n, b, L, g, y, b.items.length);
     }
   } else if (hit >= 0) {
-    const it = b.items[hit];
-    if (state.sel === hit && !it.r && !L.rh) {
+    const h = chainStart(b.items, hit); // une note coupée se sélectionne en entier
+    const it = b.items[h];
+    if (state.sel === h && !it.r && !L.rh) {
       const s = stepFromY(g, y);
       if (s !== it.s) {
         pushSnapshot(n);
         it.s = s;
         // Une liaison relie deux notes de même hauteur : déplacer une note
         // rompt la liaison qui y arrive, et entraîne la note à laquelle elle est liée.
-        const prev = b.items[hit - 1];
+        const prev = b.items[h - 1];
         if (prev && prev.tie) delete prev.tie;
-        for (let k = hit; b.items[k] && b.items[k].tie && b.items[k + 1] && !b.items[k + 1].r; k++)
+        for (let k = h; b.items[k] && b.items[k].tie && b.items[k + 1] && !b.items[k + 1].r; k++)
           b.items[k + 1].s = s;
         touch(n);
       }
     } else {
-      state.sel = hit;
+      state.sel = h;
     }
-    audio.previewItem(b, hit);
+    audio.previewItem(b, h);
   } else {
     state.sel = null;
   }
@@ -334,10 +433,11 @@ function setMode(mode) {
   closeChord();
   if (mode === 'edit') {
     const i = insertIndex(b) - 1;
-    state.sel = i >= 0 ? i : null;
+    state.sel = i >= 0 ? chainStart(b.items, i) : null;
     state.cursor = null;
   } else {
-    state.cursor = state.sel != null && state.sel + 1 < b.items.length ? state.sel + 1 : null;
+    const after = state.sel != null ? chainEnd(b.items, state.sel) + 1 : null;
+    state.cursor = after != null && after < b.items.length ? after : null;
     state.sel = null;
   }
   state.mode = mode;
@@ -368,7 +468,11 @@ function updateStaffPalette() {
   const rh = b.clef === 'rhythm';
   const editing = state.mode === 'edit';
   // En mode Écrire, la palette montre toujours les réglages de la prochaine note.
-  const it = editing && state.sel != null ? b.items[state.sel] : null;
+  // Note coupée par une barre : on affiche sa valeur entière (une ronde, pas une blanche).
+  const it =
+    editing && state.sel != null && b.items[state.sel]
+      ? { ...b.items[state.sel], ...logicalValue(b, state.sel) }
+      : null;
   const last = b.items[b.items.length - 1];
   pal
     .querySelectorAll('[data-mode]')
@@ -436,6 +540,7 @@ function updateStaffPalette() {
     info.textContent = rh
       ? 'Touche la zone bleue pour ajouter'
       : 'Touche la portée dans la zone bleue pour ajouter';
+  if (notice) info.textContent = notice;
   syncPaletteSpace();
 }
 
@@ -451,6 +556,7 @@ function withSel(fn) {
   if (!n || !b || state.sel == null || !b.items[state.sel]) return false;
   pushSnapshot(n);
   fn(b.items[state.sel], b);
+  refit(b);
   touch(n);
   redrawStaff(b.id);
   return true;
@@ -464,14 +570,17 @@ function withSel(fn) {
  */
 function toggleTie() {
   const b = /** @type {module:model~StaffBlock} */ (blockById(state.activeId));
-  const done = withSel((it, blk) => {
+  const done = withSel((first, blk) => {
+    // La liaison de l'utilisateur part de la fin de la note logique.
+    const it = blk.items[chainEnd(blk.items, state.sel)];
     if (it.r) return;
-    if (it.tie) {
+    if (it.tie && !it.auto) {
       delete it.tie;
       return;
     }
+    if (it.auto) return;
     it.tie = true;
-    const next = blk.items[state.sel + 1];
+    const next = blk.items[chainEnd(blk.items, state.sel) + 1];
     if (next && !next.r) {
       next.s = it.s;
       delete next.a;
@@ -507,12 +616,13 @@ function applyBar(type) {
   } else {
     if (tgt < 0) return;
     pushSnapshot(n);
-    const it = b.items[tgt];
+    const it = b.items[chainEnd(b.items, tgt)]; // la barre suit la fin de la note logique
     if (type === 'none') {
       delete it.bar;
       delete it.rs;
     } else if (it.bar === type) delete it.bar;
     else it.bar = /** @type {any} */ (type);
+    refit(b);
     touch(n);
   }
   barBar.hidden = true;
@@ -539,13 +649,7 @@ pal.addEventListener('click', (e) => {
   }
   if (btn.dataset.dur) {
     const d = /** @type {any} */ (btn.dataset.dur);
-    if (
-      withSel((it) => {
-        it.d = d;
-      })
-    )
-      audio.previewItem(b, state.sel);
-    else {
+    if (!resizeSel((v) => ({ ...v, d }))) {
       inp.d = d;
       updateStaffPalette();
     }
@@ -574,23 +678,13 @@ pal.addEventListener('click', (e) => {
       updateStaffPalette();
       return;
     case 'dot':
-      if (
-        !withSel((it) => {
-          if (it.dot) delete it.dot;
-          else it.dot = true;
-        })
-      ) {
+      if (!resizeSel((v) => ({ ...v, dot: !v.dot }))) {
         inp.dot = !inp.dot;
         updateStaffPalette();
       }
       return;
     case 'tup':
-      if (
-        !withSel((it) => {
-          if (it.tup) delete it.tup;
-          else it.tup = 3;
-        })
-      ) {
+      if (!resizeSel((v) => ({ ...v, tup: !v.tup }))) {
         inp.tup = !inp.tup;
         updateStaffPalette();
       }
@@ -601,12 +695,19 @@ pal.addEventListener('click', (e) => {
     case 'rest':
       if (
         !withSel((it, blk) => {
-          if (it.r) {
-            delete it.r;
-            if (blk.clef !== 'rhythm') it.s = it.s ?? 4;
-          } else {
-            it.r = true;
-            delete it.tie;
+          // Toute la note logique change (tous ses morceaux).
+          const toNote = !!it.r;
+          for (let k = state.sel; k <= chainEnd(blk.items, state.sel); k++) {
+            const p = blk.items[k];
+            if (toNote) {
+              delete p.r;
+              if (blk.clef !== 'rhythm') p.s = it.s ?? 4;
+              if (p.auto) p.tie = true;
+            } else {
+              p.r = true;
+              delete p.tie;
+              delete p.a;
+            }
           }
         })
       ) {
@@ -619,17 +720,27 @@ pal.addEventListener('click', (e) => {
       if (!b.items.length) return;
       if (state.mode === 'write') {
         // Le curseur va de 0 (avant la 1re note) à items.length (fin, noté null).
-        const c = insertIndex(b) + (btn.dataset.act === 'prev' ? -1 : 1);
-        state.cursor = c >= b.items.length ? null : Math.max(0, c);
+        // On saute d'une note logique à l'autre (jamais au milieu d'une note coupée).
+        const cur = insertIndex(b);
+        const c =
+          btn.dataset.act === 'prev'
+            ? cur > 0
+              ? chainStart(b.items, cur - 1)
+              : 0
+            : cur < b.items.length
+              ? chainEnd(b.items, cur) + 1
+              : cur;
+        state.cursor = c >= b.items.length ? null : c;
         redrawStaff(b.id);
         return;
       }
-      if (state.sel == null) state.sel = btn.dataset.act === 'prev' ? b.items.length - 1 : 0;
-      else
-        state.sel = Math.max(
-          0,
-          Math.min(b.items.length - 1, state.sel + (btn.dataset.act === 'prev' ? -1 : 1)),
-        );
+      if (state.sel == null)
+        state.sel = chainStart(b.items, btn.dataset.act === 'prev' ? b.items.length - 1 : 0);
+      else if (btn.dataset.act === 'prev') state.sel = chainStart(b.items, Math.max(0, state.sel - 1));
+      else {
+        const nx = chainEnd(b.items, state.sel) + 1;
+        if (nx < b.items.length) state.sel = nx;
+      }
       redrawStaff(b.id);
       audio.previewItem(b, state.sel);
       return;
@@ -641,14 +752,22 @@ pal.addEventListener('click', (e) => {
       // Écrire : efface la note juste avant le curseur (comme la touche ⌫).
       // Modifier : efface la note sélectionnée (à défaut, la dernière).
       const write = state.mode === 'write';
-      const i = write ? insertIndex(b) - 1 : state.sel != null ? state.sel : b.items.length - 1;
-      if (i < 0) return;
+      const last = write
+        ? insertIndex(b) - 1
+        : state.sel != null
+          ? chainEnd(b.items, state.sel)
+          : b.items.length - 1;
+      if (last < 0) return;
+      const i = chainStart(b.items, last); // une note coupée s'efface en entier
       pushSnapshot(n);
-      b.items.splice(i, 1);
+      b.items.splice(i, last - i + 1);
       if (write && state.cursor != null) state.cursor = i;
       // Une liaison qui menait à la note supprimée n'a plus de sens.
       if (b.items[i - 1] && b.items[i - 1].tie && (!b.items[i] || b.items[i].r)) delete b.items[i - 1].tie;
-      if (state.sel != null) state.sel = b.items.length ? Math.min(i, b.items.length - 1) : null;
+      if (state.sel != null)
+        state.sel = b.items.length ? chainStart(b.items, Math.min(i, b.items.length - 1)) : null;
+      if (state.cursor != null && state.cursor >= b.items.length) state.cursor = null;
+      refit(b);
       touch(n);
       redrawStaff(b.id);
       return;

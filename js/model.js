@@ -65,6 +65,7 @@ import { uid } from './util.js';
  *   (même hauteur ; à la lecture, les deux durées n'en font qu'une).
  * @property {3} [tup] Appartient à un triolet (3 notes dans le temps de 2 :
  *   durée réelle = durée écrite × 2/3).
+ * @property {boolean} [auto] Morceau créé par la mise en mesure (2.6) : continue dans l'élément suivant (note coupée à la barre). Voir le module `measure-fit`.
  */
 
 /**
