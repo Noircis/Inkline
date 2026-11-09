@@ -3,6 +3,14 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.1] - 2026-11-09
+
+### Modifié
+
+- **Exercices aléatoires : 1, 2 ou 4 mesures** (au lieu de 4, 8 ou 12). Un ancien réglage à 8 ou 12 repasse à 4.
+- **Jamais deux fois la même mesure dans un exercice.** Avant, seule la répétition immédiate était évitée. Le tirage se fait maintenant parmi les mesures pas encore sorties, ce qui garantit l'absence de doublon sans boucle de retirage. Chaque départ garde la même chance de sortir.
+- Si les réglages ne permettent pas assez de mesures différentes (une note, une seule position permise…), un message le signale sur l'écran des réglages.
+
 ## [2.8.0] - 2026-11-08
 
 ### Ajouté

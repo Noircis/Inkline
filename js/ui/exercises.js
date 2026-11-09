@@ -19,7 +19,7 @@ import { esc } from '../util.js';
 import { getMeta, setMeta, GEN_DEFAULTS } from '../storage.js';
 import { staffSvg } from '../render-staff.js';
 import { seriesBlock, meterOf, slotsOf, startGlyphs, startLabel } from '../placements.js';
-import { generateExercise, newSeed } from '../exercise.js';
+import { generateExercise, candidates, newSeed } from '../exercise.js';
 import * as audio from '../audio.js';
 import { registerScreen, goChild, backToList } from './nav.js';
 import { hideAllPalettes } from './blocks.js';
@@ -89,10 +89,10 @@ function renderGen() {
     <h2 class="eyebrow">Mesure</h2>
     ${meterChips(m.key)}
     <h2 class="eyebrow">Longueur</h2>
-    <div class="seg seg-sm" role="radiogroup" aria-label="Longueur">${[4, 8, 12]
+    <div class="seg seg-sm" role="radiogroup" aria-label="Longueur">${[1, 2, 4]
       .map(
         (n) =>
-          `<button type="button" role="radio" data-len="${n}" aria-checked="${n === g.measures}">${n} mesures</button>`,
+          `<button type="button" role="radio" data-len="${n}" aria-checked="${n === g.measures}">${n} mesure${n > 1 ? 's' : ''}</button>`,
       )
       .join('')}</div>
     <h2 class="eyebrow">Notes par mesure</h2>
@@ -104,6 +104,7 @@ function renderGen() {
         `<button type="button" data-start="${p}" aria-pressed="${starts.has(p)}" aria-label="Sur ${esc(startLabel(p, m))}"><span class="mus" aria-hidden="true">${startGlyphs(p, m)}</span></button>`,
     ).join('')}</div>
     <p class="hint" id="startsHint" hidden>Gardez au moins une position.</p>
+    <p class="hint" id="fewHint" hidden></p>
     <h2 class="eyebrow">Subdivision</h2>
     ${subdivisionSeg()}
     <button type="button" class="btn primary wide" id="genGo">Générer l’exercice</button>
@@ -122,6 +123,7 @@ function renderGen() {
   app.querySelectorAll('[data-len]').forEach((b) =>
     b.addEventListener('click', () => {
       updateGen({ measures: Number(/** @type {HTMLElement} */ (b).dataset.len) });
+      updateFewHint();
       app.querySelectorAll('[data-len]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
     }),
   );
@@ -139,6 +141,7 @@ function renderGen() {
         min = Math.min(min, max);
       }
       updateGen({ min, max });
+      updateFewHint();
       app.querySelector('#v_min').textContent = String(min);
       app.querySelector('#v_max').textContent = String(max);
     }),
@@ -153,9 +156,11 @@ function renderGen() {
       hint.hidden = set.size > 0;
       if (!set.size) return;
       updateGen({ starts: { ...gen().starts, [m.key]: [...set].sort((a, b2) => a - b2) } });
+      updateFewHint();
       b.setAttribute('aria-pressed', String(set.has(p)));
     }),
   );
+  updateFewHint();
   app.querySelector('#genGo').addEventListener('click', () => {
     updateGen({ seed: newSeed() });
     goChild('genPlay');
@@ -163,6 +168,32 @@ function renderGen() {
 }
 
 registerScreen('gen', renderGen);
+
+/**
+ * Réglages complets d'un exercice, d'après les réglages mémorisés.
+ * @returns {module:exercise~ExerciseSettings}
+ */
+function exerciseSettings() {
+  const g = gen();
+  const m = meterOf(g.meter);
+  return { meter: m, measures: g.measures, min: g.min, max: g.max, starts: startsFor(m), seed: g.seed };
+}
+
+/**
+ * Prévient quand les réglages ne permettent pas assez de mesures différentes
+ * (une mesure reviendra forcément).
+ */
+function updateFewHint() {
+  const el = /** @type {HTMLElement} */ (app.querySelector('#fewHint'));
+  if (!el) return;
+  const s = exerciseSettings();
+  const n = candidates(s).length;
+  el.hidden = n >= s.measures;
+  el.textContent =
+    n === 1
+      ? 'Ces réglages ne donnent qu’une seule mesure possible : elle sera répétée.'
+      : `Ces réglages ne donnent que ${n} mesures différentes : certaines reviendront.`;
+}
 
 /** Bloc de l'exercice affiché. */
 let block = null;
@@ -172,17 +203,8 @@ let block = null;
  * @returns {module:model~StaffBlock}
  */
 function buildBlock() {
-  const g = gen();
-  const m = meterOf(g.meter);
-  const placements = generateExercise({
-    meter: m,
-    measures: g.measures,
-    min: g.min,
-    max: g.max,
-    starts: startsFor(m),
-    seed: g.seed,
-  });
-  return seriesBlock(placements, settings(), PLAY_ID, m);
+  const s = exerciseSettings();
+  return seriesBlock(generateExercise(s), settings(), PLAY_ID, s.meter);
 }
 
 /**
@@ -197,7 +219,7 @@ function renderGenPlay() {
   block = buildBlock();
   const range = g.min === g.max ? `${g.min}` : `${g.min} à ${g.max}`;
   app.innerHTML = `${header('Réglages', `Exercice n° ${g.seed}`, '<button type="button" class="btn icon-btn" id="reroll" aria-label="Nouvel exercice">&#8635;</button>')}
-  <p class="gen-info">${esc(m.label)} · ${g.measures} mesures · ${range} note${g.max > 1 ? 's' : ''} par mesure</p>
+  <p class="gen-info">${esc(m.label)} · ${g.measures} mesure${g.measures > 1 ? 's' : ''} · ${range} note${g.max > 1 ? 's' : ''} par mesure</p>
   <div class="gen-staff" id="genStaff"></div>
   <div class="transport">
     <div class="metro-panel" id="metroPanel" hidden>${metronomeControls(m)}</div>

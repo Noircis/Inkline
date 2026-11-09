@@ -510,7 +510,7 @@ function drillOf(r) {
  * Réglages des exercices aléatoires (2.8).
  * @typedef {Object} GenSettings
  * @property {string} meter Mesure (clé de {@link module:placements.METERS|METERS}).
- * @property {number} measures Longueur de l'exercice : 4, 8 ou 12 mesures.
+ * @property {number} measures Longueur de l'exercice : 1, 2 ou 4 mesures (4, 8 ou 12 en 2.8.0).
  * @property {number} min Notes par mesure, au moins.
  * @property {number} max Notes par mesure, au plus.
  * @property {Object.<string, Array.<number>>} starts Positions permises pour
@@ -549,7 +549,7 @@ function genOf(r) {
     });
   return {
     meter,
-    measures: [4, 8, 12].includes(r.measures) ? r.measures : d.measures,
+    measures: [1, 2, 4].includes(r.measures) ? r.measures : d.measures,
     min,
     max: int(r.max, min, slots, Math.max(min, Math.min(d.max, slots))),
     starts,

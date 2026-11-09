@@ -20,16 +20,17 @@
  *    derrière elle pour les `n − 1` autres (`p ≤ positions − n`). Si aucune
  *    position permise ne laisse assez de place, on réduit `n` ;
  * 3. les `n − 1` autres notes au hasard après `p` ;
- * 4. si la mesure est identique à la précédente, on retire (quelques essais).
+ * 4. jamais deux fois la même mesure dans un exercice (2.8.1) : le tirage se
+ *    fait parmi les mesures pas encore sorties.
  */
 
-import { slotsOf } from './placements.js';
+import { slotsOf, combinations } from './placements.js';
 
 /**
  * Réglages d'un exercice.
  * @typedef {Object} ExerciseSettings
  * @property {module:placements~Meter} meter
- * @property {number} measures Nombre de mesures (4, 8 ou 12).
+ * @property {number} measures Nombre de mesures (1, 2 ou 4).
  * @property {number} min Notes par mesure, au moins.
  * @property {number} max Notes par mesure, au plus.
  * @property {Array.<number>} starts Positions permises pour la première note
@@ -66,44 +67,78 @@ export function newSeed(rnd = Math.random) {
 }
 
 /**
- * Tire les placements d'un exercice.
+ * Toutes les mesures différentes que permettent les réglages, rangées par
+ * nombre de notes puis par première note. Quand aucune position permise ne
+ * laisse la place pour `n` notes, la mesure se réduit (de la première
+ * position permise jusqu'à la fin).
+ *
+ * Au plus quelques milliers de mesures (12/8 : 2^12), énumérées une fois par
+ * exercice : c'est instantané.
+ *
  * @param {ExerciseSettings} s
- * @returns {Array.<Array.<number>>} Une liste de positions par mesure.
+ * @returns {Array.<Array.<number>>}
  */
-export function generateExercise(s) {
+export function candidates(s) {
   const slots = slotsOf(s.meter);
-  const rnd = mulberry32(s.seed);
-  const int = (lo, hi) => lo + Math.floor(rnd() * (hi - lo + 1)); // entier dans [lo, hi]
   const lo = Math.max(1, Math.min(slots, s.min));
   const hi = Math.max(lo, Math.min(slots, s.max));
   let allowed = [...new Set(s.starts)].filter((p) => p >= 0 && p < slots).sort((a, b) => a - b);
   if (!allowed.length) allowed = Array.from({ length: slots }, (_, i) => i);
-
   const out = [];
-  let prev = '';
-  for (let m = 0; m < s.measures; m++) {
-    const n = int(lo, hi);
-    let pos = [];
-    for (let attempt = 0; attempt < 8; attempt++) {
-      let cand = allowed.filter((p) => p <= slots - n);
-      let k = n;
-      if (!cand.length) {
-        // Aucune position permise ne laisse la place : on place moins de notes.
-        cand = [allowed[0]];
-        k = slots - allowed[0];
-      }
-      const p = cand[int(0, cand.length - 1)];
-      // k − 1 positions parmi p+1 … slots−1 : mélange partiel de Fisher-Yates.
-      const after = [];
-      for (let i = p + 1; i < slots; i++) after.push(i);
-      for (let i = 0; i < k - 1; i++) {
-        const j = int(i, after.length - 1);
-        [after[i], after[j]] = [after[j], after[i]];
-      }
-      pos = [p, ...after.slice(0, k - 1)].sort((a, b) => a - b);
-      if (pos.join() !== prev) break;
+  const seen = new Set();
+  const add = (pos) => {
+    const key = pos.join();
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(pos);
     }
-    prev = pos.join();
+  };
+  for (let n = lo; n <= hi; n++) {
+    const fit = allowed.filter((p) => p <= slots - n);
+    if (!fit.length) {
+      add(Array.from({ length: slots - allowed[0] }, (_, i) => allowed[0] + i));
+      continue;
+    }
+    fit.forEach((p) =>
+      combinations(slots - p - 1, n - 1).forEach((rest) => add([p, ...rest.map((x) => x + p + 1)])),
+    );
+  }
+  return out;
+}
+
+/**
+ * Tire les placements d'un exercice. **Aucune mesure n'apparaît deux fois**
+ * dans un même exercice, tant que les réglages le permettent (voir
+ * {@link candidates} : avec une seule note et une seule position permise,
+ * il n'existe qu'une mesure possible).
+ *
+ * Plutôt que de tirer au hasard puis de recommencer si la mesure est déjà
+ * sortie (ce qui peut tourner longtemps quand il reste peu de choix), on
+ * tire directement parmi les mesures **pas encore sorties** : même résultat,
+ * mais le nombre d'opérations est garanti.
+ *
+ * Pour chaque mesure : un nombre de notes au hasard, puis une première note
+ * au hasard (chaque départ a la même chance, sinon les départs tôt dans la
+ * mesure, qui offrent plus de combinaisons, sortiraient bien plus souvent),
+ * puis une mesure au hasard parmi celles qui restent.
+ *
+ * @param {ExerciseSettings} s
+ * @returns {Array.<Array.<number>>} Une liste de positions par mesure.
+ */
+export function generateExercise(s) {
+  const rnd = mulberry32(s.seed);
+  const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+  const all = candidates(s);
+  const used = new Set();
+  const out = [];
+  for (let m = 0; m < s.measures; m++) {
+    let pool = all.filter((pos) => !used.has(pos.join()));
+    if (!pool.length) pool = all; // plus rien de neuf : répétition inévitable
+    const n = pick([...new Set(pool.map((pos) => pos.length))].sort((a, b) => a - b));
+    pool = pool.filter((pos) => pos.length === n);
+    const p = pick([...new Set(pool.map((pos) => pos[0]))].sort((a, b) => a - b));
+    const pos = pick(pool.filter((x) => x[0] === p));
+    used.add(pos.join());
     out.push(pos);
   }
   return out;

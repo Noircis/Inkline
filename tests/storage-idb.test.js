@@ -148,7 +148,7 @@ test('réglages de l’entraînement : ancien format (2.3) repris, valeurs inval
     'inkline-meta',
     JSON.stringify({
       drill: { notes: 3, tempo: 100, beats: [false, true, false, true], swing: true },
-      gen: { meter: '7/8:2+3+2', measures: 7, min: 9, max: 2, starts: { '6/8': [5, 1, 1, 9] }, seed: 12 },
+      gen: { meter: '7/8:2+3+2', measures: 8, min: 9, max: 2, starts: { '6/8': [5, 1, 1, 9] }, seed: 12 },
     }),
   );
   const s = await freshStorage();
@@ -158,7 +158,7 @@ test('réglages de l’entraînement : ancien format (2.3) repris, valeurs inval
   assert.equal(m.drill.notes, 3);
   assert.equal(m.drill.loop, false);
   assert.equal(m.gen.meter, '7/8:2+3+2');
-  assert.equal(m.gen.measures, 4); // 7 n'est pas proposé
+  assert.equal(m.gen.measures, 4); // 8 n'est plus proposé (2.8.1)
   assert.equal(m.gen.min, 2); // 9 > 7 croches : valeur par défaut
   assert.equal(m.gen.max, 2);
   assert.deepEqual(m.gen.starts, {}); // 9 hors du 6/8 : liste rejetée

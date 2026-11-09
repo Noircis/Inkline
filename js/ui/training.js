@@ -50,7 +50,7 @@ function renderTraining() {
     <h2 class="eyebrow">Rythme</h2>
     <div class="opt-group">
       <button class="opt-row" type="button" id="goPlacements"><span>Placements<small>Toutes les façons de placer des notes dans une mesure, à lire et à jouer</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
-      <button class="opt-row" type="button" id="goExercises"><span>Exercices aléatoires<small>4, 8 ou 12 mesures à lire, tirées au hasard selon vos réglages</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
+      <button class="opt-row" type="button" id="goExercises"><span>Exercices aléatoires<small>1, 2 ou 4 mesures à lire, tirées au hasard selon vos réglages</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
     </div>
   </section>`;
   app.querySelector('#back').addEventListener('click', backToList);

@@ -112,7 +112,7 @@ test.describe('exercices aléatoires', () => {
 
   test('réglages, génération, même numéro après retour, nouveau tirage', async ({ page }) => {
     await page.click('[data-meter="5/8:3+2"]');
-    await page.click('[data-len="8"]');
+    await page.click('[data-len="2"]');
     await page.click('[data-step=max][data-d="1"]'); // 2 à 4
     await expect(page.locator('#v_max')).toHaveText('4');
     await expect(page.locator('[data-start]')).toHaveCount(5);
@@ -120,8 +120,10 @@ test.describe('exercices aléatoires', () => {
     for (const p of [0, 1, 2, 3, 4]) await page.click(`[data-start="${p}"]`);
     await expect(page.locator('#startsHint')).toBeVisible();
     await expect(page.locator('[data-start="4"]')).toHaveAttribute('aria-pressed', 'true');
+    // Départ sur la dernière croche seulement : une seule mesure possible, le message le dit.
+    await expect(page.locator('#fewHint')).toContainText('une seule mesure');
     await page.click('#genGo');
-    await expect(page.locator('.gen-info')).toHaveText('5/8 (3+2) · 8 mesures · 2 à 4 notes par mesure');
+    await expect(page.locator('.gen-info')).toHaveText('5/8 (3+2) · 2 mesures · 2 à 4 notes par mesure');
     const title = await page.locator('.top-title').textContent();
     expect(title).toMatch(/^Exercice n° \d+$/);
     const staff = () => page.locator('#genStaff').innerHTML();
@@ -157,5 +159,20 @@ test.describe('exercices aléatoires', () => {
     expect(clicks).toBeGreaterThan(16);
     await page.click('[data-play=gen]');
     await expect(page.locator('[data-play=gen].on')).toHaveCount(0);
+  });
+
+  test('réglages trop serrés : un message prévient', async ({ page }) => {
+    await page.click('[data-meter="4/4"]');
+    await page.click('[data-len="4"]');
+    await page.click('[data-step=min][data-d="-1"]');
+    await page.click('[data-step=min][data-d="-1"]');
+    await page.click('[data-step=max][data-d="-1"]');
+    await page.click('[data-step=max][data-d="-1"]'); // 1 note
+    for (const p of [1, 2, 3, 4, 5, 6, 7]) await page.click(`[data-start="${p}"]`); // départ sur 1 seulement
+    await expect(page.locator('#fewHint')).toHaveText(
+      'Ces réglages ne donnent qu’une seule mesure possible : elle sera répétée.',
+    );
+    await page.click('[data-len="1"]');
+    await expect(page.locator('#fewHint')).toBeHidden();
   });
 });
