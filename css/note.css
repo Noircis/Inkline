@@ -131,6 +131,7 @@
   background: var(--ink);
 }
 .staff-wrap {
+  position: relative;
   overflow: hidden;
   touch-action: manipulation;
   user-select: none;

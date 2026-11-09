@@ -3,6 +3,26 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.2] - 2026-11-09
+
+### Ajouté
+
+- **Glisser une note pour la placer.** Le doigt n'est pas toujours précis : la note suit maintenant le doigt tant qu'il reste posé, et elle est posée en le levant.
+  - Mode Écrire : en touchant la zone d'insertion (ou la zone d'ajout en fin de portée).
+  - Mode Modifier : en touchant la note sélectionnée.
+  - Pendant le geste, on entend chaque changement de hauteur, et une bulle au-dessus du doigt affiche le nom de la note.
+  - Tout le geste compte pour une seule annulation. Un simple toucher marche comme avant.
+  - Ailleurs sur la portée, la page défile toujours normalement.
+- **Notes plus aiguës** : jusqu'au ré 7 en clé de sol (six lignes supplémentaires), au lieu du mi 6. La portée s'agrandit vers le haut seulement quand une note dépasse l'ancienne limite.
+
+### Modifié
+
+- Les croches ligaturées très aiguës (ou très graves) ont des hampes qui descendent (ou montent) jusqu'à la 3e ligne, comme les notes seules : la ligature ne se perd plus dans les lignes supplémentaires.
+
+### Technique
+
+- `model` : `STEP_MIN`, `STEP_MAX`, `STEP_FIT` ; `layout` : `padTop` ; `ui/staff/input` : `bindStaffInput`, calques `drag-zone` en `touch-action: none` (le navigateur décide de faire défiler avant que le code ne s'exécute).
+
 ## [2.8.1] - 2026-11-09
 
 ### Modifié

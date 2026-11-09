@@ -26,7 +26,7 @@
  */
 
 import { uid, clamp } from './util.js';
-import { DUR, TIME_SIGNATURES } from './model.js';
+import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX } from './model.js';
 import { COLOR_KEYS, cleanFolderName } from './folders.js';
 
 /** Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères. */
@@ -71,7 +71,7 @@ function item(r, rhythm) {
   const it = { d: r.d };
   if (r.dot === true) it.dot = true;
   if (r.r === true) it.r = true;
-  else if (!rhythm) it.s = isNum(r.s) ? clamp(Math.round(r.s), -6, 14) : 4;
+  else if (!rhythm) it.s = isNum(r.s) ? clamp(Math.round(r.s), STEP_MIN, STEP_MAX) : 4;
   if (!it.r && (r.a === -1 || r.a === 0 || r.a === 1)) it.a = r.a;
   if (isStr(r.c) && r.c.trim()) it.c = str(r.c, LIMITS.chord);
   if (['single', 'double', 'final', 'rep'].includes(r.bar)) it.bar = r.bar;

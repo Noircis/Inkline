@@ -210,6 +210,19 @@ export function beatUnit(time) {
 }
 
 /**
+ * Plage des positions de note sur la portée (`s`, en demi-interlignes, 0 =
+ * 1re ligne). En clé de sol : du fa 3 (-6, trois lignes supplémentaires en
+ * dessous) au ré 7 (20, six lignes supplémentaires au-dessus ; jusqu'à la 2.8.1,
+ * le mi 6, 14). La portée s'agrandit vers le haut quand une note dépasse 14
+ * (voir {@link module:layout.layout|layout}).
+ */
+export const STEP_MIN = -6;
+/** Voir {@link STEP_MIN}. */
+export const STEP_MAX = 20;
+/** Plus haute position qui tient dans la hauteur de ligne normale. */
+export const STEP_FIT = 14;
+
+/**
  * Groupement par défaut des croches d'une mesure (2.8) : des paires en x/4
  * (un temps = deux croches), des groupes de 3 en mesure composée (6/8, 9/8,
  * 12/8, 3/8), et pour les mesures asymétriques des paires terminées par un

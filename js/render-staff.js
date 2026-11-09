@@ -305,7 +305,7 @@ function beamGroupsBySystem(ctx) {
  * 2. pente naturelle de l'extrémité de la 1re hampe à celle de la dernière,
  *    bornée à ±{@link MAX_BEAM_SLOPE} ;
  * 3. décalage de toute la ligature pour qu'aucune hampe ne fasse moins de
- *    {@link MIN_BEAMED_STEM} px ;
+ *    {@link MIN_BEAMED_STEM} px, et que la ligature atteigne au moins la 3e ligne ;
  * 4. ligature secondaire pour les doubles croches : continue entre doubles
  *    croches voisines, sinon demi-ligature vers l'intérieur du groupe.
  *
@@ -339,6 +339,12 @@ function drawBeams(ctx) {
     points.forEach((p) => {
       const missing = up ? naturalY(p.sx) - (p.y - MIN_BEAMED_STEM) : p.y + MIN_BEAMED_STEM - naturalY(p.sx);
       if (missing > shift) shift = missing;
+      // Comme une hampe seule : la ligature atteint au moins la 3e ligne
+      // (notes très aiguës ou très graves, 2.8.2).
+      if (!L.rh) {
+        const toMid = up ? naturalY(p.sx) - g.mid : g.mid - naturalY(p.sx);
+        if (toMid > shift) shift = toMid;
+      }
     });
     const beamY = (x) => naturalY(x) + (up ? -shift : shift);
 

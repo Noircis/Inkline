@@ -127,3 +127,53 @@ test('staffSvg : l’armure est dessinée sur chaque ligne, le chiffrage décal�
   assert.equal(paths(flats) - paths(plain), 3 * 2 * lines);
   assert.ok(flats.includes('x="77"')); // chiffrage : 46 + 3×9 + 4
 });
+
+// --- 2.8.2 : notes plus aiguës --------------------------------------------
+import { geom, stepFromY, yOfStep } from '../js/layout.js';
+import { sanitizeBlock } from '../js/sanitize.js';
+import { STEP_MIN, STEP_MAX } from '../js/model.js';
+
+test('plage de hauteurs : du fa 3 au ré 7 en clé de sol', () => {
+  assert.equal(midiOf('treble', STEP_MAX, 0), 98); // ré 7 (MIDI 98)
+  assert.equal(midiOf('treble', STEP_MIN, 0), 53); // fa 3
+  const b = { type: 'staff', clef: 'treble', time: '4/4', items: [{ d: 'q', s: 4 }] };
+  const L = layout(b, 360);
+  const g = geom(L, 0);
+  assert.equal(stepFromY(g, -500), STEP_MAX); // bornée
+  assert.equal(stepFromY(g, 5000), STEP_MIN);
+  assert.equal(stepFromY(g, yOfStep(L, g, 17)), 17);
+});
+
+test('la portée s’agrandit vers le haut seulement pour les notes au-dessus du mi 6', () => {
+  const mk = (s) => layout({ type: 'staff', clef: 'treble', time: '4/4', items: [{ d: 'q', s }] }, 360);
+  assert.equal(mk(14).padTop, 0);
+  assert.equal(mk(14).SH, 124);
+  assert.equal(mk(20).padTop, 30);
+  assert.equal(mk(20).SH, 154);
+  const L = mk(20);
+  // La note la plus haute reste au même endroit de la bande qu'un mi 6 avant.
+  assert.equal(yOfStep(L, geom(L, 0), 20), yOfStep(mk(14), geom(mk(14), 0), 14));
+  // Un silence ne compte pas ; une ligne rythmique non plus.
+  assert.equal(
+    layout({ type: 'staff', clef: 'treble', time: '4/4', items: [{ d: 'q', r: true, s: 20 }] }, 360).padTop,
+    0,
+  );
+});
+
+test('import : hauteurs bornées à la nouvelle plage', () => {
+  const b = sanitizeBlock({
+    type: 'staff',
+    clef: 'treble',
+    time: '4/4',
+    tempo: 100,
+    items: [
+      { d: 'q', s: 19 },
+      { d: 'q', s: 40 },
+      { d: 'q', s: -30 },
+    ],
+  });
+  assert.deepEqual(
+    b.items.map((i) => i.s),
+    [19, STEP_MAX, STEP_MIN],
+  );
+});

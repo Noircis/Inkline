@@ -35,7 +35,7 @@
  */
 
 import { segmentMeasures } from './rhythm.js';
-import { mlen } from './model.js';
+import { mlen, STEP_MIN, STEP_MAX, STEP_FIT } from './model.js';
 
 /** Moitié d'un interligne, en pixels : l'écart vertical entre deux positions `s` consécutives. */
 export const HALF_SPACE = 5;
@@ -97,6 +97,7 @@ const MAX_STRETCH = 2.4;
  *   motif est terminé par une barre de fin.
  * @property {boolean} ended Le dernier élément porte une barre de fin.
  * @property {number} SH Hauteur d'une ligne en px.
+ * @property {number} padTop Place ajoutée en haut de chaque ligne pour les notes très aiguës (2.8.2).
  * @property {number} height Hauteur totale en px.
  * @property {number} ML Capacité d'une mesure en noires.
  */
@@ -302,7 +303,12 @@ export function layout(b, W, active = false, insertAt = null) {
   }
   const appendX = ended ? null : last.ms.length ? last.end + 8 : last.start + 6;
 
-  const SH = rh ? 92 : 124;
+  // Notes très aiguës (au-dessus du mi 6 en clé de sol) : toutes les lignes
+  // s'agrandissent vers le haut d'autant. Rien ne change sinon.
+  let hi = STEP_FIT;
+  if (!rh) items.forEach((it) => !it.r && it.s > hi && (hi = it.s));
+  const padTop = (hi - STEP_FIT) * HALF_SPACE;
+  const SH = (rh ? 92 : 124) + padTop;
   return {
     rh,
     systems,
@@ -316,6 +322,7 @@ export function layout(b, W, active = false, insertAt = null) {
     appendX,
     ended,
     SH,
+    padTop,
     height: systems.length * SH,
     ML: mlen(b.time),
   };
@@ -344,7 +351,7 @@ export function geom(L, si) {
     const ly = top + 56;
     return { top, chordY: top + 20, staffTop: ly, staffBottom: ly, mid: ly, line: ly };
   }
-  const st = top + 46;
+  const st = top + 46 + (L.padTop || 0);
   return { top, chordY: top + 20, staffTop: st, staffBottom: st + 40, mid: st + 20 };
 }
 
@@ -362,11 +369,11 @@ export function yOfStep(L, g, s) {
 
 /**
  * Hit-testing vertical : position `s` la plus proche d'une ordonnée touchée.
- * Bornée à [-6, 14] (trois lignes supplémentaires de chaque côté).
+ * Bornée à [{@link module:model.STEP_MIN|STEP_MIN}, {@link module:model.STEP_MAX|STEP_MAX}].
  * @param {SystemGeom} g
  * @param {number} y
  * @returns {number}
  */
 export function stepFromY(g, y) {
-  return Math.max(-6, Math.min(14, Math.round((g.staffBottom - y) / HALF_SPACE)));
+  return Math.max(STEP_MIN, Math.min(STEP_MAX, Math.round((g.staffBottom - y) / HALF_SPACE)));
 }

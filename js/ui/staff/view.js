@@ -17,7 +17,7 @@ import { toolsHtml, updatePlayBtn, playCallbacks } from '../common.js';
 import { setActive } from '../blocks.js';
 import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from '../fold.js';
 import { hooks, staffUi, clampCursor, refit } from './shared.js';
-import { staffTap } from './input.js';
+import { bindStaffInput, dragZonesHtml } from './input.js';
 
 /**
  * Armures proposées : nombre de dièses (> 0) ou de bémols (< 0), avec les
@@ -121,7 +121,7 @@ export function staffBlockEl(n, b, el) {
   };
   const wrap = /** @type {HTMLElement} */ (el.querySelector('.staff-wrap'));
   guardFoldedTaps(wrap, b);
-  wrap.addEventListener('click', (e) => staffTap(n, b, /** @type {MouseEvent} */ (e)));
+  bindStaffInput(n, b, wrap);
 }
 
 /**
@@ -143,16 +143,18 @@ export function redrawStaff(id) {
   const lines = layout(b, W, isAct).systems.length;
   const folded = isFolded(b, lines);
   const chord = staffUi.chordTarget;
-  wrap.innerHTML = staffSvg(b, W, {
-    // En mode Écrire, rien n'est sélectionné ; on surligne seulement la note
-    // dont on saisit l'accord chiffré.
-    sel: isAct ? (write ? (chord ? chord.i : null) : state.sel) : null,
-    selEnd: isAct && !write && state.sel != null && b.items[state.sel] ? chainEnd(b.items, state.sel) : null,
-    play: audio.isPlaying(id) ? state.playIdx : null,
-    cursor: write,
-    insertAt: write ? state.cursor : null,
-    maxSystems: folded ? FOLD_PREVIEW_LINES : undefined,
-  }).svg;
+  wrap.innerHTML =
+    staffSvg(b, W, {
+      // En mode Écrire, rien n'est sélectionné ; on surligne seulement la note
+      // dont on saisit l'accord chiffré.
+      sel: isAct ? (write ? (chord ? chord.i : null) : state.sel) : null,
+      selEnd:
+        isAct && !write && state.sel != null && b.items[state.sel] ? chainEnd(b.items, state.sel) : null,
+      play: audio.isPlaying(id) ? state.playIdx : null,
+      cursor: write,
+      insertAt: write ? state.cursor : null,
+      maxSystems: folded ? FOLD_PREVIEW_LINES : undefined,
+    }).svg + (folded ? '' : dragZonesHtml(b, W));
   applyFold(wrap, b, lines, folded);
   wrap._W = W;
   if (isAct) hooks.refreshPalette();
