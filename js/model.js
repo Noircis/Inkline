@@ -87,6 +87,7 @@ import { uid } from './util.js';
  * @property {number} tempo Tempo en noires par minute.
  * @property {boolean} swing Croches swing à la lecture.
  * @property {StaffItem[]} items Éléments dans l'ordre.
+ * @property {string} [tr] Instrument transpositeur (2.8.3, clé de {@link module:model.INSTRUMENTS|INSTRUMENTS}) : les notes sont écrites comme le musicien les lit, l'écoute joue le son réel. Absent : en ut.
  * @property {number} [ks] Armure (2.5) : nombre de dièses (> 0) ou de bémols (< 0), de -7 à 7. Absente : pas d'armure.
  * @property {Array.<number>} [groups] Groupement des croches dans la mesure (2.8), ex. `[2, 2, 3]` pour un 7/8 « 2+2+3 ». Décide des ligatures et des clics du métronome. Absent : {@link module:model.defaultGroups|defaultGroups}. Pour l'instant seulement sur les blocs générés de l'entraînement.
  * @property {boolean} [justify] Étirer la dernière ligne jusqu'au bord (blocs générés de l'entraînement ; jamais enregistré).
@@ -207,6 +208,42 @@ export function mlen(time) {
  */
 export function beatUnit(time) {
   return time.endsWith('/8') ? 1.5 : 1;
+}
+
+/**
+ * Un instrument transpositeur (2.8.3) : de combien sa partie est écrite
+ * au-dessus du son réel.
+ * @typedef {Object} Instrument
+ * @property {string} key Identifiant enregistré dans la portée (`b.tr`).
+ * @property {string} label Libellé du menu.
+ * @property {string} tag Étiquette affichée sur la portée (vide en ut).
+ * @property {number} steps Écart écrit − réel, en degrés (lignes et interlignes).
+ * @property {number} semis Écart écrit − réel, en demi-tons.
+ */
+
+/**
+ * Instruments proposés. Un sax alto (mi♭) lit une sixte majeure au-dessus du
+ * son réel : son do écrit sonne mi♭. Un sax ténor (si♭) lit une neuvième
+ * majeure au-dessus (une seconde, plus une octave).
+ * @type {ReadonlyArray.<Instrument>}
+ */
+export const INSTRUMENTS = Object.freeze([
+  { key: 'C', label: 'En ut', tag: '', steps: 0, semis: 0 },
+  { key: 'Bb', label: 'Si♭', tag: 'B♭', steps: 1, semis: 2 },
+  { key: 'Bb8', label: 'Si♭ ténor', tag: 'B♭', steps: 8, semis: 14 },
+  { key: 'Eb', label: 'Mi♭ alto', tag: 'E♭', steps: 5, semis: 9 },
+  { key: 'Eb8', label: 'Mi♭ baryton', tag: 'E♭', steps: 12, semis: 21 },
+  { key: 'F', label: 'Fa', tag: 'F', steps: 4, semis: 7 },
+  { key: 'G', label: 'Sol', tag: 'G', steps: 3, semis: 5 },
+]);
+
+/**
+ * Instrument d'une portée (en ut si absent ou inconnu).
+ * @param {string} [key]
+ * @returns {Instrument}
+ */
+export function instrumentOf(key) {
+  return INSTRUMENTS.find((x) => x.key === key) || INSTRUMENTS[0];
 }
 
 /**

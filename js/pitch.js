@@ -33,7 +33,7 @@
  */
 
 import { mod, EPS, snap } from './util.js';
-import { qlen, mlen } from './model.js';
+import { qlen, mlen, instrumentOf } from './model.js';
 
 /** Noms de notes en solfège français, indexés par degré (0 = do). */
 const NOTE_NAMES = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
@@ -129,11 +129,15 @@ export function pitchName(clef, s, a, ks = 0) {
  * reprises : les altérations sont une propriété de la partition écrite).
  *
  * @param {module:model~StaffBlock} b
+ * Pour un instrument transpositeur (2.8.3), c'est le **son réel** : la note
+ * écrite, moins l'écart de l'instrument.
+ *
  * @returns {Array.<?number>} Un numéro MIDI par élément, `null` pour les
  *   silences et pour toute la ligne rythmique.
  */
 export function resolveMidis(b) {
   const ML = mlen(b.time);
+  const shift = instrumentOf(b.tr).semis;
   let pos = 0;
   // altération en cours par position, pour la mesure courante
   /** @type {Object.<number, number>} */
@@ -154,7 +158,7 @@ export function resolveMidis(b) {
         m = out[i - 1];
       } else {
         if (it.a != null) carry[it.s] = it.a;
-        m = midiOf(b.clef, it.s, carry[it.s] ?? keyAcc(b.clef, it.s, b.ks));
+        m = midiOf(b.clef, it.s, carry[it.s] ?? keyAcc(b.clef, it.s, b.ks)) - shift;
       }
     }
     out.push(m);

@@ -3,6 +3,22 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.3] - 2026-11-09
+
+### Ajouté
+
+- **Instruments transpositeurs.** Chaque portée a un menu Instrument : en ut, si♭ (trompette, clarinette, sax soprano), si♭ ténor, mi♭ alto, mi♭ baryton, fa, sol.
+  - Les notes s'écrivent et se lisent comme le musicien les lit ; l'écoute joue le son réel.
+  - L'étiquette de l'instrument (E♭, B♭, F, G) est affichée au-dessus du chiffrage, sur la portée, dans les exports PNG et PDF.
+  - Sur une portée vide, on change simplement d'instrument.
+  - Sur une portée qui a déjà des notes, l'appli demande quoi en faire : **transposer** (même son ; notes, armure et accords chiffrés sont réécrits) ou **garder l'écriture** (les notes ne bougent pas, c'est le son qui change).
+  - La transposition garde l'orthographe musicale (do majeur au sax alto donne la majeur, avec do♯, fa♯ et sol♯ à l'armure). Une armure de plus de 7 altérations passe à l'enharmonique (ré♯ majeur devient mi♭ majeur).
+  - Une note qui sortirait de la portée est ramenée d'une octave, avec un message.
+
+### Technique
+
+- Nouveau module pur `transpose` ; `model` : `INSTRUMENTS`, `instrumentOf`, champ de portée `tr` ; `chords` : `transposeChord` ; `pitch.resolveMidis` renvoie le son réel.
+
 ## [2.8.2] - 2026-11-09
 
 ### Ajouté

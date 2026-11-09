@@ -37,6 +37,7 @@
 import { esc, mod } from './util.js';
 import { layout, geom, yOfStep, HALF_SPACE, KEY_ACC_W, INSERT_GAP } from './layout.js';
 import { beamGroups, tupletGroups } from './rhythm.js';
+import { instrumentOf } from './model.js';
 
 /** Remplace `b` et `#` par les vrais signes ♭ et ♯ dans un accord chiffré. */
 const fmtChord = (c) => c.replace(/([A-G])b/g, '$1♭').replace(/#/g, '♯');
@@ -249,6 +250,10 @@ function drawStaffLines(ctx) {
       out += L.rh
         ? `<text class="t" x="34" y="${g.line - 3}" font-size="15" text-anchor="middle">${num}</text><text class="t" x="34" y="${g.line + 14}" font-size="15" text-anchor="middle">${den}</text>`
         : `<text class="t" x="${tx}" y="${g.staffTop + 17}" font-size="21" text-anchor="middle">${num}</text><text class="t" x="${tx}" y="${g.staffTop + 37}" font-size="21" text-anchor="middle">${den}</text>`;
+      // Instrument transpositeur (2.8.3) : « E♭ », « B♭ »… au-dessus du chiffrage.
+      const tag = L.rh ? '' : instrumentOf(b.tr).tag;
+      if (tag)
+        out += `<text class="t trtag" x="${tx}" y="${g.staffTop - 7}" font-size="13" text-anchor="middle">${esc(tag)}</text>`;
     } else if (system.ms.length) {
       out += `<text class="mnum" x="2" y="${L.rh ? g.line - 16 : g.staffTop - 8}">${system.firstMeasure}</text>`;
     }

@@ -26,7 +26,7 @@
  */
 
 import { uid, clamp } from './util.js';
-import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX } from './model.js';
+import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX, INSTRUMENTS } from './model.js';
 import { COLOR_KEYS, cleanFolderName } from './folders.js';
 
 /** Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères. */
@@ -125,6 +125,7 @@ export function sanitizeBlock(r) {
       : [];
     const st = { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
     if (clef !== 'rhythm' && Number.isInteger(r.ks) && r.ks !== 0 && Math.abs(r.ks) <= 7) st.ks = r.ks;
+    if (clef !== 'rhythm' && r.tr !== 'C' && INSTRUMENTS.some((x) => x.key === r.tr)) st.tr = r.tr;
     if (FOLDS.includes(r.fold)) st.fold = r.fold;
     return st;
   }

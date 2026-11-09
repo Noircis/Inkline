@@ -7,7 +7,8 @@
 
 import { esc } from '../../util.js';
 import { state, app, blockById, touch } from '../state.js';
-import { TIME_SIGNATURES } from '../../model.js';
+import { TIME_SIGNATURES, INSTRUMENTS, instrumentOf } from '../../model.js';
+import { changeInstrument } from '../../transpose.js';
 import { chainEnd } from '../../measure-fit.js';
 import { staffSvg } from '../../render-staff.js';
 import { layout } from '../../layout.js';
@@ -16,7 +17,7 @@ import * as audio from '../../audio.js';
 import { toolsHtml, updatePlayBtn, playCallbacks } from '../common.js';
 import { setActive } from '../blocks.js';
 import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from '../fold.js';
-import { hooks, staffUi, clampCursor, refit } from './shared.js';
+import { hooks, staffUi, clampCursor, refit, flash } from './shared.js';
 import { bindStaffInput, dragZonesHtml } from './input.js';
 
 /**
@@ -51,6 +52,7 @@ function headerHtml(b) {
   return `<div class="shead"><span class="kind">${rh ? 'Rythme' : 'Portée'}</span>
     ${rh ? '' : `<select data-f="clef" id="c_${id}" aria-label="Clé"><option value="treble">Sol</option><option value="bass">Fa</option></select>`}
     ${rh ? '' : `<select data-f="ks" id="k_${id}" aria-label="Armure">${KEY_SIGS.map((k) => `<option value="${k.v}">${k.label}</option>`).join('')}</select>`}
+    ${rh ? '' : `<select data-f="tr" id="i_${id}" aria-label="Instrument (transposition)">${INSTRUMENTS.map((x) => `<option value="${x.key}">${x.label}</option>`).join('')}</select>`}
     <select data-f="time" id="m_${id}" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${id}"></label>
     <button type="button" class="chip" data-f="swing" aria-pressed="${!!b.swing}">Swing</button>
@@ -78,6 +80,61 @@ function bindSelect(n, b, sel, value, apply) {
 }
 
 /**
+ * Menu Instrument (2.8.3). Sur une portée vide, on change simplement
+ * d'instrument (l'armure reste celle choisie). S'il y a déjà des notes, on
+ * demande quoi en faire (voir {@link module:transpose|transpose}) :
+ * transposer (même son, l'écriture change) ou garder l'écriture (le son change).
+ * @param {module:model~Note} n
+ * @param {module:model~StaffBlock} b
+ * @param {HTMLElement} el
+ */
+function bindInstrument(n, b, el) {
+  const sel = /** @type {?HTMLSelectElement} */ (el.querySelector('[data-f=tr]'));
+  if (!sel) return;
+  sel.value = instrumentOf(b.tr).key;
+  const apply = (keep) => {
+    pushSnapshot(n);
+    const { octaves } = changeInstrument(b, sel.value, { keep });
+    touch(n);
+    redrawStaff(b.id);
+    const ks = /** @type {HTMLSelectElement} */ (el.querySelector('[data-f=ks]'));
+    if (ks) ks.value = String(b.ks || 0);
+    if (octaves)
+      flash(
+        octaves > 1
+          ? `${octaves} notes ramenées d’une octave pour rester sur la portée`
+          : 'Une note ramenée d’une octave pour rester sur la portée',
+      );
+  };
+  const closeAsk = () => el.querySelector('.tr-ask')?.remove();
+  sel.onchange = () => {
+    closeAsk();
+    if (!b.items.some((it) => !it.r)) return apply(true);
+    const from = instrumentOf(b.tr);
+    const to = instrumentOf(sel.value);
+    const ask = document.createElement('div');
+    ask.className = 'tr-ask';
+    ask.setAttribute('role', 'group');
+    ask.setAttribute('aria-label', 'Notes déjà écrites');
+    ask.innerHTML = `<p>Passer de « ${esc(from.label)} » à « ${esc(to.label)} ». Les notes déjà écrites :</p>
+      <div class="tr-ask-btns"><button type="button" class="btn primary" data-tr="move">Transposer<small>même son, l’écriture change</small></button><button type="button" class="btn" data-tr="keep">Garder l’écriture<small>les notes ne bougent pas</small></button><button type="button" class="btn ghost" data-tr="cancel">Annuler</button></div>`;
+    el.querySelector('.shead').after(ask);
+    ask.querySelector('[data-tr=move]').addEventListener('click', () => {
+      closeAsk();
+      apply(false);
+    });
+    ask.querySelector('[data-tr=keep]').addEventListener('click', () => {
+      closeAsk();
+      apply(true);
+    });
+    ask.querySelector('[data-tr=cancel]').addEventListener('click', () => {
+      closeAsk();
+      sel.value = instrumentOf(b.tr).key;
+    });
+  };
+}
+
+/**
  * Remplit l'élément d'un bloc portée : en-tête, zone SVG, outils.
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
@@ -98,6 +155,8 @@ export function staffBlockEl(n, b, el) {
     b.time = v;
     refit(b); // tout est recoupé selon la nouvelle mesure
   });
+
+  bindInstrument(n, b, el);
 
   const tp = /** @type {HTMLInputElement} */ (el.querySelector('[data-f=tempo]'));
   tp.value = String(b.tempo);

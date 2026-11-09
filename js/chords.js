@@ -39,6 +39,49 @@ function pitchClass(s) {
   return LETTER_PC[s[0]] + (/[b♭]/.test(acc) ? -1 : /[#♯]/.test(acc) ? 1 : 0);
 }
 
+/** Lettres dans l'ordre des degrés. */
+const LETTERS = 'CDEFGAB';
+
+/**
+ * Transpose un nom de note (« Bb », « F# », « C ») de `steps` degrés et
+ * `semis` demi-tons, en gardant l'orthographe musicale : do + sixte majeure
+ * donne la (pas si♭♭), si♭ + sixte majeure donne sol. Si l'orthographe
+ * demandait un double dièse ou un double bémol, on prend le nom voisin.
+ * @param {string} name
+ * @param {number} steps
+ * @param {number} semis
+ * @returns {string}
+ */
+function transposeName(name, steps, semis) {
+  const target = mod(pitchClass(name) + semis, 12);
+  let li = mod(LETTERS.indexOf(name[0]) + steps, 7);
+  let alter = mod(target - LETTER_PC[LETTERS[li]] + 6, 12) - 6;
+  if (Math.abs(alter) > 1) {
+    li = mod(li + Math.sign(alter), 7);
+    alter = mod(target - LETTER_PC[LETTERS[li]] + 6, 12) - 6;
+  }
+  return LETTERS[li] + (alter > 0 ? '#'.repeat(alter) : 'b'.repeat(-alter));
+}
+
+/**
+ * Transpose un accord chiffré (fondamentale et basse). Les symboles
+ * spéciaux et les textes non reconnus sont rendus tels quels.
+ *
+ * @example
+ * transposeChord('Bb7/D', 5, 9) // 'G7/B' (do → la : sixte majeure)
+ * @param {string} c
+ * @param {number} steps Degrés.
+ * @param {number} semis Demi-tons.
+ * @returns {string}
+ */
+export function transposeChord(c, steps, semis) {
+  const m = CHORD_RE.exec(c);
+  if (!m) return c;
+  const root = transposeName(m[1] + m[2].replace('♭', 'b').replace('♯', '#'), steps, semis);
+  const bass = m[4] ? '/' + transposeName(m[4].replace('♭', 'b').replace('♯', '#'), steps, semis) : '';
+  return root + m[3] + bass;
+}
+
 /**
  * Indique si une case de grille est valide : accord reconnu, case vide
  * (prolongation), *no chord* ou répétition de mesure.

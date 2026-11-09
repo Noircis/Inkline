@@ -193,3 +193,54 @@ test('au doigt : le glisser ne fait pas défiler la page, le reste de la portée
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(50);
   expect((await staffState(page)).steps).toEqual([12]);
 });
+
+test('instrument transpositeur : portée vide, puis transposer ou garder, annuler', async ({ page }) => {
+  const errors = collectErrors(page);
+  const tag = page.locator('.block.active svg .trtag');
+  const block = () =>
+    page.evaluate(async () => {
+      const { state, blockById } = await import('/js/ui/state.js');
+      const { resolveMidis } = await import('/js/pitch.js');
+      const b = blockById(state.activeId);
+      return { tr: b.tr, ks: b.ks, steps: b.items.map((i) => i.s), midis: resolveMidis(b) };
+    });
+  // Portée vide : on change d'instrument sans question, l'armure ne bouge pas.
+  await page.selectOption('[data-f=tr]', 'Bb');
+  await expect(page.locator('.tr-ask')).toHaveCount(0);
+  await expect(tag).toHaveText('B♭');
+  expect(await block()).toMatchObject({ tr: 'Bb', ks: undefined });
+  await page.selectOption('[data-f=tr]', 'C');
+  await expect(tag).toHaveCount(0);
+
+  for (const s of [-2, 0, 2]) await tapStaff(page, { t: 'append', s }); // do mi sol
+  const concert = await block();
+  // Avec des notes : question. Annuler remet le menu.
+  await page.selectOption('[data-f=tr]', 'Eb');
+  await expect(page.locator('.tr-ask')).toBeVisible();
+  await page.click('[data-tr=cancel]');
+  await expect(page.locator('[data-f=tr]')).toHaveValue('C');
+  expect(await block()).toEqual(concert);
+  // Transposer : même son, la majeur, étiquette E♭.
+  await page.selectOption('[data-f=tr]', 'Eb');
+  await page.click('[data-tr=move]');
+  let st = await block();
+  expect(st).toMatchObject({ tr: 'Eb', ks: 3, steps: [3, 5, 7] });
+  expect(st.midis).toEqual(concert.midis);
+  await expect(page.locator('[data-f=ks]')).toHaveValue('3');
+  await expect(tag).toHaveText('E♭');
+  // Annuler (palette) : retour en ut.
+  await pal(page, '[data-act=undo]');
+  expect(await block()).toEqual(concert);
+  // Garder l'écriture : les notes ne bougent pas, le son descend d'une neuvième.
+  await page.selectOption('[data-f=tr]', 'Bb8');
+  await page.click('[data-tr=keep]');
+  st = await block();
+  expect(st.steps).toEqual(concert.steps);
+  expect(st.midis).toEqual(concert.midis.map((m) => m - 14));
+  // Rechargé : l'instrument est enregistré.
+  await page.waitForTimeout(400); // écriture différée
+  await page.reload();
+  await page.locator('.card').first().click();
+  await expect(page.locator('.block svg .trtag').first()).toHaveText('B♭');
+  expect(errors).toEqual([]);
+});

@@ -57,3 +57,31 @@
   position: absolute;
   touch-action: none;
 }
+
+/* Instrument transpositeur (2.8.3) : question quand la portée a déjà des notes. */
+.tr-ask {
+  margin: 8px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+.tr-ask p {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+.tr-ask-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tr-ask-btns .btn {
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+.tr-ask-btns small {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.8;
+}
