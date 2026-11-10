@@ -28,7 +28,7 @@
  * l'utilisateur : le contexte est créé (ou réveillé) au premier appel.
  */
 
-import { staffEvents } from './rhythm.js';
+import { staffEvents, staffSegment } from './rhythm.js';
 import { resolveMidis } from './pitch.js';
 import { mlen, groupStarts } from './model.js';
 import { gridPlayOrder, slotDurations } from './grid.js';
@@ -282,6 +282,9 @@ function at(p, c, t, fn) {
  *   le surlignage suit quand même la lecture.
  * @property {boolean} [loop] Rejouer en boucle jusqu'à l'arrêt (2.8), sans
  *   nouveau décompte. Chaque passage dure un nombre entier de mesures.
+ * @property {number} [from] Jouer à partir de cette mesure (2.8.4, index
+ *   d'écriture). Voir {@link module:rhythm.staffSegment|staffSegment}.
+ * @property {number} [to] … jusqu'à cette mesure (comprise). Absent : jusqu'à la fin.
  */
 
 /** Décompte : tous les temps cliquent. */
@@ -335,8 +338,17 @@ export function playStaff(b, cb, opt = {}) {
   const start = c.currentTime + 0.12; // petite marge pour que la 1re note ne soit pas tronquée
   const bar = mlen(b.time) * spq; // durée d'une mesure (s)
   if (opt.countIn) metronome(p, start, 1, b, spq, EVERY_BEAT, !!opt.accent);
-  const { events, total } = staffEvents(b);
-  const measures = Math.ceil(total / mlen(b.time) - 1e-9);
+  let events;
+  let total;
+  let measures;
+  if (opt.from != null) {
+    const seg = staffSegment(b, opt.from, opt.to ?? Infinity);
+    if (!seg) return stop();
+    ({ events, total, measures } = seg);
+  } else {
+    ({ events, total } = staffEvents(b));
+    measures = Math.ceil(total / mlen(b.time) - 1e-9);
+  }
   let mark = 0; // nœuds audio du passage précédent (voir plus bas)
   /** Programme un passage complet à partir de `t0`. */
   const pass = (t0) => {
@@ -371,13 +383,28 @@ export function playStaff(b, cb, opt = {}) {
  * cases se partagent la mesure selon {@link module:grid.slotDurations|slotDurations}.
  * Une mesure vide prolonge le dernier accord, `%` rejoue la mesure précédente.
  *
+ * Options (2.8.4) : `from` / `to` pour ne jouer qu'une partie (même règle
+ * que {@link module:rhythm.staffSegment|staffSegment} : premier passage par
+ * `from`, jusqu'au passage par `to` qui suit), `loop`, `countIn`. L'accord
+ * qui sonne sur une case vide ou un `%` ne dépend pas du point de départ :
+ * le début de la grille est parcouru en silence pour le retrouver.
+ *
  * @param {module:model~GridBlock} b
  * @param {PlayCallbacks} cb
+ * @param {PlayOptions} [opt={}] Seuls `from`, `to`, `loop` et `countIn` comptent ici.
  */
-export function playGrid(b, cb) {
+export function playGrid(b, cb, opt = {}) {
   if (!b.measures.length) {
     stop();
     return;
+  }
+  const order = gridPlayOrder(b.measures);
+  const k1 = opt.from != null ? order.indexOf(opt.from) : 0;
+  if (k1 < 0) return stop();
+  let k2 = order.length - 1;
+  if (opt.to != null) {
+    const k = order.findIndex((m, j) => j >= k1 && m === opt.to);
+    if (k >= 0) k2 = k;
   }
   const r = begin(b.id, cb);
   if (!r) return;
@@ -385,36 +412,53 @@ export function playGrid(b, cb) {
   const spq = 60 / (b.tempo || 120);
   const ML = mlen(b.time);
   const swingy = /swing|waltz|blues|gospel|ballad/i.test(b.style);
-  const t0 = c.currentTime + 0.15;
-  let q = 0;
-  let last = null; // dernier accord joué (pour les cases vides et les mesures vides)
-  let prevCh = [];
-  gridPlayOrder(b.measures).forEach((i) => {
-    let ch = b.measures[i].ch;
-    if (ch.length === 1 && ch[0] === '%') ch = prevCh;
-    else if (!ch.length) ch = last ? [last] : [];
-    prevCh = ch;
-    const durs = slotDurations(Math.max(1, ch.length), b.time);
-    let qq = q;
-    ch.forEach((x, k) => {
-      const d = durs[k];
-      if (x === 'n') last = null;
-      else {
-        const cc = x === '' ? last : x;
-        const tn = cc && chordTones(cc);
-        if (tn) {
-          last = cc;
-          const ts = t0 + qq * spq;
-          tone(ts, Math.min(d * spq, spq * 2), tn.bass, p.nodes);
-          tn.notes.forEach((nm) => pad(ts, d * spq, nm, p.nodes));
+  const start = c.currentTime + 0.15;
+  if (opt.countIn) metronome(p, start, 1, b, spq, EVERY_BEAT, false);
+  let mark = 0;
+  /** Programme un passage (positions k1 à k2 de l'ordre de lecture) à partir de `t0`. */
+  const pass = (t0) => {
+    const old = mark;
+    mark = p.nodes.length;
+    let q = 0;
+    let last = null; // dernier accord joué (pour les cases vides et les mesures vides)
+    let prevCh = [];
+    for (let k = 0; k <= k2; k++) {
+      const i = order[k];
+      const play = k >= k1; // avant le segment : on suit les accords sans jouer
+      let ch = b.measures[i].ch;
+      if (ch.length === 1 && ch[0] === '%') ch = prevCh;
+      else if (!ch.length) ch = last ? [last] : [];
+      prevCh = ch;
+      const durs = slotDurations(Math.max(1, ch.length), b.time);
+      let qq = q;
+      ch.forEach((x, j) => {
+        const d = durs[j];
+        if (x === 'n') last = null;
+        else {
+          const cc = x === '' ? last : x;
+          const tn = cc && chordTones(cc);
+          if (tn) {
+            last = cc;
+            if (play) {
+              const ts = t0 + qq * spq;
+              tone(ts, Math.min(d * spq, spq * 2), tn.bass, p.nodes);
+              tn.notes.forEach((nm) => pad(ts, d * spq, nm, p.nodes));
+            }
+          }
         }
-      }
-      qq += d;
-    });
-    if (swingy && !b.time.endsWith('/8'))
-      for (let bt = 1; bt < ML; bt += 2) perc(t0 + (q + bt) * spq, false, p.nodes);
-    at(p, c, t0 + q * spq, () => cb.onStep(i));
-    q += ML;
-  });
-  at(p, c, t0 + q * spq + 0.2, stop);
+        qq += d;
+      });
+      if (!play) continue;
+      if (swingy && !b.time.endsWith('/8'))
+        for (let bt = 1; bt < ML; bt += 2) perc(t0 + (q + bt) * spq, false, p.nodes);
+      at(p, c, t0 + q * spq, () => cb.onStep(i));
+      q += ML;
+    }
+    p.nodes.splice(0, old);
+    mark -= old;
+    const end = t0 + q * spq;
+    if (opt.loop) at(p, c, end - 0.3, () => current === p && pass(end));
+    else at(p, c, end + 0.2, stop);
+  };
+  pass(opt.countIn ? start + ML * spq : start);
 }

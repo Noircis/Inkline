@@ -10,7 +10,7 @@ import { state } from './state.js';
 import * as audio from '../audio.js';
 
 /** Version affichée dans les Options (à garder alignée sur CHANGELOG.md). */
-export const APP_VERSION = '2.8.3';
+export const APP_VERSION = '2.8.4';
 
 /** HTML des outils d'un bloc actif. */
 export function toolsHtml() {

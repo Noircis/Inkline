@@ -19,6 +19,7 @@ import { setActive } from '../blocks.js';
 import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from '../fold.js';
 import { hooks, staffUi, clampCursor, refit, flash } from './shared.js';
 import { bindStaffInput, dragZonesHtml } from './input.js';
+import { bindMeasureSelect, staffTarget, refreshMeasureSelect } from '../measure-select.js';
 
 /**
  * Armures proposées : nombre de dièses (> 0) ou de bémols (< 0), avec les
@@ -181,6 +182,29 @@ export function staffBlockEl(n, b, el) {
   const wrap = /** @type {HTMLElement} */ (el.querySelector('.staff-wrap'));
   guardFoldedTaps(wrap, b);
   bindStaffInput(n, b, wrap);
+  // Appui long : sélection de mesures, « Jouer d'ici » ou boucle (2.8.4).
+  bindMeasureSelect(
+    wrap,
+    staffTarget(wrap, () => renderedLayout(b, wrap), {
+      playId: () => b.id,
+      skip: (e) => !!(/** @type {Element} */ (e.target).closest('.drag-zone')),
+      play: (a, to, loop, done) => {
+        const cb = playCallbacks(b.id, redrawStaff);
+        audio.playStaff(
+          b,
+          {
+            onStep: cb.onStep,
+            onEnd: () => {
+              cb.onEnd();
+              done();
+            },
+          },
+          { from: a, to, loop, countIn: true },
+        );
+        updatePlayBtn(b.id);
+      },
+    }),
+  );
 }
 
 /**
@@ -216,7 +240,21 @@ export function redrawStaff(id) {
     }).svg + (folded ? '' : dragZonesHtml(b, W));
   applyFold(wrap, b, lines, folded);
   wrap._W = W;
+  refreshMeasureSelect(wrap);
   if (isAct) hooks.refreshPalette();
 }
 
 hooks.redraw = redrawStaff;
+
+/**
+ * Mise en page telle que dessinée par {@link redrawStaff} (même largeur, même
+ * curseur), pour retrouver les mesures sous le doigt.
+ * @param {module:model~StaffBlock} b
+ * @param {HTMLElement} wrap
+ * @returns {?module:layout~Layout}
+ */
+function renderedLayout(b, wrap) {
+  if (!wrap._W) return null;
+  const write = state.activeId === b.id && state.mode === 'write';
+  return layout(b, wrap._W, write, write ? state.cursor : null);
+}

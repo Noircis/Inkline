@@ -29,6 +29,7 @@ import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks, readFile } f
 import { setActive, undo, registerBlockKind } from './blocks.js';
 import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from './fold.js';
 import { renderScreen } from './nav.js';
+import { bindMeasureSelect, refreshMeasureSelect } from './measure-select.js';
 
 /** Mesures par ligne de grille. */
 const GRID_COLS = 4;
@@ -202,6 +203,7 @@ function bindIRealPanel(n, b, el) {
 function bindMeasureSelection(n, b, el) {
   const wrap = /** @type {HTMLElement} */ (el.querySelector('.gridwrap'));
   guardFoldedTaps(wrap, b);
+  bindGridSelect(b, wrap);
   wrap.addEventListener('click', (e) => {
     const cell = /** @type {HTMLElement} */ (e.target).closest('[data-gm]');
     if (!cell) return;
@@ -217,6 +219,55 @@ function bindMeasureSelection(n, b, el) {
     loadInput(b);
     redrawGrid(b.id);
     gin.focus();
+  });
+}
+
+/**
+ * Appui long sur une case : sélection de mesures (2.8.4), voir
+ * {@link module:ui/measure-select|ui/measure-select}. Les cases sont des
+ * boutons : on les retrouve sous le doigt et on mesure leur place à l'écran.
+ * @param {module:model~GridBlock} b
+ * @param {HTMLElement} wrap
+ */
+function bindGridSelect(b, wrap) {
+  const cell = (k) => wrap.querySelector(`[data-gm="${k}"]`);
+  bindMeasureSelect(wrap, {
+    playId: () => b.id,
+    measureAt(cx, cy) {
+      const el = document.elementFromPoint(cx, cy);
+      const c = el && /** @type {HTMLElement} */ (el.closest('[data-gm]'));
+      if (!c || !wrap.contains(c) || c.dataset.gm === 'add') return null;
+      return Number(c.dataset.gm);
+    },
+    boxes(a, z) {
+      const r = wrap.getBoundingClientRect();
+      const out = [];
+      for (let k = a; k <= z; k++) {
+        const c = cell(k);
+        if (!c) return [];
+        const q = c.getBoundingClientRect();
+        const last = out[out.length - 1];
+        const box = { x: q.left - r.left, y: q.top - r.top, w: q.width, h: q.height };
+        if (last && Math.abs(last.y - box.y) < 2) last.w = box.x + box.w - last.x;
+        else out.push(box);
+      }
+      return out.map((x) => ({ x: x.x - 2, y: x.y - 2, w: x.w + 4, h: x.h + 4 }));
+    },
+    play(a, to, loop, done) {
+      const cb = playCallbacks(b.id, redrawGrid);
+      audio.playGrid(
+        b,
+        {
+          onStep: cb.onStep,
+          onEnd: () => {
+            cb.onEnd();
+            done();
+          },
+        },
+        { from: a, to: to === Infinity ? undefined : to, loop, countIn: true },
+      );
+      updatePlayBtn(b.id);
+    },
   });
 }
 
@@ -251,6 +302,7 @@ export function redrawGrid(id) {
     folded ? FOLD_PREVIEW_LINES * GRID_COLS : 0,
   );
   applyFold(w, b, lines, folded);
+  refreshMeasureSelect(w);
   if (state.activeId === id) updateGridPalette();
 }
 

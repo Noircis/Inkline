@@ -88,6 +88,7 @@ const MAX_STRETCH = 2.4;
  * @property {System[]} systems
  * @property {ItemPos[]} pos Une position par élément, même index que `items`.
  * @property {Array.<{sys:number, x:number, type:string}>} bars Barres de fin de mesure.
+ * @property {Array.<{sys:number, x0:number, x1:number}>} mrects Place de chaque mesure (2.8.4), dans l'ordre d'écriture.
  * @property {Array.<{sys:number, x:number}>} starts Débuts de reprise.
  * @property {number} ksw Largeur de l'armure (0 sans armure).
  * @property {?number} insertSys Ligne du curseur d'insertion (s'il est placé avant une note).
@@ -219,13 +220,14 @@ function stretchFactor(sys, W, isLast, ended, justify = false) {
  * @param {boolean} rh
  * @param {boolean} ended
  * @param {boolean} [justify=false]
- * @returns {{pos: ItemPos[], bars: Array.<{sys: number, x: number, type: string}>, starts: Array.<{sys: number, x: number}>, measureCount: number}}
+ * @returns {{pos: ItemPos[], bars: Array.<{sys: number, x: number, type: string}>, starts: Array.<{sys: number, x: number}>, measureCount: number, mrects: Array.<{sys: number, x0: number, x1: number}>}}
  */
 function placeSystems(systems, items, widths, W, rh, ended, justify = false, gapAt = null) {
   const pos = [];
   let insert = null;
   const bars = [];
   const starts = [];
+  const mrects = [];
   let measureCount = 0;
   systems.forEach((sys, si) => {
     const sc = stretchFactor(sys, W, si === systems.length - 1, ended, justify);
@@ -256,10 +258,11 @@ function placeSystems(systems, items, widths, W, rh, ended, justify = false, gap
       });
       x += (PAD_R + (BAR_EXTRA[m.type] || 0)) * sc;
       if (m.full) bars.push({ sys: si, x, type: m.type || 'single' });
+      mrects.push({ sys: si, x0: measureX, x1: x });
     });
     sys.end = x;
   });
-  return { pos, bars, starts, measureCount, insert };
+  return { pos, bars, starts, measureCount, insert, mrects };
 }
 
 /**
@@ -282,7 +285,7 @@ export function layout(b, W, active = false, insertAt = null) {
   const ksw = keySigWidth(b);
 
   const systems = breakIntoSystems(segmentMeasures(items, b.time), widths, W, rh, ksw);
-  const { pos, bars, starts, measureCount, insert } = placeSystems(
+  const { pos, bars, starts, measureCount, insert, mrects } = placeSystems(
     systems,
     items,
     widths,
@@ -314,6 +317,7 @@ export function layout(b, W, active = false, insertAt = null) {
     systems,
     pos,
     bars,
+    mrects,
     starts,
     ksw,
     insertSys: insert ? insert.sys : null,

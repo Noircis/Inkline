@@ -85,3 +85,35 @@
   font-weight: 500;
   opacity: 0.8;
 }
+
+/* Sélection de mesures à l'appui long (2.8.4). */
+.msel-zone {
+  position: relative;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.msel-box {
+  position: absolute;
+  z-index: 3;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  pointer-events: none;
+}
+.msel-bar {
+  position: absolute;
+  z-index: 70;
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 6px 22px rgb(0 0 0 / 0.22);
+}
+.msel-bar[hidden] {
+  display: none;
+}
+.msel-bar .btn {
+  min-height: 40px;
+}

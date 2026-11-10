@@ -3,6 +3,24 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.4] - 2026-11-10
+
+### Ajouté
+
+- **Sélection de mesures à l'appui long**, sur les portées, les lignes rythmiques, les grilles, les séries des Placements et les exercices aléatoires.
+  - Appui long sur une mesure (environ une demi-seconde) : un cadre l'entoure et le téléphone vibre.
+  - Sans lever le doigt, glisser étend la sélection à d'autres mesures, dans les deux sens et sur plusieurs lignes. La page ne défile pas pendant ce glisser.
+  - Une barre apparaît au-dessus : **▶ Jouer d'ici** pour une mesure (jusqu'à la fin), **🔁 Boucle** pour plusieurs (le passage en boucle). ✕ ou un toucher ailleurs efface la sélection et arrête sa lecture.
+  - Dans une note, la lecture commence par une mesure de décompte. Dans l'entraînement, le réglage Décompte est respecté.
+  - Une reprise comprise dans la sélection est jouée dépliée. On part toujours du premier passage par la mesure choisie.
+  - Grille : une case vide ou un « % » joue l'accord qu'on entendrait en partant du début.
+  - Une note liée depuis la mesure précédente est attaquée au début de la sélection.
+- Le toucher simple, le glisser de note et le bouton Écouter ne changent pas.
+
+### Technique
+
+- `rhythm.staffSegment` ; `audio.playStaff` : options `from` / `to` ; `audio.playGrid` : options `from`, `to`, `loop`, `countIn` ; `layout` : `mrects` (place de chaque mesure) ; nouveau module `ui/measure-select`.
+
 ## [2.8.3] - 2026-11-09
 
 ### Ajouté

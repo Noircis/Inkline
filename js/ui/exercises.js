@@ -23,6 +23,8 @@ import { generateExercise, candidates, newSeed } from '../exercise.js';
 import * as audio from '../audio.js';
 import { registerScreen, goChild, backToList } from './nav.js';
 import { hideAllPalettes } from './blocks.js';
+import { layout } from '../layout.js';
+import { bindMeasureSelect, staffTarget, refreshMeasureSelect } from './measure-select.js';
 import {
   header,
   settings,
@@ -256,14 +258,28 @@ function renderGenPlay() {
     panel.hidden = !panel.hidden;
     metroBtn.setAttribute('aria-expanded', String(!panel.hidden));
   });
-  app.querySelector(`[data-play="${PLAY_ID}"]`).addEventListener('click', play);
+  app.querySelector(`[data-play="${PLAY_ID}"]`).addEventListener('click', () => play());
+  // Appui long : « Jouer d'ici » ou boucle sur des mesures de l'exercice (2.8.4).
+  const st = /** @type {HTMLElement} */ (app.querySelector('#genStaff'));
+  bindMeasureSelect(
+    st,
+    staffTarget(st, () => (st._W && block ? layout(block, st._W, false, null) : null), {
+      playId: () => PLAY_ID,
+      // Une mesure : jusqu'à la fin, en boucle si « Boucle » est activé.
+      play: (a, to, loop, done) => play({ from: a, to, loop: loop || settings().loop }, done),
+    }),
+  );
   requestAnimationFrame(draw);
 }
 
 registerScreen('genPlay', renderGenPlay);
 
-/** Lance ou arrête l'exercice. */
-function play() {
+/**
+ * Lance ou arrête l'exercice.
+ * @param {module:audio~PlayOptions} [extra] Partie à jouer (sélection de mesures, 2.8.4).
+ * @param {function()} [done] À la fin de la lecture.
+ */
+function play(extra = {}, done = () => {}) {
   const el = app.querySelector('#genStaff');
   audio.playStaff(
     block,
@@ -272,9 +288,10 @@ function play() {
       onEnd: () => {
         highlight(el, null);
         updatePlay(PLAY_ID);
+        done();
       },
     },
-    playOptions(meterOf(gen().meter), settings().loop),
+    { ...playOptions(meterOf(gen().meter), settings().loop), ...extra },
   );
   updatePlay(PLAY_ID);
 }
@@ -287,5 +304,8 @@ function play() {
 function draw() {
   const el = /** @type {HTMLElement} */ (app.querySelector('#genStaff'));
   if (!el || !block) return;
-  el.innerHTML = staffSvg(block, Math.max(220, Math.round((el.clientWidth || 300) / 1.15))).svg;
+  const W = Math.max(220, Math.round((el.clientWidth || 300) / 1.15));
+  el.innerHTML = staffSvg(block, W).svg;
+  el._W = W;
+  refreshMeasureSelect(el);
 }

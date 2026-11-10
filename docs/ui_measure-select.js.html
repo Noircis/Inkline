@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>ui/measure-select.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Documentation du code d'Inkline" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~click">click</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li><li data-type='method'><a href="module-audio.html#~metronome">metronome</a></li><li data-type='method'><a href="module-audio.html#~perc">perc</a></li><li data-type='method'><a href="module-audio.html#~tone">tone</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTERS">LETTERS</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordParts">chordParts</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.transposeChord">transposeChord</a></li><li data-type='method'><a href="module-chords.html#~pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li><li data-type='method'><a href="module-chords.html#~transposeName">transposeName</a></li></ul></li><li><a href="module-db.html">db</a><ul class='members'><li data-type='member'><a href="module-db.html#.STORES">STORES</a></li><li data-type='member'><a href="module-db.html#~DB_NAME">DB_NAME</a></li><li data-type='member'><a href="module-db.html#~DB_VERSION">DB_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-db.html#.getAll">getAll</a></li><li data-type='method'><a href="module-db.html#.openDb">openDb</a></li><li data-type='method'><a href="module-db.html#.write">write</a></li><li data-type='method'><a href="module-db.html#~done">done</a></li></ul></li><li><a href="module-exercise.html">exercise</a><ul class='methods'><li data-type='method'><a href="module-exercise.html#.candidates">candidates</a></li><li data-type='method'><a href="module-exercise.html#.generateExercise">generateExercise</a></li><li data-type='method'><a href="module-exercise.html#.mulberry32">mulberry32</a></li><li data-type='method'><a href="module-exercise.html#.newSeed">newSeed</a></li></ul></li><li><a href="module-export.html">export</a><ul class='methods'><li data-type='method'><a href="module-export.html#.download">download</a></li><li data-type='method'><a href="module-export.html#.noteToInkline">noteToInkline</a></li><li data-type='method'><a href="module-export.html#.noteToPdf">noteToPdf</a></li><li data-type='method'><a href="module-export.html#.noteToPng">noteToPng</a></li><li data-type='method'><a href="module-export.html#.paginate">paginate</a></li><li data-type='method'><a href="module-export.html#.parseFontFaces">parseFontFaces</a></li><li data-type='method'><a href="module-export.html#.shareOrDownload">shareOrDownload</a></li><li data-type='method'><a href="module-export.html#.slug">slug</a></li><li data-type='method'><a href="module-export.html#~caption">caption</a></li><li data-type='method'><a href="module-export.html#~embeddedFontCss">embeddedFontCss</a></li><li data-type='method'><a href="module-export.html#~noteToSvg">noteToSvg</a></li><li data-type='method'><a href="module-export.html#~rasterize">rasterize</a></li><li data-type='method'><a href="module-export.html#~toBlob">toBlob</a></li><li data-type='method'><a href="module-export.html#~wrap">wrap</a></li></ul></li><li><a href="module-folders.html">folders</a><ul class='members'><li data-type='member'><a href="module-folders.html#.ALL">ALL</a></li><li data-type='member'><a href="module-folders.html#.COLOR_KEYS">COLOR_KEYS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_COLORS">FOLDER_COLORS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_NAME_MAX">FOLDER_NAME_MAX</a></li><li data-type='member'><a href="module-folders.html#.UNFILED">UNFILED</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folders.html#.cleanFolderName">cleanFolderName</a></li><li data-type='method'><a href="module-folders.html#.countByFolder">countByFolder</a></li><li data-type='method'><a href="module-folders.html#.deleteFolder">deleteFolder</a></li><li data-type='method'><a href="module-folders.html#.folderOf">folderOf</a></li><li data-type='method'><a href="module-folders.html#.inSelection">inSelection</a></li><li data-type='method'><a href="module-folders.html#.newFolder">newFolder</a></li><li data-type='method'><a href="module-folders.html#.sortedFolders">sortedFolders</a></li></ul></li><li><a href="module-folding.html">folding</a><ul class='members'><li data-type='member'><a href="module-folding.html#.FOLD_MIN_LINES">FOLD_MIN_LINES</a></li><li data-type='member'><a href="module-folding.html#.FOLD_PREVIEW_LINES">FOLD_PREVIEW_LINES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folding.html#.shouldFold">shouldFold</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li><li data-type='member'><a href="module-grid.html#~SVG_GAP">SVG_GAP</a></li><li data-type='member'><a href="module-grid.html#~SVG_ROW">SVG_ROW</a></li><li data-type='member'><a href="module-grid.html#~SVG_TOP">SVG_TOP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridSvg">gridSvg</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li><li data-type='method'><a href="module-grid.html#~svgBarlines">svgBarlines</a></li><li data-type='method'><a href="module-grid.html#~svgChords">svgChords</a></li><li data-type='method'><a href="module-grid.html#~svgDots">svgDots</a></li><li data-type='method'><a href="module-grid.html#~svgLabels">svgLabels</a></li><li data-type='method'><a href="module-grid.html#~svgVline">svgVline</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.discardSnapshot">discardSnapshot</a></li><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#~newParser">newParser</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li><li data-type='method'><a href="module-ireal.html#~qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#~readToken">readToken</a></li><li data-type='method'><a href="module-ireal.html#~tidy">tidy</a></li><li data-type='method'><a href="module-ireal.html#~unscramble">unscramble</a></li></ul></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#.INSERT_GAP">INSERT_GAP</a></li><li data-type='member'><a href="module-layout.html#.KEY_ACC_W">KEY_ACC_W</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~breakIntoSystems">breakIntoSystems</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li><li data-type='method'><a href="module-layout.html#~keySigWidth">keySigWidth</a></li><li data-type='method'><a href="module-layout.html#~measureWidth">measureWidth</a></li><li data-type='method'><a href="module-layout.html#~newSystem">newSystem</a></li><li data-type='method'><a href="module-layout.html#~placeSystems">placeSystems</a></li><li data-type='method'><a href="module-layout.html#~stretchFactor">stretchFactor</a></li><li data-type='method'><a href="module-layout.html#~systemStart">systemStart</a></li></ul></li><li><a href="module-main.html">main</a></li><li><a href="module-measure-fit.html">measure-fit</a><ul class='methods'><li data-type='method'><a href="module-measure-fit.html#.chainEnd">chainEnd</a></li><li data-type='method'><a href="module-measure-fit.html#.chainStart">chainStart</a></li><li data-type='method'><a href="module-measure-fit.html#.decompose">decompose</a></li><li data-type='method'><a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a></li><li data-type='method'><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a></li><li data-type='method'><a href="module-measure-fit.html#.singleValue">singleValue</a></li><li data-type='method'><a href="module-measure-fit.html#~baseProps">baseProps</a></li><li data-type='method'><a href="module-measure-fit.html#~cutAtBars">cutAtBars</a></li><li data-type='method'><a href="module-measure-fit.html#~eventsOf">eventsOf</a></li><li data-type='method'><a href="module-measure-fit.html#~isMult">isMult</a></li><li data-type='method'><a href="module-measure-fit.html#~materialize">materialize</a></li><li data-type='method'><a href="module-measure-fit.html#~piecesFrom">piecesFrom</a></li><li data-type='method'><a href="module-measure-fit.html#~valuesFor">valuesFor</a></li></ul></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.INSTRUMENTS">INSTRUMENTS</a></li><li data-type='member'><a href="module-model.html#.STEP_FIT">STEP_FIT</a></li><li data-type='member'><a href="module-model.html#.STEP_MAX">STEP_MAX</a></li><li data-type='member'><a href="module-model.html#.STEP_MIN">STEP_MIN</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.defaultGroups">defaultGroups</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.groupStarts">groupStarts</a></li><li data-type='method'><a href="module-model.html#.instrumentOf">instrumentOf</a></li><li data-type='method'><a href="module-model.html#.meterGroups">meterGroups</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pdf.html">pdf</a><ul class='members'><li data-type='member'><a href="module-pdf.html#.A4">A4</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pdf.html#.buildPdf">buildPdf</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='methods'><li data-type='method'><a href="module-pitch.html#.keyAcc">keyAcc</a></li><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li><li data-type='method'><a href="module-pitch.html#~degreeOf">degreeOf</a></li></ul></li><li><a href="module-placements.html">placements</a><ul class='members'><li data-type='member'><a href="module-placements.html#.EIGHTH_GLYPH">EIGHTH_GLYPH</a></li><li data-type='member'><a href="module-placements.html#.METERS">METERS</a></li><li data-type='member'><a href="module-placements.html#.SLOTS">SLOTS</a></li><li data-type='member'><a href="module-placements.html#.slotsOf">slotsOf</a></li><li data-type='member'><a href="module-placements.html#~PAIR">PAIR</a></li><li data-type='member'><a href="module-placements.html#~REST_GLYPH">REST_GLYPH</a></li><li data-type='member'><a href="module-placements.html#~TRIPLE">TRIPLE</a></li></ul><ul class='methods'><li data-type='method'><a href="module-placements.html#.combinations">combinations</a></li><li data-type='method'><a href="module-placements.html#.meterOf">meterOf</a></li><li data-type='method'><a href="module-placements.html#.placementItems">placementItems</a></li><li data-type='method'><a href="module-placements.html#.placementSeries">placementSeries</a></li><li data-type='method'><a href="module-placements.html#.seriesBlock">seriesBlock</a></li><li data-type='method'><a href="module-placements.html#.startGlyphs">startGlyphs</a></li><li data-type='method'><a href="module-placements.html#.startLabel">startLabel</a></li><li data-type='method'><a href="module-placements.html#~groupSeries">groupSeries</a></li><li data-type='method'><a href="module-placements.html#~meter">meter</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#~accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#~barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#~beamGroupsBySystem">beamGroupsBySystem</a></li><li data-type='method'><a href="module-render-staff.html#~drawAppendZone">drawAppendZone</a></li><li data-type='method'><a href="module-render-staff.html#~drawBars">drawBars</a></li><li data-type='method'><a href="module-render-staff.html#~drawBeams">drawBeams</a></li><li data-type='method'><a href="module-render-staff.html#~drawItems">drawItems</a></li><li data-type='method'><a href="module-render-staff.html#~drawNote">drawNote</a></li><li data-type='method'><a href="module-render-staff.html#~drawStaffLines">drawStaffLines</a></li><li data-type='method'><a href="module-render-staff.html#~drawTies">drawTies</a></li><li data-type='method'><a href="module-render-staff.html#~drawTuplets">drawTuplets</a></li><li data-type='method'><a href="module-render-staff.html#~fmtChord">fmtChord</a></li><li data-type='method'><a href="module-render-staff.html#~freeStem">freeStem</a></li><li data-type='method'><a href="module-render-staff.html#~isVisible">isVisible</a></li><li data-type='method'><a href="module-render-staff.html#~keySigSvg">keySigSvg</a></li><li data-type='method'><a href="module-render-staff.html#~ledgerLines">ledgerLines</a></li><li data-type='method'><a href="module-render-staff.html#~restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#~tieSvg">tieSvg</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.staffSegment">staffSegment</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li><li data-type='method'><a href="module-rhythm.html#~straightBeats">straightBeats</a></li><li data-type='method'><a href="module-rhythm.html#~tupletIndex">tupletIndex</a></li></ul></li><li><a href="module-sanitize.html">sanitize</a><ul class='methods'><li data-type='method'><a href="module-sanitize.html#.sanitizeBlock">sanitizeBlock</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeFolders">sanitizeFolders</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNote">sanitizeNote</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a></li><li data-type='method'><a href="module-sanitize.html#~item">item</a></li><li data-type='method'><a href="module-sanitize.html#~measure">measure</a></li><li data-type='method'><a href="module-sanitize.html#~sanitizeFolder">sanitizeFolder</a></li></ul></li><li><a href="module-search.html">search</a><ul class='members'><li data-type='member'><a href="module-search.html#.SORT_KEYS">SORT_KEYS</a></li><li data-type='member'><a href="module-search.html#.SORT_MODES">SORT_MODES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-search.html#.matchNote">matchNote</a></li><li data-type='method'><a href="module-search.html#.normalize">normalize</a></li><li data-type='method'><a href="module-search.html#.sortNotes">sortNotes</a></li><li data-type='method'><a href="module-search.html#~searchableText">searchableText</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.DRILL_DEFAULTS">DRILL_DEFAULTS</a></li><li data-type='member'><a href="module-storage.html#.GEN_DEFAULTS">GEN_DEFAULTS</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_VERSION">BACKUP_VERSION</a></li><li data-type='member'><a href="module-storage.html#~FOLDERS_KEY">FOLDERS_KEY</a></li><li data-type='member'><a href="module-storage.html#~META_KEY">META_KEY</a></li><li data-type='member'><a href="module-storage.html#~NOTE_APP">NOTE_APP</a></li><li data-type='member'><a href="module-storage.html#~SAVE_DELAY">SAVE_DELAY</a></li><li data-type='member'><a href="module-storage.html#~STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~backend">backend</a></li><li data-type='member'><a href="module-storage.html#~db">db</a></li><li data-type='member'><a href="module-storage.html#~dirty">dirty</a></li><li data-type='member'><a href="module-storage.html#~fullPending">fullPending</a></li><li data-type='member'><a href="module-storage.html#~saved">saved</a></li><li data-type='member'><a href="module-storage.html#~savedLocal">savedLocal</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.getMeta">getMeta</a></li><li data-type='method'><a href="module-storage.html#.importFile">importFile</a></li><li data-type='method'><a href="module-storage.html#.loadAll">loadAll</a></li><li data-type='method'><a href="module-storage.html#.noteFileJson">noteFileJson</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.saveFolders">saveFolders</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#.setMeta">setMeta</a></li><li data-type='method'><a href="module-storage.html#.storageBackend">storageBackend</a></li><li data-type='method'><a href="module-storage.html#~beatsOf">beatsOf</a></li><li data-type='method'><a href="module-storage.html#~drillOf">drillOf</a></li><li data-type='method'><a href="module-storage.html#~genOf">genOf</a></li><li data-type='method'><a href="module-storage.html#~migrateFromLocal">migrateFromLocal</a></li><li data-type='method'><a href="module-storage.html#~readDb">readDb</a></li><li data-type='method'><a href="module-storage.html#~readLocal">readLocal</a></li><li data-type='method'><a href="module-storage.html#~sortsOf">sortsOf</a></li><li data-type='method'><a href="module-storage.html#~writeChanges">writeChanges</a></li></ul></li><li><a href="module-transpose.html">transpose</a><ul class='methods'><li data-type='method'><a href="module-transpose.html#.changeInstrument">changeInstrument</a></li><li data-type='method'><a href="module-transpose.html#.fifthsOf">fifthsOf</a></li></ul></li><li><a href="module-ui_blocks.html">ui/blocks</a><ul class='methods'><li data-type='method'><a href="module-ui_blocks.html#.blockKind">blockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.hideAllPalettes">hideAllPalettes</a></li><li data-type='method'><a href="module-ui_blocks.html#.redrawBlock">redrawBlock</a></li><li data-type='method'><a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_blocks.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_blocks.html#.updateActive">updateActive</a></li></ul></li><li><a href="module-ui_common.html">ui/common</a><ul class='members'><li data-type='member'><a href="module-ui_common.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_common.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_common.html#.confirmTap">confirmTap</a></li><li data-type='method'><a href="module-ui_common.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_common.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_common.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_common.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_common.html#.updatePlayBtn">updatePlayBtn</a></li></ul></li><li><a href="module-ui_drill-kit.html">ui/drill-kit</a><ul class='members'><li data-type='member'><a href="module-ui_drill-kit.html#.SUBDIVISIONS">SUBDIVISIONS</a></li><li data-type='member'><a href="module-ui_drill-kit.html#.tempoField">tempoField</a></li><li data-type='member'><a href="module-ui_drill-kit.html#.toggle">toggle</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_drill-kit.html#.beatsFor">beatsFor</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.bindPlayControls">bindPlayControls</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.header">header</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.highlight">highlight</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.meterChips">meterChips</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.metronomeControls">metronomeControls</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.playOptions">playOptions</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.settings">settings</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.subdivisionSeg">subdivisionSeg</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.updatePlay">updatePlay</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.updateSettings">updateSettings</a></li></ul></li><li><a href="module-ui_exercises.html">ui/exercises</a><ul class='methods'><li data-type='method'><a href="module-ui_exercises.html#~buildBlock">buildBlock</a></li><li data-type='method'><a href="module-ui_exercises.html#~draw">draw</a></li><li data-type='method'><a href="module-ui_exercises.html#~exerciseSettings">exerciseSettings</a></li><li data-type='method'><a href="module-ui_exercises.html#~gen">gen</a></li><li data-type='method'><a href="module-ui_exercises.html#~play">play</a></li><li data-type='method'><a href="module-ui_exercises.html#~renderGen">renderGen</a></li><li data-type='method'><a href="module-ui_exercises.html#~renderGenPlay">renderGenPlay</a></li><li data-type='method'><a href="module-ui_exercises.html#~startsFor">startsFor</a></li><li data-type='method'><a href="module-ui_exercises.html#~stepper">stepper</a></li><li data-type='method'><a href="module-ui_exercises.html#~updateFewHint">updateFewHint</a></li><li data-type='method'><a href="module-ui_exercises.html#~updateGen">updateGen</a></li></ul></li><li><a href="module-ui_fold.html">ui/fold</a><ul class='methods'><li data-type='method'><a href="module-ui_fold.html#.applyFold">applyFold</a></li><li data-type='method'><a href="module-ui_fold.html#.guardFoldedTaps">guardFoldedTaps</a></li><li data-type='method'><a href="module-ui_fold.html#.isFolded">isFolded</a></li><li data-type='method'><a href="module-ui_fold.html#~toggleFold">toggleFold</a></li></ul></li><li><a href="module-ui_folder-sheet.html">ui/folder-sheet</a><ul class='methods'><li data-type='method'><a href="module-ui_folder-sheet.html#.openFolderSheet">openFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~bindDelete">bindDelete</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~closeFolderSheet">closeFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~sheetHtml">sheetHtml</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindGridSelect">bindGridSelect</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindGridSettings">bindGridSettings</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindIRealPanel">bindIRealPanel</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindMeasureSelection">bindMeasureSelection</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockHtml">gridBlockHtml</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~importIntoGrid">importIntoGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~updateGridPalette">updateGridPalette</a></li></ul></li><li><a href="module-ui_home.html">ui/home</a><ul class='members'><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_home.html#~chipsHtml">chipsHtml</a></li><li data-type='method'><a href="module-ui_home.html#~currentSelection">currentSelection</a></li><li data-type='method'><a href="module-ui_home.html#~editFolder">editFolder</a></li><li data-type='method'><a href="module-ui_home.html#~emptyHtml">emptyHtml</a></li><li data-type='method'><a href="module-ui_home.html#~newNote">newNote</a></li><li data-type='method'><a href="module-ui_home.html#~plural">plural</a></li><li data-type='method'><a href="module-ui_home.html#~refreshResults">refreshResults</a></li><li data-type='method'><a href="module-ui_home.html#~renderHome">renderHome</a></li><li data-type='method'><a href="module-ui_home.html#~renderOnboarding">renderOnboarding</a></li><li data-type='method'><a href="module-ui_home.html#~select">select</a></li><li data-type='method'><a href="module-ui_home.html#~sortFor">sortFor</a></li></ul></li><li><a href="module-ui_icons.html">ui/icons</a><ul class='members'><li data-type='member'><a href="module-ui_icons.html#.GEAR">GEAR</a></li><li data-type='member'><a href="module-ui_icons.html#.LOUPE">LOUPE</a></li><li data-type='member'><a href="module-ui_icons.html#.METRONOME">METRONOME</a></li><li data-type='member'><a href="module-ui_icons.html#.PIN_ICON">PIN_ICON</a></li></ul></li><li><a href="module-ui_list-view.html">ui/list-view</a><ul class='members'><li data-type='member'><a href="module-ui_list-view.html#.LIST_VIEWS">LIST_VIEWS</a></li><li data-type='member'><a href="module-ui_list-view.html#~MOSAIC_STAFF_W">MOSAIC_STAFF_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_list-view.html#.noteSummary">noteSummary</a></li><li data-type='method'><a href="module-ui_list-view.html#.relativeDate">relativeDate</a></li><li data-type='method'><a href="module-ui_list-view.html#.renderNoteList">renderNoteList</a></li><li data-type='method'><a href="module-ui_list-view.html#~chordsPreview">chordsPreview</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstStaff">firstStaff</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstText">firstText</a></li><li data-type='method'><a href="module-ui_list-view.html#~folderTag">folderTag</a></li><li data-type='method'><a href="module-ui_list-view.html#~itemHtml">itemHtml</a></li><li data-type='method'><a href="module-ui_list-view.html#~shortDate">shortDate</a></li></ul></li><li><a href="module-ui_measure-select.html">ui/measure-select</a><ul class='members'><li data-type='member'><a href="module-ui_measure-select.html#.LONG_PRESS_MS">LONG_PRESS_MS</a></li><li data-type='member'><a href="module-ui_measure-select.html#~SLOP">SLOP</a></li><li data-type='member'><a href="module-ui_measure-select.html#~bar">bar</a></li><li data-type='member'><a href="module-ui_measure-select.html#~cur">cur</a></li><li data-type='member'><a href="module-ui_measure-select.html#~swallowClick">swallowClick</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_measure-select.html#.bindMeasureSelect">bindMeasureSelect</a></li><li data-type='method'><a href="module-ui_measure-select.html#.clearMeasureSelect">clearMeasureSelect</a></li><li data-type='method'><a href="module-ui_measure-select.html#.measureSelection">measureSelection</a></li><li data-type='method'><a href="module-ui_measure-select.html#.refreshMeasureSelect">refreshMeasureSelect</a></li><li data-type='method'><a href="module-ui_measure-select.html#.staffTarget">staffTarget</a></li><li data-type='method'><a href="module-ui_measure-select.html#~drawBoxes">drawBoxes</a></li><li data-type='method'><a href="module-ui_measure-select.html#~makeBar">makeBar</a></li><li data-type='method'><a href="module-ui_measure-select.html#~placeBar">placeBar</a></li><li data-type='method'><a href="module-ui_measure-select.html#~updateBar">updateBar</a></li></ul></li><li><a href="module-ui_nav.html">ui/nav</a><ul class='methods'><li data-type='method'><a href="module-ui_nav.html#.backToList">backToList</a></li><li data-type='method'><a href="module-ui_nav.html#.go">go</a></li><li data-type='method'><a href="module-ui_nav.html#.goChild">goChild</a></li><li data-type='method'><a href="module-ui_nav.html#.onHistoryBack">onHistoryBack</a></li><li data-type='method'><a href="module-ui_nav.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_nav.html#.registerScreen">registerScreen</a></li><li data-type='method'><a href="module-ui_nav.html#.renderScreen">renderScreen</a></li><li data-type='method'><a href="module-ui_nav.html#~enterSubView">enterSubView</a></li><li data-type='method'><a href="module-ui_nav.html#~show">show</a></li><li data-type='method'><a href="module-ui_nav.html#~showList">showList</a></li></ul></li><li><a href="module-ui_note.html">ui/note</a><ul class='methods'><li data-type='method'><a href="module-ui_note.html#~addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangement">bindArrangement</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangementSelect">bindArrangementSelect</a></li><li data-type='method'><a href="module-ui_note.html#~bindShare">bindShare</a></li><li data-type='method'><a href="module-ui_note.html#~bindTitle">bindTitle</a></li><li data-type='method'><a href="module-ui_note.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_note.html#~folderSelectHtml">folderSelectHtml</a></li><li data-type='method'><a href="module-ui_note.html#~renderNote">renderNote</a></li></ul></li><li><a href="module-ui_options.html">ui/options</a><ul class='methods'><li data-type='method'><a href="module-ui_options.html#.backupDue">backupDue</a></li><li data-type='method'><a href="module-ui_options.html#~aboutHtml">aboutHtml</a></li><li data-type='method'><a href="module-ui_options.html#~bindDisplay">bindDisplay</a></li><li data-type='method'><a href="module-ui_options.html#~bindFolders">bindFolders</a></li><li data-type='method'><a href="module-ui_options.html#~bindIReal">bindIReal</a></li><li data-type='method'><a href="module-ui_options.html#~bindNotebook">bindNotebook</a></li><li data-type='method'><a href="module-ui_options.html#~displayHtml">displayHtml</a></li><li data-type='method'><a href="module-ui_options.html#~foldersHtml">foldersHtml</a></li><li data-type='method'><a href="module-ui_options.html#~importChosenFile">importChosenFile</a></li><li data-type='method'><a href="module-ui_options.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_options.html#~irealHtml">irealHtml</a></li><li data-type='method'><a href="module-ui_options.html#~lastExportLabel">lastExportLabel</a></li><li data-type='method'><a href="module-ui_options.html#~notebookHtml">notebookHtml</a></li><li data-type='method'><a href="module-ui_options.html#~renderOptions">renderOptions</a></li></ul></li><li><a href="module-ui_staff_bars.html">ui/staff/bars</a><ul class='members'><li data-type='member'><a href="module-ui_staff_bars.html#.barBar">barBar</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_staff_bars.html#.applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff_bars.html#.syncBarMenu">syncBarMenu</a></li></ul></li><li><a href="module-ui_staff_chord.html">ui/staff/chord</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_chord.html#.closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#.openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#~applyChord">applyChord</a></li></ul></li><li><a href="module-ui_staff_index.html">ui/staff/index</a></li><li><a href="module-ui_staff_input.html">ui/staff/input</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_input.html#.bindStaffInput">bindStaffInput</a></li><li data-type='method'><a href="module-ui_staff_input.html#.dragZonesHtml">dragZonesHtml</a></li><li data-type='method'><a href="module-ui_staff_input.html#.setMode">setMode</a></li><li data-type='method'><a href="module-ui_staff_input.html#~hitTest">hitTest</a></li><li data-type='method'><a href="module-ui_staff_input.html#~insertNote">insertNote</a></li><li data-type='method'><a href="module-ui_staff_input.html#~newItem">newItem</a></li><li data-type='method'><a href="module-ui_staff_input.html#~setStep">setStep</a></li><li data-type='method'><a href="module-ui_staff_input.html#~showTip">showTip</a></li><li data-type='method'><a href="module-ui_staff_input.html#~staffTap">staffTap</a></li></ul></li><li><a href="module-ui_staff_palette.html">ui/staff/palette</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_palette.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~erase">erase</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~helpText">helpText</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~onAccidental">onAccidental</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~onDuration">onDuration</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~resizeSel">resizeSel</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~setInput">setInput</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~shownValues">shownValues</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~step">step</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~toggleRestOf">toggleRestOf</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~updateStaffPalette">updateStaffPalette</a></li></ul></li><li><a href="module-ui_staff_shared.html">ui/staff/shared</a><ul class='members'><li data-type='member'><a href="module-ui_staff_shared.html#.hooks">hooks</a></li><li data-type='member'><a href="module-ui_staff_shared.html#.staffUi">staffUi</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_staff_shared.html#.activeStaff">activeStaff</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.clampCursor">clampCursor</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.flash">flash</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.insertIndex">insertIndex</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.logicalValue">logicalValue</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.refit">refit</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.targetIndex">targetIndex</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.withSel">withSel</a></li></ul></li><li><a href="module-ui_staff_view.html">ui/staff/view</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_view.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff_view.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff_view.html#~bindInstrument">bindInstrument</a></li><li data-type='method'><a href="module-ui_staff_view.html#~bindSelect">bindSelect</a></li><li data-type='method'><a href="module-ui_staff_view.html#~headerHtml">headerHtml</a></li><li data-type='method'><a href="module-ui_staff_view.html#~renderedLayout">renderedLayout</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.saveArrangement">saveArrangement</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_training.html">ui/training</a><ul class='methods'><li data-type='method'><a href="module-ui_training.html#~applyPlaySettings">applyPlaySettings</a></li><li data-type='method'><a href="module-ui_training.html#~draw">draw</a></li><li data-type='method'><a href="module-ui_training.html#~play">play</a></li><li data-type='method'><a href="module-ui_training.html#~renderPlacements">renderPlacements</a></li><li data-type='method'><a href="module-ui_training.html#~renderSections">renderSections</a></li><li data-type='method'><a href="module-ui_training.html#~renderTraining">renderTraining</a></li><li data-type='method'><a href="module-ui_training.html#~setOpen">setOpen</a></li><li data-type='method'><a href="module-ui_training.html#~updateFoldAll">updateFoldAll</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ui/measure-select.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module ui/measure-select
+ * @description
+ * **Sélection de mesures à l'appui long** (2.8.4), commune aux portées, aux
+ * lignes rythmiques, aux grilles et aux écrans d'entraînement.
+ *
+ * 1. **Appui long** (450 ms sans bouger de plus de 10 px) sur une mesure : un
+ *    cadre apparaît autour d'elle, le téléphone vibre brièvement.
+ * 2. Sans lever le doigt, **glisser** étend la sélection jusqu'à la mesure
+ *    sous le doigt (dans les deux sens, sur plusieurs lignes). La page ne
+ *    défile pas pendant ce glisser.
+ * 3. En levant le doigt, une **barre contextuelle** apparaît au-dessus de la
+ *    sélection : « Jouer d'ici » pour une seule mesure (jusqu'à la fin),
+ *    « Boucle » pour plusieurs (le passage en boucle). Les deux commencent par
+ *    une mesure de décompte.
+ *
+ * Un toucher ailleurs efface la sélection (et arrête la lecture qu'elle a
+ * lancée), comme ✕. Il n'y a qu'une sélection à la fois dans l'appli.
+ *
+ * Chaque zone (portée, grille…) se branche avec {@link bindMeasureSelect} en
+ * fournissant un petit objet {@link SelectTarget} : comment trouver la mesure
+ * sous le doigt, où dessiner le cadre, comment jouer. Après chaque
+ * redessin de la zone, elle appelle {@link refreshMeasureSelect} (le cadre
+ * vit dans la zone, un redessin l'efface).
+ *
+ * ## Pourquoi tant de précautions sur le geste
+ *
+ * - Le navigateur envoie un `click` en levant le doigt, même après un appui
+ *   long : on l'avale, sinon une grille ouvrirait le clavier.
+ * - Android ouvre un menu (ou sélectionne du texte) sur un appui long : on
+ *   l'empêche (`contextmenu`, CSS `-webkit-touch-callout`).
+ * - Pour glisser sans faire défiler la page, on annule les `touchmove` une
+ *   fois la sélection armée (seulement à ce moment-là : avant, le doigt peut
+ *   encore servir à faire défiler).
+ */
+
+import * as audio from '../audio.js';
+import { geom } from '../layout.js';
+
+/** Durée de l'appui long (ms). */
+export const LONG_PRESS_MS = 450;
+/** Déplacement toléré pendant l'appui long (px). */
+const SLOP = 10;
+
+/**
+ * Ce qu'une zone fournit pour être sélectionnable.
+ * @typedef {Object} SelectTarget
+ * @property {function(number, number): ?number} measureAt Mesure (index
+ *   d'écriture) sous un point de la fenêtre, `null` si aucune.
+ * @property {function(number, number): Array.&lt;{x: number, y: number, w: number, h: number}>} boxes
+ *   Rectangles (dans la zone) qui couvrent les mesures `a` à `b`, un par ligne.
+ * @property {function(number, number, boolean, function()): void} play
+ *   Lance la lecture de `a` à `b` (boucle ou non), avec décompte ; le dernier
+ *   argument est à appeler à la fin de la lecture.
+ * @property {function(): string} playId Identifiant de lecture (pour savoir si elle tourne).
+ * @property {function(PointerEvent): boolean} [skip] Vrai si le geste ne doit
+ *   pas servir à sélectionner (zone de glisser de note, par exemple).
+ */
+
+/**
+ * Sélection courante.
+ * @type {?{wrap: HTMLElement, t: SelectTarget, a: number, b: number, anchor: number, mine: boolean}}
+ */
+let cur = null;
+/** Avaler le prochain `click` (celui qui suit l'appui long). */
+let swallowClick = false;
+/** Barre contextuelle (créée au premier usage). */
+let bar = null;
+
+/**
+ * Efface la sélection (cadre et barre) ; arrête la lecture si c'est elle
+ * qui l'a lancée.
+ */
+export function clearMeasureSelect() {
+  if (!cur) return;
+  const { wrap, t, mine } = cur;
+  cur = null;
+  wrap.querySelectorAll('.msel-box').forEach((x) => x.remove());
+  if (bar) bar.hidden = true;
+  if (mine &amp;&amp; audio.isPlaying(t.playId())) audio.stop();
+}
+
+/**
+ * Sélection courante (pour les tests et les écrans).
+ * @returns {?{a: number, b: number}}
+ */
+export function measureSelection() {
+  return cur &amp;&amp; { a: cur.a, b: cur.b };
+}
+
+/**
+ * Redessine le cadre et replace la barre, après un redessin de la zone.
+ * @param {HTMLElement} wrap
+ */
+export function refreshMeasureSelect(wrap) {
+  if (!cur || cur.wrap !== wrap) return;
+  drawBoxes();
+  placeBar();
+}
+
+/** Dessine le cadre autour des mesures sélectionnées. */
+function drawBoxes() {
+  const { wrap, t, a, b } = cur;
+  wrap.querySelectorAll('.msel-box').forEach((x) => x.remove());
+  const boxes = t.boxes(a, b);
+  if (!boxes.length) {
+    clearMeasureSelect(); // la mesure n'existe plus (bloc modifié)
+    return;
+  }
+  boxes.forEach(({ x, y, w, h }) => {
+    const d = document.createElement('div');
+    d.className = 'msel-box';
+    d.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px`;
+    wrap.appendChild(d);
+  });
+}
+
+/** Crée la barre contextuelle. */
+function makeBar() {
+  bar = document.createElement('div');
+  bar.className = 'msel-bar';
+  bar.setAttribute('role', 'toolbar');
+  bar.setAttribute('aria-label', 'Mesures sélectionnées');
+  bar.innerHTML =
+    '&lt;button type="button" class="btn primary" data-msel="go">&lt;/button>&lt;button type="button" class="btn ghost" data-msel="close" aria-label="Fermer la sélection">&amp;#10005;&lt;/button>';
+  bar.hidden = true;
+  document.body.appendChild(bar);
+  bar.querySelector('[data-msel=close]').addEventListener('click', clearMeasureSelect);
+  bar.querySelector('[data-msel=go]').addEventListener('click', () => {
+    if (!cur) return;
+    const { t, a, b } = cur;
+    if (cur.mine &amp;&amp; audio.isPlaying(t.playId())) {
+      audio.stop();
+      return;
+    }
+    audio.stop();
+    cur.mine = true;
+    // Une mesure : jusqu'à la fin ; plusieurs : le passage en boucle.
+    t.play(a, a === b ? Infinity : b, a !== b, updateBar);
+    updateBar();
+  });
+}
+
+/** Libellé du bouton de la barre. */
+function updateBar() {
+  if (!bar || !cur) return;
+  const go = bar.querySelector('[data-msel=go]');
+  const on = cur.mine &amp;&amp; audio.isPlaying(cur.t.playId());
+  go.classList.toggle('on', on);
+  go.innerHTML = on ? '&amp;#9632; Stop' : cur.a === cur.b ? '&amp;#9654; Jouer d’ici' : '&amp;#128257; Boucle';
+}
+
+/** Place la barre au-dessus de la sélection (en dessous s'il n'y a pas la place). */
+function placeBar() {
+  if (!bar) makeBar();
+  if (!cur) return;
+  updateBar();
+  bar.hidden = false;
+  const boxes = [...cur.wrap.querySelectorAll('.msel-box')].map((x) => x.getBoundingClientRect());
+  if (!boxes.length) return;
+  const first = boxes[0];
+  const last = boxes[boxes.length - 1];
+  const bw = bar.offsetWidth || 200;
+  const bh = bar.offsetHeight || 44;
+  let top = first.top - bh - 8;
+  if (top &lt; 64) top = last.bottom + 8; // sous l'en-tête : on passe en dessous
+  const left = Math.max(8, Math.min(window.innerWidth - bw - 8, first.left + first.width / 2 - bw / 2));
+  bar.style.left = `${left + window.scrollX}px`;
+  bar.style.top = `${top + window.scrollY}px`;
+}
+
+/**
+ * Rend une zone sélectionnable à l'appui long.
+ * @param {HTMLElement} wrap Élément de la zone (doit être en `position: relative`).
+ * @param {SelectTarget} t
+ */
+export function bindMeasureSelect(wrap, t) {
+  wrap.classList.add('msel-zone');
+  /** Appui en attente : position de départ et minuterie. */
+  let press = null;
+  /** Glisser de sélection en cours. */
+  let armed = false;
+
+  const cancel = () => {
+    if (press) clearTimeout(press.timer);
+    press = null;
+  };
+
+  wrap.addEventListener('pointerdown', (e) => {
+    cancel();
+    if (e.pointerType === 'mouse' &amp;&amp; e.button !== 0) return;
+    if (t.skip &amp;&amp; t.skip(e)) return;
+    const m = t.measureAt(e.clientX, e.clientY);
+    if (m == null) return;
+    const id = e.pointerId;
+    press = {
+      x: e.clientX,
+      y: e.clientY,
+      timer: setTimeout(() => {
+        press = null;
+        if (!wrap.isConnected) return;
+        // Armé : nouvelle sélection, la lecture en cours s'arrête.
+        clearMeasureSelect();
+        audio.stop();
+        cur = { wrap, t, a: m, b: m, anchor: m, mine: false };
+        armed = true;
+        swallowClick = true;
+        try {
+          navigator.vibrate?.(15);
+        } catch {
+          /* pas de vibreur */
+        }
+        try {
+          wrap.setPointerCapture(id);
+        } catch {
+          /* doigt déjà levé */
+        }
+        drawBoxes();
+        if (bar) bar.hidden = true;
+      }, LONG_PRESS_MS),
+    };
+  });
+
+  wrap.addEventListener('pointermove', (e) => {
+    if (press &amp;&amp; Math.hypot(e.clientX - press.x, e.clientY - press.y) > SLOP) cancel();
+    if (!armed || !cur) return;
+    const m = t.measureAt(e.clientX, e.clientY);
+    if (m == null) return;
+    const a = Math.min(cur.anchor, m);
+    const b = Math.max(cur.anchor, m);
+    if (a !== cur.a || b !== cur.b) {
+      cur.a = a;
+      cur.b = b;
+      drawBoxes();
+    }
+  });
+
+  const end = () => {
+    cancel();
+    if (!armed) return;
+    armed = false;
+    if (cur &amp;&amp; cur.wrap === wrap) placeBar();
+  };
+  wrap.addEventListener('pointerup', end);
+  wrap.addEventListener('pointercancel', end);
+  // Glisser de sélection : le doigt sélectionne, la page ne défile pas.
+  wrap.addEventListener(
+    'touchmove',
+    (e) => {
+      if (armed) e.preventDefault();
+    },
+    { passive: false },
+  );
+  // Pas de menu du navigateur sur un appui long.
+  wrap.addEventListener('contextmenu', (e) => {
+    if (press || armed || (cur &amp;&amp; cur.wrap === wrap)) e.preventDefault();
+  });
+}
+
+// Le `click` qui suit l'appui long est avalé ; un toucher ailleurs que dans la
+// barre efface la sélection. (Écoute en phase de capture, avant les zones.)
+document.addEventListener(
+  'pointerdown',
+  () => {
+    // Nouveau toucher : le `click` d'un ancien appui long (qui n'est pas
+    // toujours envoyé, par exemple après un glisser) ne doit plus être avalé.
+    swallowClick = false;
+  },
+  true,
+);
+document.addEventListener(
+  'click',
+  (e) => {
+    if (swallowClick) {
+      swallowClick = false;
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
+    if (cur &amp;&amp; !(bar &amp;&amp; bar.contains(/** @type {Node} */ (e.target)))) clearMeasureSelect();
+  },
+  true,
+);
+// La zone a disparu (autre écran, note refermée…) : on efface la sélection.
+new MutationObserver(() => {
+  if (cur &amp;&amp; !cur.wrap.isConnected) clearMeasureSelect();
+}).observe(document.body, { childList: true, subtree: true });
+window.addEventListener('resize', () => cur &amp;&amp; refreshMeasureSelect(cur.wrap));
+
+/**
+ * {@link SelectTarget} pour une portée dessinée par
+ * {@link module:render-staff.staffSvg|staffSvg} : les mesures sont retrouvées
+ * dans la mise en page ({@link module:layout~Layout|Layout}, `mrects`).
+ *
+ * @param {HTMLElement} wrap Conteneur du SVG.
+ * @param {function(): ?module:layout~Layout} getLayout Mise en page telle que dessinée.
+ * @param {Omit&lt;SelectTarget, 'measureAt'|'boxes'>} rest `play`, `playId`, `skip`.
+ * @returns {SelectTarget}
+ */
+export function staffTarget(wrap, getLayout, rest) {
+  /**
+   * Repère du SVG à l'écran : il peut être décalé dans la zone (marges) et
+   * agrandi par le CSS (exercices aléatoires).
+   */
+  const frame = () => {
+    const svg = wrap.querySelector('svg');
+    if (!svg) return null;
+    const r = svg.getBoundingClientRect();
+    const w = Number(svg.getAttribute('width')) || r.width;
+    return { r, k: r.width / w };
+  };
+  return {
+    ...rest,
+    measureAt(cx, cy) {
+      const L = getLayout();
+      const f = frame();
+      if (!L || !f || !L.mrects.length) return null;
+      const x = (cx - f.r.left) / f.k;
+      const y = (cy - f.r.top) / f.k;
+      const si = Math.max(0, Math.min(L.systems.length - 1, Math.floor(y / L.SH)));
+      const on = L.mrects.map((m, k) => ({ ...m, k })).filter((m) => m.sys === si);
+      if (!on.length) return null; // ligne vide (zone d'ajout)
+      const hit = on.find((m) => x >= m.x0 &amp;&amp; x &lt; m.x1);
+      if (hit) return hit.k;
+      return x &lt; on[0].x0 ? on[0].k : on[on.length - 1].k;
+    },
+    boxes(a, b) {
+      const L = getLayout();
+      const f = frame();
+      if (!L || !f || b >= L.mrects.length) return [];
+      const w = wrap.getBoundingClientRect();
+      const ox = f.r.left - w.left;
+      const oy = f.r.top - w.top;
+      const out = [];
+      for (let k = a; k &lt;= b; k++) {
+        const m = L.mrects[k];
+        const last = out[out.length - 1];
+        if (last &amp;&amp; last.sys === m.sys) last.x1 = m.x1;
+        else out.push({ sys: m.sys, x0: m.x0, x1: m.x1 });
+      }
+      return out.map(({ sys, x0, x1 }) => {
+        const g = geom(L, sys);
+        const top = g.staffTop - 12;
+        const h = Math.max(32, g.staffBottom - g.staffTop + 24);
+        const y0 = g.staffTop === g.staffBottom ? g.staffTop - h / 2 : top;
+        return { x: ox + (x0 - 2) * f.k, y: oy + y0 * f.k, w: (x1 - x0 + 4) * f.k, h: h * f.k };
+      });
+    },
+  };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

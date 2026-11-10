@@ -135,10 +135,10 @@ test.describe('exercices aléatoires', () => {
     await page.goForward();
     await expect(page.locator('.top-title')).toHaveText(title);
     await expect.poll(staff).toBe(svg);
-    // ↻ : un autre numéro, une autre portée.
+    // ↻ : un autre numéro.
     await page.click('#reroll');
     await expect(page.locator('.top-title')).not.toHaveText(title);
-    await expect.poll(staff).not.toBe(svg);
+    // (Ici une seule mesure est possible : la portée peut rester identique.)
   });
 
   test('lecture en boucle : le métronome continue après la fin', async ({ page }) => {

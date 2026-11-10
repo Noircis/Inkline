@@ -123,3 +123,61 @@ test('staffEvents : en swing, les doubles croches restent égales (temps joué d
   // Syncope en croches (croche, noire, croche) : swing normal.
   assert.deepEqual(starts([n('8'), n('q'), n('8')]), [0, 0.667, 1.667]);
 });
+
+// --- 2.8.4 : jouer une partie de la portée --------------------------------
+import { staffSegment } from '../js/rhythm.js';
+import { layout } from '../js/layout.js';
+
+/** Quatre mesures de rondes : s = 0, 1, 2, 3 (pour les reconnaître). */
+const four = (extra = []) => staff([0, 1, 2, 3].map((s, k) => ({ d: 'w', s, ...(extra[k] || {}) })));
+
+test('staffSegment : d’une mesure à une autre, instants ramenés au début', () => {
+  const seg = staffSegment(four(), 1, 2);
+  assert.deepEqual(
+    seg.events.map((e) => [e.i, e.start, e.end]),
+    [
+      [1, 0, 4],
+      [2, 4, 8],
+    ],
+  );
+  assert.equal(seg.total, 8);
+  assert.equal(seg.measures, 2);
+  // Jusqu'à la fin.
+  assert.deepEqual(
+    staffSegment(four(), 2, Infinity).events.map((e) => e.i),
+    [2, 3],
+  );
+  assert.equal(staffSegment(four(), 9, 9), null); // mesure inexistante
+});
+
+test('staffSegment : reprise dépliée à l’intérieur, premier passage', () => {
+  // ‖: m0 m1 :‖ m2 m3 → lecture m0 m1 m0 m1 m2 m3
+  const b = four([{ rs: true }, { bar: 'rep' }]);
+  assert.deepEqual(
+    staffSegment(b, 1, 2).events.map((e) => e.i),
+    [1, 0, 1, 2], // depuis le 1er passage par m1 jusqu'à m2 : la reprise est jouée
+  );
+  assert.deepEqual(
+    staffSegment(b, 0, 0).events.map((e) => e.i),
+    [0], // m0 seule : son premier passage
+  );
+});
+
+test('staffSegment : une note liée qui arrive d’avant est attaquée', () => {
+  // Blanche liée sur la barre : h h~ | h h
+  const b = staff([n('h'), n('h', { tie: true }), n('h'), n('h')]);
+  const full = staffEvents(b).events;
+  assert.equal(full[2].held, true);
+  const seg = staffSegment(b, 1, 1).events;
+  assert.equal(seg[0].held, false); // attaquée au début du segment
+  assert.equal(seg[0].end, 2);
+});
+
+test('layout : place de chaque mesure', () => {
+  const L = layout(four(), 360);
+  assert.equal(L.mrects.length, 4);
+  L.mrects.forEach((m, k) => {
+    assert.ok(m.x1 > m.x0);
+    if (k && L.mrects[k - 1].sys === m.sys) assert.ok(Math.abs(m.x0 - L.mrects[k - 1].x1) < 1e-6);
+  });
+});

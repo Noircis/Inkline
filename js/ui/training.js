@@ -24,6 +24,13 @@ import { placementSeries, seriesBlock, meterOf, slotsOf, startGlyphs, startLabel
 import * as audio from '../audio.js';
 import { registerScreen, goChild, backToList } from './nav.js';
 import { hideAllPalettes } from './blocks.js';
+import { layout } from '../layout.js';
+import {
+  bindMeasureSelect,
+  staffTarget,
+  refreshMeasureSelect,
+  clearMeasureSelect,
+} from './measure-select.js';
 import {
   header,
   settings,
@@ -170,6 +177,15 @@ function renderSections() {
       updateFoldAll();
     });
     list.querySelector(`[data-play="${id}"]`).addEventListener('click', () => play(id));
+    // Appui long : « Jouer d'ici » ou boucle sur des mesures de la série (2.8.4).
+    const el = /** @type {HTMLElement} */ (list.querySelector(`[data-drill="${id}"]`));
+    bindMeasureSelect(
+      el,
+      staffTarget(el, () => (el._W ? layout(sec.block, el._W, false, null) : null), {
+        playId: () => id,
+        play: (a, to, loop, done) => play(id, { from: a, to, loop }, done),
+      }),
+    );
     setOpen(id, sec.open);
   });
   updateFoldAll();
@@ -191,7 +207,10 @@ function setOpen(id, open) {
     sec.drawn = true;
     draw(id);
   }
-  if (!open && audio.isPlaying(id)) audio.stop();
+  if (!open) {
+    if (audio.isPlaying(id)) audio.stop();
+    clearMeasureSelect();
+  }
 }
 
 /** Libellé du bouton « Tout déplier / Tout replier ». */
@@ -205,8 +224,10 @@ function updateFoldAll() {
 /**
  * Joue une section (et la déplie si elle était repliée).
  * @param {string} id
+ * @param {module:audio~PlayOptions} [extra] Partie à jouer (sélection de mesures, 2.8.4).
+ * @param {function()} [done] À la fin de la lecture.
  */
-function play(id) {
+function play(id, extra = {}, done = () => {}) {
   const sec = sections.get(id);
   if (!sec) return;
   if (!sec.open) {
@@ -221,9 +242,10 @@ function play(id) {
       onEnd: () => {
         highlight(el, null);
         updatePlay(id, false);
+        done();
       },
     },
-    playOptions(meterOf(settings().meter)),
+    { ...playOptions(meterOf(settings().meter)), ...extra },
   );
   updatePlay(id, false);
 }
@@ -236,5 +258,8 @@ function draw(id) {
   const sec = sections.get(id);
   const el = /** @type {HTMLElement} */ (app.querySelector(`[data-drill="${id}"]`));
   if (!sec || !el) return;
-  el.innerHTML = staffSvg(sec.block, Math.max(220, el.clientWidth || 300)).svg;
+  const W = Math.max(220, el.clientWidth || 300);
+  el.innerHTML = staffSvg(sec.block, W).svg;
+  el._W = W;
+  refreshMeasureSelect(el);
 }

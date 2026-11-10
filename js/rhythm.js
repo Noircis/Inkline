@@ -390,3 +390,63 @@ export function staffEvents(b) {
   });
   return { events, total: warp(q, false) };
 }
+
+/**
+ * Une partie de la lecture d'une portée (2.8.4) : de la mesure `from` à la
+ * mesure `to` (index d'écriture, à partir de 0).
+ *
+ * La lecture déroulée (reprises comprises) passe par une suite de mesures,
+ * certaines plusieurs fois. Le segment commence au **premier passage** par
+ * `from` et s'arrête au premier passage par `to` qui suit (une reprise
+ * contenue dans le segment est donc jouée dépliée). Les instants sont
+ * ramenés au début du segment.
+ *
+ * Une note liée qui arrive d'avant le segment est attaquée (sinon le
+ * segment commencerait par un silence).
+ *
+ * @param {module:model~StaffBlock} b
+ * @param {number} from
+ * @param {number} to
+ * @returns {?{events: StaffEvent[], total: number, measures: number}} `null`
+ *   si `from` n'est jamais jouée. `measures` : nombre de mesures du segment.
+ */
+export function staffSegment(b, from, to) {
+  const { events, total } = staffEvents(b);
+  /** Mesure d'écriture de chaque élément. */
+  const mOf = [];
+  segmentMeasures(b.items, b.time).forEach((m, mi) => m.idx.forEach((i) => (mOf[i] = mi)));
+  // Passages successifs par les mesures : un nouveau passage commence quand
+  // on change de mesure ou qu'on saute (reprise).
+  const occOf = [];
+  const occStart = [];
+  const occMeasure = [];
+  events.forEach((ev, k) => {
+    const prev = events[k - 1];
+    if (!prev || mOf[ev.i] !== mOf[prev.i] || ev.i !== prev.i + 1) {
+      occMeasure.push(mOf[ev.i]);
+      occStart.push(ev.start);
+    }
+    occOf[k] = occMeasure.length - 1;
+  });
+  const k1 = occMeasure.indexOf(from);
+  if (k1 < 0) return null;
+  let k2 = occMeasure.findIndex((m, k) => k >= k1 && m === to);
+  if (k2 < 0) k2 = occMeasure.length - 1;
+  const t0 = occStart[k1];
+  const t1 = k2 + 1 < occStart.length ? occStart[k2 + 1] : total;
+  /** @type {StaffEvent[]} */
+  const out = [];
+  let head = null; // note qui sonne (pour prolonger les liaisons)
+  events.forEach((e, k) => {
+    if (occOf[k] < k1 || occOf[k] > k2) return;
+    const ev = { ...e, start: e.start - t0, end: Math.min(e.end, t1) - t0 };
+    if (ev.held) {
+      if (head) head.end = Math.max(head.end, ev.end);
+      else ev.held = false; // liaison entrante : on attaque la note
+    }
+    if (!ev.rest && !ev.held) head = ev;
+    if (ev.rest) head = null;
+    out.push(ev);
+  });
+  return { events: out, total: t1 - t0, measures: k2 - k1 + 1 };
+}

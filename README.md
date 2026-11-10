@@ -95,6 +95,7 @@ js/
     training.js       écrans Entraînement et Placements
     exercises.js      écrans des exercices aléatoires (réglages, lecture)
     drill-kit.js      pièces communes de l'entraînement (réglages, métronome, lecture)
+    measure-select.js sélection de mesures à l'appui long (jouer d'ici, boucle)
     staff/            bloc portée : index (enregistrement), view (en-tête, dessin),
                       input (toucher, modes), palette, bars, chord, shared (socle commun)
     grid-ui.js        bloc grille : saisie, palette, panneau iReal
