@@ -28,7 +28,19 @@
 import { state, app, touch } from './state.js';
 import { esc } from '../util.js';
 import { newNote as makeNote, exampleNote } from '../model.js';
-import { ALL, UNFILED, sortedFolders, inSelection, countByFolder } from '../folders.js';
+import {
+  ALL,
+  UNFILED,
+  ALL_CATS,
+  NO_CAT,
+  sortedFolders,
+  inSelection,
+  countByFolder,
+  inCategory,
+  countByCategory,
+  groupByCategory,
+  fileNote,
+} from '../folders.js';
 import { SORT_MODES, matchNote, sortNotes } from '../search.js';
 import { getMeta, setMeta } from '../storage.js';
 import { staffSvg } from '../render-staff.js';
@@ -38,7 +50,7 @@ import { hideAllPalettes } from './blocks.js';
 import { backupDue } from './options.js';
 import { renderNoteList } from './list-view.js';
 import { GEAR, LOUPE, METRONOME } from './icons.js';
-import { openFolderSheet } from './folder-sheet.js';
+import { openFolderSheet, openCategoriesSheet } from './folder-sheet.js';
 
 /** « 1 note », « 3 notes ». */
 const plural = (k, word) => `${k} ${word}${k > 1 ? 's' : ''}`;
@@ -52,6 +64,41 @@ function currentSelection() {
   const f = getMeta().folder;
   if (f === UNFILED || (f && state.folders[f])) return f;
   return ALL;
+}
+
+/**
+ * Catégorie choisie dans un dossier (2.8.6) : {@link module:folders.ALL_CATS|ALL_CATS},
+ * {@link module:folders.NO_CAT|NO_CAT} ou un id de catégorie existante.
+ * @param {?module:folders~Folder} folder
+ * @returns {string}
+ */
+function currentCategory(folder) {
+  if (!folder || !folder.cats || !folder.cats.length) return ALL_CATS;
+  const c = (getMeta().catSel || {})[folder.id];
+  if (c === NO_CAT || (c && folder.cats.some((x) => x.id === c))) return c;
+  return ALL_CATS;
+}
+
+/**
+ * HTML de la barre de catégories d'un dossier (2e rangée de puces).
+ * @param {module:folders~Folder} folder
+ * @param {string} cat Catégorie choisie.
+ * @returns {string}
+ */
+function catChipsHtml(folder, cat) {
+  const cats = folder.cats || [];
+  const add = `<button type="button" class="chip chip-add" id="addCat" aria-label="Catégories du dossier">+${cats.length ? '' : ' Catégorie'}</button>`;
+  if (!cats.length) return add;
+  const counts = countByCategory(
+    Object.values(state.notes).filter((n) => inSelection(n, folder.id, state.folders)),
+    folder,
+  );
+  const chip = (key, label) =>
+    `<button type="button" class="chip" data-cat="${esc(key)}" aria-pressed="${key === cat}"><span class="chip-name">${label}</span><span class="chip-n">${counts[key] || 0}</span></button>`;
+  let html = chip(ALL_CATS, 'Tout');
+  cats.forEach((c) => (html += chip(c.id, esc(c.name))));
+  if (counts[NO_CAT]) html += chip(NO_CAT, 'Sans catégorie');
+  return html + add;
 }
 
 /**
@@ -76,7 +123,10 @@ function select(selection) {
 function newNote() {
   const n = makeNote();
   const sel = currentSelection();
-  if (sel !== ALL && sel !== UNFILED) n.folder = sel;
+  if (sel !== ALL && sel !== UNFILED) {
+    const cat = currentCategory(state.folders[sel]);
+    fileNote(n, sel, cat !== ALL_CATS && cat !== NO_CAT ? [cat] : []);
+  }
   state.notes[n.id] = n;
   touch(n);
   openNote(n.id, true);
@@ -132,6 +182,7 @@ function renderHome() {
   const sel = currentSelection();
   body.innerHTML = `<div class="search"><span class="search-ico">${LOUPE}</span><input type="search" id="q" placeholder="Rechercher titres, textes, accords" autocomplete="off" spellcheck="false" enterkeyhint="search" aria-label="Rechercher"><button type="button" class="search-clear" id="qClear" aria-label="Effacer la recherche" hidden>&times;</button></div>
   <nav class="chips" id="chips" aria-label="Dossiers">${chipsHtml(sel)}</nav>
+  ${state.folders[sel] ? `<nav class="chips cat-chips" id="catChips" aria-label="Catégories">${catChipsHtml(state.folders[sel], currentCategory(state.folders[sel]))}</nav>` : ''}
   <div class="listbar"><span class="listbar-lbl" id="listLbl"></span><button type="button" class="btn ghost small" id="editFolder" hidden>Modifier</button><div class="grow"></div><label class="sort"><span class="sr">Trier</span><select id="sortSel">${SORT_MODES.map((m) => `<option value="${m.key}">${esc(m.label)}</option>`).join('')}</select></label></div>
   <div id="listBody"></div>`;
 
@@ -163,6 +214,7 @@ function renderHome() {
     .querySelector('#addFolder')
     .addEventListener('click', () => openFolderSheet(null, (f) => (f ? select(f.id) : renderHome())));
   body.querySelector('#editFolder').addEventListener('click', () => editFolder(sel));
+  bindCatChips(sel);
 
   const sortSel = /** @type {HTMLSelectElement} */ (body.querySelector('#sortSel'));
   sortSel.value = sortFor(sel);
@@ -182,6 +234,27 @@ function renderHome() {
 registerScreen('list', renderHome);
 
 /**
+ * Branche la barre de catégories : toucher une catégorie la choisit ;
+ * toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.
+ * @param {string} sel Dossier choisi.
+ */
+function bindCatChips(sel) {
+  const folder = state.folders[sel];
+  const bar = app.querySelector('#catChips');
+  if (!folder || !bar) return;
+  const manage = (focusNew) => openCategoriesSheet(folder, () => renderHome(), { focusNew });
+  bar.querySelectorAll('[data-cat]').forEach((c) =>
+    c.addEventListener('click', () => {
+      const key = /** @type {HTMLElement} */ (c).dataset.cat;
+      if (key === currentCategory(folder)) return manage(false);
+      setMeta({ catSel: { ...getMeta().catSel, [folder.id]: key } });
+      renderHome();
+    }),
+  );
+  bar.querySelector('#addCat').addEventListener('click', () => manage(true));
+}
+
+/**
  * Ouvre l'éditeur d'un dossier depuis l'accueil.
  * @param {string} id
  */
@@ -198,21 +271,29 @@ function refreshResults() {
   const query = state.query.trim();
   const searching = !!query;
   const all = Object.values(state.notes);
+  const folder = state.folders[sel];
+  const cat = currentCategory(folder);
   const notes = sortNotes(
-    all.filter((n) => (searching ? matchNote(n, query) : inSelection(n, sel, state.folders))),
+    all.filter((n) =>
+      searching
+        ? matchNote(n, query)
+        : inSelection(n, sel, state.folders) && inCategory(n, cat, state.folders),
+    ),
     sortFor(sel),
   );
 
-  const folder = state.folders[sel];
+  const catName =
+    cat === NO_CAT ? 'Sans catégorie' : cat !== ALL_CATS ? folder.cats.find((c) => c.id === cat).name : '';
   const lbl = app.querySelector('#listLbl');
   lbl.textContent = searching
     ? `${plural(notes.length, 'résultat')} dans toutes les notes`
     : sel === ALL
       ? plural(notes.length, 'note')
-      : `${folder ? folder.name : 'Non classées'} · ${plural(notes.length, 'note')}`;
+      : `${folder ? folder.name : 'Non classées'}${catName ? ' › ' + catName : ''} · ${plural(notes.length, 'note')}`;
   /** @type {HTMLElement} */ (app.querySelector('#editFolder')).hidden = searching || !folder;
   /** @type {HTMLElement} */ (app.querySelector('#qClear')).hidden = !state.query;
   app.querySelector('#chips').classList.toggle('dim', searching);
+  app.querySelector('#catChips')?.classList.toggle('dim', searching);
 
   const body = /** @type {HTMLElement} */ (app.querySelector('#listBody'));
   body.innerHTML = '';
@@ -222,9 +303,52 @@ function refreshResults() {
     if (b) b.addEventListener('click', newNote);
     return;
   }
-  renderNoteList(body, notes, getMeta().listView || 'cards', openNote, {
-    folders: state.folders,
-    showFolder: searching || sel === ALL,
+  const listOpt = { folders: state.folders, showFolder: searching || sel === ALL };
+  // Dossier à catégories, sur « Tout » : une section repliable par catégorie (2.8.6).
+  if (!searching && folder && folder.cats && folder.cats.length && cat === ALL_CATS) {
+    renderSections(body, notes, folder, listOpt);
+    return;
+  }
+  renderNoteList(body, notes, getMeta().listView || 'cards', openNote, listOpt);
+}
+
+/**
+ * Liste d'un dossier en sections, une par catégorie (puis « Sans
+ * catégorie »). Une note de plusieurs catégories apparaît dans chacune.
+ * L'état replié de chaque section est mémorisé.
+ * @param {HTMLElement} body
+ * @param {module:model~Note[]} notes Notes du dossier, triées.
+ * @param {module:folders~Folder} folder
+ * @param {Object} listOpt Options de {@link module:ui/list-view.renderNoteList|renderNoteList}.
+ */
+function renderSections(body, notes, folder, listOpt) {
+  const mode = getMeta().listView || 'cards';
+  groupByCategory(notes, folder).forEach(({ cat, notes: list }) => {
+    const key = `${folder.id}:${cat ? cat.id : NO_CAT}`;
+    const folded = !!(getMeta().catFold || {})[key];
+    const sec = document.createElement('section');
+    sec.className = 'cat-sec';
+    sec.innerHTML = `<button type="button" class="cat-head" aria-expanded="${!folded}"><span class="drill-chev" aria-hidden="true"></span><span class="cat-title">${esc(cat ? cat.name : 'Sans catégorie')}</span><span class="cat-count">${list.length}</span></button><div class="cat-body"${folded ? ' hidden' : ''}></div>`;
+    body.appendChild(sec);
+    const inner = /** @type {HTMLElement} */ (sec.querySelector('.cat-body'));
+    let drawn = false;
+    const draw = () => {
+      if (drawn) return;
+      drawn = true;
+      renderNoteList(inner, list, mode, openNote, listOpt);
+    };
+    if (!folded) draw();
+    sec.querySelector('.cat-head').addEventListener('click', (e) => {
+      const head = /** @type {HTMLElement} */ (e.currentTarget);
+      const open = inner.hidden;
+      inner.hidden = !open;
+      head.setAttribute('aria-expanded', String(open));
+      const fold = { ...getMeta().catFold };
+      if (open) delete fold[key];
+      else fold[key] = true;
+      setMeta({ catFold: fold });
+      if (open) draw();
+    });
   });
 }
 

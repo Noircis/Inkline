@@ -354,3 +354,171 @@
     animation: none;
   }
 }
+
+/* Catégories de dossier (2.8.6) */
+.cat-chips {
+  margin-top: 6px;
+}
+.cat-chips .chip {
+  min-height: 32px;
+  padding: 4px 11px;
+  font-size: 13px;
+  background: var(--bg);
+}
+.cat-sec {
+  margin-top: 12px;
+}
+.cat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+}
+.cat-head .drill-chev::before {
+  content: '\25B8';
+  display: inline-block;
+  width: 12px;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+.cat-head[aria-expanded='true'] .drill-chev::before {
+  transform: rotate(90deg);
+}
+.cat-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cat-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+.cat-body[hidden] {
+  display: none;
+}
+/* Bouton de rangement d'une note */
+button.note-folder {
+  padding: 6px 12px 6px 10px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 100%;
+}
+.nf-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nf-cats {
+  font-weight: 500;
+  color: var(--muted);
+}
+.nf-chev {
+  color: var(--muted);
+  font-size: 11px;
+}
+/* Panneau des catégories */
+.cat-list {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sheet .cat-row .cat-name {
+  flex: 1;
+  min-width: 0;
+}
+.cat-n {
+  min-width: 22px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.cat-add {
+  display: flex;
+  gap: 6px;
+}
+.sheet .cat-add input {
+  flex: 1;
+  min-width: 0;
+}
+.sheet .hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+/* Panneau Ranger la note */
+.ar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin: 8px 0;
+}
+.ar-folder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: var(--ink);
+  font-size: 15px;
+  text-align: left;
+}
+.ar-folder[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+.ar-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 4px 10px 32px;
+}
+.ar-cats .chip {
+  min-height: 34px;
+  padding: 4px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+}
+.ar-cats .chip[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--surface);
+}
+.sheet .ar-new input {
+  min-height: 34px;
+  width: 170px;
+  font-size: 13px;
+}
+.cat-row button:disabled {
+  opacity: 0.25;
+}

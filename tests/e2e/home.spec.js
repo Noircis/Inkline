@@ -48,7 +48,11 @@ test('dossiers : créer, ranger une note, filtrer, supprimer', async ({ page }) 
   await page.click('.chip[data-sel=all]');
   await page.locator('.card', { hasText: 'Blues en F' }).click();
   const fid = (await storedNotes(page)).folders[0].id;
-  await page.selectOption('#folderSel', fid);
+  // Panneau « Ranger la note » (2.8.6), à la place de l'ancien menu.
+  await page.click('#folderBtn');
+  await page.click(`[data-folder="${fid}"]`);
+  await page.click('#arDone');
+  await expect(page.locator('#folderBtn')).toContainText('Harmonie');
   await page.click('#pinBtn');
   await page.click('#back');
   await page.waitForTimeout(300);

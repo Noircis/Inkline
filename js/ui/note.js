@@ -14,7 +14,7 @@
 import { state, app, curNote, touch, saveArrangement } from './state.js';
 import { esc } from '../util.js';
 import { newTextBlock, newStaffBlock, newGridBlock } from '../model.js';
-import { sortedFolders, folderOf } from '../folders.js';
+import { folderOf, catsOf } from '../folders.js';
 import { flushSave } from '../storage.js';
 import { noteToInkline, noteToPng, noteToPdf, shareOrDownload, slug } from '../export.js';
 import { pushSnapshot } from '../history.js';
@@ -23,24 +23,22 @@ import { registerScreen, backToList, renderScreen } from './nav.js';
 import { toolsHtml, autosize, confirmTap } from './common.js';
 import { PIN_ICON } from './icons.js';
 import { blockKind, redrawBlock, setActive, updateActive } from './blocks.js';
-import { openFolderSheet } from './folder-sheet.js';
-
-/** Valeur spéciale du sélecteur de dossier : créer un dossier. */
-const NEW_FOLDER = '__new';
+import { openArrangeSheet } from './folder-sheet.js';
 
 /**
- * HTML du sélecteur de dossier d'une note.
+ * Bouton de rangement d'une note (2.8.6) : « ● Saxophone › Technique, Son ».
+ * Il ouvre le panneau Ranger la note ({@link module:ui/folder-sheet.openArrangeSheet|openArrangeSheet}).
  * @param {module:model~Note} n
  * @returns {string}
  */
-function folderSelectHtml(n) {
+function folderButtonHtml(n) {
   const f = folderOf(n, state.folders);
-  const opts = sortedFolders(state.folders)
-    .map(
-      (x) => `<option value="${esc(x.id)}"${f && f.id === x.id ? ' selected' : ''}>${esc(x.name)}</option>`,
-    )
-    .join('');
-  return `<label class="note-folder"><span class="fdot ${f ? 'fc-' + f.color : 'none'}" aria-hidden="true"></span><span class="sr">Dossier</span><select id="folderSel"><option value=""${f ? '' : ' selected'}>Non classée</option>${opts}<option value="${NEW_FOLDER}">+ Nouveau dossier…</option></select></label>`;
+  const cats = catsOf(n, state.folders);
+  const label = f
+    ? esc(f.name) +
+      (cats.length ? ` <span class="nf-cats">› ${esc(cats.map((c) => c.name).join(', '))}</span>` : '')
+    : 'Non classée';
+  return `<button type="button" class="note-folder" id="folderBtn" aria-haspopup="dialog"><span class="fdot ${f ? 'fc-' + f.color : 'none'}" aria-hidden="true"></span><span class="sr">Rangement : </span><span class="nf-name">${label}</span><span class="nf-chev" aria-hidden="true">&#9662;</span></button>`;
 }
 
 /**
@@ -60,7 +58,7 @@ function renderNote(opts = {}) {
     <div class="status" id="shareMsg"></div>
   </div>
   <textarea class="title-in" id="titleIn" rows="1" placeholder="Titre de la note"></textarea>
-  ${folderSelectHtml(n)}
+  ${folderButtonHtml(n)}
   <div class="blocks" id="blocks"></div>
   <div class="addbar"><button class="btn" data-add="text" type="button">+ Texte</button><button class="btn" data-add="staff" type="button">+ Portée</button><button class="btn" data-add="rhythm" type="button">+ Rythme</button><button class="btn" data-add="grid" type="button">+ Grille</button></div>
   <div class="notefoot"><button class="btn ghost danger" id="delNote" type="button">Supprimer la note</button></div>`;
@@ -134,34 +132,18 @@ function bindArrangement(n) {
     saveArrangement(n);
   };
 
-  const assign = (id) => {
-    if (id) n.folder = id;
-    else delete n.folder;
-    saveArrangement(n);
-    app.querySelector('.note-folder').outerHTML = folderSelectHtml(n);
-    bindArrangementSelect(n, assign);
+  const refresh = () => {
+    app.querySelector('#folderBtn').outerHTML = folderButtonHtml(n);
+    bindFolderButton();
   };
-  bindArrangementSelect(n, assign);
-}
-
-/**
- * Branche le `<select>` de dossier (recréé après chaque changement, pour la pastille de couleur).
- * @param {module:model~Note} n
- * @param {function(string)} assign
- */
-function bindArrangementSelect(n, assign) {
-  const sel = /** @type {HTMLSelectElement} */ (app.querySelector('#folderSel'));
-  sel.onchange = () => {
-    if (sel.value !== NEW_FOLDER) {
-      assign(sel.value);
-      return;
-    }
-    // « + Nouveau dossier… » : on remet l'ancienne valeur, l'éditeur décidera.
-    sel.value = n.folder && state.folders[n.folder] ? n.folder : '';
-    openFolderSheet(null, (f) => {
-      if (f) assign(f.id);
-    });
-  };
+  const bindFolderButton = () =>
+    app.querySelector('#folderBtn').addEventListener('click', () =>
+      openArrangeSheet(n, () => {
+        saveArrangement(n);
+        refresh();
+      }),
+    );
+  bindFolderButton();
 }
 
 /**

@@ -25,7 +25,7 @@
 import { esc } from '../util.js';
 import { staffSvg } from '../render-staff.js';
 import { chordParts } from '../chords.js';
-import { folderOf } from '../folders.js';
+import { folderOf, catsOf } from '../folders.js';
 import { PIN_ICON } from './icons.js';
 
 /**
@@ -136,7 +136,7 @@ function chordsPreview(n, max) {
 function folderTag(n, opt) {
   const f = opt.showFolder && opt.folders ? folderOf(n, opt.folders) : null;
   return f
-    ? `<span class="ftag"><span class="fdot fc-${f.color}" aria-hidden="true"></span>${esc(f.name)}</span>`
+    ? `<span class="ftag"><span class="fdot fc-${f.color}" aria-hidden="true"></span>${esc(f.name)}${catLabel(n, opt.folders)}</span>`
     : '';
 }
 
@@ -174,6 +174,17 @@ function itemHtml(n, mode, opt = {}) {
     return `<h3>${title}</h3>${preview}<div class="mz-foot">${tag}<span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>`;
   }
   return `<h3>${title}</h3><div class="meta">${tag}<span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>${txt ? `<p class="snip">${esc(txt.split('\n')[0])}</p>` : ''}<div class="thumb"></div>`;
+}
+
+/**
+ * Catégories d'une note à la suite de son dossier (« › Technique, Son »), 2.8.6.
+ * @param {module:model~Note} n
+ * @param {Object.<string, module:folders~Folder>} folders
+ * @returns {string}
+ */
+function catLabel(n, folders) {
+  const cats = catsOf(n, folders);
+  return cats.length ? ` › ${esc(cats.map((c) => c.name).join(', '))}` : '';
 }
 
 /**

@@ -346,10 +346,10 @@ export function backupJson(notes, folders = {}) {
  * @returns {string}
  */
 export function noteFileJson(note) {
-  // Le rangement (dossier, épingle, blocs réduits) reste chez soi : il n'a pas
+  // Le rangement (dossier, catégories, épingle, blocs réduits) reste chez soi : il n'a pas
   // de sens chez le destinataire.
   // eslint-disable-next-line no-unused-vars
-  const { folder, pinned, ...shared } = note;
+  const { folder, cats, pinned, ...shared } = note;
   shared.blocks = note.blocks.map((b) => {
     // eslint-disable-next-line no-unused-vars
     const { fold, ...rest } = b;
@@ -400,7 +400,15 @@ export function importFile(notes, text, folders = {}) {
   const incoming = sanitizeNotes(d && d.notes ? d.notes : d);
   if (d && d.folders) {
     Object.values(sanitizeFolders(d.folders)).forEach((f) => {
-      if (!folders[f.id]) folders[f.id] = f;
+      // Dossier déjà là : on lui ajoute les catégories qui lui manquent (2.8.6),
+      // pour que les notes importées gardent les leurs.
+      const here = folders[f.id];
+      if (here && f.cats) {
+        const ids = new Set((here.cats || []).map((c) => c.id));
+        const extra = f.cats.filter((c) => !ids.has(c.id));
+        if (extra.length) here.cats = [...(here.cats || []), ...extra];
+      }
+      if (!here) folders[f.id] = f;
     });
   }
   let count = 0;
@@ -425,6 +433,8 @@ export function importFile(notes, text, folders = {}) {
  * @property {'cards'|'mosaic'|'list'} [listView] Affichage de la liste choisi dans les Options.
  * @property {string} [folder] Sélection de la barre de dossiers (`'all'`, `'none'` ou id de dossier).
  * @property {Object.<string, string>} [sorts] Tri choisi pour chaque sélection de la barre de dossiers.
+ * @property {Object.<string, string>} [catSel] Catégorie choisie dans chaque dossier (2.8.6) : `'all'`, `'none'` ou id.
+ * @property {Object.<string, boolean>} [catFold] Sections repliées de l'accueil (2.8.6), clés `dossier:catégorie`.
  * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
  * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
  * @property {boolean} [autoFold] Option « Réduire automatiquement les blocs longs » (2.2).
@@ -574,6 +584,24 @@ function sortsOf(r) {
 }
 
 /**
+ * Valide un petit dictionnaire de métadonnées : clés et valeurs bornées.
+ * @param {*} r
+ * @param {RegExp} keyRe
+ * @param {function(*): boolean} ok Valeur acceptée.
+ * @returns {Object|undefined}
+ */
+function dictOf(r, keyRe, ok) {
+  if (!r || typeof r !== 'object') return undefined;
+  const out = {};
+  Object.keys(r)
+    .slice(0, 500)
+    .forEach((k) => {
+      if (keyRe.test(k) && ok(r[k])) out[k] = r[k];
+    });
+  return out;
+}
+
+/**
  * Lit les métadonnées (objet vide si absentes ou illisibles).
  * @returns {Meta}
  */
@@ -588,6 +616,12 @@ export function getMeta() {
       listView: views.includes(m.listView) ? m.listView : undefined,
       folder: typeof m.folder === 'string' && /^[a-z0-9]{1,32}$/.test(m.folder) ? m.folder : undefined,
       sorts: sortsOf(m.sorts),
+      catSel: dictOf(
+        m.catSel,
+        /^[a-z0-9]{1,32}$/,
+        (v) => typeof v === 'string' && /^[a-z0-9]{1,32}$/.test(v),
+      ),
+      catFold: dictOf(m.catFold, /^[a-z0-9]{1,32}:[a-z0-9]{1,32}$/, (v) => v === true),
       dataVersion: num(m.dataVersion),
       storage: m.storage === 'idb' ? 'idb' : undefined,
       autoFold: m.autoFold === true ? true : undefined,

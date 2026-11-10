@@ -27,7 +27,7 @@
 
 import { uid, clamp } from './util.js';
 import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX, INSTRUMENTS } from './model.js';
-import { COLOR_KEYS, cleanFolderName } from './folders.js';
+import { COLOR_KEYS, cleanFolderName, CAT_NAME_MAX, MAX_CATS } from './folders.js';
 
 /** Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères. */
 const ID_RE = /^[a-z0-9]{1,32}$/;
@@ -179,7 +179,14 @@ export function sanitizeNote(r, opt = {}) {
   // Rangement (2.0). Une note reçue (freshIds) arrive non classée et non
   // épinglée : son rangement appartient à celui qui la reçoit.
   if (!opt.freshIds) {
-    if (isStr(r.folder) && ID_RE.test(r.folder)) note.folder = r.folder;
+    if (isStr(r.folder) && ID_RE.test(r.folder)) {
+      note.folder = r.folder;
+      // Catégories (2.8.6) : des ids, sans doublon, bornées.
+      if (Array.isArray(r.cats)) {
+        const cats = [...new Set(r.cats.filter((c) => isStr(c) && ID_RE.test(c)))].slice(0, MAX_CATS);
+        if (cats.length) note.cats = cats;
+      }
+    }
     if (r.pinned === true) note.pinned = true;
   }
   return note;
@@ -214,12 +221,25 @@ function sanitizeFolder(r) {
   if (!r || typeof r !== 'object') return null;
   const name = cleanFolderName(isStr(r.name) ? r.name : '');
   if (!name) return null;
-  return {
+  const f = {
     id: id(r.id),
     name,
     color: COLOR_KEYS.includes(r.color) ? r.color : 'blue',
     created: isNum(r.created) ? r.created : Date.now(),
   };
+  // Catégories (2.8.6) : noms non vides, ids uniques.
+  if (Array.isArray(r.cats)) {
+    const seen = new Set();
+    const cats = [];
+    r.cats.slice(0, MAX_CATS).forEach((c) => {
+      const cn = c && isStr(c.name) ? cleanFolderName(c.name, CAT_NAME_MAX) : '';
+      if (!cn || !c || !isStr(c.id) || !ID_RE.test(c.id) || seen.has(c.id)) return;
+      seen.add(c.id);
+      cats.push({ id: c.id, name: cn });
+    });
+    if (cats.length) f.cats = cats;
+  }
+  return f;
 }
 
 /**

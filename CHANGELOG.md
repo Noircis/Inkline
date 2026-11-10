@@ -3,6 +3,28 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.6] - 2026-11-10
+
+### Ajouté
+
+- **Catégories dans les dossiers.** Chaque dossier peut avoir ses propres catégories (par exemple Technique, Son, Impro dans « Saxophone »). Elles ne sont pas partagées entre dossiers.
+  - Une note peut avoir **plusieurs** catégories ; elle apparaît alors dans chacune.
+  - Accueil : dans un dossier, une deuxième rangée de puces (Tout, chaque catégorie, Sans catégorie, +). Sur « Tout », les notes sont rangées **en sections repliables**, une par catégorie dans l'ordre choisi, puis « Sans catégorie ». L'état replié est mémorisé.
+  - Toucher une catégorie la choisit : la liste ne montre plus qu'elle. Une nouvelle note créée là prend le dossier et la catégorie.
+  - Toucher la catégorie déjà choisie, ou « + », ouvre le panneau des catégories : ajouter, renommer, changer l'ordre (↑ ↓), supprimer. Supprimer une catégorie ne supprime aucune note.
+- **Ranger une note** : le menu de dossier en haut d'une note devient un bouton « ● Saxophone › Technique, Son » qui ouvre un panneau : le dossier, puis ses catégories à cocher, avec création d'une catégorie ou d'un dossier sur place.
+- Recherche et « Toutes » : la catégorie s'affiche à côté du dossier de chaque note.
+
+### Modifié
+
+- Changer une note de dossier efface ses catégories (elles appartiennent à l'ancien dossier).
+- Un fichier de note partagé n'emporte pas ses catégories, comme pour le dossier.
+- Restaurer une sauvegarde dans un dossier qui existe déjà lui ajoute les catégories qui lui manquent.
+
+### Technique
+
+- `folders` : `addCategory`, `catsOf`, `inCategory`, `countByCategory`, `groupByCategory`, `deleteCategory`, `moveCategory`, `fileNote` ; champs `cats` du dossier et de la note, validés par `sanitize` ; métadonnées `catSel` et `catFold`.
+
 ## [2.8.5] - 2026-11-10
 
 ### Ajouté

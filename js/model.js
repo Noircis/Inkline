@@ -143,6 +143,9 @@ import { uid } from './util.js';
  * @property {number} updated Horodatage (ms) de dernière modification, utilisé pour
  *   trier la liste et pour résoudre les conflits à l'import (le plus récent gagne).
  * @property {Block[]} blocks
+ * @property {string} [folder] Dossier (2.0), voir {@link module:folders|folders}.
+ * @property {Array.<string>} [cats] Catégories de son dossier (2.8.6), une ou plusieurs.
+ * @property {boolean} [pinned] Épinglée en tête de liste (2.0).
  */
 
 /**
