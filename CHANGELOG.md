@@ -3,6 +3,15 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.7] - 2026-11-10
+
+### Corrigé
+
+- **Ajouter une catégorie ne marchait pas au téléphone.**
+  - Panneau « Ranger la note » : le champ « + Nouvelle catégorie » n'avait pas de bouton et attendait la touche Entrée, que le clavier d'Android n'envoie pas toujours (pendant qu'il propose des mots). Il a maintenant un bouton **Ajouter**, et la touche ✓ du clavier marche aussi.
+  - Panneau des catégories : la touche ✓ du clavier dans « Nouvelle catégorie » enregistrait et fermait le panneau, en perdant le nom tapé. Elle ajoute maintenant la catégorie.
+  - Un nom tapé mais pas encore ajouté n'est plus jamais perdu : « Enregistrer » ou « Fini » l'ajoutent aussi.
+
 ## [2.8.6] - 2026-11-10
 
 ### Ajouté

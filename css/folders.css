@@ -514,9 +514,15 @@ button.note-folder {
   background: var(--accent);
   color: var(--surface);
 }
+.ar-new {
+  display: flex;
+  gap: 6px;
+  flex-basis: 100%;
+}
 .sheet .ar-new input {
+  flex: 1;
+  min-width: 0;
   min-height: 34px;
-  width: 170px;
   font-size: 13px;
 }
 .cat-row button:disabled {

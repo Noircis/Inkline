@@ -117,3 +117,70 @@ test('gérer les catégories : renommer, ordre, supprimer (sans supprimer de not
     await page.evaluate(async () => Object.keys((await import('/js/ui/state.js')).state.notes).length),
   ).toBe(4);
 });
+
+test('nouvelle catégorie : bouton Ajouter, touche ✓ du clavier, et rien n’est perdu', async ({ page }) => {
+  // Panneau des catégories : ✓ du clavier ajoute (sans fermer).
+  await page.click('#addCat');
+  await page.fill('#csNew', 'Répertoire');
+  await page.press('#csNew', 'Enter');
+  await expect(page.locator('#csTitle')).toBeVisible();
+  await expect(page.locator('.cat-name')).toHaveCount(4);
+  // Nom tapé puis « Enregistrer » directement : il est gardé.
+  await page.fill('#csNew', 'Lecture');
+  await page.click('#folderSheet [type=submit]');
+  await expect(page.locator('#catChips [data-cat]')).toContainText([
+    'Tout',
+    'Technique',
+    'Son',
+    'Impro',
+    'Répertoire',
+    'Lecture',
+  ]);
+
+  // Panneau « Ranger la note » : bouton Ajouter.
+  await page.click('[data-cat=all]');
+  await page.locator('#folderSheet [data-del]').first().waitFor(); // gestion ouverte : on referme
+  await page.click('#csCancel');
+  await page.click('text=En vrac');
+  await page.click('#folderBtn');
+  await page.fill('#arNew', 'Transcriptions');
+  await page.click('#arNewForm [type=submit]');
+  await expect(page.locator('.ar-cats [data-cat][aria-pressed=true]')).toHaveText(['Transcriptions']);
+  // ✓ du clavier.
+  await page.fill('#arNew', 'Oreille');
+  await page.press('#arNew', 'Enter');
+  await expect(page.locator('.ar-cats [data-cat][aria-pressed=true]')).toHaveText([
+    'Transcriptions',
+    'Oreille',
+  ]);
+  // Tapé puis « Fini » : ajouté aussi.
+  await page.fill('#arNew', 'Rythme');
+  await page.click('#arDone');
+  await expect(page.locator('#folderBtn')).toContainText('Transcriptions, Oreille, Rythme');
+});
+
+test('dossier sans catégorie : « + Catégorie » à l’accueil et dans une note', async ({ page }) => {
+  await page.evaluate(async () => {
+    const { state } = await import('/js/ui/state.js');
+    const { saveFolders, setMeta } = await import('/js/storage.js');
+    delete state.folders.sax.cats;
+    Object.values(state.notes).forEach((n) => delete n.cats);
+    await saveFolders(state.folders);
+    setMeta({ folder: 'sax' });
+  });
+  await page.reload();
+  await expect(page.locator('#addCat')).toHaveText('+ Catégorie');
+  await page.click('#addCat');
+  await expect(page.locator('#csNew')).toBeFocused();
+  await page.fill('#csNew', 'Technique');
+  await page.click('#csAdd');
+  await page.click('#folderSheet [type=submit]');
+  await expect(page.locator('#catChips [data-cat]')).toContainText(['Tout', 'Technique']);
+  // Dans une note : la catégorie s'ajoute et se coche.
+  await page.click('text=Gammes');
+  await page.click('#folderBtn');
+  await page.fill('#arNew', 'Son');
+  await page.click('#arNewForm [type=submit]');
+  await expect(page.locator('.ar-cats [data-cat]')).toHaveText(['Technique', 'Son']);
+  await expect(page.locator('.ar-cats [aria-pressed=true]')).toHaveText(['Son']);
+});

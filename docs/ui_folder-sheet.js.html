@@ -285,6 +285,23 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
     back.querySelector('#csCancel').addEventListener('click', () => close(false));
     back.querySelector('form').addEventListener('submit', (e) => {
       e.preventDefault();
+      const pending = /** @type {HTMLInputElement} */ (back.querySelector('#csNew'));
+      // La touche ✓ du clavier dans « Nouvelle catégorie » envoie le formulaire
+      // (sur Android, elle n'arrive pas toujours comme une touche Entrée) :
+      // elle ajoute la catégorie au lieu d'enregistrer et de fermer.
+      const submitter = /** @type {SubmitEvent} */ (e).submitter;
+      if (!submitter &amp;&amp; document.activeElement === pending &amp;&amp; pending.value.trim()) {
+        add();
+        return;
+      }
+      // Un nom tapé mais pas encore ajouté n'est jamais perdu.
+      const extra = cleanFolderName(pending.value, CAT_NAME_MAX);
+      if (
+        extra &amp;&amp;
+        work.length &lt; MAX_CATS &amp;&amp;
+        !work.some((c) => c.name.localeCompare(extra, 'fr', { sensitivity: 'base' }) === 0)
+      )
+        work.push({ name: extra });
       // Catégories supprimées : retirées des notes ; puis ordre et noms.
       const kept = new Set(work.map((c) => c.id).filter(Boolean));
       (folder.cats || [])
@@ -350,7 +367,7 @@ export function openArrangeSheet(note, onChange) {
         )
         .join(
           '',
-        )}&lt;span class="ar-new">&lt;input type="text" id="arNew" maxlength="${CAT_NAME_MAX}" autocomplete="off" placeholder="+ Nouvelle catégorie" enterkeyhint="done" aria-label="Nouvelle catégorie">&lt;/span>&lt;/div>`;
+        )}&lt;form class="ar-new" id="arNewForm">&lt;input type="text" id="arNew" maxlength="${CAT_NAME_MAX}" autocomplete="off" placeholder="Nouvelle catégorie" enterkeyhint="done" aria-label="Nouvelle catégorie">&lt;button type="submit" class="btn small">Ajouter&lt;/button>&lt;/form>&lt;/div>`;
     });
     back.innerHTML = `&lt;div class="sheet" role="dialog" aria-modal="true" aria-labelledby="arTitle">
       &lt;div class="ar-head">&lt;h2 id="arTitle">Ranger la note&lt;/h2>&lt;button type="button" class="btn primary" id="arDone">Fini&lt;/button>&lt;/div>
@@ -378,19 +395,26 @@ export function openArrangeSheet(note, onChange) {
       }),
     );
     const input = /** @type {?HTMLInputElement} */ (back.querySelector('#arNew'));
-    if (input)
-      input.addEventListener('keydown', (e) => {
-        if (/** @type {KeyboardEvent} */ (e).key !== 'Enter') return;
-        e.preventDefault();
-        const f = state.folders[note.folder];
-        const c = f &amp;&amp; addCategory(f, input.value);
-        if (!c) return;
-        saveFolders(state.folders);
-        fileNote(note, f.id, [...(note.cats || []), c.id]);
-        onChange();
-        render();
-      });
-    back.querySelector('#arDone').addEventListener('click', close);
+    /** Crée la catégorie tapée et la coche sur la note. */
+    const addTyped = () => {
+      const f = state.folders[note.folder];
+      const c = f &amp;&amp; input &amp;&amp; addCategory(f, input.value);
+      if (!c) return false;
+      saveFolders(state.folders);
+      fileNote(note, f.id, [...(note.cats || []), c.id]);
+      onChange();
+      return true;
+    };
+    // Bouton « Ajouter » ou touche ✓ du clavier (envoi du formulaire : plus
+    // fiable sur Android qu'une touche Entrée).
+    back.querySelector('#arNewForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (addTyped()) render();
+    });
+    back.querySelector('#arDone').addEventListener('click', () => {
+      addTyped(); // un nom tapé mais pas ajouté n'est pas perdu
+      close();
+    });
     back.querySelector('#arNewFolder').addEventListener('click', () =>
       openFolderSheet(null, (f) => {
         if (f) {
