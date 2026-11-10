@@ -93,18 +93,30 @@ export function chordOk(c) {
 }
 
 /**
- * Normalise la qualité pour l'affichage façon « real book » :
- * majeur 7 → Δ, mineur → –, demi-diminué → ø, diminué → °, augmenté → +,
- * et b/# → ♭/♯.
+ * Met la qualité en forme pour l'affichage, comme iReal Pro (2.8.5) :
+ * mineur `−`, majeur 7 `Δ7`, demi-diminué `ø7`, diminué `°`, augmenté `+`,
+ * et `b`/`#` → `♭`/`♯`. Toutes les façons de l'écrire au clavier donnent le
+ * même affichage :
+ *
+ * | Saisie                          | Affichage |
+ * |---------------------------------|-----------|
+ * | `m7`, `-7`, `min7`, `mi7`       | `−7`      |
+ * | `maj7`, `^7`, `^`, `Δ`, `M7`    | `Δ7`      |
+ * | `maj9`, `^9`                    | `Δ9`      |
+ * | `mMaj7`, `-^7`                  | `−Δ7`     |
+ * | `m7b5`, `-7b5`, `h7`, `h`, `ø`  | `ø7`      |
+ * | `dim7`, `o7`, `°7`              | `°7`      |
+ * | `aug`, `+`                      | `+`       |
+ *
  * @param {string} q Qualité brute.
  * @returns {string}
  */
 function prettyQuality(q) {
   return q
-    .replace(/^(maj|Maj|MA|M(?=7|9|13|$)|\^)7?/, 'Δ')
-    .replace(/^(min|mi|m(?!aj)|-)/, '–')
-    .replace(/^–(maj|Maj|Δ|\^)7?/, '–Δ')
-    .replace(/^(–7b5|m7b5|ø7?|h7?)/, 'ø')
+    .replace(/^(min|mi|m(?!aj)|-|–|−)/, '−')
+    .replace(/^(−?)(maj|Maj|MA|M(?=7|9|13|$)|\^|Δ|∆)/, '$1Δ')
+    .replace(/^(−?Δ)(?![0-9])/, '$17')
+    .replace(/^(−7b5|ø7?|h7?)/, 'ø7')
     .replace(/^(dim|o|°)/, '°')
     .replace(/^aug/, '+')
     .replace(/b/g, '♭')

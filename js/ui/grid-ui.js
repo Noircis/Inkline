@@ -20,6 +20,8 @@ import { state, app, curNote, blockById, touch } from './state.js';
 import { esc } from '../util.js';
 import { TIME_SIGNATURES } from '../model.js';
 import { chordOk } from '../chords.js';
+import { applyChordKey } from '../chord-keys.js';
+import { mountChordKeyboard } from './chord-keyboard.js';
 import { STYLES, KEYS, SECTIONS, keyLabel, gridTokens, measureText, gridHtml } from '../grid.js';
 import { toIRealLink, parseIRealAll } from '../ireal.js';
 import { pushSnapshot } from '../history.js';
@@ -36,6 +38,80 @@ const GRID_COLS = 4;
 
 const gpal = /** @type {HTMLElement} */ (document.getElementById('gpal'));
 const gin = /** @type {HTMLInputElement} */ (document.getElementById('gIn'));
+const gText = /** @type {HTMLElement} */ (document.getElementById('gText'));
+const gKeys = /** @type {HTMLElement} */ (document.getElementById('gKeys'));
+
+/**
+ * Saisie au champ texte (clavier du téléphone) plutôt qu'au clavier
+ * d'accords (2.8.5). Gardé le temps de la session.
+ */
+let textMode = false;
+/** Mesure pour laquelle un instantané d'annulation a déjà été pris. */
+let snapFor = null;
+
+/**
+ * Une case de la mesure n'est pas un accord reconnu.
+ * @param {module:model~GridMeasure} m
+ * @returns {boolean}
+ */
+const badMeasure = (m) => m.ch.some((c) => !chordOk(c));
+
+/** Clavier d'accords de la grille. */
+const kb = mountChordKeyboard(gKeys, {
+  mode: 'grid',
+  onKey: (k) => {
+    const n = curNote();
+    const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
+    if (!n || !b || state.sel == null) return;
+    const m = b.measures[state.sel];
+    // Un seul instantané par mesure saisie : « Annuler » efface toute la mesure tapée.
+    const key = b.id + ':' + state.sel;
+    if (snapFor !== key) {
+      pushSnapshot(n);
+      snapFor = key;
+    }
+    m.ch = applyChordKey(m.ch, k);
+    touch(n);
+    redrawGrid(b.id);
+    kb.show(m.ch);
+  },
+  onNext: () => nextMeasure(),
+  onText: () => setTextMode(true),
+  onUndo: () => {
+    undo();
+    const b = blockById(state.activeId);
+    if (b && b.type === 'grid') loadInput(/** @type {module:model~GridBlock} */ (b));
+  },
+});
+
+/**
+ * Passe du clavier d'accords au champ texte, ou l'inverse.
+ * @param {boolean} on
+ */
+function setTextMode(on) {
+  textMode = on;
+  gText.hidden = !on;
+  gKeys.hidden = on;
+  const b = blockById(state.activeId);
+  if (b && b.type === 'grid') loadInput(/** @type {module:model~GridBlock} */ (b));
+  if (on) gin.focus();
+  else gin.blur();
+  syncPaletteSpace();
+}
+
+/**
+ * Onglet de la palette : accords ou structure (barres, sections, mesures).
+ * @param {'chords'|'struct'} tab
+ */
+function setTab(tab) {
+  const chords = tab === 'chords';
+  document.getElementById('gChords').hidden = !chords;
+  document.getElementById('gStruct').hidden = chords;
+  document.getElementById('gTabChords').setAttribute('aria-selected', String(chords));
+  document.getElementById('gTabStruct').setAttribute('aria-selected', String(!chords));
+  if (!chords) gin.blur();
+  syncPaletteSpace();
+}
 
 /**
  * HTML d'un bloc grille : en-tête de réglages, panneau iReal (replié), zone de la grille, outils.
@@ -218,7 +294,7 @@ function bindMeasureSelection(n, b, el) {
     }
     loadInput(b);
     redrawGrid(b.id);
-    gin.focus();
+    if (textMode) gin.focus();
   });
 }
 
@@ -314,6 +390,8 @@ function loadInput(b) {
   const m = state.sel != null && b.measures[state.sel];
   gin.value = m ? measureText(m) : '';
   gin.classList.remove('err');
+  kb.show(m ? m.ch : []);
+  snapFor = null;
 }
 
 /**
@@ -347,7 +425,7 @@ function updateGridPalette() {
     ? `Mesure ${state.sel + 1}` +
       (m.sec ? ` · section ${m.sec}` : '') +
       (m.ending ? ' · ' + (m.ending === 1 ? '1re' : m.ending + 'e') + ' fin' : '') +
-      (gin.classList.contains('err') ? ' · accord non reconnu' : '')
+      ((textMode ? gin.classList.contains('err') : badMeasure(m)) ? ' · accord non reconnu' : '')
     : 'Touche une mesure';
   gpal.querySelectorAll('[data-g]').forEach((x) => {
     const k = x.dataset.g;
@@ -397,7 +475,7 @@ function nextMeasure() {
   const n = curNote();
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
   if (!n || !b || state.sel == null) return;
-  applyInput(true);
+  if (textMode) applyInput(true);
   if (b.measures[state.sel].fin) {
     gin.blur();
     return;
@@ -427,6 +505,9 @@ gin.addEventListener('keydown', (e) => {
     nextMeasure();
   }
 });
+document.getElementById('gKb').onclick = () => setTextMode(false);
+document.getElementById('gTabChords').onclick = () => setTab('chords');
+document.getElementById('gTabStruct').onclick = () => setTab('struct');
 document.getElementById('gOk').onclick = () => {
   nextMeasure();
   gin.focus();
@@ -444,7 +525,7 @@ gpal.addEventListener('click', (e) => {
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
   if (!n || !b) return;
   if (k === 'prev' || k === 'next') {
-    if (state.sel != null) applyInput(false);
+    if (state.sel != null && textMode) applyInput(false);
     state.sel =
       state.sel == null
         ? 0

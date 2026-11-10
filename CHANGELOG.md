@@ -3,6 +3,28 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.5] - 2026-11-10
+
+### Ajouté
+
+- **Clavier d'accords** à la place du clavier du téléphone, dans la grille et pour l'accord d'une note. Plus de majuscules ni de « b » à taper.
+  - Ligne 1 : la fondamentale (C à B) et ♭ ♯. Après `/`, la même ligne donne la basse.
+  - Lignes 2 et 3 : la couleur en un toucher (7, −7, Δ7, ø7, °7, 7alt, 6, −6, +, sus4, 7sus4, 9, −9, Δ9, 7♭9, 7♯9, 13). La même touche deux fois retire la couleur.
+  - `⋯` : pavé détaillé pour les accords rares (−, Δ, ø, °, +, sus, add, alt, 2 à 13, ♭5, ♯5, ♭9, ♯9, ♯11, ♭13).
+  - Dernière ligne : `/`, N.C., répétition de mesure, `␣` (deuxième accord dans la mesure), effacer, annuler, Suivant (mesure suivante) ou OK (accord d'une note).
+  - Aperçu de la mesure en cours, avec la couleur choisie surlignée sur le clavier.
+  - `⌨` repasse au champ texte (pour coller un accord ou écrire au clavier d'ordinateur), `♫` revient au clavier d'accords.
+  - Grille : une seule annulation par mesure saisie.
+- **Palette de grille en deux onglets** : Accords et Structure (sections, voltas, reprises, barres, insertion et suppression de mesure).
+
+### Modifié
+
+- **Affichage des accords comme dans iReal Pro**, partout (grille, portées, exports) : `−7`, `Δ7`, `ø7`, `°7`. Toutes les écritures (`m7`, `-7`, `maj7`, `^7`, `m7b5`, `h7`…) donnent le même affichage. L'accord au-dessus d'une note a maintenant sa couleur en exposant, comme dans la grille.
+
+### Technique
+
+- Nouveaux modules `chord-keys` (pur) et `ui/chord-keyboard`, feuille `css/chord-keys.css`. Les accords du clavier sont enregistrés en notation iReal (`-7`, `^7`, `h7`, `o7`), déjà lue par l'écoute, la transposition et l'export iReal.
+
 ## [2.8.4] - 2026-11-10
 
 ### Ajouté

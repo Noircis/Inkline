@@ -41,6 +41,7 @@
     <link rel="stylesheet" href="css/fold.css" />
     <link rel="stylesheet" href="css/training.css" />
     <link rel="stylesheet" href="css/staff-modes.css" />
+    <link rel="stylesheet" href="css/chord-keys.css" />
   </head>
   <body>
     <!-- Les vues (liste, note) sont rendues ici par js/ui/views.js -->
@@ -60,16 +61,23 @@
           <button id="palDone" type="button">Terminé</button>
         </div>
         <div class="pal-hint" id="palInfo" role="status"></div>
-        <div class="pal-chord" id="chordBar" hidden>
-          <input
-            id="chordIn"
-            placeholder="Accord, ex. Bb7, Cm7, F7alt"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-          />
-          <button id="chordOk" class="ok" type="button">OK</button>
-          <button id="chordCancel" type="button">Annuler</button>
+        <div id="chordBar" hidden>
+          <div class="ck-head">
+            <span>Accord de la note</span>
+            <button id="chordCancel" type="button">Annuler</button>
+          </div>
+          <div class="pal-chord" id="chordText" hidden>
+            <input
+              id="chordIn"
+              placeholder="Accord, ex. Bb7, Cm7, F7alt"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            />
+            <button id="chordOk" class="ok" type="button">OK</button>
+            <button id="chordKb" type="button" aria-label="Clavier d'accords">&#9835;</button>
+          </div>
+          <div class="ck" id="chordKeys"></div>
         </div>
         <div class="pal-bars" id="barBar" hidden>
           <button type="button" data-bar="single"><span class="mus">&#x1D100;</span>Simple</button>
@@ -123,36 +131,53 @@
     <!-- Palette de grille (js/ui/grid-ui.js). Visible quand un bloc grille est actif. -->
     <div id="gpal" hidden>
       <div class="pal-inner">
-        <div class="pal-info"><span id="gInfo"></span><button id="gDone" type="button">Terminé</button></div>
-        <div class="pal-chord">
-          <input
-            id="gIn"
-            placeholder="Accords : Bb7 Eb7 · | = mesure suivante"
-            autocomplete="off"
-            autocapitalize="off"
-            autocorrect="off"
-            spellcheck="false"
-            enterkeyhint="next"
-          />
-          <button id="gOk" class="ok" type="button" aria-label="Mesure suivante">&#8629;</button>
+        <div class="pal-info">
+          <span id="gInfo"></span>
+          <button type="button" class="icon" data-g="prev" aria-label="Mesure précédente">&#9664;</button>
+          <button type="button" class="icon" data-g="next" aria-label="Mesure suivante">&#9654;</button>
+          <button id="gDone" type="button">Terminé</button>
         </div>
-        <div class="pal-row g-row">
-          <button type="button" data-g="sec">Section</button>
-          <button type="button" data-g="end">Volta</button>
-          <button type="button" class="mus" data-g="rs" aria-label="Début de reprise">&#x1D106;</button>
-          <button type="button" class="mus" data-g="re" aria-label="Fin de reprise">&#x1D107;</button>
-          <button type="button" class="mus" data-g="dbl" aria-label="Double barre">&#x1D101;</button>
-          <button type="button" class="mus" data-g="fin" aria-label="Barre de fin">&#x1D102;</button>
-        </div>
-        <div class="pal-row g-row">
-          <button type="button" data-g="prev" aria-label="Mesure précédente">&#9664;</button>
-          <button type="button" data-g="next" aria-label="Mesure suivante">&#9654;</button>
-          <button type="button" class="mus" data-g="sim" aria-label="Répéter la mesure précédente">
-            &#x1D10E;
+        <div class="ck-tabs" role="tablist" aria-label="Palette de grille">
+          <button type="button" role="tab" id="gTabChords" aria-selected="true" aria-controls="gChords">
+            Accords
           </button>
-          <button type="button" data-g="ins">+ Mes.</button>
-          <button type="button" data-g="del">Suppr.</button>
-          <button type="button" data-g="undo" aria-label="Annuler" style="font-size: 20px">&#8630;</button>
+          <button type="button" role="tab" id="gTabStruct" aria-selected="false" aria-controls="gStruct">
+            Structure
+          </button>
+        </div>
+        <div id="gChords" role="tabpanel" aria-labelledby="gTabChords">
+          <div class="pal-chord" id="gText" hidden>
+            <input
+              id="gIn"
+              placeholder="Accords : Bb7 Eb7 · | = mesure suivante"
+              autocomplete="off"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+              enterkeyhint="next"
+            />
+            <button id="gOk" class="ok" type="button" aria-label="Mesure suivante">&#8629;</button>
+            <button id="gKb" type="button" aria-label="Clavier d'accords">&#9835;</button>
+          </div>
+          <div class="ck" id="gKeys"></div>
+        </div>
+        <div id="gStruct" role="tabpanel" aria-labelledby="gTabStruct" hidden>
+          <div class="pal-row g-row">
+            <button type="button" data-g="sec">Section</button>
+            <button type="button" data-g="end">Volta</button>
+            <button type="button" class="mus" data-g="rs" aria-label="Début de reprise">&#x1D106;</button>
+            <button type="button" class="mus" data-g="re" aria-label="Fin de reprise">&#x1D107;</button>
+            <button type="button" class="mus" data-g="dbl" aria-label="Double barre">&#x1D101;</button>
+            <button type="button" class="mus" data-g="fin" aria-label="Barre de fin">&#x1D102;</button>
+          </div>
+          <div class="pal-row g-row">
+            <button type="button" class="mus" data-g="sim" aria-label="Répéter la mesure précédente">
+              &#x1D10E;
+            </button>
+            <button type="button" data-g="ins">+ Mes.</button>
+            <button type="button" data-g="del">Suppr.</button>
+            <button type="button" data-g="undo" aria-label="Annuler" style="font-size: 20px">&#8630;</button>
+          </div>
         </div>
       </div>
     </div>

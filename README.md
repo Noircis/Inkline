@@ -78,6 +78,7 @@ js/
   placements.js       entraînement rythmique : mesures, écriture des placements, séries
   exercise.js         exercices rythmiques aléatoires (tirage reproductible par numéro)
   transpose.js        instruments transpositeurs : réécrire une portée pour un autre instrument
+  chord-keys.js       clavier d'accords : effet de chaque touche
   measure-fit.js      mise en mesure : liaisons automatiques aux barres, compensation par des silences
   export.js           partage d'une note : .inkline, PNG, PDF
   pdf.js              générateur PDF minimal (images JPEG)
@@ -96,6 +97,7 @@ js/
     exercises.js      écrans des exercices aléatoires (réglages, lecture)
     drill-kit.js      pièces communes de l'entraînement (réglages, métronome, lecture)
     measure-select.js sélection de mesures à l'appui long (jouer d'ici, boucle)
+    chord-keyboard.js clavier d'accords à l'écran (grille, accord d'une note)
     staff/            bloc portée : index (enregistrement), view (en-tête, dessin),
                       input (toucher, modes), palette, bars, chord, shared (socle commun)
     grid-ui.js        bloc grille : saisie, palette, panneau iReal

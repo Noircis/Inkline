@@ -1,0 +1,159 @@
+/* Inkline · Clavier d'accords (2.8.5) : grille et accord d'une note. */
+
+/* Onglets de la palette de grille */
+.ck-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--bg);
+}
+.ck-tabs button {
+  min-height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 14px;
+}
+.ck-tabs button[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+/* Aperçu de la mesure (ou de l'accord) en cours */
+.ck-field {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-height: 42px;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--bg);
+  font-family: var(--f-display);
+  font-size: 22px;
+  font-weight: 600;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.ck-field sup {
+  font-size: 0.62em;
+  margin-left: 1px;
+}
+.ck-field .cb {
+  font-size: 0.8em;
+}
+.ck-field .slash {
+  color: var(--muted);
+}
+.ck-field .nc {
+  font-size: 0.75em;
+}
+.ck-slot.cur {
+  color: var(--accent);
+}
+.ck-slot:empty {
+  min-width: 2px;
+}
+.ck-caret {
+  align-self: center;
+  width: 2px;
+  height: 24px;
+  margin-left: -12px;
+  background: var(--accent);
+  animation: ck-blink 1s steps(1) infinite;
+}
+@keyframes ck-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Touches */
+.ck-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 6px;
+}
+.ck-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+}
+.ck-k {
+  min-height: 42px;
+  padding: 0 2px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.ck-k:active {
+  background: var(--accent-soft);
+}
+.ck-roots .ck-k {
+  font-family: var(--f-display);
+  font-size: 18px;
+}
+.ck-roots .ck-acc {
+  font-size: 20px;
+  color: var(--accent);
+}
+.ck-k.ck-q {
+  font-size: 14px;
+}
+.ck-k[aria-pressed='true'],
+.ck-more.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+.ck-k .mus {
+  font-family: var(--f-music);
+  font-size: 22px;
+}
+.ck-bottom .ck-next {
+  grid-column: span 2;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--surface);
+}
+
+/* Accord d'une note : le clavier remplace la palette pendant la saisie. */
+.ck-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ck-head button {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  min-height: 32px;
+}
+#chordBar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#chordBar[hidden] {
+  display: none;
+}
+#palette:has(#chordBar:not([hidden])) .pal-inner > :not(.pal-info):not(#chordBar) {
+  display: none;
+}

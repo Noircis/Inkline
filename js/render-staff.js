@@ -38,9 +38,23 @@ import { esc, mod } from './util.js';
 import { layout, geom, yOfStep, HALF_SPACE, KEY_ACC_W, INSERT_GAP } from './layout.js';
 import { beamGroups, tupletGroups } from './rhythm.js';
 import { instrumentOf } from './model.js';
+import { chordParts } from './chords.js';
 
 /** Remplace `b` et `#` par les vrais signes ♭ et ♯ dans un accord chiffré. */
-const fmtChord = (c) => c.replace(/([A-G])b/g, '$1♭').replace(/#/g, '♯');
+/**
+ * Accord chiffré en SVG, comme dans la grille et iReal Pro (2.8.5) :
+ * fondamentale, qualité en exposant (`−7`, `Δ7`, `ø7`), basse. Un texte non
+ * reconnu est écrit tel quel (♭ et ♯ mis en forme).
+ * @param {string} c
+ * @returns {string} Contenu de l'élément `<text>` (échappé).
+ */
+function chordSvgText(c) {
+  const p = chordParts(c);
+  if (!p) return esc(c.replace(/([A-G])b/g, '$1♭').replace(/#/g, '♯'));
+  const q = p.quality ? `<tspan dy="-5" font-size="10.5">${esc(p.quality)}</tspan>` : '';
+  const bass = p.bass ? `<tspan${p.quality ? ' dy="5"' : ''}>${esc(p.bass)}</tspan>` : '';
+  return esc(p.root) + q + bass;
+}
 
 /** Longueur standard d'une hampe (px), un peu plus d'une octave. */
 const STEM = 34;
@@ -503,7 +517,7 @@ function drawItems(ctx) {
       const top = L.rh ? g.line - 26 : g.staffTop - 14;
       s += `<rect class="selbg" x="${p.x0}" y="${top}" width="${p.x1 - p.x0}" height="${L.rh ? 52 : 68}" rx="4"/>`;
     }
-    if (it.c) s += `<text class="chord" x="${p.x - 6}" y="${g.chordY}">${esc(fmtChord(it.c))}</text>`;
+    if (it.c) s += `<text class="chord" x="${p.x - 6}" y="${g.chordY}">${chordSvgText(it.c)}</text>`;
     if (it.r) {
       s += restSvg(it.d, p.x, g, L.rh);
       if (it.dot) s += `<circle class="f" cx="${p.x + 10}" cy="${g.mid - 5}" r="1.9"/>`;

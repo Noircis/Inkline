@@ -27,7 +27,7 @@
  *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
  */
 
-const CACHE = 'inkline-2.8.4';
+const CACHE = 'inkline-2.8.5';
 
 /** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
 const CORE = [
@@ -46,6 +46,7 @@ const CORE = [
   './css/fold.css',
   './css/training.css',
   './css/staff-modes.css',
+  './css/chord-keys.css',
   './css/fonts.css',
   './fonts/bricolage-grotesque-latin-600-normal.woff2',
   './fonts/bricolage-grotesque-latin-700-normal.woff2',
@@ -82,6 +83,7 @@ const CORE = [
   './js/folding.js',
   './js/placements.js',
   './js/transpose.js',
+  './js/chord-keys.js',
   './js/exercise.js',
   './js/measure-fit.js',
   './js/ui/state.js',
@@ -95,6 +97,7 @@ const CORE = [
   './js/ui/fold.js',
   './js/ui/training.js',
   './js/ui/exercises.js',
+  './js/ui/chord-keyboard.js',
   './js/ui/measure-select.js',
   './js/ui/drill-kit.js',
   './js/ui/staff/index.js',
