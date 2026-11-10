@@ -3,6 +3,14 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.8.8] - 2026-11-10
+
+### Corrigé
+
+- **Écoute des grilles : on n'entendait pas toujours le changement d'accord ni le mouvement de basse** (par exemple Fmaj7 → F♯ø7).
+  - La nappe était jouée sans fondamentale. Or Fmaj7 sans fa et F♯ø7 sans fa♯ donnent tous deux la, do, mi : les deux accords sonnaient pareil. La fondamentale fait maintenant partie de la nappe.
+  - La basse jouait entre 82 et 155 Hz avec un son très filtré, là où un haut-parleur de téléphone ne rend presque rien. Elle a maintenant un son de basse pincée, riche en harmoniques et doublé d'une octave douce : sur un haut-parleur de téléphone simulé, elle ressort environ 6 fois plus fort, sans être plus lourde au casque.
+
 ## [2.8.7] - 2026-11-10
 
 ### Corrigé

@@ -52,9 +52,28 @@ test('gridPlayOrder : reprise avec 1re et 2e fins', () => {
   assert.deepEqual(gridPlayOrder(blues.measures), [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 8, 9, 10, 11]);
 });
 
-test('chordTones : D7alt et Cm7b5', () => {
-  assert.deepEqual(chordTones('D7alt').notes, [54, 60, 63, 65]);
-  assert.deepEqual(chordTones('Cm7b5').notes, [63, 58, 54]);
+test('chordTones : D7alt et Cm7b5 (fondamentale comprise depuis la 2.8.8)', () => {
+  assert.deepEqual(chordTones('D7alt').notes, [62, 54, 60, 63, 65]);
+  assert.deepEqual(chordTones('Cm7b5').notes, [60, 63, 58, 54]);
+});
+
+test('chordTones : deux accords différents ne donnent jamais la même nappe', () => {
+  // Fmaj7 → F♯ø7 : sans fondamentale, les deux nappes étaient la, do, mi.
+  const set = (c) => [...chordTones(c).notes].sort((a, b) => a - b).join();
+  assert.notEqual(set('Fmaj7'), set('F#m7b5'));
+  assert.ok(chordTones('Fmaj7').notes.includes(53)); // fa 3
+  assert.ok(chordTones('F#m7b5').notes.includes(54)); // fa♯ 3
+  // Pour toutes les fondamentales et qualités courantes : la nappe contient la fondamentale.
+  const roots = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+  const quals = ['maj7', 'm7', '7', 'm7b5', 'dim7', '7alt', '9', 'sus4'];
+  roots.forEach((r) =>
+    quals.forEach((q) =>
+      assert.ok(
+        chordTones(r + q).notes.some((n) => n % 12 === chordTones(r + q).bass % 12),
+        r + q,
+      ),
+    ),
+  );
 });
 
 test('scramble est une involution', () => {

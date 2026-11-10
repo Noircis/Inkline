@@ -111,6 +111,56 @@ function tone(t, dur, midi, nodes) {
 }
 
 /**
+ * Joue une note de **basse** de grille (2.8.8), façon contrebasse pincée.
+ *
+ * La basse sonne entre 82 et 155 Hz, là où un haut-parleur de téléphone ne
+ * rend presque rien. On entend pourtant la hauteur d'une note grave par ses
+ * **harmoniques** (l'oreille reconstitue la fondamentale absente) : le son est
+ * donc riche (dent de scie peu filtrée) et doublé d'une octave douce, pour
+ * que le mouvement de basse reste audible même sur un petit haut-parleur.
+ *
+ * @param {number} t
+ * @param {number} dur
+ * @param {number} midi
+ * @param {AudioScheduledSourceNode[]} nodes
+ */
+function bass(t, dur, midi, nodes) {
+  const c = audioContext();
+  if (!c || midi == null) return;
+  const f = freq(midi);
+  const o1 = c.createOscillator();
+  const o2 = c.createOscillator();
+  const g2 = c.createGain();
+  const lp = c.createBiquadFilter();
+  const g = c.createGain();
+  o1.type = 'sawtooth';
+  o2.type = 'triangle';
+  o1.frequency.value = f;
+  o2.frequency.value = f * 2; // octave au-dessus : porte la hauteur sur un petit haut-parleur
+  g2.gain.value = 0.45;
+  lp.type = 'lowpass';
+  lp.Q.value = 1.2;
+  lp.frequency.setValueAtTime(f * 10, t); // attaque claire (le « pincé »)
+  lp.frequency.setTargetAtTime(f * 5, t + 0.03, 0.12);
+  const v = 0.2;
+  const end = t + Math.max(0.08, dur * 0.92);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(v, t + 0.012);
+  g.gain.setTargetAtTime(v * 0.55, t + 0.03, 0.18);
+  g.gain.setTargetAtTime(0, end, 0.04);
+  o1.connect(lp);
+  o2.connect(g2);
+  g2.connect(lp);
+  lp.connect(g);
+  g.connect(c.destination);
+  o1.start(t);
+  o2.start(t);
+  o1.stop(end + 0.3);
+  o2.stop(end + 0.3);
+  nodes.push(o1, o2);
+}
+
+/**
  * Joue une note d'accord (son de nappe).
  * @param {number} t
  * @param {number} dur
@@ -441,7 +491,7 @@ export function playGrid(b, cb, opt = {}) {
             last = cc;
             if (play) {
               const ts = t0 + qq * spq;
-              tone(ts, Math.min(d * spq, spq * 2), tn.bass, p.nodes);
+              bass(ts, Math.min(d * spq, spq * 2), tn.bass, p.nodes);
               tn.notes.forEach((nm) => pad(ts, d * spq, nm, p.nodes));
             }
           }

@@ -187,11 +187,15 @@ export function chordHtml(c) {
  *
  * ## Voicing
  *
- * La fondamentale n'est jouée qu'à la basse. Les autres intervalles sont
- * repliés dans une tessiture fixe (MIDI 52 à 72) : on obtient des voicings
- * serrés, et des enchaînements avec peu de mouvement, sans algorithme de
- * conduite des voix. La quinte, la note la moins utile, est omise dès
- * qu'il y a deux extensions.
+ * La fondamentale est jouée à la basse **et** dans l'accord (depuis la 2.8.8).
+ * Sans elle, deux accords différents pouvaient donner exactement la même
+ * nappe : Fmaj7 sans fa et F♯ø7 sans fa♯ donnent tous deux la, do, mi. Au
+ * téléphone, où la basse s'entend peu, on n'entendait alors aucun changement.
+ *
+ * Les intervalles sont repliés dans une tessiture fixe (MIDI 52 à 72) : on
+ * obtient des voicings serrés, et des enchaînements avec peu de mouvement,
+ * sans algorithme de conduite des voix. La quinte, la note la moins utile,
+ * est omise dès qu'il y a deux extensions.
  *
  * @param {string} c Accord.
  * @returns {ChordVoicing|null} `null` si l'accord n'est pas reconnu.
@@ -232,7 +236,7 @@ export function chordTones(c) {
     fifth = 8;
   }
 
-  const iv = [third, sev, ...ext];
+  const iv = [0, third, sev, ...ext];
   if (ext.length < 2 || sev == null) iv.push(fifth);
   const bass = m[4] ? pitchClass(m[4]) : root;
   return {
