@@ -22,6 +22,7 @@
  * `requestAnimationFrame`), quand la largeur réelle des cartes est connue.
  */
 
+import { t, locale } from '../i18n.js';
 import { esc } from '../util.js';
 import { staffSvg } from '../render-staff.js';
 import { chordParts } from '../chords.js';
@@ -37,11 +38,7 @@ import { PIN_ICON } from './icons.js';
  */
 
 /** Modes d'affichage, dans l'ordre du sélecteur. */
-export const LIST_VIEWS = [
-  { key: 'cards', label: 'Cartes' },
-  { key: 'mosaic', label: 'Mosaïque' },
-  { key: 'list', label: 'Liste' },
-];
+export const LIST_VIEWS = [{ key: 'cards' }, { key: 'mosaic' }, { key: 'list' }];
 
 /** Largeur (px) à laquelle la portée est dessinée avant réduction, en mosaïque. */
 const MOSAIC_STAFF_W = 260;
@@ -53,7 +50,7 @@ const MOSAIC_STAFF_W = 260;
  */
 function shortDate(ts) {
   try {
-    return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    return new Date(ts).toLocaleDateString(locale(), { day: 'numeric', month: 'short' });
   } catch (e) {
     return '';
   }
@@ -67,13 +64,13 @@ function shortDate(ts) {
  * @returns {string}
  */
 export function relativeDate(ts, now = Date.now()) {
-  const day = (t) => {
-    const d = new Date(t);
+  const day = (ms) => {
+    const d = new Date(ms);
     return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
   };
   const diff = Math.round((day(now) - day(ts)) / 86400000);
-  if (diff <= 0) return 'aujourd’hui';
-  if (diff === 1) return 'hier';
+  if (diff <= 0) return t('list.today');
+  if (diff === 1) return t('list.yesterday');
   return shortDate(ts);
 }
 
@@ -88,9 +85,9 @@ export function noteSummary(n) {
   const p = st.length - r;
   const gr = n.blocks.filter((b) => b.type === 'grid').length;
   const parts = [];
-  if (p) parts.push(p + (p > 1 ? ' portées' : ' portée'));
-  if (r) parts.push(r + (r > 1 ? ' rythmes' : ' rythme'));
-  if (gr) parts.push(gr + (gr > 1 ? ' grilles' : ' grille'));
+  if (p) parts.push(t('list.staves', { n: p }));
+  if (r) parts.push(t('list.rhythms', { n: r }));
+  if (gr) parts.push(t('list.grids', { n: gr }));
   return parts.join(' · ');
 }
 
@@ -149,14 +146,16 @@ function folderTag(n, opt) {
  */
 function itemHtml(n, mode, opt = {}) {
   const pin = n.pinned
-    ? `<span class="pin" title="Épinglée">${PIN_ICON}<span class="sr">Épinglée</span></span>`
+    ? `<span class="pin" title="${esc(t('list.pinned'))}">${PIN_ICON}<span class="sr">${esc(t('list.pinned'))}</span></span>`
     : '';
-  const title = pin + esc(n.title || 'Sans titre');
+  const title = pin + esc(n.title || t('list.untitled'));
   const tag = folderTag(n, opt);
   const sum = noteSummary(n);
   const txt = firstText(n);
   if (mode === 'list') {
-    const sub = ['créée le ' + shortDate(n.created || n.updated), sum].filter(Boolean).join(' · ');
+    const sub = [t('list.createdOn', { date: shortDate(n.created || n.updated) }), sum]
+      .filter(Boolean)
+      .join(' · ');
     return `<span class="row-main"><span class="row-title">${title}</span><span class="row-sub">${tag}${esc(sub)}</span></span><span class="row-date">${esc(relativeDate(n.updated))}</span>`;
   }
   if (mode === 'mosaic') {
@@ -169,7 +168,7 @@ function itemHtml(n, mode, opt = {}) {
         ? `<div class="mz-chords">${ch}</div>`
         : txt
           ? `<p class="mz-text">${esc(txt)}</p>`
-          : '<p class="mz-text mz-empty">Note vide</p>';
+          : `<p class="mz-text mz-empty">${esc(t('list.emptyNote'))}</p>`;
     }
     return `<h3>${title}</h3>${preview}<div class="mz-foot">${tag}<span>${esc(shortDate(n.updated))}</span>${sum ? `<span>${esc(sum)}</span>` : ''}</div>`;
   }

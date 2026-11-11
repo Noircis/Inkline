@@ -32,11 +32,23 @@
  * de celle-ci, même par-dessus une barre (règle d'écriture standard).
  */
 
+import { lang } from './i18n.js';
 import { mod, EPS, snap } from './util.js';
 import { qlen, mlen, instrumentOf } from './model.js';
 
 /** Noms de notes en solfège français, indexés par degré (0 = do). */
-const NOTE_NAMES = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
+const NOTE_NAMES = {
+  fr: ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'],
+  en: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+};
+
+/**
+ * Nom d'un degré dans la langue de l'interface (2.9) : `Do`… en français,
+ * `C`… en anglais.
+ * @param {number} degree 0 = do.
+ * @returns {string}
+ */
+export const noteName = (degree) => NOTE_NAMES[lang()][mod(degree, 7)];
 
 /** Demi-tons depuis do pour chaque degré de la gamme majeure. */
 const SEMITONES = [0, 2, 4, 5, 7, 9, 11];
@@ -99,8 +111,8 @@ export function keyAcc(clef, s, ks = 0) {
  */
 export function midiOf(clef, s, acc) {
   const b = CLEF_BASE[clef] || CLEF_BASE.treble;
-  const t = b.L + s;
-  return 12 * (b.O + Math.floor(t / 7) + 1) + SEMITONES[mod(t, 7)] + acc;
+  const deg = b.L + s;
+  return 12 * (b.O + Math.floor(deg / 7) + 1) + SEMITONES[mod(deg, 7)] + acc;
 }
 
 /**
@@ -115,10 +127,11 @@ export function midiOf(clef, s, acc) {
  */
 export function pitchName(clef, s, a, ks = 0) {
   const b = CLEF_BASE[clef] || CLEF_BASE.treble;
-  const t = b.L + s;
+  const deg = b.L + s;
   const eff = a == null ? keyAcc(clef, s, ks) : a;
   const acc = eff === -1 ? '♭' : eff === 1 ? '♯' : a === 0 ? '♮' : '';
-  return NOTE_NAMES[mod(t, 7)] + acc + ' ' + (b.O + Math.floor(t / 7));
+  // « Si♭ 4 » en français, « B♭4 » en anglais.
+  return noteName(deg) + acc + (lang() === 'fr' ? ' ' : '') + (b.O + Math.floor(deg / 7));
 }
 
 /**

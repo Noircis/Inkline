@@ -24,6 +24,7 @@
  * type de fichier, et télécharge le fichier sinon.
  */
 
+import { t, locale } from './i18n.js';
 import { esc } from './util.js';
 import { staffSvg } from './render-staff.js';
 import { gridSvg, keyLabel } from './grid.js';
@@ -148,8 +149,14 @@ function wrap(ctx, text, maxW) {
  */
 function caption(b) {
   if (b.type === 'grid')
-    return `GRILLE · ${keyLabel(b.key).toUpperCase()} · ${b.time} · ${b.style.toUpperCase()} · TEMPO ${b.tempo}`;
-  const kind = b.clef === 'rhythm' ? 'RYTHME' : b.clef === 'bass' ? 'CLÉ DE FA' : 'CLÉ DE SOL';
+    return `${t('grid.kind').toUpperCase()} · ${keyLabel(b.key).toUpperCase()} · ${b.time} · ${b.style.toUpperCase()} · TEMPO ${b.tempo}`;
+  const kind = (
+    b.clef === 'rhythm'
+      ? t('staff.rhythm')
+      : b.clef === 'bass'
+        ? t('export.bassClef')
+        : t('export.trebleClef')
+  ).toUpperCase();
   return `${kind} · ${b.time} · TEMPO ${b.tempo}${b.swing ? ' · SWING' : ''}`;
 }
 
@@ -176,17 +183,17 @@ async function noteToSvg(note) {
 
   // Titre (sur plusieurs lignes si besoin) et date.
   ctx.font = '700 30px "Bricolage Grotesque", sans-serif';
-  wrap(ctx, note.title || 'Sans titre', CW).forEach((l) => {
+  wrap(ctx, note.title || t('list.untitled'), CW).forEach((l) => {
     y += 34;
     body += `<text class="ttl" x="${PAD}" y="${y}">${esc(l)}</text>`;
   });
-  const date =
-    'Créée le ' +
-    new Date(note.created || note.updated).toLocaleDateString('fr-FR', {
+  const date = t('export.created', {
+    date: new Date(note.created || note.updated).toLocaleDateString(locale(), {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    });
+    }),
+  });
   y += 24;
   body += `<text class="foot" x="${PAD}" y="${y}">${esc(date)}</text>`;
   y += 12;

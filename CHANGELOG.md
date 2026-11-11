@@ -3,6 +3,24 @@
 Toutes les évolutions notables d'Inkline sont listées ici.
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [2.9.0] - 2026-11-11
+
+### Ajouté
+
+- **Interface en anglais et en français.**
+  - Au premier lancement, l'appli suit la langue du téléphone (du navigateur) : français si elle est en français, anglais sinon.
+  - Options › Langue : Automatique, English ou Français. Le choix est retenu.
+  - Tout est traduit : écrans, palettes, clavier d'accords, panneaux, messages, entraînement, exports PNG et PDF, note d'exemple.
+  - Noms de notes selon la langue : Do Ré Mi en français (« Si♭ 4 »), C D E en anglais (« B♭4 »). Les accords chiffrés restent identiques.
+  - Les dates suivent la langue (« 11 nov. », « Nov 11 »).
+
+### Technique
+
+- Nouveaux modules `i18n` (`t('clé', { n })`, pluriels par `Intl.PluralRules`, détection), `lang-init` (importé en premier par `main`), dictionnaires `locales/en` et `locales/fr` (317 textes).
+- Textes fixes de `index.html` : attributs `data-i18n` et `data-i18n-attr`.
+- Tests : mêmes clés dans les deux langues, chaque clé utilisée existe, aucune variable locale `t` ne masque la fonction de traduction ; tests d'interface en anglais.
+- Le manifeste d'installation est en anglais.
+
 ## [2.8.8] - 2026-11-10
 
 ### Corrigé

@@ -5,6 +5,8 @@
  * mesure, tempo, swing, lecture, puis la portée elle-même en SVG.
  */
 
+import { noteName } from '../../pitch.js';
+import { t } from '../../i18n.js';
 import { esc } from '../../util.js';
 import { state, app, blockById, touch } from '../state.js';
 import { TIME_SIGNATURES, INSTRUMENTS, instrumentOf } from '../../model.js';
@@ -26,21 +28,34 @@ import { bindMeasureSelect, staffTarget, refreshMeasureSelect } from '../measure
  * tonalités majeure et mineure correspondantes.
  * @type {Array.<{v: number, label: string}>}
  */
-const KEY_SIGS = [
-  { v: 0, label: 'Sans armure' },
-  ...['Sol / Mi m', 'Ré / Si m', 'La / Fa♯ m', 'Mi / Do♯ m', 'Si / Sol♯ m', 'Fa♯ / Ré♯ m', 'Do♯ / La♯ m'].map(
-    (t, i) => ({ v: i + 1, label: `${i + 1}♯ · ${t}` }),
-  ),
-  ...[
-    'Fa / Ré m',
-    'Si♭ / Sol m',
-    'Mi♭ / Do m',
-    'La♭ / Fa m',
-    'Ré♭ / Si♭ m',
-    'Sol♭ / Mi♭ m',
-    'Do♭ / La♭ m',
-  ].map((t, i) => ({ v: -(i + 1), label: `${i + 1}♭ · ${t}` })),
-];
+const KEY_SIGS = (() => {
+  // Tonalités : [degré, altération] de la majeure puis de la relative mineure.
+  const SHARPS = [
+    [4, '', 2, ''],
+    [1, '', 6, ''],
+    [5, '', 3, '♯'],
+    [2, '', 0, '♯'],
+    [6, '', 4, '♯'],
+    [3, '♯', 1, '♯'],
+    [0, '♯', 5, '♯'],
+  ];
+  const FLATS = [
+    [3, '', 1, ''],
+    [6, '♭', 4, ''],
+    [2, '♭', 0, ''],
+    [5, '♭', 3, ''],
+    [1, '♭', 6, '♭'],
+    [4, '♭', 2, '♭'],
+    [0, '♭', 5, '♭'],
+  ];
+  const label = (n, acc, [M, ma, m, mia]) =>
+    t('ks.label', { n, acc, maj: noteName(M) + ma, min: noteName(m) + mia });
+  return [
+    { v: 0, label: t('ks.none') },
+    ...SHARPS.map((k, i) => ({ v: i + 1, label: label(i + 1, '♯', k) })),
+    ...FLATS.map((k, i) => ({ v: -(i + 1), label: label(i + 1, '♭', k) })),
+  ];
+})();
 
 /**
  * HTML de l'en-tête du bloc.
@@ -50,14 +65,14 @@ const KEY_SIGS = [
 function headerHtml(b) {
   const rh = b.clef === 'rhythm';
   const id = esc(b.id);
-  return `<div class="shead"><span class="kind">${rh ? 'Rythme' : 'Portée'}</span>
-    ${rh ? '' : `<select data-f="clef" id="c_${id}" aria-label="Clé"><option value="treble">Sol</option><option value="bass">Fa</option></select>`}
-    ${rh ? '' : `<select data-f="ks" id="k_${id}" aria-label="Armure">${KEY_SIGS.map((k) => `<option value="${k.v}">${k.label}</option>`).join('')}</select>`}
-    ${rh ? '' : `<select data-f="tr" id="i_${id}" aria-label="Instrument (transposition)">${INSTRUMENTS.map((x) => `<option value="${x.key}">${x.label}</option>`).join('')}</select>`}
-    <select data-f="time" id="m_${id}" aria-label="Mesure">${TIME_SIGNATURES.map((t) => `<option>${t}</option>`).join('')}</select>
+  return `<div class="shead"><span class="kind">${esc(rh ? t('staff.rhythm') : t('staff.staff'))}</span>
+    ${rh ? '' : `<select data-f="clef" id="c_${id}" aria-label="${esc(t('staff.clef'))}"><option value="treble">${esc(t('staff.treble'))}</option><option value="bass">${esc(t('staff.bass'))}</option></select>`}
+    ${rh ? '' : `<select data-f="ks" id="k_${id}" aria-label="${esc(t('staff.keySig'))}">${KEY_SIGS.map((k) => `<option value="${k.v}">${esc(k.label)}</option>`).join('')}</select>`}
+    ${rh ? '' : `<select data-f="tr" id="i_${id}" aria-label="${esc(t('staff.instrument'))}">${INSTRUMENTS.map((x) => `<option value="${x.key}">${esc(t('instr.' + x.key))}</option>`).join('')}</select>`}
+    <select data-f="time" id="m_${id}" aria-label="${esc(t('staff.time'))}">${TIME_SIGNATURES.map((ts) => `<option>${ts}</option>`).join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${id}"></label>
     <button type="button" class="chip" data-f="swing" aria-pressed="${!!b.swing}">Swing</button>
-    <button type="button" class="playbtn" data-play="${id}">&#9654; Écouter</button></div>`;
+    <button type="button" class="playbtn" data-play="${id}">&#9654; ${esc(t('play.listen'))}</button></div>`;
 }
 
 /**
@@ -100,12 +115,7 @@ function bindInstrument(n, b, el) {
     redrawStaff(b.id);
     const ks = /** @type {HTMLSelectElement} */ (el.querySelector('[data-f=ks]'));
     if (ks) ks.value = String(b.ks || 0);
-    if (octaves)
-      flash(
-        octaves > 1
-          ? `${octaves} notes ramenées d’une octave pour rester sur la portée`
-          : 'Une note ramenée d’une octave pour rester sur la portée',
-      );
+    if (octaves) flash(octaves > 1 ? t('tr.octaves', { n: octaves }) : t('tr.octave'));
   };
   const closeAsk = () => el.querySelector('.tr-ask')?.remove();
   sel.onchange = () => {
@@ -116,9 +126,9 @@ function bindInstrument(n, b, el) {
     const ask = document.createElement('div');
     ask.className = 'tr-ask';
     ask.setAttribute('role', 'group');
-    ask.setAttribute('aria-label', 'Notes déjà écrites');
-    ask.innerHTML = `<p>Passer de « ${esc(from.label)} » à « ${esc(to.label)} ». Les notes déjà écrites :</p>
-      <div class="tr-ask-btns"><button type="button" class="btn primary" data-tr="move">Transposer<small>même son, l’écriture change</small></button><button type="button" class="btn" data-tr="keep">Garder l’écriture<small>les notes ne bougent pas</small></button><button type="button" class="btn ghost" data-tr="cancel">Annuler</button></div>`;
+    ask.setAttribute('aria-label', t('tr.askLabel'));
+    ask.innerHTML = `<p>${esc(t('tr.ask', { from: t('instr.' + from.key), to: t('instr.' + to.key) }))}</p>
+      <div class="tr-ask-btns"><button type="button" class="btn primary" data-tr="move">${esc(t('tr.move'))}<small>${esc(t('tr.moveSub'))}</small></button><button type="button" class="btn" data-tr="keep">${esc(t('tr.keep'))}<small>${esc(t('tr.keepSub'))}</small></button><button type="button" class="btn ghost" data-tr="cancel">${esc(t('common.cancel'))}</button></div>`;
     el.querySelector('.shead').after(ask);
     ask.querySelector('[data-tr=move]').addEventListener('click', () => {
       closeAsk();

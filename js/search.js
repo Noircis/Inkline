@@ -22,13 +22,10 @@
 
 /**
  * Ordres de tri proposés sur l'accueil.
- * @type {Array.<{key: string, label: string}>}
+ * Libellés : clés `sort.*` des dictionnaires ({@link module:i18n|i18n}).
+ * @type {Array.<{key: string}>}
  */
-export const SORT_MODES = [
-  { key: 'updated', label: 'Modifiées récemment' },
-  { key: 'created', label: 'Créées récemment' },
-  { key: 'title', label: 'Titre (A → Z)' },
-];
+export const SORT_MODES = [{ key: 'updated' }, { key: 'created' }, { key: 'title' }];
 
 /** Clés de tri valides. */
 export const SORT_KEYS = SORT_MODES.map((m) => m.key);

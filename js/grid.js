@@ -23,6 +23,7 @@
  * | `rb`       | bord droit simple (fin de ligne)                 |
  */
 
+import { t } from './i18n.js';
 import { esc } from './util.js';
 import { mlen } from './model.js';
 import { chordHtml, chordParts } from './chords.js';
@@ -60,7 +61,9 @@ export const SECTIONS = ['', 'A', 'B', 'C', 'D', 'Intro'];
  * @returns {string}
  */
 export function keyLabel(k) {
-  return k.endsWith('-') ? k.slice(0, -1).replace('b', '♭') + ' mineur' : k.replace('b', '♭') + ' majeur';
+  return k.endsWith('-')
+    ? t('key.minor', { k: k.slice(0, -1).replace('b', '♭') })
+    : t('key.major', { k: k.replace('b', '♭') });
 }
 
 /**
@@ -83,11 +86,11 @@ export function gridTokens(txt) {
     .trim()
     .split(/[\s,]+/)
     .filter(Boolean)
-    .map((t) => {
-      if (/^(n|nc|n\.c\.?)$/i.test(t)) return 'n';
-      if (t === '/') return '';
-      if (t === '%') return '%';
-      return /^[a-g]/.test(t) ? t[0].toUpperCase() + t.slice(1) : t;
+    .map((tok) => {
+      if (/^(n|nc|n\.c\.?)$/i.test(tok)) return 'n';
+      if (tok === '/') return '';
+      if (tok === '%') return '%';
+      return /^[a-g]/.test(tok) ? tok[0].toUpperCase() + tok.slice(1) : tok;
     });
 }
 
@@ -211,7 +214,7 @@ export function gridHtml(b, selI, playI, limit = 0) {
     if (i % 4 === 3 || (i === all.length - 1 && ended)) c.push('rb');
     const inner =
       m.ch.length === 1 && m.ch[0] === '%'
-        ? '<span class="sim" aria-label="Mesure répétée">\u{1D10E}</span>'
+        ? `<span class="sim" aria-label="${esc(t('grid.repeatedBar'))}">\u{1D10E}</span>`
         : m.ch.map((x) => `<span class="gc">${chordHtml(x)}</span>`).join('');
     h +=
       `<button type="button" class="${c.join(' ')}" data-gm="${i}">` +

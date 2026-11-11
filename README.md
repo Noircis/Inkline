@@ -79,6 +79,10 @@ js/
   exercise.js         exercices rythmiques aléatoires (tirage reproductible par numéro)
   transpose.js        instruments transpositeurs : réécrire une portée pour un autre instrument
   chord-keys.js       clavier d'accords : effet de chaque touche
+  i18n.js             langue de l'interface : t('clé'), pluriels, détection
+  lang-init.js        fixe la langue au démarrage (importé en premier)
+  locales/en.js       textes en anglais
+  locales/fr.js       textes en français (mêmes clés, vérifié par les tests)
   measure-fit.js      mise en mesure : liaisons automatiques aux barres, compensation par des silences
   export.js           partage d'une note : .inkline, PNG, PDF
   pdf.js              générateur PDF minimal (images JPEG)

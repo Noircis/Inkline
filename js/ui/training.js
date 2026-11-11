@@ -17,6 +17,7 @@
  * {@link module:audio.playStaff|playStaff}, comme dans une note.
  */
 
+import { t } from '../i18n.js';
 import { app } from './state.js';
 import { esc } from '../util.js';
 import { staffSvg } from '../render-staff.js';
@@ -52,12 +53,12 @@ import {
 function renderTraining() {
   audio.stop();
   hideAllPalettes();
-  app.innerHTML = `${header('Notes', 'Entraînement')}
+  app.innerHTML = `${header(t('note.back'), t('home.training'))}
   <section class="opt">
-    <h2 class="eyebrow">Rythme</h2>
+    <h2 class="eyebrow">${esc(t('staff.rhythm'))}</h2>
     <div class="opt-group">
-      <button class="opt-row" type="button" id="goPlacements"><span>Placements<small>Toutes les façons de placer des notes dans une mesure, à lire et à jouer</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
-      <button class="opt-row" type="button" id="goExercises"><span>Exercices aléatoires<small>1, 2 ou 4 mesures à lire, tirées au hasard selon vos réglages</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
+      <button class="opt-row" type="button" id="goPlacements"><span>${esc(t('train.placements'))}<small>${esc(t('train.placementsHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
+      <button class="opt-row" type="button" id="goExercises"><span>${esc(t('train.exercises'))}<small>${esc(t('train.exercisesHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
     </div>
   </section>`;
   app.querySelector('#back').addEventListener('click', backToList);
@@ -83,21 +84,21 @@ function renderPlacements() {
   const s = settings();
   const m = meterOf(s.meter);
   const slots = slotsOf(m);
-  app.innerHTML = `${header('Entraînement', 'Placements')}
+  app.innerHTML = `${header(t('home.training'), t('train.placements'))}
   <section class="opt">
-    <h2 class="eyebrow">Mesure</h2>
+    <h2 class="eyebrow">${esc(t('staff.time'))}</h2>
     ${meterChips(m.key)}
-    <h2 class="eyebrow">Notes par mesure</h2>
-    <div class="nsel" role="radiogroup" aria-label="Notes par mesure">${Array.from(
+    <h2 class="eyebrow">${esc(t('train.notesPerBar'))}</h2>
+    <div class="nsel" role="radiogroup" aria-label="${esc(t('train.notesPerBar'))}">${Array.from(
       { length: slots },
       (_, i) =>
         `<button type="button" role="radio" data-n="${i + 1}" aria-checked="${i + 1 === s.notes}">${i + 1}</button>`,
     ).join('')}</div>
-    <h2 class="eyebrow">Subdivision</h2>
+    <h2 class="eyebrow">${esc(t('train.subdivision'))}</h2>
     ${subdivisionSeg()}
-    <h2 class="eyebrow">Lecture</h2>
+    <h2 class="eyebrow">${esc(t('train.playback'))}</h2>
     <div class="drill-row">${tempoField(s.tempo)}${toggle('swing', 'Swing', s.swing, m.kind !== 'simple')}</div>
-    <h2 class="eyebrow">Métronome</h2>
+    <h2 class="eyebrow">${esc(t('train.metronome'))}</h2>
     ${metronomeControls(m)}
     <div class="drill-bar"><span class="listbar-lbl" id="drillCount"></span><button type="button" class="btn ghost small" id="foldAll"></button></div>
   </section>
@@ -151,12 +152,11 @@ function renderSections() {
   const s = settings();
   const m = meterOf(s.meter);
   const series = placementSeries(s.notes, m);
-  const measures = series.reduce((t, x) => t + x.length, 0);
-  const plural = (n, w) => `${n} ${w}${n > 1 ? 's' : ''}`;
+  const measures = series.reduce((sum, x) => sum + x.length, 0);
   app.querySelector('#drillCount').textContent =
     series.length > 1
-      ? `${plural(measures, 'mesure')} · ${plural(series.length, 'départ')}`
-      : plural(measures, 'mesure');
+      ? `${t('train.bars', { n: measures })} · ${t('train.starts', { n: series.length })}`
+      : t('train.bars', { n: measures });
   sections = new Map();
   const single = s.notes === 1;
   const list = app.querySelector('#drills');
@@ -166,9 +166,9 @@ function renderSections() {
       sections.set(id, { block: seriesBlock(sr, s, id, m), open: i === 0, drawn: false });
       const p = sr[0][0];
       const title = single
-        ? '<span class="drill-all">Toutes les positions</span>'
-        : `<span class="drill-start mus" aria-hidden="true">${startGlyphs(p, m)}</span><span class="sr">Départ sur ${esc(startLabel(p, m))}</span>`;
-      return `<div class="drill" data-sec="${id}"><div class="drill-head"><button type="button" class="drill-tog" data-tog="${id}" aria-expanded="false" aria-controls="ds_${id}"><span class="drill-chev" aria-hidden="true"></span>${title}<span class="drill-sub">${plural(sr.length, 'mesure')}</span></button><button type="button" class="playbtn round" data-play="${id}" aria-label="Écouter">&#9654;</button></div><div class="drill-staff" id="ds_${id}" data-drill="${id}" hidden></div></div>`;
+        ? `<span class="drill-all">${esc(t('train.allPositions'))}</span>`
+        : `<span class="drill-start mus" aria-hidden="true">${startGlyphs(p, m)}</span><span class="sr">${esc(t('train.startOn', { pos: startLabel(p, m) }))}</span>`;
+      return `<div class="drill" data-sec="${id}"><div class="drill-head"><button type="button" class="drill-tog" data-tog="${id}" aria-expanded="false" aria-controls="ds_${id}"><span class="drill-chev" aria-hidden="true"></span>${title}<span class="drill-sub">${esc(t('train.bars', { n: sr.length }))}</span></button><button type="button" class="playbtn round" data-play="${id}" aria-label="${esc(t('play.listen'))}">&#9654;</button></div><div class="drill-staff" id="ds_${id}" data-drill="${id}" hidden></div></div>`;
     })
     .join('');
   sections.forEach((sec, id) => {
@@ -218,7 +218,9 @@ function updateFoldAll() {
   const btn = app.querySelector('#foldAll');
   if (!btn) return;
   btn.hidden = sections.size < 2;
-  btn.textContent = [...sections.values()].some((x) => !x.open) ? 'Tout déplier' : 'Tout replier';
+  btn.textContent = [...sections.values()].some((x) => !x.open)
+    ? t('train.expandAll')
+    : t('train.collapseAll');
 }
 
 /**

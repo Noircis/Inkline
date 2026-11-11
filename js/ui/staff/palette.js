@@ -16,6 +16,7 @@
  * `touch` (sauvegarde), d'une remise en mesure et d'un redessin.
  */
 
+import { t } from '../../i18n.js';
 import { state, touch } from '../state.js';
 import { pitchName } from '../../pitch.js';
 import { resizeEvent, chainStart, chainEnd } from '../../measure-fit.js';
@@ -38,8 +39,8 @@ const GLYPHS = {
 
 /** Noms accessibles des boutons de valeur. */
 const LABELS = {
-  note: { w: 'Ronde', h: 'Blanche', q: 'Noire', 8: 'Croche', 16: 'Double croche' },
-  rest: { w: 'Pause', h: 'Demi-pause', q: 'Soupir', 8: 'Demi-soupir', 16: 'Quart de soupir' },
+  note: (d) => t('dur.' + d),
+  rest: (d) => t('rest.' + d),
 };
 
 /**
@@ -92,18 +93,18 @@ function helpText(b, v) {
   const rh = b.clef === 'rhythm';
   const last = b.items[b.items.length - 1];
   if (v.sel) {
-    if (v.sel.r) return 'Silence sélectionné';
-    if (rh) return 'Note sélectionnée';
-    return pitchName(b.clef, v.sel.s, v.sel.a, b.ks) + ' · touche plus haut ou plus bas pour la déplacer';
+    if (v.sel.r) return t('hint.restSelected');
+    if (rh) return t('hint.noteSelected');
+    return pitchName(b.clef, v.sel.s, v.sel.a, b.ks) + ' · ' + t('hint.moveNote');
   }
-  if (state.mode === 'edit') return 'Touche une note pour la modifier';
-  if (state.cursor != null) return `Insertion avant la note ${state.cursor + 1} · touche la zone bleue`;
-  if (last && last.bar === 'final') return 'Motif terminé · retire la barre de fin pour continuer';
-  if (inp.tie) return 'Liaison · la prochaine note prolonge la précédente';
-  if (inp.rs) return 'La prochaine note ouvrira une reprise';
-  if (v.rest) return 'Mode silence (' + LABELS.rest[v.d].toLowerCase() + ') · touche la zone bleue';
-  if (inp.tup) return 'Mode triolet · touche la zone bleue';
-  return rh ? 'Touche la zone bleue pour ajouter' : 'Touche la portée dans la zone bleue pour ajouter';
+  if (state.mode === 'edit') return t('hint.editMode');
+  if (state.cursor != null) return t('hint.insertBefore', { n: state.cursor + 1 });
+  if (last && last.bar === 'final') return t('hint.finished');
+  if (inp.tie) return t('hint.tie');
+  if (inp.rs) return t('hint.repeat');
+  if (v.rest) return t('hint.restMode', { rest: LABELS.rest(v.d).toLowerCase() });
+  if (inp.tup) return t('hint.tripletMode');
+  return rh ? t('hint.addRhythm') : t('hint.addStaff');
 }
 
 /**
@@ -123,15 +124,12 @@ function updateStaffPalette() {
   });
   pal
     .querySelector('[data-act=del]')
-    .setAttribute(
-      'aria-label',
-      editing ? 'Effacer la note sélectionnée' : 'Effacer la note avant le curseur',
-    );
+    .setAttribute('aria-label', editing ? t('pal.deleteSelected') : t('pal.deleteBefore'));
   pal.querySelectorAll('[data-dur]').forEach((x) => {
     const k = /** @type {HTMLElement} */ (x).dataset.dur;
     x.setAttribute('aria-pressed', String(k === v.d));
     x.textContent = GLYPHS[kind][k];
-    x.setAttribute('aria-label', LABELS[kind][k]);
+    x.setAttribute('aria-label', LABELS[kind](k));
     x.classList.toggle('restmode', v.rest);
   });
   const press = (sel, on) => pal.querySelector(sel).setAttribute('aria-pressed', String(on));
@@ -167,7 +165,7 @@ function resizeSel(change) {
   const value = change(logicalValue(b, state.sel));
   const res = resizeEvent(b.items, b.time, state.sel, value);
   if (value.tup && res.tupCross.has(res.index)) {
-    flash('Un triolet ne peut pas passer la barre de mesure');
+    flash(t('hint.tripletBar'));
     return true;
   }
   pushSnapshot(n);

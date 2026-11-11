@@ -28,6 +28,7 @@
  * `.inkline` partagé ne transporte pas cet état.
  */
 
+import { t } from '../i18n.js';
 import { state, curNote, saveArrangement } from './state.js';
 import { getMeta } from '../storage.js';
 import { setActive, redrawBlock } from './blocks.js';
@@ -74,7 +75,7 @@ export function applyFold(wrap, b, lines, folded) {
     bar.addEventListener('click', () => toggleFold(b, wrap));
   }
   bar.setAttribute('aria-expanded', String(!folded));
-  bar.textContent = folded ? `Afficher tout · ${lines} lignes ▾` : 'Réduire ▴';
+  bar.textContent = folded ? t('fold.showAll', { n: lines }) : t('fold.collapse');
 }
 
 /**

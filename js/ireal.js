@@ -55,6 +55,7 @@
  * (export puis import), pas contre l'application iReal Pro elle-même.
  */
 
+import { t } from './i18n.js';
 import { CHORD_RE } from './chords.js';
 import { newGridBlock } from './model.js';
 
@@ -88,9 +89,9 @@ export function scramble(s) {
   let r = '';
   let p = s;
   while (p.length > 51) {
-    const t = p.slice(0, 50);
+    const chunk = p.slice(0, 50);
     p = p.slice(50);
-    r += p.length < 2 ? t : obfuscate50(t);
+    r += p.length < 2 ? chunk : obfuscate50(chunk);
   }
   return r + p;
 }
@@ -313,8 +314,8 @@ const CHORD_TOKEN = /^([A-GW])([b#]?)([\^\-ho+0-9b#susaldt]*)(\/[A-G][b#]?)?/;
 function readToken(p, r) {
   let mm;
   if ((mm = /^T(\d\d)/.exec(r))) {
-    const t = TOKEN_TO_TIME['T' + mm[1]];
-    if (t && !p.M.length) p.time = t;
+    const ts = TOKEN_TO_TIME['T' + mm[1]];
+    if (ts && !p.M.length) p.time = ts;
     return 3;
   }
   if ((mm = /^\*([A-Za-z])/.exec(r))) {
@@ -408,7 +409,7 @@ export function parseIRealAll(text) {
       const r = parseIRealMusic(music);
       if (!r.measures.length) return;
       out.push({
-        title: p[0] || 'Sans titre',
+        title: p[0] || t('list.untitled'),
         composer: p[1] || '',
         style: style || 'Medium Swing',
         key: key || 'C',

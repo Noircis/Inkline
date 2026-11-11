@@ -6,24 +6,26 @@
  * réservé aux palettes. Ce module ne dépend d'aucun écran.
  */
 
+import { t } from '../i18n.js';
+import { esc } from '../util.js';
 import { state } from './state.js';
 import * as audio from '../audio.js';
 
 /** Version affichée dans les Options (à garder alignée sur CHANGELOG.md). */
-export const APP_VERSION = '2.8.8';
+export const APP_VERSION = '2.9.0';
 
 /** HTML des outils d'un bloc actif. */
 export function toolsHtml() {
-  return '<div class="tools"><button type="button" data-tool="up" aria-label="Monter">&#8593;</button><button type="button" data-tool="down" aria-label="Descendre">&#8595;</button><button type="button" data-tool="del">Supprimer</button></div>';
+  return `<div class="tools"><button type="button" data-tool="up" aria-label="${esc(t('common.moveUp'))}">&#8593;</button><button type="button" data-tool="down" aria-label="${esc(t('common.moveDown'))}">&#8595;</button><button type="button" data-tool="del">${esc(t('common.delete'))}</button></div>`;
 }
 
 /**
  * Ajuste la hauteur d'un `<textarea>` à son contenu (pas d'ascenseur interne).
- * @param {HTMLTextAreaElement} t
+ * @param {HTMLTextAreaElement} el
  */
-export function autosize(t) {
-  t.style.height = 'auto';
-  t.style.height = t.scrollHeight + 'px';
+export function autosize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
 }
 
 /**
@@ -92,7 +94,7 @@ export function updatePlayBtn(id) {
   if (!btn) return;
   const on = audio.isPlaying(id);
   btn.classList.toggle('on', on);
-  btn.innerHTML = on ? '&#9632; Stop' : '&#9654; Écouter';
+  btn.innerHTML = on ? '&#9632; ' + esc(t('play.stop')) : '&#9654; ' + esc(t('play.listen'));
 }
 
 /**

@@ -20,6 +20,7 @@
  * coller un accord ou écrire au clavier physique.
  */
 
+import { t } from '../i18n.js';
 import { esc } from '../util.js';
 import { chordHtml } from '../chords.js';
 import { splitChord } from '../chord-keys.js';
@@ -123,29 +124,32 @@ export function mountChordKeyboard(root, opt) {
       ? DETAIL.map(
           (r, k) =>
             r.map(([l, v]) => key(esc(l), `data-ck="add" data-v="${esc(v)}"`)).join('') +
-            (k === 0 ? key('⋯', 'data-ck="more"', 'ck-more on', 'Couleurs courantes') : ''),
+            (k === 0 ? key('⋯', 'data-ck="more"', 'ck-more on', t('ck.common')) : ''),
         )
       : COLORS.map(
           (r, k) =>
             r.map(([l, v]) => key(esc(l), `data-ck="qual" data-v="${esc(v)}"`, 'ck-q')).join('') +
-            (k === 1 ? key('⋯', 'data-ck="more"', 'ck-more', 'Pavé détaillé') : ''),
+            (k === 1 ? key('⋯', 'data-ck="more"', 'ck-more', t('ck.detail')) : ''),
         );
     const bottom = [
-      key('/', 'data-ck="slash"', '', 'Basse'),
-      grid ? key('N.C.', 'data-ck="nc"', '', 'Sans accord') : '',
-      grid
-        ? key('<span class="mus">&#x1D10E;</span>', 'data-ck="sim"', '', 'Répéter la mesure précédente')
-        : '',
-      grid ? key('␣', 'data-ck="space"', '', 'Accord suivant dans la mesure') : '',
-      key('⌫', 'data-ck="back"', '', 'Effacer'),
-      key('⌨', 'data-ck="text"', '', 'Saisir au clavier'),
-      grid && opt.onUndo ? key('↶', 'data-ck="undo"', '', 'Annuler') : '',
-      key(grid ? 'Suivant →' : 'OK', 'data-ck="next"', 'ck-next', grid ? 'Mesure suivante' : 'Valider'),
+      key('/', 'data-ck="slash"', '', t('ck.bass')),
+      grid ? key('N.C.', 'data-ck="nc"', '', t('ck.noChord')) : '',
+      grid ? key('<span class="mus">&#x1D10E;</span>', 'data-ck="sim"', '', t('grid.simile')) : '',
+      grid ? key('␣', 'data-ck="space"', '', t('ck.space')) : '',
+      key('⌫', 'data-ck="back"', '', t('ck.erase')),
+      key('⌨', 'data-ck="text"', '', t('ck.text')),
+      grid && opt.onUndo ? key('↶', 'data-ck="undo"', '', t('common.undo')) : '',
+      key(
+        esc(grid ? t('ck.next') : t('common.ok')),
+        'data-ck="next"',
+        'ck-next',
+        grid ? t('grid.nextMeasure') : t('ck.validate'),
+      ),
     ].join('');
     return (
       `<div class="ck-row ck-roots">${ROOTS.map((r) => key(r, `data-ck="root" data-v="${r}"`)).join('')}` +
-      key('♭', 'data-ck="acc" data-v="b"', 'ck-acc', 'Bémol') +
-      key('♯', 'data-ck="acc" data-v="#"', 'ck-acc', 'Dièse') +
+      key('♭', 'data-ck="acc" data-v="b"', 'ck-acc', t('acc.flat')) +
+      key('♯', 'data-ck="acc" data-v="#"', 'ck-acc', t('acc.sharp')) +
       '</div>' +
       colorRows.map((r) => `<div class="ck-row">${r}</div>`).join('') +
       `<div class="ck-row ck-bottom">${bottom}</div>`
@@ -195,14 +199,14 @@ export function mountChordKeyboard(root, opt) {
   keys.addEventListener('click', (e) => {
     const b = /** @type {HTMLElement} */ (/** @type {Element} */ (e.target).closest('[data-ck]'));
     if (!b) return;
-    const t = b.dataset.ck;
-    if (t === 'more') {
+    const kind = b.dataset.ck;
+    if (kind === 'more') {
       detail = !detail;
       render();
-    } else if (t === 'next') opt.onNext();
-    else if (t === 'text') opt.onText();
-    else if (t === 'undo') opt.onUndo && opt.onUndo();
-    else opt.onKey(/** @type {any} */ ({ t, v: b.dataset.v }));
+    } else if (kind === 'next') opt.onNext();
+    else if (kind === 'text') opt.onText();
+    else if (kind === 'undo') opt.onUndo && opt.onUndo();
+    else opt.onKey(/** @type {any} */ ({ t: kind, v: b.dataset.v }));
   });
 
   render();

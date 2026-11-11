@@ -34,6 +34,7 @@
  * d'après la position moyenne. Ligne rythmique : toujours vers le haut.
  */
 
+import { t } from './i18n.js';
 import { esc, mod } from './util.js';
 import { layout, geom, yOfStep, HALF_SPACE, KEY_ACC_W, INSERT_GAP } from './layout.js';
 import { beamGroups, tupletGroups } from './rhythm.js';
@@ -659,7 +660,7 @@ export function staffSvg(b, W, opt = {}) {
   const zone = drawAppendZone(ctx);
 
   const svg =
-    `<svg width="${W}" height="${height}" viewBox="0 0 ${W} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portée">` +
+    `<svg width="${W}" height="${height}" viewBox="0 0 ${W} ${height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(t('staff.staff'))}">` +
     zone.background +
     staff +
     bars +

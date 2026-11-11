@@ -20,6 +20,7 @@
  * coupée à la barre et liée.
  */
 
+import { t } from '../../i18n.js';
 import { state, blockById, touch } from '../state.js';
 import { chainStart, chainEnd } from '../../measure-fit.js';
 import { layout, geom, stepFromY, INSERT_GAP } from '../../layout.js';
@@ -89,7 +90,7 @@ function insertNote(n, b, L, g, y, at) {
     b.items = before;
     state.cursor = cursorBefore;
     discardSnapshot(n);
-    flash('Un triolet ne peut pas passer la barre de mesure');
+    flash(t('hint.tripletBar'));
     return -1;
   }
   // Réglages « à usage unique » consommés ; triolet et silence restent actifs.
@@ -295,33 +296,33 @@ export function bindStaffInput(n, b, wrap) {
     // Bloc inactif ou réduit : le premier toucher l'active (voir staffTap / fold).
     if (state.activeId !== b.id || wrap.closest('.folded')) return;
     clampCursor(b);
-    const t = hitTest(b, wrap, e.clientX, e.clientY);
+    const ht = hitTest(b, wrap, e.clientX, e.clientY);
     let h;
     let movable;
     if (state.mode === 'write') {
-      const at = t.inInsert
+      const at = ht.inInsert
         ? state.cursor
-        : t.hit < 0 && t.inAppend && state.cursor == null
+        : ht.hit < 0 && ht.inAppend && state.cursor == null
           ? b.items.length
           : null;
       if (at == null) return;
       const tie = state.input.tie && !state.input.rest;
-      h = insertNote(n, b, t.L, t.g, t.y, at);
+      h = insertNote(n, b, ht.L, ht.g, ht.y, at);
       consumed = true;
       hooks.redraw(b.id);
       if (h < 0) return;
       // Silence, note liée (hauteur imposée), ligne rythmique : rien à glisser.
-      movable = !b.items[h].r && !t.L.rh && !tie;
-      drag = { h, g: t.g, top: t.top, id: e.pointerId, s: b.items[h].s, start: b.items[h].s, fresh: true };
+      movable = !b.items[h].r && !ht.L.rh && !tie;
+      drag = { h, g: ht.g, top: ht.top, id: e.pointerId, s: b.items[h].s, start: b.items[h].s, fresh: true };
     } else {
-      if (t.hit < 0) return;
-      h = chainStart(b.items, t.hit);
-      if (state.sel !== h || b.items[h].r || t.L.rh) return;
+      if (ht.hit < 0) return;
+      h = chainStart(b.items, ht.hit);
+      if (state.sel !== h || b.items[h].r || ht.L.rh) return;
       movable = true;
       consumed = true;
       pushSnapshot(n);
-      drag = { h, g: t.g, top: t.top, id: e.pointerId, s: b.items[h].s, start: b.items[h].s, fresh: false };
-      moveTo(stepFromY(t.g, t.y));
+      drag = { h, g: ht.g, top: ht.top, id: e.pointerId, s: b.items[h].s, start: b.items[h].s, fresh: false };
+      moveTo(stepFromY(ht.g, ht.y));
       audio.previewItem(b, h);
     }
     if (!movable) {

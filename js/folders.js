@@ -39,17 +39,18 @@ export const FOLDER_NAME_MAX = 40;
  * Couleurs proposées pour les dossiers. La couleur réelle vient du thème
  * (variables CSS `--fc-<clé>`, une valeur pour le mode clair et une pour le
  * mode sombre) : on ne stocke que la clé.
- * @type {Array.<{key: string, label: string}>}
+ * Noms des couleurs : clés `color.*` des dictionnaires ({@link module:i18n|i18n}).
+ * @type {Array.<{key: string}>}
  */
 export const FOLDER_COLORS = [
-  { key: 'red', label: 'Rouge' },
-  { key: 'orange', label: 'Orange' },
-  { key: 'yellow', label: 'Jaune' },
-  { key: 'green', label: 'Vert' },
-  { key: 'teal', label: 'Turquoise' },
-  { key: 'blue', label: 'Bleu' },
-  { key: 'purple', label: 'Violet' },
-  { key: 'gray', label: 'Gris' },
+  { key: 'red' },
+  { key: 'orange' },
+  { key: 'yellow' },
+  { key: 'green' },
+  { key: 'teal' },
+  { key: 'blue' },
+  { key: 'purple' },
+  { key: 'gray' },
 ];
 
 /** Clés de couleur valides. */

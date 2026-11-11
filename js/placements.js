@@ -52,6 +52,8 @@
  * - jamais en mesure asymétrique (5/8, 7/8) : chaque groupe reste lisible.
  */
 
+import { t } from './i18n.js';
+
 /**
  * Une mesure proposée à l'entraînement.
  * @typedef {Object} Meter
@@ -190,14 +192,14 @@ export function placementItems(positions, m = METERS[0]) {
   const merged = dot ? { d: 'h', dot: true, r: true } : { d: 'h', r: true };
   const anyPair = cells.length === 3; // 3/4, 9/8
   const items = [];
-  for (let t = 0; t < cells.length; t++) {
-    if (cells[t]) {
-      items.push(...cells[t]);
-    } else if (m.kind !== 'odd' && t + 1 < cells.length && !cells[t + 1] && (anyPair || t % 2 === 0)) {
+  for (let ci = 0; ci < cells.length; ci++) {
+    if (cells[ci]) {
+      items.push(...cells[ci]);
+    } else if (m.kind !== 'odd' && ci + 1 < cells.length && !cells[ci + 1] && (anyPair || ci % 2 === 0)) {
       items.push({ ...merged }); // deux temps vides réunis
-      t++;
+      ci++;
     } else {
-      items.push(rest(m.groups[t]));
+      items.push(rest(m.groups[ci]));
     }
   }
   return items;
@@ -293,13 +295,13 @@ export function startGlyphs(pos, m = METERS[0]) {
  */
 export function startLabel(pos, m = METERS[0]) {
   let off = 0;
-  for (let t = 0; t < m.groups.length; t++) {
+  for (let g = 0; g < m.groups.length; g++) {
     const k = pos - off;
-    if (k < m.groups[t]) {
-      if (m.kind === 'simple') return k ? `${t + 1} et` : `${t + 1}`;
-      return k ? `temps ${t + 1}, ${k + 1}e croche` : `temps ${t + 1}`;
+    if (k < m.groups[g]) {
+      if (m.kind === 'simple') return k ? t('count.and', { n: g + 1 }) : `${g + 1}`;
+      return k ? t('count.beatEighth', { n: g + 1, k: k + 1 }) : t('count.beat', { n: g + 1 });
     }
-    off += m.groups[t];
+    off += m.groups[g];
   }
   return String(pos + 1);
 }

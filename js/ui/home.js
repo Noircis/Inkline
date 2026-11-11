@@ -25,6 +25,7 @@
  *   focus et le clavier reste ouvert).
  */
 
+import { t } from '../i18n.js';
 import { state, app, touch } from './state.js';
 import { esc } from '../util.js';
 import { newNote as makeNote, exampleNote } from '../model.js';
@@ -51,9 +52,6 @@ import { backupDue } from './options.js';
 import { renderNoteList } from './list-view.js';
 import { GEAR, LOUPE, METRONOME } from './icons.js';
 import { openFolderSheet, openCategoriesSheet } from './folder-sheet.js';
-
-/** « 1 note », « 3 notes ». */
-const plural = (k, word) => `${k} ${word}${k > 1 ? 's' : ''}`;
 
 /**
  * Sélection courante de la barre de dossiers. Un dossier supprimé entre-temps
@@ -87,7 +85,7 @@ function currentCategory(folder) {
  */
 function catChipsHtml(folder, cat) {
   const cats = folder.cats || [];
-  const add = `<button type="button" class="chip chip-add" id="addCat" aria-label="Catégories du dossier">+${cats.length ? '' : ' Catégorie'}</button>`;
+  const add = `<button type="button" class="chip chip-add" id="addCat" aria-label="${esc(t('home.catsOfFolder'))}">+${cats.length ? '' : ' ' + esc(t('home.category'))}</button>`;
   if (!cats.length) return add;
   const counts = countByCategory(
     Object.values(state.notes).filter((n) => inSelection(n, folder.id, state.folders)),
@@ -95,9 +93,9 @@ function catChipsHtml(folder, cat) {
   );
   const chip = (key, label) =>
     `<button type="button" class="chip" data-cat="${esc(key)}" aria-pressed="${key === cat}"><span class="chip-name">${label}</span><span class="chip-n">${counts[key] || 0}</span></button>`;
-  let html = chip(ALL_CATS, 'Tout');
+  let html = chip(ALL_CATS, esc(t('home.allCats')));
   cats.forEach((c) => (html += chip(c.id, esc(c.name))));
-  if (counts[NO_CAT]) html += chip(NO_CAT, 'Sans catégorie');
+  if (counts[NO_CAT]) html += chip(NO_CAT, esc(t('home.noCat')));
   return html + add;
 }
 
@@ -143,7 +141,7 @@ function chipsHtml(sel) {
   const folders = sortedFolders(state.folders);
   const chip = (key, label, count, dot = '') =>
     `<button type="button" class="chip" data-sel="${esc(key)}" aria-pressed="${key === sel}">${dot}<span class="chip-name">${label}</span><span class="chip-n">${count}</span></button>`;
-  let html = chip(ALL, 'Toutes', counts[ALL]);
+  let html = chip(ALL, esc(t('home.all')), counts[ALL]);
   folders.forEach((f) => {
     html += chip(
       f.id,
@@ -152,8 +150,8 @@ function chipsHtml(sel) {
       `<span class="fdot fc-${f.color}" aria-hidden="true"></span>`,
     );
   });
-  if (folders.length || sel === UNFILED) html += chip(UNFILED, 'Non classées', counts[UNFILED]);
-  html += `<button type="button" class="chip chip-add" id="addFolder" aria-label="Nouveau dossier">+${folders.length ? '' : ' Dossier'}</button>`;
+  if (folders.length || sel === UNFILED) html += chip(UNFILED, esc(t('home.unfiled')), counts[UNFILED]);
+  html += `<button type="button" class="chip chip-add" id="addFolder" aria-label="${esc(t('home.newFolder'))}">+${folders.length ? '' : ' ' + esc(t('home.folder'))}</button>`;
   return html;
 }
 
@@ -167,7 +165,7 @@ function renderHome() {
   state.sel = null;
   hideAllPalettes();
   const due = backupDue();
-  app.innerHTML = `<header class="top"><div class="grow"><h1 class="brand">Inkline</h1></div><button class="btn icon-btn" id="trainBtn" type="button" aria-label="Entraînement">${METRONOME}</button><button class="btn icon-btn" id="optBtn" type="button" aria-label="${due ? 'Options (sauvegarde conseillée)' : 'Options'}">${GEAR}${due ? '<span class="dot" aria-hidden="true"></span>' : ''}</button><button class="btn primary" id="newNote" type="button">+ Note</button></header>
+  app.innerHTML = `<header class="top"><div class="grow"><h1 class="brand">Inkline</h1></div><button class="btn icon-btn" id="trainBtn" type="button" aria-label="${esc(t('home.training'))}">${METRONOME}</button><button class="btn icon-btn" id="optBtn" type="button" aria-label="${esc(due ? t('home.optionsBackup') : t('home.options'))}">${GEAR}${due ? '<span class="dot" aria-hidden="true"></span>' : ''}</button><button class="btn primary" id="newNote" type="button">${esc(t('home.newNoteBtn'))}</button></header>
   <div id="homeBody"></div>`;
   app.querySelector('#optBtn').onclick = () => go('options');
   app.querySelector('#trainBtn').onclick = () => go('training');
@@ -180,10 +178,10 @@ function renderHome() {
   }
 
   const sel = currentSelection();
-  body.innerHTML = `<div class="search"><span class="search-ico">${LOUPE}</span><input type="search" id="q" placeholder="Rechercher titres, textes, accords" autocomplete="off" spellcheck="false" enterkeyhint="search" aria-label="Rechercher"><button type="button" class="search-clear" id="qClear" aria-label="Effacer la recherche" hidden>&times;</button></div>
-  <nav class="chips" id="chips" aria-label="Dossiers">${chipsHtml(sel)}</nav>
-  ${state.folders[sel] ? `<nav class="chips cat-chips" id="catChips" aria-label="Catégories">${catChipsHtml(state.folders[sel], currentCategory(state.folders[sel]))}</nav>` : ''}
-  <div class="listbar"><span class="listbar-lbl" id="listLbl"></span><button type="button" class="btn ghost small" id="editFolder" hidden>Modifier</button><div class="grow"></div><label class="sort"><span class="sr">Trier</span><select id="sortSel">${SORT_MODES.map((m) => `<option value="${m.key}">${esc(m.label)}</option>`).join('')}</select></label></div>
+  body.innerHTML = `<div class="search"><span class="search-ico">${LOUPE}</span><input type="search" id="q" placeholder="${esc(t('home.searchPlaceholder'))}" autocomplete="off" spellcheck="false" enterkeyhint="search" aria-label="${esc(t('home.search'))}"><button type="button" class="search-clear" id="qClear" aria-label="${esc(t('home.clearSearch'))}" hidden>&times;</button></div>
+  <nav class="chips" id="chips" aria-label="${esc(t('home.folders'))}">${chipsHtml(sel)}</nav>
+  ${state.folders[sel] ? `<nav class="chips cat-chips" id="catChips" aria-label="${esc(t('home.categories'))}">${catChipsHtml(state.folders[sel], currentCategory(state.folders[sel]))}</nav>` : ''}
+  <div class="listbar"><span class="listbar-lbl" id="listLbl"></span><button type="button" class="btn ghost small" id="editFolder" hidden>${esc(t('common.edit'))}</button><div class="grow"></div><label class="sort"><span class="sr">${esc(t('home.sort'))}</span><select id="sortSel">${SORT_MODES.map((m) => `<option value="${m.key}">${esc(t('sort.' + m.key))}</option>`).join('')}</select></label></div>
   <div id="listBody"></div>`;
 
   const q = /** @type {HTMLInputElement} */ (body.querySelector('#q'));
@@ -283,13 +281,13 @@ function refreshResults() {
   );
 
   const catName =
-    cat === NO_CAT ? 'Sans catégorie' : cat !== ALL_CATS ? folder.cats.find((c) => c.id === cat).name : '';
+    cat === NO_CAT ? t('home.noCat') : cat !== ALL_CATS ? folder.cats.find((c) => c.id === cat).name : '';
   const lbl = app.querySelector('#listLbl');
   lbl.textContent = searching
-    ? `${plural(notes.length, 'résultat')} dans toutes les notes`
+    ? t('home.results', { n: notes.length })
     : sel === ALL
-      ? plural(notes.length, 'note')
-      : `${folder ? folder.name : 'Non classées'}${catName ? ' › ' + catName : ''} · ${plural(notes.length, 'note')}`;
+      ? t('home.noteCount', { n: notes.length })
+      : `${folder ? folder.name : t('home.unfiled')}${catName ? ' › ' + catName : ''} · ${t('home.noteCount', { n: notes.length })}`;
   /** @type {HTMLElement} */ (app.querySelector('#editFolder')).hidden = searching || !folder;
   /** @type {HTMLElement} */ (app.querySelector('#qClear')).hidden = !state.query;
   app.querySelector('#chips').classList.toggle('dim', searching);
@@ -328,7 +326,7 @@ function renderSections(body, notes, folder, listOpt) {
     const folded = !!(getMeta().catFold || {})[key];
     const sec = document.createElement('section');
     sec.className = 'cat-sec';
-    sec.innerHTML = `<button type="button" class="cat-head" aria-expanded="${!folded}"><span class="drill-chev" aria-hidden="true"></span><span class="cat-title">${esc(cat ? cat.name : 'Sans catégorie')}</span><span class="cat-count">${list.length}</span></button><div class="cat-body"${folded ? ' hidden' : ''}></div>`;
+    sec.innerHTML = `<button type="button" class="cat-head" aria-expanded="${!folded}"><span class="drill-chev" aria-hidden="true"></span><span class="cat-title">${esc(cat ? cat.name : t('home.noCat'))}</span><span class="cat-count">${list.length}</span></button><div class="cat-body"${folded ? ' hidden' : ''}></div>`;
     body.appendChild(sec);
     const inner = /** @type {HTMLElement} */ (sec.querySelector('.cat-body'));
     let drawn = false;
@@ -361,10 +359,9 @@ function renderSections(body, notes, folder, listOpt) {
  */
 function emptyHtml(searching, sel, query) {
   if (searching)
-    return `<div class="empty-mini"><p>Aucune note ne contient « ${esc(query)} ».</p><p class="hint">La recherche porte sur les titres, les textes et les accords.</p></div>`;
-  if (sel === UNFILED)
-    return '<div class="empty-mini"><p>Toutes tes notes sont rangées dans des dossiers.</p></div>';
-  return `<div class="empty-mini"><p>${sel === ALL ? 'Aucune note pour l’instant.' : 'Ce dossier est vide.'}</p><button class="btn primary" id="emptyNew" type="button">${sel === ALL ? 'Nouvelle note' : 'Nouvelle note ici'}</button></div>`;
+    return `<div class="empty-mini"><p>${esc(t('home.noResult', { q: query }))}</p><p class="hint">${esc(t('home.searchHint'))}</p></div>`;
+  if (sel === UNFILED) return `<div class="empty-mini"><p>${esc(t('home.allFiled'))}</p></div>`;
+  return `<div class="empty-mini"><p>${esc(sel === ALL ? t('home.emptyAll') : t('home.emptyFolder'))}</p><button class="btn primary" id="emptyNew" type="button">${esc(sel === ALL ? t('home.newNote') : t('home.newNoteHere'))}</button></div>`;
 }
 
 /**
@@ -373,7 +370,7 @@ function emptyHtml(searching, sel, query) {
  */
 function renderOnboarding(body) {
   const ex = exampleNote();
-  body.innerHTML = `<div class="empty"><div class="eyebrow">Aperçu</div><h2>Notez une idée en trois touchers</h2><p>Écrivez du texte, insérez une portée, une ligne rythmique ou une grille d'accords, puis touchez la portée pour poser les notes. Liaisons, triolets, accords chiffrés et lecture audio inclus.</p><div class="thumb" id="emptyThumb"></div><div class="actions"><button class="btn primary" id="newNote2" type="button">Nouvelle note</button><button class="btn" id="tryEx" type="button">Ouvrir l'exemple</button></div></div>`;
+  body.innerHTML = `<div class="empty"><div class="eyebrow">${esc(t('onboard.eyebrow'))}</div><h2>${esc(t('onboard.title'))}</h2><p>${esc(t('onboard.text'))}</p><div class="thumb" id="emptyThumb"></div><div class="actions"><button class="btn primary" id="newNote2" type="button">${esc(t('home.newNote'))}</button><button class="btn" id="tryEx" type="button">${esc(t('onboard.example'))}</button></div></div>`;
   requestAnimationFrame(() => {
     const el = body.querySelector('#emptyThumb');
     if (el) el.innerHTML = staffSvg(ex.blocks[1], el.clientWidth || 320).svg;

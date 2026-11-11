@@ -34,6 +34,7 @@
  *   encore servir à faire défiler).
  */
 
+import { t } from '../i18n.js';
 import * as audio from '../audio.js';
 import { geom } from '../layout.js';
 
@@ -73,11 +74,11 @@ let bar = null;
  */
 export function clearMeasureSelect() {
   if (!cur) return;
-  const { wrap, t, mine } = cur;
+  const { wrap, t: tg, mine } = cur;
   cur = null;
   wrap.querySelectorAll('.msel-box').forEach((x) => x.remove());
   if (bar) bar.hidden = true;
-  if (mine && audio.isPlaying(t.playId())) audio.stop();
+  if (mine && audio.isPlaying(tg.playId())) audio.stop();
 }
 
 /**
@@ -100,9 +101,9 @@ export function refreshMeasureSelect(wrap) {
 
 /** Dessine le cadre autour des mesures sélectionnées. */
 function drawBoxes() {
-  const { wrap, t, a, b } = cur;
+  const { wrap, t: tg, a, b } = cur;
   wrap.querySelectorAll('.msel-box').forEach((x) => x.remove());
-  const boxes = t.boxes(a, b);
+  const boxes = tg.boxes(a, b);
   if (!boxes.length) {
     clearMeasureSelect(); // la mesure n'existe plus (bloc modifié)
     return;
@@ -120,23 +121,22 @@ function makeBar() {
   bar = document.createElement('div');
   bar.className = 'msel-bar';
   bar.setAttribute('role', 'toolbar');
-  bar.setAttribute('aria-label', 'Mesures sélectionnées');
-  bar.innerHTML =
-    '<button type="button" class="btn primary" data-msel="go"></button><button type="button" class="btn ghost" data-msel="close" aria-label="Fermer la sélection">&#10005;</button>';
+  bar.setAttribute('aria-label', t('sel.label'));
+  bar.innerHTML = `<button type="button" class="btn primary" data-msel="go"></button><button type="button" class="btn ghost" data-msel="close" aria-label="${t('sel.close')}">&#10005;</button>`;
   bar.hidden = true;
   document.body.appendChild(bar);
   bar.querySelector('[data-msel=close]').addEventListener('click', clearMeasureSelect);
   bar.querySelector('[data-msel=go]').addEventListener('click', () => {
     if (!cur) return;
-    const { t, a, b } = cur;
-    if (cur.mine && audio.isPlaying(t.playId())) {
+    const { t: tg, a, b } = cur;
+    if (cur.mine && audio.isPlaying(tg.playId())) {
       audio.stop();
       return;
     }
     audio.stop();
     cur.mine = true;
     // Une mesure : jusqu'à la fin ; plusieurs : le passage en boucle.
-    t.play(a, a === b ? Infinity : b, a !== b, updateBar);
+    tg.play(a, a === b ? Infinity : b, a !== b, updateBar);
     updateBar();
   });
 }
@@ -147,7 +147,11 @@ function updateBar() {
   const go = bar.querySelector('[data-msel=go]');
   const on = cur.mine && audio.isPlaying(cur.t.playId());
   go.classList.toggle('on', on);
-  go.innerHTML = on ? '&#9632; Stop' : cur.a === cur.b ? '&#9654; Jouer d’ici' : '&#128257; Boucle';
+  go.textContent = on
+    ? '■ ' + t('play.stop')
+    : cur.a === cur.b
+      ? '▶ ' + t('sel.playFrom')
+      : '🔁 ' + t('play.loop');
 }
 
 /** Place la barre au-dessus de la sélection (en dessous s'il n'y a pas la place). */
@@ -172,9 +176,9 @@ function placeBar() {
 /**
  * Rend une zone sélectionnable à l'appui long.
  * @param {HTMLElement} wrap Élément de la zone (doit être en `position: relative`).
- * @param {SelectTarget} t
+ * @param {SelectTarget} tg
  */
-export function bindMeasureSelect(wrap, t) {
+export function bindMeasureSelect(wrap, tg) {
   wrap.classList.add('msel-zone');
   /** Appui en attente : position de départ et minuterie. */
   let press = null;
@@ -189,8 +193,8 @@ export function bindMeasureSelect(wrap, t) {
   wrap.addEventListener('pointerdown', (e) => {
     cancel();
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    if (t.skip && t.skip(e)) return;
-    const m = t.measureAt(e.clientX, e.clientY);
+    if (tg.skip && tg.skip(e)) return;
+    const m = tg.measureAt(e.clientX, e.clientY);
     if (m == null) return;
     const id = e.pointerId;
     press = {
@@ -202,7 +206,7 @@ export function bindMeasureSelect(wrap, t) {
         // Armé : nouvelle sélection, la lecture en cours s'arrête.
         clearMeasureSelect();
         audio.stop();
-        cur = { wrap, t, a: m, b: m, anchor: m, mine: false };
+        cur = { wrap, t: tg, a: m, b: m, anchor: m, mine: false };
         armed = true;
         swallowClick = true;
         try {
@@ -224,7 +228,7 @@ export function bindMeasureSelect(wrap, t) {
   wrap.addEventListener('pointermove', (e) => {
     if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > SLOP) cancel();
     if (!armed || !cur) return;
-    const m = t.measureAt(e.clientX, e.clientY);
+    const m = tg.measureAt(e.clientX, e.clientY);
     if (m == null) return;
     const a = Math.min(cur.anchor, m);
     const b = Math.max(cur.anchor, m);

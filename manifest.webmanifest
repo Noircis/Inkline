@@ -1,8 +1,8 @@
 {
   "name": "Inkline",
   "short_name": "Inkline",
-  "description": "Carnet de notes musicales : texte, portées, rythmes et grilles d'accords.",
-  "lang": "fr",
+  "description": "Music notebook: text, staves, rhythms and chord charts.",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

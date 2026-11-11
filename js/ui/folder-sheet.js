@@ -14,6 +14,7 @@
  * ({@link openArrangeSheet}) : dossier et catégories d'une note.
  */
 
+import { t } from '../i18n.js';
 import { state, app } from './state.js';
 import { esc, uid } from '../util.js';
 import {
@@ -41,19 +42,19 @@ import { confirmTap } from './common.js';
  */
 function sheetHtml(editing, color) {
   return `<form class="sheet" role="dialog" aria-modal="true" aria-labelledby="fsTitle" novalidate>
-    <h2 id="fsTitle">${editing ? 'Modifier le dossier' : 'Nouveau dossier'}</h2>
-    <label class="fs-lbl" for="fsName">Nom</label>
-    <input id="fsName" type="text" maxlength="${FOLDER_NAME_MAX}" autocomplete="off" placeholder="Harmonie, Répertoire, Cours de piano…">
-    <div class="fs-lbl" id="fsColorLbl">Couleur</div>
+    <h2 id="fsTitle">${esc(editing ? t('folder.edit') : t('home.newFolder'))}</h2>
+    <label class="fs-lbl" for="fsName">${esc(t('folder.name'))}</label>
+    <input id="fsName" type="text" maxlength="${FOLDER_NAME_MAX}" autocomplete="off" placeholder="${esc(t('folder.namePlaceholder'))}">
+    <div class="fs-lbl" id="fsColorLbl">${esc(t('folder.color'))}</div>
     <div class="swatches" role="radiogroup" aria-labelledby="fsColorLbl">${FOLDER_COLORS.map(
       (c) =>
-        `<button type="button" role="radio" class="swatch fc-${c.key}" data-color="${c.key}" aria-checked="${c.key === color}" aria-label="${esc(c.label)}"></button>`,
+        `<button type="button" role="radio" class="swatch fc-${c.key}" data-color="${c.key}" aria-checked="${c.key === color}" aria-label="${esc(t('color.' + c.key))}"></button>`,
     ).join('')}</div>
     <div class="sheet-actions">
-      ${editing ? '<button class="btn ghost danger" id="fsDel" type="button">Supprimer</button>' : ''}
+      ${editing ? `<button class="btn ghost danger" id="fsDel" type="button">${esc(t('common.delete'))}</button>` : ''}
       <div class="grow"></div>
-      <button class="btn" id="fsCancel" type="button">Annuler</button>
-      <button class="btn primary" id="fsSave" type="submit">${editing ? 'Enregistrer' : 'Créer'}</button>
+      <button class="btn" id="fsCancel" type="button">${esc(t('common.cancel'))}</button>
+      <button class="btn primary" id="fsSave" type="submit">${esc(editing ? t('common.save') : t('folder.create'))}</button>
     </div>
     <p class="fs-msg" id="fsMsg" role="status"></p>
   </form>`;
@@ -69,7 +70,7 @@ function sheetHtml(editing, color) {
 function bindDelete(back, folder, close) {
   const del = /** @type {HTMLButtonElement} */ (back.querySelector('#fsDel'));
   const count = Object.values(state.notes).filter((n) => n.folder === folder.id).length;
-  const armed = count ? `Supprimer (${count} note${count > 1 ? 's' : ''} → Non classées)` : 'Confirmer';
+  const armed = count ? t('folder.deleteArmed', { n: count }) : t('common.confirm');
   del.addEventListener('click', () =>
     confirmTap(del, armed, () => {
       deleteFolder(folder.id, state.notes, state.folders);
@@ -117,7 +118,7 @@ export function openFolderSheet(folder, onDone = () => {}) {
     e.preventDefault();
     const clean = cleanFolderName(name.value);
     if (!clean) {
-      back.querySelector('#fsMsg').textContent = 'Donne un nom au dossier.';
+      back.querySelector('#fsMsg').textContent = t('folder.needName');
       name.focus();
       return;
     }
@@ -172,24 +173,24 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
 
   const render = () => {
     back.innerHTML = `<form class="sheet" role="dialog" aria-modal="true" aria-labelledby="csTitle" novalidate>
-      <h2 id="csTitle">Catégories de « ${esc(folder.name)} »</h2>
+      <h2 id="csTitle">${esc(t('cats.title', { name: folder.name }))}</h2>
       <ul class="cat-list">${work
         .map(
           (c, k) => `<li class="cat-row" data-k="${k}">
-          <input type="text" class="cat-name" maxlength="${CAT_NAME_MAX}" value="${esc(c.name)}" aria-label="Nom de la catégorie ${k + 1}">
-          <span class="cat-n" title="Notes">${c.id ? counts[c.id] || 0 : 0}</span>
-          <button type="button" class="btn ghost small" data-move="-1" aria-label="Monter"${k ? '' : ' disabled'}>&#8593;</button>
-          <button type="button" class="btn ghost small" data-move="1" aria-label="Descendre"${k < work.length - 1 ? '' : ' disabled'}>&#8595;</button>
-          <button type="button" class="btn ghost small danger" data-del aria-label="Supprimer">&#10005;</button>
+          <input type="text" class="cat-name" maxlength="${CAT_NAME_MAX}" value="${esc(c.name)}" aria-label="${esc(t('cats.nameN', { n: k + 1 }))}">
+          <span class="cat-n" title="${esc(t('note.back'))}">${c.id ? counts[c.id] || 0 : 0}</span>
+          <button type="button" class="btn ghost small" data-move="-1" aria-label="${esc(t('common.moveUp'))}"${k ? '' : ' disabled'}>&#8593;</button>
+          <button type="button" class="btn ghost small" data-move="1" aria-label="${esc(t('common.moveDown'))}"${k < work.length - 1 ? '' : ' disabled'}>&#8595;</button>
+          <button type="button" class="btn ghost small danger" data-del aria-label="${esc(t('common.delete'))}">&#10005;</button>
         </li>`,
         )
         .join('')}</ul>
-      <div class="cat-add"><input type="text" id="csNew" maxlength="${CAT_NAME_MAX}" autocomplete="off" placeholder="Nouvelle catégorie" enterkeyhint="done"><button type="button" class="btn" id="csAdd">Ajouter</button></div>
-      <p class="hint">Une note peut avoir plusieurs catégories. Supprimer une catégorie ne supprime aucune note.</p>
+      <div class="cat-add"><input type="text" id="csNew" maxlength="${CAT_NAME_MAX}" autocomplete="off" placeholder="${esc(t('cats.new'))}" enterkeyhint="done"><button type="button" class="btn" id="csAdd">${esc(t('common.add'))}</button></div>
+      <p class="hint">${esc(t('cats.hint'))}</p>
       <div class="sheet-actions">
         <div class="grow"></div>
-        <button class="btn" id="csCancel" type="button">Annuler</button>
-        <button class="btn primary" type="submit">Enregistrer</button>
+        <button class="btn" id="csCancel" type="button">${esc(t('common.cancel'))}</button>
+        <button class="btn primary" type="submit">${esc(t('common.save'))}</button>
       </div>
     </form>`;
     const rows = back.querySelectorAll('.cat-row');
@@ -207,7 +208,7 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
       const del = /** @type {HTMLButtonElement} */ (row.querySelector('[data-del]'));
       const n = work[k].id ? counts[work[k].id] || 0 : 0;
       del.addEventListener('click', () =>
-        confirmTap(del, n ? `Retirer de ${n} note${n > 1 ? 's' : ''}` : 'Confirmer', () => {
+        confirmTap(del, n ? t('cats.removeFrom', { n }) : t('common.confirm'), () => {
           work.splice(k, 1);
           render();
         }),
@@ -304,23 +305,25 @@ export function openArrangeSheet(note, onChange) {
     const mine = new Set(note.cats || []);
     const radio = (id, label, dot) =>
       `<button type="button" class="ar-folder" role="radio" data-folder="${esc(id)}" aria-checked="${(id || null) === cur}">${dot}<span>${label}</span></button>`;
-    let list = radio('', 'Non classée', '<span class="fdot none" aria-hidden="true"></span>');
+    let list = radio('', esc(t('note.unfiled')), '<span class="fdot none" aria-hidden="true"></span>');
     folders.forEach((f) => {
       list += radio(f.id, esc(f.name), `<span class="fdot fc-${f.color}" aria-hidden="true"></span>`);
       if (f.id !== cur) return;
-      list += `<div class="ar-cats" role="group" aria-label="Catégories de ${esc(f.name)}">${(f.cats || [])
+      list += `<div class="ar-cats" role="group" aria-label="${esc(t('cats.title', { name: f.name }))}">${(
+        f.cats || []
+      )
         .map(
           (c) =>
             `<button type="button" class="chip" data-cat="${esc(c.id)}" aria-pressed="${mine.has(c.id)}">${esc(c.name)}</button>`,
         )
         .join(
           '',
-        )}<form class="ar-new" id="arNewForm"><input type="text" id="arNew" maxlength="${CAT_NAME_MAX}" autocomplete="off" placeholder="Nouvelle catégorie" enterkeyhint="done" aria-label="Nouvelle catégorie"><button type="submit" class="btn small">Ajouter</button></form></div>`;
+        )}<form class="ar-new" id="arNewForm"><input type="text" id="arNew" maxlength="${CAT_NAME_MAX}" autocomplete="off" placeholder="${esc(t('cats.new'))}" enterkeyhint="done" aria-label="${esc(t('cats.new'))}"><button type="submit" class="btn small">${esc(t('common.add'))}</button></form></div>`;
     });
     back.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="arTitle">
-      <div class="ar-head"><h2 id="arTitle">Ranger la note</h2><button type="button" class="btn primary" id="arDone">Fini</button></div>
+      <div class="ar-head"><h2 id="arTitle">${esc(t('arrange.title'))}</h2><button type="button" class="btn primary" id="arDone">${esc(t('common.finish'))}</button></div>
       <div class="ar-list" role="radiogroup" aria-labelledby="arTitle">${list}</div>
-      <button type="button" class="btn ghost" id="arNewFolder">+ Nouveau dossier</button>
+      <button type="button" class="btn ghost" id="arNewFolder">+ ${esc(t('home.newFolder'))}</button>
     </div>`;
     back.querySelectorAll('[data-folder]').forEach((b) =>
       b.addEventListener('click', () => {

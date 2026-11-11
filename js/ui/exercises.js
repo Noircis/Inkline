@@ -14,6 +14,7 @@
  * revenir sur l'écran redonne le même.
  */
 
+import { t } from '../i18n.js';
 import { app } from './state.js';
 import { esc } from '../util.js';
 import { getMeta, setMeta, GEN_DEFAULTS } from '../storage.js';
@@ -75,7 +76,7 @@ function startsFor(m) {
  * @returns {string}
  */
 const stepper = (key, label, value) =>
-  `<span class="stepper" role="group" aria-label="${esc(label)}"><button type="button" class="btn" data-step="${key}" data-d="-1" aria-label="${esc(label)} : moins">&minus;</button><output id="v_${key}">${value}</output><button type="button" class="btn" data-step="${key}" data-d="1" aria-label="${esc(label)} : plus">+</button></span>`;
+  `<span class="stepper" role="group" aria-label="${esc(label)}"><button type="button" class="btn" data-step="${key}" data-d="-1" aria-label="${esc(label + ' : ' + t('ex.less'))}">&minus;</button><output id="v_${key}">${value}</output><button type="button" class="btn" data-step="${key}" data-d="1" aria-label="${esc(label + ' : ' + t('ex.more'))}">+</button></span>`;
 
 /**
  * Écran des réglages.
@@ -86,30 +87,30 @@ function renderGen() {
   const g = gen();
   const m = meterOf(g.meter);
   const starts = new Set(startsFor(m));
-  app.innerHTML = `${header('Entraînement', 'Exercices')}
+  app.innerHTML = `${header(t('home.training'), t('ex.title'))}
   <section class="opt">
-    <h2 class="eyebrow">Mesure</h2>
+    <h2 class="eyebrow">${esc(t('staff.time'))}</h2>
     ${meterChips(m.key)}
-    <h2 class="eyebrow">Longueur</h2>
-    <div class="seg seg-sm" role="radiogroup" aria-label="Longueur">${[1, 2, 4]
+    <h2 class="eyebrow">${esc(t('ex.length'))}</h2>
+    <div class="seg seg-sm" role="radiogroup" aria-label="${esc(t('ex.length'))}">${[1, 2, 4]
       .map(
         (n) =>
-          `<button type="button" role="radio" data-len="${n}" aria-checked="${n === g.measures}">${n} mesure${n > 1 ? 's' : ''}</button>`,
+          `<button type="button" role="radio" data-len="${n}" aria-checked="${n === g.measures}">${esc(t('train.bars', { n }))}</button>`,
       )
       .join('')}</div>
-    <h2 class="eyebrow">Notes par mesure</h2>
-    <div class="drill-row gen-range"><span class="drill-lbl">de</span>${stepper('min', 'Au moins', g.min)}<span class="drill-lbl">à</span>${stepper('max', 'Au plus', g.max)}</div>
-    <h2 class="eyebrow">Première note de chaque mesure</h2>
-    <div class="starts" role="group" aria-label="Positions permises pour la première note">${Array.from(
+    <h2 class="eyebrow">${esc(t('train.notesPerBar'))}</h2>
+    <div class="drill-row gen-range"><span class="drill-lbl">${esc(t('ex.from'))}</span>${stepper('min', t('ex.atLeast'), g.min)}<span class="drill-lbl">${esc(t('ex.to'))}</span>${stepper('max', t('ex.atMost'), g.max)}</div>
+    <h2 class="eyebrow">${esc(t('ex.firstNote'))}</h2>
+    <div class="starts" role="group" aria-label="${esc(t('ex.firstNoteLabel'))}">${Array.from(
       { length: slotsOf(m) },
       (_, p) =>
         `<button type="button" data-start="${p}" aria-pressed="${starts.has(p)}" aria-label="Sur ${esc(startLabel(p, m))}"><span class="mus" aria-hidden="true">${startGlyphs(p, m)}</span></button>`,
     ).join('')}</div>
-    <p class="hint" id="startsHint" hidden>Gardez au moins une position.</p>
+    <p class="hint" id="startsHint" hidden>${esc(t('ex.keepOne'))}</p>
     <p class="hint" id="fewHint" hidden></p>
-    <h2 class="eyebrow">Subdivision</h2>
+    <h2 class="eyebrow">${esc(t('train.subdivision'))}</h2>
     ${subdivisionSeg()}
-    <button type="button" class="btn primary wide" id="genGo">Générer l’exercice</button>
+    <button type="button" class="btn primary wide" id="genGo">${esc(t('ex.generate'))}</button>
   </section>`;
 
   app.querySelector('#back').addEventListener('click', backToList);
@@ -191,10 +192,7 @@ function updateFewHint() {
   const s = exerciseSettings();
   const n = candidates(s).length;
   el.hidden = n >= s.measures;
-  el.textContent =
-    n === 1
-      ? 'Ces réglages ne donnent qu’une seule mesure possible : elle sera répétée.'
-      : `Ces réglages ne donnent que ${n} mesures différentes : certaines reviendront.`;
+  el.textContent = n === 1 ? t('ex.onlyOne') : t('ex.onlyN', { n });
 }
 
 /** Bloc de l'exercice affiché. */
@@ -219,19 +217,19 @@ function renderGenPlay() {
   const s = settings();
   const m = meterOf(g.meter);
   block = buildBlock();
-  const range = g.min === g.max ? `${g.min}` : `${g.min} à ${g.max}`;
-  app.innerHTML = `${header('Réglages', `Exercice n° ${g.seed}`, '<button type="button" class="btn icon-btn" id="reroll" aria-label="Nouvel exercice">&#8635;</button>')}
-  <p class="gen-info">${esc(m.label)} · ${g.measures} mesure${g.measures > 1 ? 's' : ''} · ${range} note${g.max > 1 ? 's' : ''} par mesure</p>
+  const range = g.min === g.max ? `${g.min}` : t('ex.range', { a: g.min, b: g.max });
+  app.innerHTML = `${header(t('ex.settings'), t('ex.number', { n: g.seed }), `<button type="button" class="btn icon-btn" id="reroll" aria-label="${esc(t('ex.new'))}">&#8635;</button>`)}
+  <p class="gen-info">${esc(m.label)} · ${esc(t('train.bars', { n: g.measures }))} · ${esc(t('ex.notesPerBar', { r: range, n: g.max }))}</p>
   <div class="gen-staff" id="genStaff"></div>
   <div class="transport">
     <div class="metro-panel" id="metroPanel" hidden>${metronomeControls(m)}</div>
     <div class="transport-bar">
-      <button type="button" class="btn" data-tempo="-5" aria-label="Plus lent">&minus;</button>${tempoField(s.tempo)}<button type="button" class="btn" data-tempo="5" aria-label="Plus vite">+</button>
+      <button type="button" class="btn" data-tempo="-5" aria-label="${esc(t('ex.slower'))}">&minus;</button>${tempoField(s.tempo)}<button type="button" class="btn" data-tempo="5" aria-label="${esc(t('ex.faster'))}">+</button>
       ${toggle('swing', 'Swing', s.swing, m.kind !== 'simple')}
-      ${toggle('loop', 'Boucle', s.loop)}
-      <button type="button" class="btn icon-btn" id="metroBtn" aria-expanded="false" aria-controls="metroPanel" aria-label="Métronome">&#9881;</button>
+      ${toggle('loop', t('play.loop'), s.loop)}
+      <button type="button" class="btn icon-btn" id="metroBtn" aria-expanded="false" aria-controls="metroPanel" aria-label="${esc(t('train.metronome'))}">&#9881;</button>
     </div>
-    <button type="button" class="playbtn big" data-play="${PLAY_ID}">&#9654; Écouter</button>
+    <button type="button" class="playbtn big" data-play="${PLAY_ID}">&#9654; ${esc(t('play.listen'))}</button>
   </div>`;
 
   app.querySelector('#back').addEventListener('click', backToList);

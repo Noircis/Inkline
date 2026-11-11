@@ -16,6 +16,7 @@
  *
  * ```
  * main
+ *  ├─ lang-init ───── i18n ── locales/en, locales/fr   (importé en premier)
  *  ├─ ui/home ─────┬─ ui/list-view       (affichages de la liste)
  *  │               ├─ ui/folder-sheet    (éditeur de dossier)
  *  │               └─ ui/options         (rappel de sauvegarde)
@@ -46,6 +47,8 @@
  * sont purs, sans DOM, et testés sous Node (`npm test`).
  */
 
+// En premier : la langue doit être fixée avant que les écrans fabriquent leurs libellés.
+import './lang-init.js';
 import { state, app } from './ui/state.js';
 import { loadAll, flushSave, requestPersistence, getMeta, setMeta } from './storage.js';
 import { renderScreen, onHistoryBack } from './ui/nav.js';

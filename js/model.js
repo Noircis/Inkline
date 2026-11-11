@@ -31,6 +31,7 @@
  * calculée à la demande par {@link module:pitch|pitch}.
  */
 
+import { t } from './i18n.js';
 import { uid } from './util.js';
 
 /**
@@ -217,8 +218,8 @@ export function beatUnit(time) {
  * Un instrument transpositeur (2.8.3) : de combien sa partie est écrite
  * au-dessus du son réel.
  * @typedef {Object} Instrument
- * @property {string} key Identifiant enregistré dans la portée (`b.tr`).
- * @property {string} label Libellé du menu.
+ * @property {string} key Identifiant enregistré dans la portée (`b.tr`) ; libellé : clé
+ *   `instr.<key>` des dictionnaires ({@link module:i18n|i18n}).
  * @property {string} tag Étiquette affichée sur la portée (vide en ut).
  * @property {number} steps Écart écrit − réel, en degrés (lignes et interlignes).
  * @property {number} semis Écart écrit − réel, en demi-tons.
@@ -231,13 +232,13 @@ export function beatUnit(time) {
  * @type {ReadonlyArray.<Instrument>}
  */
 export const INSTRUMENTS = Object.freeze([
-  { key: 'C', label: 'En ut', tag: '', steps: 0, semis: 0 },
-  { key: 'Bb', label: 'Si♭', tag: 'B♭', steps: 1, semis: 2 },
-  { key: 'Bb8', label: 'Si♭ ténor', tag: 'B♭', steps: 8, semis: 14 },
-  { key: 'Eb', label: 'Mi♭ alto', tag: 'E♭', steps: 5, semis: 9 },
-  { key: 'Eb8', label: 'Mi♭ baryton', tag: 'E♭', steps: 12, semis: 21 },
-  { key: 'F', label: 'Fa', tag: 'F', steps: 4, semis: 7 },
-  { key: 'G', label: 'Sol', tag: 'G', steps: 3, semis: 5 },
+  { key: 'C', tag: '', steps: 0, semis: 0 },
+  { key: 'Bb', tag: 'B♭', steps: 1, semis: 2 },
+  { key: 'Bb8', tag: 'B♭', steps: 8, semis: 14 },
+  { key: 'Eb', tag: 'E♭', steps: 5, semis: 9 },
+  { key: 'Eb8', tag: 'E♭', steps: 12, semis: 21 },
+  { key: 'F', tag: 'F', steps: 4, semis: 7 },
+  { key: 'G', tag: 'G', steps: 3, semis: 5 },
 ]);
 
 /**
@@ -376,14 +377,14 @@ export function newGridBlock() {
 export function exampleNote() {
   return {
     id: uid(),
-    title: 'Exemple · motif sur Bb blues',
+    title: t('example.title'),
     created: Date.now(),
     updated: Date.now(),
     blocks: [
       {
         id: uid(),
         type: 'text',
-        text: 'Motif de deux mesures, à développer en question / réponse. Essayer plus lent.',
+        text: t('example.text'),
       },
       {
         id: uid(),
@@ -410,7 +411,7 @@ export function exampleNote() {
           { d: 'h', r: true, bar: 'final' },
         ],
       },
-      { id: uid(), type: 'text', text: 'Cellule rythmique pour la relance :' },
+      { id: uid(), type: 'text', text: t('example.rhythm') },
       {
         id: uid(),
         type: 'staff',

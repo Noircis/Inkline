@@ -9,6 +9,7 @@
  * {@link module:ui/exercises|ui/exercises} (exercices aléatoires).
  */
 
+import { t } from '../i18n.js';
 import { esc } from '../util.js';
 import { getMeta, setMeta, DRILL_DEFAULTS } from '../storage.js';
 import { METERS } from '../placements.js';
@@ -16,9 +17,9 @@ import * as audio from '../audio.js';
 
 /** Subdivisions proposées (seules les croches sont disponibles pour l'instant). */
 export const SUBDIVISIONS = [
-  { key: '8', label: 'Croches', ready: true },
-  { key: '16', label: 'Doubles', ready: false },
-  { key: '3', label: 'Triolets', ready: false },
+  { key: '8', ready: true },
+  { key: '16', ready: false },
+  { key: '3', ready: false },
 ];
 
 /**
@@ -82,7 +83,7 @@ export function playOptions(m, loop = false) {
  * @returns {string}
  */
 export function meterChips(selected) {
-  return `<div class="meters" role="radiogroup" aria-label="Mesure">${METERS.map((m) => {
+  return `<div class="meters" role="radiogroup" aria-label="${esc(t('staff.time'))}">${METERS.map((m) => {
     const sub = m.kind === 'odd' ? `<small>${m.groups.join('+')}</small>` : '';
     return `<button type="button" role="radio" data-meter="${m.key}" aria-checked="${m.key === selected}" aria-label="${esc(m.label)}">${m.time}${sub}</button>`;
   }).join('')}</div>`;
@@ -93,9 +94,9 @@ export function meterChips(selected) {
  * @returns {string}
  */
 export function subdivisionSeg() {
-  return `<div class="seg seg-sm" role="radiogroup" aria-label="Subdivision">${SUBDIVISIONS.map(
+  return `<div class="seg seg-sm" role="radiogroup" aria-label="${esc(t('train.subdivision'))}">${SUBDIVISIONS.map(
     (d) =>
-      `<button type="button" role="radio" aria-checked="${d.key === '8'}"${d.ready ? '' : ' disabled'}>${esc(d.label)}${d.ready ? '' : '<small>bientôt</small>'}</button>`,
+      `<button type="button" role="radio" aria-checked="${d.key === '8'}"${d.ready ? '' : ' disabled'}>${esc(t('sub.' + d.key))}${d.ready ? '' : `<small>${esc(t('sub.soon'))}</small>`}</button>`,
   ).join('')}</div>`;
 }
 
@@ -108,7 +109,7 @@ export function subdivisionSeg() {
  * @returns {string}
  */
 export const toggle = (key, label, on, disabled = false) =>
-  `<button type="button" class="chip" data-opt="${key}" aria-pressed="${on && !disabled}"${disabled ? ' disabled title="Seulement en mesure simple (x/4)"' : ''}>${esc(label)}</button>`;
+  `<button type="button" class="chip" data-opt="${key}" aria-pressed="${on && !disabled}"${disabled ? ` disabled title="${esc(t('train.simpleOnly'))}"` : ''}>${esc(label)}</button>`;
 
 /**
  * Champ tempo (noire = …).
@@ -126,15 +127,15 @@ export const tempoField = (tempo) =>
  */
 export function metronomeControls(m) {
   const s = settings();
-  return `<div class="drill-row"><span class="drill-lbl">Temps</span><div class="beats" role="group" aria-label="Temps du métronome">${beatsFor(
+  return `<div class="drill-row"><span class="drill-lbl">${esc(t('train.beats'))}</span><div class="beats" role="group" aria-label="${esc(t('train.beatsLabel'))}">${beatsFor(
     m,
   )
     .map(
       (on, k) =>
-        `<button type="button" data-beat="${k}" aria-pressed="${on}" aria-label="Temps ${k + 1}">${k + 1}</button>`,
+        `<button type="button" data-beat="${k}" aria-pressed="${on}" aria-label="${esc(t('train.beatN', { n: k + 1 }))}">${k + 1}</button>`,
     )
     .join('')}</div></div>
-    <div class="drill-row">${toggle('accent', 'Accent sur le 1', s.accent)}${toggle('countIn', 'Décompte', s.countIn)}${toggle('mute', 'Couper le rythme', s.mute)}</div>`;
+    <div class="drill-row">${toggle('accent', t('train.accent'), s.accent)}${toggle('countIn', t('train.countIn'), s.countIn)}${toggle('mute', t('train.mute'), s.mute)}</div>`;
 }
 
 /**
@@ -187,8 +188,14 @@ export function updatePlay(id, withText = true) {
   if (!btn) return;
   const on = audio.isPlaying(id);
   btn.classList.toggle('on', on);
-  btn.setAttribute('aria-label', on ? 'Arrêter' : 'Écouter');
-  btn.innerHTML = withText ? (on ? '&#9632; Stop' : '&#9654; Écouter') : on ? '&#9632;' : '&#9654;';
+  btn.setAttribute('aria-label', on ? t('play.stopLabel') : t('play.listen'));
+  btn.innerHTML = withText
+    ? on
+      ? '&#9632; ' + esc(t('play.stop'))
+      : '&#9654; ' + esc(t('play.listen'))
+    : on
+      ? '&#9632;'
+      : '&#9654;';
 }
 
 /**

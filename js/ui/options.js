@@ -23,6 +23,7 @@
  * mais jamais bloquant.
  */
 
+import { t, lang } from '../i18n.js';
 import { state, app } from './state.js';
 import { esc, uid } from '../util.js';
 import {
@@ -72,11 +73,11 @@ export function backupDue(now = Date.now()) {
  * @returns {string}
  */
 function lastExportLabel(ts) {
-  if (!ts) return 'Aucune sauvegarde pour l’instant';
+  if (!ts) return t('opt.noBackup');
   const days = Math.floor((Date.now() - ts) / DAY);
-  if (days <= 0) return 'Dernière sauvegarde : aujourd’hui';
-  if (days === 1) return 'Dernière sauvegarde : hier';
-  return `Dernière sauvegarde : il y a ${days} jours`;
+  if (days <= 0) return t('opt.backupToday');
+  if (days === 1) return t('opt.backupYesterday');
+  return t('opt.backupDaysAgo', { n: days });
 }
 
 /**
@@ -123,10 +124,45 @@ function foldersHtml() {
   const rows = sortedFolders(state.folders)
     .map(
       (f) =>
-        `<button class="opt-row" type="button" data-folder="${esc(f.id)}"><span class="opt-folder"><span class="fdot fc-${f.color}" aria-hidden="true"></span><span>${esc(f.name)}<small>${counts[f.id]} note${counts[f.id] > 1 ? 's' : ''}</small></span></span>${CHEVRON}</button>`,
+        `<button class="opt-row" type="button" data-folder="${esc(f.id)}"><span class="opt-folder"><span class="fdot fc-${f.color}" aria-hidden="true"></span><span>${esc(f.name)}<small>${esc(t('home.noteCount', { n: counts[f.id] }))}</small></span></span>${CHEVRON}</button>`,
     )
     .join('');
-  return `${rows}<button class="opt-row" id="optNewFolder" type="button"><span>+ Nouveau dossier<small>${rows ? 'Supprimer un dossier ne supprime pas ses notes' : 'Range tes notes par cours, projet, répertoire…'}</small></span>${CHEVRON}</button>`;
+  return `${rows}<button class="opt-row" id="optNewFolder" type="button"><span>+ ${esc(t('home.newFolder'))}<small>${esc(rows ? t('opt.folderDeleteHint') : t('opt.folderHint'))}</small></span>${CHEVRON}</button>`;
+}
+
+/**
+ * HTML de la section Langue (2.9) : automatique (langue du téléphone ou du
+ * navigateur), anglais ou français. Les libellés des langues restent dans
+ * leur propre langue, pour qu'on retrouve toujours la sienne.
+ * @param {module:storage~Meta} meta
+ * @returns {string}
+ */
+function languageHtml(meta) {
+  const cur = meta.lang || 'auto';
+  const opts = [
+    ['auto', t('opt.langAuto')],
+    ['en', 'English'],
+    ['fr', 'Français'],
+  ];
+  return `<section class="opt">
+    <h2 class="eyebrow" id="langLbl">${esc(t('opt.language'))}</h2>
+    <div class="seg" role="radiogroup" aria-labelledby="langLbl">${opts.map(([k, l]) => `<button type="button" role="radio" data-lang="${k}" aria-checked="${k === cur}" lang="${k === 'auto' ? lang() : k}"><span>${esc(l)}</span></button>`).join('')}</div>
+  </section>`;
+}
+
+/**
+ * Branche la section Langue. Toute l'interface est rechargée dans la
+ * nouvelle langue (palettes et claviers compris).
+ */
+function bindLanguage() {
+  app.querySelectorAll('[data-lang]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const v = /** @type {HTMLElement} */ (b).dataset.lang;
+      if (v === (getMeta().lang || 'auto')) return;
+      setMeta({ lang: v });
+      location.reload();
+    }),
+  );
 }
 
 /**
@@ -137,10 +173,10 @@ function foldersHtml() {
 function displayHtml(meta) {
   const current = meta.listView || 'cards';
   return `<section class="opt">
-    <h2 class="eyebrow" id="viewLbl">Affichage des notes</h2>
-    <div class="seg" role="radiogroup" aria-labelledby="viewLbl">${LIST_VIEWS.map((v) => `<button type="button" role="radio" data-view="${v.key}" aria-checked="${v.key === current}">${VIEW_ICONS[v.key]}<span>${v.label}</span></button>`).join('')}</div>
+    <h2 class="eyebrow" id="viewLbl">${esc(t('opt.display'))}</h2>
+    <div class="seg" role="radiogroup" aria-labelledby="viewLbl">${LIST_VIEWS.map((v) => `<button type="button" role="radio" data-view="${v.key}" aria-checked="${v.key === current}">${VIEW_ICONS[v.key]}<span>${esc(t('listView.' + v.key))}</span></button>`).join('')}</div>
     <div class="opt-group opt-gap">
-      <label class="opt-row" for="optFold"><span>Réduire automatiquement les blocs longs<small>Portées, rythmes et grilles de ${FOLD_MIN_LINES} lignes ou plus : seules les ${FOLD_PREVIEW_LINES} premières sont affichées</small></span><input type="checkbox" class="switch" id="optFold"${meta.autoFold ? ' checked' : ''}></label>
+      <label class="opt-row" for="optFold"><span>${esc(t('opt.autoFold'))}<small>${esc(t('opt.autoFoldHint', { min: FOLD_MIN_LINES, n: FOLD_PREVIEW_LINES }))}</small></span><input type="checkbox" class="switch" id="optFold"${meta.autoFold ? ' checked' : ''}></label>
     </div>
   </section>`;
 }
@@ -152,10 +188,10 @@ function displayHtml(meta) {
  */
 function notebookHtml(meta) {
   return `<section class="opt">
-    <h2 class="eyebrow">Carnet</h2>
+    <h2 class="eyebrow">${esc(t('opt.notebook'))}</h2>
     <div class="opt-group">
-      <button class="opt-row" id="optExport" type="button"><span>Exporter le carnet<small>Sauvegarde des notes et des dossiers (.json)</small></span>${CHEVRON}</button>
-      <label class="opt-row" for="optImport"><span>Importer un fichier<small>Sauvegarde ou note reçue (.inkline)</small></span>${CHEVRON}</label>
+      <button class="opt-row" id="optExport" type="button"><span>${esc(t('opt.export'))}<small>${esc(t('opt.exportHint'))}</small></span>${CHEVRON}</button>
+      <label class="opt-row" for="optImport"><span>${esc(t('opt.import'))}<small>${esc(t('opt.importHint'))}</small></span>${CHEVRON}</label>
       <input type="file" id="optImport" hidden>
       <p class="opt-note${backupDue() ? ' due' : ''}" id="optLast">${esc(lastExportLabel(meta.lastExport))}</p>
     </div>
@@ -171,9 +207,9 @@ function irealHtml() {
   return `<section class="opt">
     <h2 class="eyebrow">iReal Pro</h2>
     <div class="opt-group opt-pad">
-      <label class="ir-lbl" for="optIr">Colle un lien <code>irealb://</code> (morceau ou playlist) : une note est créée par morceau.</label>
+      <label class="ir-lbl" for="optIr">${esc(t('opt.irealPaste1'))} <code>irealb://</code> ${esc(t('opt.irealPaste2'))}</label>
       <textarea id="optIr" rows="2" placeholder="irealb://…" spellcheck="false"></textarea>
-      <div class="ir-actions"><button class="btn primary" id="optIrGo" type="button">Importer</button><label class="btn" for="optIrFile">Ouvrir un fichier iReal</label><input type="file" id="optIrFile" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
+      <div class="ir-actions"><button class="btn primary" id="optIrGo" type="button">${esc(t('opt.irealImport'))}</button><label class="btn" for="optIrFile">${esc(t('opt.irealFile'))}</label><input type="file" id="optIrFile" accept=".html,.htm,.txt,text/html,text/plain" hidden></div>
     </div>
     <div class="status" id="optIrMsg" role="status"></div>
   </section>`;
@@ -185,11 +221,11 @@ function irealHtml() {
  */
 function aboutHtml() {
   return `<section class="opt">
-    <h2 class="eyebrow">À propos</h2>
+    <h2 class="eyebrow">${esc(t('opt.about'))}</h2>
     <div class="opt-group">
-      <div class="opt-row static"><span>Inkline<small>Version ${esc(APP_VERSION)} · stockage ${storageBackend() === 'idb' ? 'IndexedDB' : 'localStorage'}</small></span></div>
-      <a class="opt-row" href="${CHANGELOG_URL}" target="_blank" rel="noopener"><span>Nouveautés<small>Historique des versions</small></span>${CHEVRON}</a>
-      <a class="opt-row" href="docs/" target="_blank" rel="noopener"><span>Documentation du code<small>Générée avec JSDoc</small></span>${CHEVRON}</a>
+      <div class="opt-row static"><span>Inkline<small>${esc(t('opt.version', { v: APP_VERSION, store: storageBackend() === 'idb' ? 'IndexedDB' : 'localStorage' }))}</small></span></div>
+      <a class="opt-row" href="${CHANGELOG_URL}" target="_blank" rel="noopener"><span>${esc(t('opt.whatsNew'))}<small>${esc(t('opt.whatsNewHint'))}</small></span>${CHEVRON}</a>
+      <a class="opt-row" href="docs/" target="_blank" rel="noopener"><span>${esc(t('opt.docs'))}<small>${esc(t('opt.docsHint'))}</small></span>${CHEVRON}</a>
     </div>
   </section>`;
 }
@@ -237,11 +273,9 @@ function importChosenFile(text) {
     const added = Object.keys(state.folders).length - nf;
     renderScreen({ keepScroll: true }); // la section Dossiers a pu changer
     app.querySelector('#optMsg').textContent =
-      r.count +
-      (r.count > 1 ? ' notes importées' : ' note importée') +
-      (added ? `, ${added} dossier${added > 1 ? 's' : ''} ajouté${added > 1 ? 's' : ''}.` : '.');
+      t('opt.imported', { n: r.count }) + (added ? t('opt.foldersAdded', { n: added }) : '.');
   } catch (err) {
-    msg.textContent = "Ce fichier n'est ni une note Inkline ni une sauvegarde.";
+    msg.textContent = t('opt.badFile');
   }
 }
 
@@ -250,13 +284,13 @@ function bindNotebook() {
   app.querySelector('#optExport').onclick = () => {
     download(
       new Blob([backupJson(state.notes, state.folders)], { type: 'application/json' }),
-      'inkline-carnet-' + new Date().toISOString().slice(0, 10) + '.json',
+      t('opt.backupFile') + '-' + new Date().toISOString().slice(0, 10) + '.json',
     );
     setMeta({ lastExport: Date.now() });
     const last = app.querySelector('#optLast');
     last.textContent = lastExportLabel(Date.now());
     last.classList.remove('due');
-    app.querySelector('#optMsg').textContent = 'Fichier enregistré dans tes téléchargements.';
+    app.querySelector('#optMsg').textContent = t('note.downloaded');
   };
   // Pas de filtre « accept » : Android grise les extensions qu'il ne connaît
   // pas (.inkline). Le contenu est vérifié par importFile.
@@ -268,12 +302,7 @@ function bindIReal() {
   const field = /** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr'));
   const irGo = (txt) => {
     const k = importIRealNotes(txt);
-    app.querySelector('#optIrMsg').textContent = k
-      ? k +
-        (k > 1
-          ? ' morceaux importés : ils sont dans tes notes.'
-          : ' morceau importé : il est dans tes notes.')
-      : 'Aucun morceau iReal trouvé. Le lien doit commencer par irealb://.';
+    app.querySelector('#optIrMsg').textContent = k ? t('opt.irealDone', { n: k }) : t('opt.irealNone');
     if (k) field.value = '';
   };
   app.querySelector('#optIrGo').onclick = () => irGo(field.value);
@@ -286,16 +315,18 @@ function bindIReal() {
  */
 function renderOptions() {
   const meta = getMeta();
-  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><h1 class="top-title">Options</h1></header>
+  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(t('note.back'))}</button><div class="grow"></div><h1 class="top-title">${esc(t('home.options'))}</h1></header>
+  ${languageHtml(meta)}
   ${displayHtml(meta)}
   <section class="opt">
-    <h2 class="eyebrow">Dossiers</h2>
+    <h2 class="eyebrow">${esc(t('home.folders'))}</h2>
     <div class="opt-group" id="optFolders">${foldersHtml()}</div>
   </section>
   ${notebookHtml(meta)}
   ${irealHtml()}
   ${aboutHtml()}`;
   app.querySelector('#back').onclick = backToList;
+  bindLanguage();
   bindDisplay();
   bindFolders();
   bindNotebook();

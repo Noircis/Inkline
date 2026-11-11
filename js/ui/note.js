@@ -11,6 +11,7 @@
  * {@link module:ui/staff/index|ui/staff} et {@link module:ui/grid-ui|ui/grid-ui}.
  */
 
+import { t } from '../i18n.js';
 import { state, app, curNote, touch, saveArrangement } from './state.js';
 import { esc } from '../util.js';
 import { newTextBlock, newStaffBlock, newGridBlock } from '../model.js';
@@ -37,8 +38,8 @@ function folderButtonHtml(n) {
   const label = f
     ? esc(f.name) +
       (cats.length ? ` <span class="nf-cats">› ${esc(cats.map((c) => c.name).join(', '))}</span>` : '')
-    : 'Non classée';
-  return `<button type="button" class="note-folder" id="folderBtn" aria-haspopup="dialog"><span class="fdot ${f ? 'fc-' + f.color : 'none'}" aria-hidden="true"></span><span class="sr">Rangement : </span><span class="nf-name">${label}</span><span class="nf-chev" aria-hidden="true">&#9662;</span></button>`;
+    : esc(t('note.unfiled'));
+  return `<button type="button" class="note-folder" id="folderBtn" aria-haspopup="dialog"><span class="fdot ${f ? 'fc-' + f.color : 'none'}" aria-hidden="true"></span><span class="sr">${esc(t('note.filing'))}</span><span class="nf-name">${label}</span><span class="nf-chev" aria-hidden="true">&#9662;</span></button>`;
 }
 
 /**
@@ -50,18 +51,18 @@ function renderNote(opts = {}) {
   const n = curNote();
   if (!n) return false;
   const sy = window.scrollY;
-  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; Notes</button><div class="grow"></div><button class="btn icon-btn pin-btn" id="pinBtn" type="button" aria-pressed="${!!n.pinned}" aria-label="Épingler en tête de liste">${PIN_ICON}</button><button class="btn" id="shareBtn" type="button" aria-expanded="false">Partager</button></header>
+  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(t('note.back'))}</button><div class="grow"></div><button class="btn icon-btn pin-btn" id="pinBtn" type="button" aria-pressed="${!!n.pinned}" aria-label="${esc(t('note.pin'))}">${PIN_ICON}</button><button class="btn" id="shareBtn" type="button" aria-expanded="false">${esc(t('note.share'))}</button></header>
   <div class="sharebox" id="shareBox" hidden>
-    <button class="btn primary" type="button" data-share="inkline">Fichier Inkline<small>modifiable dans Inkline</small></button>
-    <button class="btn" type="button" data-share="png">Image<small>PNG</small></button>
+    <button class="btn primary" type="button" data-share="inkline">${esc(t('note.shareInkline'))}<small>${esc(t('note.shareInklineSub'))}</small></button>
+    <button class="btn" type="button" data-share="png">${esc(t('note.shareImage'))}<small>PNG</small></button>
     <button class="btn" type="button" data-share="pdf">PDF<small>A4</small></button>
     <div class="status" id="shareMsg"></div>
   </div>
-  <textarea class="title-in" id="titleIn" rows="1" placeholder="Titre de la note"></textarea>
+  <textarea class="title-in" id="titleIn" rows="1" placeholder="${esc(t('note.titlePlaceholder'))}"></textarea>
   ${folderButtonHtml(n)}
   <div class="blocks" id="blocks"></div>
-  <div class="addbar"><button class="btn" data-add="text" type="button">+ Texte</button><button class="btn" data-add="staff" type="button">+ Portée</button><button class="btn" data-add="rhythm" type="button">+ Rythme</button><button class="btn" data-add="grid" type="button">+ Grille</button></div>
-  <div class="notefoot"><button class="btn ghost danger" id="delNote" type="button">Supprimer la note</button></div>`;
+  <div class="addbar"><button class="btn" data-add="text" type="button">${esc(t('note.addText'))}</button><button class="btn" data-add="staff" type="button">${esc(t('note.addStaff'))}</button><button class="btn" data-add="rhythm" type="button">${esc(t('note.addRhythm'))}</button><button class="btn" data-add="grid" type="button">${esc(t('note.addGrid'))}</button></div>
+  <div class="notefoot"><button class="btn ghost danger" id="delNote" type="button">${esc(t('note.delete'))}</button></div>`;
 
   bindTitle(n);
   bindArrangement(n);
@@ -70,7 +71,7 @@ function renderNote(opts = {}) {
 
   const dn = /** @type {HTMLButtonElement} */ (app.querySelector('#delNote'));
   dn.onclick = () =>
-    confirmTap(dn, 'Toucher encore pour supprimer', () => {
+    confirmTap(dn, t('note.deleteConfirm'), () => {
       delete state.notes[n.id];
       flushSave(state.notes);
       backToList();
@@ -170,8 +171,8 @@ function bindShare(n) {
     b.onclick = async () => {
       const kind = b.dataset.share;
       const name = slug(n.title);
-      const title = n.title || 'Note Inkline';
-      msg.textContent = kind === 'inkline' ? '' : 'Préparation…';
+      const title = n.title || t('note.defaultTitle');
+      msg.textContent = kind === 'inkline' ? '' : t('note.preparing');
       box.querySelectorAll('button').forEach((x) => {
         x.disabled = true;
       });
@@ -201,13 +202,9 @@ function bindShare(n) {
           );
         }
         msg.textContent =
-          res === 'downloaded'
-            ? 'Fichier enregistré dans tes téléchargements.'
-            : res === 'shared'
-              ? 'Envoyé.'
-              : '';
+          res === 'downloaded' ? t('note.downloaded') : res === 'shared' ? t('note.sent') : '';
       } catch (e) {
-        msg.textContent = "L'export a échoué. Réessaie ; si ça persiste, exporte le fichier Inkline.";
+        msg.textContent = t('note.exportFailed');
       } finally {
         box.querySelectorAll('button').forEach((x) => {
           x.disabled = false;
@@ -235,8 +232,8 @@ function addBlock(n, kind) {
   if (el) {
     el.scrollIntoView({ block: 'center', behavior: 'smooth' });
     if (kind === 'text') {
-      const t = el.querySelector('textarea');
-      if (t) t.focus();
+      const ta = el.querySelector('textarea');
+      if (ta) ta.focus();
     }
   }
 }
@@ -254,17 +251,17 @@ function blockEl(n, b, bi) {
   el.dataset.block = b.id;
   if (b.type === 'text') {
     el.innerHTML =
-      `<textarea rows="1" placeholder="${bi === 0 ? 'Écrivez ici…' : 'Texte'}" id="t_${esc(b.id)}"></textarea>` +
+      `<textarea rows="1" placeholder="${esc(bi === 0 ? t('note.writeHere') : t('note.text'))}" id="t_${esc(b.id)}"></textarea>` +
       toolsHtml();
-    const t = el.querySelector('textarea');
-    t.value = b.text;
-    t.addEventListener('focus', () => {
+    const ta = el.querySelector('textarea');
+    ta.value = b.text;
+    ta.addEventListener('focus', () => {
       pushSnapshot(n);
       setActive(b.id);
     });
-    t.addEventListener('input', () => {
-      b.text = t.value;
-      autosize(t);
+    ta.addEventListener('input', () => {
+      b.text = ta.value;
+      autosize(ta);
       touch(n);
     });
   } else {
@@ -278,7 +275,7 @@ function blockEl(n, b, bi) {
       if (tool === 'del') {
         confirmTap(
           /** @type {HTMLButtonElement} */ (btn),
-          'Confirmer',
+          t('common.confirm'),
           () => {
             pushSnapshot(n);
             if (audio.isPlaying(b.id)) audio.stop();

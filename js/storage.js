@@ -433,6 +433,7 @@ export function importFile(notes, text, folders = {}) {
  * @property {'cards'|'mosaic'|'list'} [listView] Affichage de la liste choisi dans les Options.
  * @property {string} [folder] Sélection de la barre de dossiers (`'all'`, `'none'` ou id de dossier).
  * @property {Object.<string, string>} [sorts] Tri choisi pour chaque sélection de la barre de dossiers.
+ * @property {string} [lang] Langue de l'interface (2.9) : `auto`, `en` ou `fr`.
  * @property {Object.<string, string>} [catSel] Catégorie choisie dans chaque dossier (2.8.6) : `'all'`, `'none'` ou id.
  * @property {Object.<string, boolean>} [catFold] Sections repliées de l'accueil (2.8.6), clés `dossier:catégorie`.
  * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
@@ -616,6 +617,7 @@ export function getMeta() {
       listView: views.includes(m.listView) ? m.listView : undefined,
       folder: typeof m.folder === 'string' && /^[a-z0-9]{1,32}$/.test(m.folder) ? m.folder : undefined,
       sorts: sortsOf(m.sorts),
+      lang: ['auto', 'en', 'fr'].includes(m.lang) ? m.lang : undefined,
       catSel: dictOf(
         m.catSel,
         /^[a-z0-9]{1,32}$/,
