@@ -56,23 +56,3 @@
   min-width: 84px;
   justify-content: center;
 }
-.ms-outs {
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-  margin: 0;
-}
-.ms-out {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 32px;
-}
-.ms-diag {
-  margin: 0;
-  font-size: 12px;
-  color: var(--muted);
-  white-space: pre-wrap;
-}
