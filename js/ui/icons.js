@@ -19,6 +19,13 @@ export const GEAR =
 export const LOUPE =
   '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13zM15.4 15.4 20 20"/></svg>';
 
-/** Metronome (Practice button on the home screen). */
+/** Metronome (metronome button, 2.10; was the Practice button before). */
 export const METRONOME =
   '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round" d="M9.2 3h5.6l4.2 18H5L9.2 3zM6.6 15h10.8M12 15l5.5-9.5"/></svg>';
+
+/**
+ * Practice (2.10): a loop arrow around a quarter note, practice is
+ * repetition. Replaces the metronome on the Practice button.
+ */
+export const PRACTICE =
+  '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round" d="M20.5 12a8.5 8.5 0 1 1-2.5-6M14.6 6H18V2.6M12.6 14V8.2"/><ellipse fill="currentColor" cx="10.6" cy="14.2" rx="2.1" ry="1.6" transform="rotate(-20 10.6 14.2)"/></svg>';
