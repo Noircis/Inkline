@@ -104,7 +104,7 @@ js/
     training.js       Practice and Placements screens
     exercises.js      random exercise screens (settings, playback)
     drill-kit.js      shared practice pieces (settings, metronome, playback)
-    metronome.js      metronome sheet (any screen), mini-bar, presets, lights, vibration, flash
+    metronome.js      metronome sheet (any screen) with its sub-pages, mini-bar, presets, lights, vibration, flash
     measure-select.js measure selection by long press (play from here, loop)
     chord-keyboard.js on-screen chord keyboard (chart, note chord)
     staff/            staff block: index (registration), view (header, drawing),

@@ -4,6 +4,15 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.13.0] - 2026-11-11
+
+### Changed
+
+- **Metronome: a pared-down screen.** The main page keeps only what is used every time: the level bars (which are also the lights), the tempo, and Start. Everything else moved to sub-pages, each opened from a row that shows its current value: Time signature, Subdivision, Sound, Jazz, Options, and Presets (★). Android's back button returns from a sub-page to the main page.
+- **TAP** is now a small outlined button next to the tempo, far from the wide Start button: the two are no longer confused. Tapping the tempo number in rhythm works too; dragging it still changes the tempo.
+- − and + sit next to the number: a tap moves by 1, holding moves by steps of 5.
+- The time signature page holds the menus, the group limits (tap between two bars) and what the tempo counts; the subdivision page holds the choices, a small bar per click and swing; sound and jazz are simple lists; options are switches with a short explanation.
+
 ## [2.12.0] - 2026-11-11
 
 ### Changed

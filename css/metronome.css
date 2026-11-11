@@ -153,32 +153,56 @@
 .mbars.dense .mgap.cut {
   flex-basis: 14px;
 }
-.mbars-hint {
-  margin: 0;
-  text-align: center;
-}
 
-/* Tempo: drag up and down */
+/* Tempo row: TAP (small, outlined) · the number (tap or drag) · − + */
+.metro-tempo-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  align-items: center;
+  gap: 8px;
+}
+.mtap {
+  justify-self: start;
+  width: 60px;
+  height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 22px;
+  background: none;
+  color: var(--ink);
+  font: 700 13px var(--f-body);
+  letter-spacing: 0.08em;
+  touch-action: manipulation;
+  user-select: none;
+}
 .metro-tempo {
   touch-action: none;
   user-select: none;
   text-align: center;
-  padding: 8px 0 4px;
+  padding: 6px 0 4px;
   border-radius: 14px;
   cursor: ns-resize;
 }
 .metro-tempo.drag {
   background: var(--accent-soft);
 }
+.mtap.hit,
+.metro-tempo.hit {
+  animation: metro-tap 0.15s;
+}
+@keyframes metro-tap {
+  from {
+    background: var(--accent-soft);
+  }
+}
 .mt-unit {
   font-family: var(--f-music);
-  font-size: 30px;
+  font-size: 26px;
   color: var(--muted);
-  vertical-align: 18px;
+  vertical-align: 16px;
 }
 .mt-val {
   font-family: var(--f-display);
-  font-size: 76px;
+  font-size: 68px;
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -186,38 +210,81 @@
 .mt-mark {
   color: var(--muted);
   font-style: italic;
+  font-size: 14px;
 }
 .metro-steps {
+  justify-self: end;
   display: flex;
-  justify-content: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
 }
 .mstep {
-  min-width: 56px;
+  width: 44px;
+  height: 40px;
   justify-content: center;
+  font-size: 20px;
   touch-action: manipulation;
   user-select: none;
 }
-.metro-tap {
-  align-self: center;
-  width: min(100%, 260px);
-  min-height: 64px;
-  border-radius: 32px;
-  border: 2px solid var(--accent);
+
+/* Rows of the main page, and choice lists of the sub-pages */
+.mlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
   background: var(--surface);
-  color: var(--accent);
-  font: 700 18px var(--f-display);
-  letter-spacing: 0.08em;
-  touch-action: manipulation;
-  user-select: none;
+  overflow: hidden;
 }
-.metro-tap.hit {
-  animation: metro-tap 0.15s;
+.mlist li + li {
+  border-top: 1px solid var(--rule);
 }
-@keyframes metro-tap {
-  from {
-    background: var(--accent-soft);
-  }
+.mitem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 14px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.mitem-lbl {
+  flex: 1;
+  font-weight: 600;
+}
+.mitem-lbl small {
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--muted);
+}
+.mitem-val {
+  color: var(--muted);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 55%;
+}
+.mitem-go {
+  color: var(--muted);
+  font-size: 20px;
+}
+.mchoices input[type='radio'],
+.mchoices input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+.mempty {
+  margin: 8px 0;
+  text-align: center;
 }
 
 /* Settings rows */
@@ -286,7 +353,7 @@
   width: 100%;
   accent-color: var(--accent);
 }
-.mrow select {
+.metro-sheet select {
   min-height: 40px;
   font: inherit;
   color: var(--ink);

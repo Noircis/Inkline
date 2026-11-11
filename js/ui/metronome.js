@@ -1,28 +1,38 @@
 /**
  * @module ui/metronome
  * @description
- * **Metronome** interface (2.11), reachable from every screen.
+ * **Metronome** interface (2.11; pared-down layout 2.13), reachable from
+ * every screen.
  *
  * - The ♩ button of each screen header ({@link module:ui/common.metroButton|metroButton})
  *   opens a full-height **sheet** over the current screen. It is an overlay,
  *   not a screen: Android's back button closes it and the screen under it is
  *   left as it was ({@link module:ui/nav.openOverlay|openOverlay}).
+ * - The sheet shows only what is used every time; everything else is in
+ *   **sub-pages** (time signature, subdivision, sound, jazz, options,
+ *   presets), each opened from a row that shows its current value. A
+ *   sub-page has its own history entry: Android's back button returns to the
+ *   main page.
  * - Collapsed while playing, the metronome becomes a **mini-bar** at the
  *   bottom of every screen (above an open palette): beat lights, tempo − +,
  *   stop, expand. Its height is reserved (`--metro-h`) so it never hides
  *   content.
  *
  * ```
- * ┌ ⌄            Metronome      ★ Presets ┐
- * │  █  ▆  ▆  ▆        one bar per pulse     │  tap: on / off; slide: level 0 to 4
- * │  1  2  3  4        (small bars: subdivisions)
- * │              ♩ = 120                   │  drag up/down on the number
- * │   [−5] [−1]   Allegro    [+1] [+5]     │  long press repeats
- * │               [ TAP ]                  │
- * │ [4 ▾] / [4 ▾]          [shortcuts ▾]   │  any time signature, 1 to 32 over 2 to 16
- * │ groups, subdivision, swing, sound, jazz modes, options │
- * │              [ ▶ Start ]               │
+ * ┌ ⌄  Metronome                 ★ ┐
+ * │   ▆ ▂ ▂ ▂                      │  bars = lights; tap: on/off, slide: level
+ * │  (TAP)     ♩ = 120      [−][+] │  tap the number too; drag it up/down
+ * │             Allegro            │  − + : hold for steps of 5
+ * │  Time signature   7/8 2+2+3  › │
+ * │  Subdivision      none       › │
+ * │  Sound            Click      › │
+ * │  Jazz             off        › │
+ * │  Options                     › │
+ * │        [  ▶  Start  ]          │  stuck to the bottom
  * ```
+ *
+ * TAP is small and outlined, away from the wide filled Start button, so the
+ * two are never confused.
  *
  * Settings are remembered (`meta.metro`), as are the presets
  * (`meta.metroPresets`). What to play is computed by
@@ -83,10 +93,15 @@ import { confirmTap } from './common.js';
 /** Subdivision → dictionary key suffix (keys cannot hold dots). */
 const SUB_KEYS = { none: 'none', 8: 's8', 3: 's3', 16: 's16', 8.16: 's816' };
 
+/** Sub-pages of the sheet, in the order of the rows. */
+const PAGES = ['meter', 'subdiv', 'sound', 'jazz', 'options'];
+
 /** Tempo drag: pixels per BPM. */
 const DRAG_PX = 6;
 /** Bar drag: pixels per level. */
 const LEVEL_PX = 14;
+/** Movement (px) under which a press is a tap, not a drag. */
+const SLOP = 6;
 /** Above this many pulses, the mini-bar shows a counter instead of dots. */
 const MINI_DOTS_MAX = 12;
 
@@ -94,7 +109,7 @@ const MINI_DOTS_MAX = 12;
 let s = sanitizeMetro(getMeta().metro || METRO_DEFAULTS);
 /** @type {Array.<module:metronome~MetroPreset>} */
 let presets = getMeta().metroPresets || [];
-/** Sheet view: settings or preset list. */
+/** Sheet page: `main`, one of {@link PAGES}, or `presets`. */
 let view = 'main';
 /** Preset being renamed (id). */
 let editing = null;
@@ -135,7 +150,15 @@ function save() {
  * @param {Object} patch
  */
 function update(patch) {
-  s = sanitizeMetro({ ...s, ...patch });
+  replace(sanitizeMetro({ ...s, ...patch }));
+}
+
+/**
+ * Replaces the settings with derived ones, then saves and redraws.
+ * @param {module:metronome~MetroSettings} next
+ */
+function replace(next) {
+  s = next;
   save();
   render();
 }
@@ -150,7 +173,8 @@ function setTempo(bpm, persist = true) {
   const v = clampTempo(bpm);
   if (v === s.tempo && !persist) return;
   s = { ...s, tempo: v };
-  sheet.querySelectorAll('#mTempoVal').forEach((el) => (el.textContent = String(v)));
+  const val = sheet.querySelector('#mTempoVal');
+  if (val) val.textContent = String(v);
   const mark = sheet.querySelector('#mMark');
   if (mark) mark.textContent = tempoMarking(v);
   const mt = mini.querySelector('.mm-tempo');
@@ -168,9 +192,9 @@ function scheduleConfigure() {
   }, 60);
 }
 
-// ---------- Sheet ----------
+// ---------- Sheet and pages ----------
 
-/** Opens the sheet over the current screen. */
+/** Opens the sheet over the current screen, on its main page. */
 function openSheet() {
   if (sheetOpen) return;
   sheetOpen = true;
@@ -180,27 +204,58 @@ function openSheet() {
   document.documentElement.classList.add('metro-open');
   openOverlay(hideSheet);
   render();
-  sheet.querySelector('.metro-head button')?.focus({ preventScroll: true });
 }
 
 /** Hides the sheet (called by the history `popstate`). */
 function hideSheet() {
   sheetOpen = false;
+  view = 'main';
   sheet.hidden = true;
   sheet.innerHTML = '';
   document.documentElement.classList.remove('metro-open');
   renderMini();
 }
 
-/** Redraws the sheet (current view) and the mini-bar. */
+/**
+ * Opens a sub-page, with its own history entry (Android back returns to the
+ * main page).
+ * @param {string} page
+ */
+function openPage(page) {
+  view = page;
+  editing = null;
+  openOverlay(() => {
+    view = 'main';
+    editing = null;
+    render();
+  });
+  render();
+  sheet.scrollTo(0, 0);
+}
+
+/** Redraws the sheet (current page) and the mini-bar. */
 function render() {
   if (sheetOpen) {
     sheet.setAttribute('aria-label', t('metro.title'));
-    sheet.innerHTML = view === 'presets' ? presetsHtml() : mainHtml();
+    sheet.innerHTML =
+      view === 'main' ? mainHtml() : view === 'presets' ? presetsHtml() : pageHtml(view, PAGE_BODIES[view]());
     lastK = null;
     paintLights(engine.position());
   }
   renderMini();
+}
+
+/**
+ * A sub-page: back button, title, content.
+ * @param {string} page
+ * @param {string} body
+ * @returns {string}
+ */
+function pageHtml(page, body) {
+  return `<div class="metro-wrap">
+<header class="metro-head"><button type="button" class="btn ghost" data-m="back">&#8249; ${esc(t('metro.title'))}</button><span class="grow"></span><h2>${esc(t('metro.page.' + page))}</h2></header>
+${body}
+</div>`;
 }
 
 /**
@@ -213,24 +268,28 @@ function render() {
  * @returns {string}
  */
 function barHtml(attr, v, label, cls = '') {
-  const on = v > 0;
-  return `<button type="button" class="mbar${cls}${on ? '' : ' off'}" ${attr} style="--lv:${Math.abs(v) / LEVEL_MAX}" aria-label="${esc(label)}"><span class="fill"></span></button>`;
+  return `<button type="button" class="mbar${cls}${v > 0 ? '' : ' off'}" ${attr} style="--lv:${Math.abs(v) / LEVEL_MAX}" aria-label="${esc(label)}"><span class="fill"></span></button>`;
 }
 
 /**
- * The pulses of the bar, as level bars (they are also the lights). In /8 and
- * /16, a thin button between two bars splits or joins a group. In /2 and /4,
- * the subdivision clicks of each pulse have their own small bars.
+ * The pulses of the bar, as level bars (they are also the lights).
+ *
+ * @param {{cuts: (boolean|undefined), subs: (boolean|undefined)}} [opt]
+ *   `cuts`: in /8 and /16, a thin button between two bars splits or joins a
+ *   group (time signature page; elsewhere the group limits are only drawn).
+ *   `subs`: the subdivision clicks of each pulse get small bars (subdivision page).
  * @returns {string}
  */
-function barsHtml() {
+function barsHtml(opt = {}) {
   const levels = s.jazz === 'off' ? s.levels : pulseLevels(s, 0);
   const heads = new Set(groupHeads(s.groups));
-  const sc = subCount(s.subdiv);
+  const sc = opt.subs ? subCount(s.subdiv) : 0;
   let html = '';
   for (let i = 0; i < s.num; i++) {
     if (grouped(s.den) && i > 0)
-      html += `<button type="button" class="mgap${heads.has(i) ? ' cut' : ''}" data-mcut="${i}" aria-label="${esc(t('metro.cutN', { n: i + 1 }))}" aria-pressed="${heads.has(i)}"></button>`;
+      html += opt.cuts
+        ? `<button type="button" class="mgap${heads.has(i) ? ' cut' : ''}" data-mcut="${i}" aria-label="${esc(t('metro.cutN', { n: i + 1 }))}" aria-pressed="${heads.has(i)}"></button>`
+        : `<span class="mgap${heads.has(i) ? ' cut' : ''}" aria-hidden="true"></span>`;
     let subs = '';
     for (let k = 0; k < sc; k++) {
       const j = i * sc + k;
@@ -245,17 +304,78 @@ function barsHtml() {
     html += `<div class="mcol${heads.has(i) ? ' head' : ''}">${barHtml(`data-mbar="${i}"`, levels[i], t('metro.pulseN', { n: i + 1, l: audible(levels[i]) }))}<span class="mnum">${i + 1}</span>${sc ? `<div class="msubs">${subs}</div>` : ''}</div>`;
   }
   // Same width for every bar, so that long bars wrap into even rows.
-  const w = s.num <= 4 ? 52 : s.num <= 8 ? 36 : s.num <= 12 ? 24 : 20;
-  return `<div class="mbars${grouped(s.den) ? ' grouped' : ''}${s.num > 16 ? ' dense' : ''}${s.jazz === 'off' ? '' : ' jazz'}" id="mBeats" style="--cw:${w}px">${html}</div>
-<p class="mhint mbars-hint">${esc(t(grouped(s.den) ? 'metro.levelHintGroups' : 'metro.levelHint'))}</p>`;
+  const w = sc
+    ? s.num <= 4
+      ? 64
+      : s.num <= 6
+        ? 48
+        : 36
+    : s.num <= 4
+      ? 44
+      : s.num <= 8
+        ? 32
+        : s.num <= 12
+          ? 24
+          : 20;
+  return `<div class="mbars${grouped(s.den) ? ' grouped' : ''}${s.num > 16 ? ' dense' : ''}${s.jazz === 'off' ? '' : ' jazz'}" id="mBeats" style="--cw:${w}px">${html}</div>`;
 }
 
 /**
- * Time signature section: top and bottom numbers, shortcuts, groups, what the
- * tempo counts.
+ * Short value shown on each row of the main page.
+ * @param {string} page
  * @returns {string}
  */
-function meterHtml() {
+function rowValue(page) {
+  switch (page) {
+    case 'meter':
+      return meterLabel(s);
+    case 'subdiv':
+      return (
+        t(s.subdiv === 'none' ? 'metro.subGlyphs.none' : 'metro.subs.' + SUB_KEYS[s.subdiv]) +
+        (swingApplies(s) && s.swing > SWING_MIN ? ' · ' + t('metro.swing') + ' ' + swingLabel(s.swing) : '')
+      );
+    case 'sound':
+      return t('metro.sounds.' + s.sound);
+    case 'jazz':
+      return t(s.jazz === '24' ? 'metro.jazz24' : s.jazz === 'once' ? 'metro.jazzOnce' : 'metro.jazzOff');
+    default: {
+      const on = ['vibrate', 'flash', 'wake'].filter((k) => s[k]).map((k) => t('metro.' + k));
+      return on.length ? on.join(', ') : t('metro.optionsNone');
+    }
+  }
+}
+
+/**
+ * Main page: lights and levels, tempo, the rows to the sub-pages, Start.
+ * @returns {string}
+ */
+function mainHtml() {
+  const on = engine.isRunning();
+  const step = (n) =>
+    `<button type="button" class="btn icon-btn mstep" data-step="${n}" aria-label="${esc(t('metro.stepN', { n: n > 0 ? '+' + n : String(n) }))}">${n > 0 ? '+' : '&minus;'}</button>`;
+  const rows = PAGES.map(
+    (p) =>
+      `<li><button type="button" class="mitem" data-page="${p}"><span class="mitem-lbl">${esc(t('metro.page.' + p))}</span><span class="mitem-val">${esc(rowValue(p))}</span><span class="mitem-go" aria-hidden="true">&#8250;</span></button></li>`,
+  ).join('');
+  return `<div class="metro-wrap">
+<header class="metro-head"><button type="button" class="btn icon-btn" data-m="close" aria-label="${esc(t('metro.collapse'))}">&#x2304;</button><h2>${esc(t('metro.title'))}</h2><span class="grow"></span><button type="button" class="btn icon-btn" data-m="presets" aria-label="${esc(t('metro.presets'))}">&#9733;</button></header>
+${barsHtml()}
+<div class="metro-tempo-row">
+<button type="button" class="mtap" data-m="tap">${esc(t('metro.tap'))}</button>
+<div class="metro-tempo" id="mTempo" role="button" tabindex="0" aria-label="${esc(t('metro.tempoZone'))}"><span class="mt-unit">${unitGlyph(s)} =</span> <span id="mTempoVal" class="mt-val">${s.tempo}</span><div id="mMark" class="mt-mark">${esc(tempoMarking(s.tempo))}</div></div>
+<div class="metro-steps">${step(-1)}${step(1)}</div>
+</div>
+<ul class="mlist">${rows}</ul>
+<button type="button" class="btn primary metro-play${on ? ' on' : ''}" data-m="play">${on ? '&#9632; ' + esc(t('metro.stop')) : '&#9654; ' + esc(t('metro.start'))}</button>
+</div>`;
+}
+
+/**
+ * Time signature page: top and bottom numbers, shortcuts, bars with group
+ * limits, groups, what the tempo counts.
+ * @returns {string}
+ */
+function meterBody() {
   const nums = Array.from(
     { length: NUM_MAX },
     (_, i) => `<option value="${i + 1}"${i + 1 === s.num ? ' selected' : ''}>${i + 1}</option>`,
@@ -270,7 +390,10 @@ function meterHtml() {
       const label = meterLabel({ ...s, num: x.num, den: x.den, groups: x.groups });
       return `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(label)}</option>`;
     }).join('');
-  let html = `<div class="mrow"><span class="mlbl">${esc(t('metro.meter'))}</span><div class="mmeter"><select data-k="num" aria-label="${esc(t('metro.num'))}">${nums}</select><span class="mslash">/</span><select data-k="den" aria-label="${esc(t('metro.den'))}">${dens}</select><span class="grow"></span><select data-k="shortcut" aria-label="${esc(t('metro.shortcuts'))}">${shortcuts}</select></div></div>`;
+  let html = `<div class="mmeter"><select data-k="num" aria-label="${esc(t('metro.num'))}">${nums}</select><span class="mslash">/</span><select data-k="den" aria-label="${esc(t('metro.den'))}">${dens}</select><span class="grow"></span><select data-k="shortcut" aria-label="${esc(t('metro.shortcuts'))}">${shortcuts}</select></div>
+${barsHtml({ cuts: true })}
+<p class="mhint">${esc(t(grouped(s.den) ? 'metro.levelHintGroups' : 'metro.levelHint'))}</p>
+<div class="metro-rows">`;
   if (grouped(s.den)) {
     const key = s.groups.join('+');
     const choices = groupChoices(s.num, s.den).map((g) => g.join('+'));
@@ -280,64 +403,104 @@ function meterHtml() {
       .join('')}</select></label>`;
   }
   if (canCountGroups(s)) {
-    const radio = (u, glyph) =>
-      `<label class="mcheck"><input type="radio" name="mUnit" data-k="unit" value="${u}"${s.unit === u ? ' checked' : ''}> <span class="mglyph">${glyph}</span> ${esc(t(u === 'group' ? 'metro.unitGroup' : 'metro.unitPulse'))}</label>`;
-    html += `<div class="mrow"><span class="mlbl">${esc(t('metro.tempoCounts'))}</span><div class="mrow-sub">${radio('pulse', unitGlyph({ ...s, unit: 'pulse' }))}${radio('group', unitGlyph({ ...s, unit: 'group' }))}</div></div>`;
+    const radio = (u) =>
+      `<label class="mcheck"><input type="radio" name="mUnit" data-k="unit" value="${u}"${s.unit === u ? ' checked' : ''}> <span class="mglyph">${unitGlyph({ ...s, unit: u })}</span> ${esc(t(u === 'group' ? 'metro.unitGroup' : 'metro.unitPulse'))}</label>`;
+    html += `<div class="mrow"><span class="mlbl">${esc(t('metro.tempoCounts'))}</span><div class="mrow-sub">${radio('pulse')}${radio('group')}</div></div>`;
   }
-  return html;
+  return html + '</div>';
 }
 
 /**
- * Settings view of the sheet.
+ * Subdivision page: the five choices, a small bar per click, swing.
  * @returns {string}
  */
-function mainHtml() {
-  const on = engine.isRunning();
-  const step = (n) =>
-    `<button type="button" class="btn mstep" data-step="${n}" aria-label="${esc(t('metro.stepN', { n: n > 0 ? '+' + n : String(n) }))}">${n > 0 ? '+' + n : '−' + -n}</button>`;
-  const subdivs = subdivsFor(s.den);
-  const subs = subdivs
+function subdivBody() {
+  if (grouped(s.den)) return `<p class="mhint mempty">${esc(t('metro.noSubdiv'))}</p>`;
+  const subs = subdivsFor(s.den)
     .map(
       (k) =>
         `<button type="button" data-msub="${esc(k)}" aria-pressed="${k === s.subdiv}" aria-label="${esc(t('metro.subs.' + SUB_KEYS[k]))}">${esc(t('metro.subGlyphs.' + SUB_KEYS[k]))}</button>`,
     )
     .join('');
-  const sounds = SOUNDS.map(
-    (k) => `<option value="${k}"${k === s.sound ? ' selected' : ''}>${esc(t('metro.sounds.' + k))}</option>`,
-  ).join('');
-  const swingOk = swingApplies(s);
-  const onceOpts = Array.from(
-    { length: s.num },
-    (_, i) => `<option value="${i}"${i === s.onceBeat ? ' selected' : ''}>${i + 1}</option>`,
-  ).join('');
-  const opt = (k) =>
-    `<button type="button" class="chip" data-mopt="${k}" aria-pressed="${!!s[k]}">${esc(t('metro.' + k))}</button>`;
-  return `<div class="metro-wrap">
-<header class="metro-head"><button type="button" class="btn icon-btn" data-m="close" aria-label="${esc(t('metro.collapse'))}">&#x2304;</button><h2>${esc(t('metro.title'))}</h2><span class="grow"></span><button type="button" class="btn" data-m="presets">&#9733; ${esc(t('metro.presets'))}</button></header>
-${barsHtml()}
-<div class="metro-tempo" id="mTempo" aria-label="${esc(t('metro.tempoDrag'))}"><span class="mt-unit">${unitGlyph(s)} =</span> <span id="mTempoVal" class="mt-val">${s.tempo}</span><div id="mMark" class="mt-mark">${esc(tempoMarking(s.tempo))}</div></div>
-<div class="metro-steps">${step(-5)}${step(-1)}${step(1)}${step(5)}</div>
-<button type="button" class="metro-tap" data-m="tap">${esc(t('metro.tap'))}</button>
-<div class="metro-rows">
-${meterHtml()}
-${subdivs.length > 1 ? `<div class="mrow"><span class="mlbl">${esc(t('metro.subdiv'))}</span><div class="msub">${subs}</div></div>` : ''}
-${
-  swingOk
-    ? `<label class="mrow"><span class="mlbl">${esc(t('metro.swing'))} <output id="mSwingVal">${esc(swingLabel(s.swing))}</output></span><input type="range" min="${SWING_MIN}" max="${SWING_MAX}" step="1" data-k="swing" value="${s.swing}"></label>`
-    : ''
+  let html = `<div class="msub">${subs}</div>`;
+  if (s.subdiv !== 'none')
+    html += `${barsHtml({ subs: true })}<p class="mhint">${esc(t('metro.levelHint'))}</p>`;
+  if (swingApplies(s))
+    html += `<div class="metro-rows"><label class="mrow"><span class="mlbl">${esc(t('metro.swing'))} <output id="mSwingVal">${esc(swingLabel(s.swing))}</output></span><input type="range" min="${SWING_MIN}" max="${SWING_MAX}" step="1" data-k="swing" value="${s.swing}"></label></div>`;
+  return html;
 }
-<label class="mrow"><span class="mlbl">${esc(t('metro.sound'))}</span><select data-k="sound">${sounds}</select></label>
-<div class="mrow"><span class="mlbl">${esc(t('metro.jazz'))}</span><div class="mchips"><button type="button" class="chip" data-mjazz="24" aria-pressed="${s.jazz === '24'}"${canTwoFour(s) ? '' : ' disabled'}>${esc(t('metro.jazz24'))}</button><button type="button" class="chip" data-mjazz="once" aria-pressed="${s.jazz === 'once'}">${esc(t('metro.jazzOnce'))}</button></div></div>
-${
-  s.jazz === 'once'
-    ? `<div class="mrow mrow-sub"><label>${esc(t('metro.onceBeat'))} <select data-k="onceBeat">${onceOpts}</select></label><label class="mcheck"><input type="checkbox" data-k="twoBars"${s.twoBars ? ' checked' : ''}> ${esc(t('metro.twoBars'))}</label></div>`
-    : ''
+
+/**
+ * A list of choices, one checked (sound and jazz pages).
+ * @param {string} name Radio group name and `data-k`.
+ * @param {Array.<{v: string, label: string}>} items
+ * @param {string} value Checked value.
+ * @returns {string}
+ */
+function choiceList(name, items, value) {
+  return `<ul class="mlist mchoices">${items
+    .map(
+      (x) =>
+        `<li><label class="mitem"><span class="mitem-lbl">${esc(x.label)}</span><input type="radio" name="${name}" data-k="${name}" value="${esc(x.v)}"${x.v === value ? ' checked' : ''}></label></li>`,
+    )
+    .join('')}</ul>`;
 }
-<div class="mrow"><span class="mlbl">${esc(t('metro.options'))}</span><div class="mchips">${opt('vibrate')}${opt('flash')}${opt('wake')}</div></div>
-</div>
-<button type="button" class="btn primary metro-play${on ? ' on' : ''}" data-m="play">${on ? '&#9632; ' + esc(t('metro.stop')) : '&#9654; ' + esc(t('metro.start'))}</button>
-</div>`;
+
+/**
+ * Sound page.
+ * @returns {string}
+ */
+function soundBody() {
+  return choiceList(
+    'sound',
+    SOUNDS.map((k) => ({ v: k, label: t('metro.sounds.' + k) })),
+    s.sound,
+  );
 }
+
+/**
+ * Jazz page: off, 2 and 4, once per bar (with its beat and "every other bar").
+ * @returns {string}
+ */
+function jazzBody() {
+  const items = [
+    { v: 'off', label: t('metro.jazzOff') },
+    ...(canTwoFour(s) ? [{ v: '24', label: t('metro.jazz24') }] : []),
+    { v: 'once', label: t('metro.jazzOnce') },
+  ];
+  let html = choiceList('jazz', items, s.jazz);
+  if (!canTwoFour(s)) html += `<p class="mhint">${esc(t('metro.jazz24Hint'))}</p>`;
+  if (s.jazz === 'once') {
+    const onceOpts = Array.from(
+      { length: s.num },
+      (_, i) => `<option value="${i}"${i === s.onceBeat ? ' selected' : ''}>${i + 1}</option>`,
+    ).join('');
+    html += `<div class="metro-rows"><label class="mrow"><span class="mlbl">${esc(t('metro.onceBeat'))}</span><select data-k="onceBeat">${onceOpts}</select></label><label class="mcheck"><input type="checkbox" data-k="twoBars"${s.twoBars ? ' checked' : ''}> ${esc(t('metro.twoBars'))}</label></div>`;
+  }
+  return html;
+}
+
+/**
+ * Options page: vibration, flash, screen on.
+ * @returns {string}
+ */
+function optionsBody() {
+  return `<ul class="mlist mchoices">${['vibrate', 'flash', 'wake']
+    .map(
+      (k) =>
+        `<li><label class="mitem"><span class="mitem-lbl">${esc(t('metro.' + k))}<small>${esc(t('metro.' + k + 'Hint'))}</small></span><input type="checkbox" class="switch" data-k="${k}"${s[k] ? ' checked' : ''}></label></li>`,
+    )
+    .join('')}</ul>`;
+}
+
+/** Content of each sub-page. */
+const PAGE_BODIES = {
+  meter: meterBody,
+  subdiv: subdivBody,
+  sound: soundBody,
+  jazz: jazzBody,
+  options: optionsBody,
+};
 
 /**
  * Swing value as shown: "straight", "triplet" or a percentage.
@@ -356,14 +519,14 @@ function swingLabel(v) {
  * @returns {string}
  */
 function presetSummary(p) {
-  const jazz =
-    p.jazz === '24' ? ' · ' + t('metro.jazz24') : p.jazz === 'once' ? ' · ' + t('metro.jazzOnce') : '';
   const ps = sanitizeMetro(p);
+  const jazz =
+    ps.jazz === '24' ? ' · ' + t('metro.jazz24') : ps.jazz === 'once' ? ' · ' + t('metro.jazzOnce') : '';
   return `${unitGlyph(ps)} ${ps.tempo} · ${meterLabel(ps)}${jazz}`;
 }
 
 /**
- * Preset view of the sheet.
+ * Preset page.
  * @returns {string}
  */
 function presetsHtml() {
@@ -375,12 +538,12 @@ function presetsHtml() {
     })
     .join('');
   const full = presets.length >= PRESETS_MAX;
-  return `<div class="metro-wrap">
-<header class="metro-head"><button type="button" class="btn ghost" data-m="main">&#8249; ${esc(t('metro.title'))}</button><span class="grow"></span><h2>${esc(t('metro.presets'))}</h2></header>
-<form class="mp-form" id="mpSave"><input type="text" name="name" maxlength="${PRESET_NAME_MAX}" placeholder="${esc(t('metro.presetName'))}" aria-label="${esc(t('metro.presetName'))}"${full ? ' disabled' : ''}><button type="submit" class="btn primary"${full ? ' disabled' : ''}>${esc(t('metro.presetSave'))}</button></form>
+  return pageHtml(
+    'presets',
+    `<form class="mp-form" id="mpSave"><input type="text" name="name" maxlength="${PRESET_NAME_MAX}" placeholder="${esc(t('metro.presetName'))}" aria-label="${esc(t('metro.presetName'))}"${full ? ' disabled' : ''}><button type="submit" class="btn primary"${full ? ' disabled' : ''}>${esc(t('metro.presetSave'))}</button></form>
 <p class="mhint">${esc(t('metro.presetCurrent', { s: presetSummary(s) }))}</p>
-${rows ? `<ul class="mpresets">${rows}</ul>` : `<p class="mhint">${esc(t('metro.presetEmpty'))}</p>`}
-</div>`;
+${rows ? `<ul class="mpresets">${rows}</ul>` : `<p class="mhint">${esc(t('metro.presetEmpty'))}</p>`}`,
+  );
 }
 
 /** Saves the preset list. */
@@ -409,7 +572,7 @@ function renderMini() {
 // ---------- Lights, vibration, flash ----------
 
 /**
- * Lights the sounding beat in the sheet and the mini-bar.
+ * Lights the sounding pulse in the sheet and the mini-bar.
  * @param {?{k: number, beat: number, bar: number, level: number}} p
  */
 function paintLights(p) {
@@ -426,7 +589,7 @@ function paintLights(p) {
   if (count && p) count.textContent = `${p.beat + 1}/${s.num}`;
 }
 
-/** Animation loop: lights, and vibration / flash on each new audible beat. */
+/** Animation loop: lights, and vibration / flash on each new audible pulse. */
 function loop() {
   raf = 0;
   if (!engine.isRunning() || document.hidden) return;
@@ -505,6 +668,28 @@ function levelPatch(field, i, fn) {
 }
 
 /**
+ * Switches a bar on or off (it keeps its level).
+ * @param {HTMLElement} bar
+ */
+function toggleBar(bar) {
+  const pulse = bar.dataset.mbar !== undefined;
+  const i = Number(pulse ? bar.dataset.mbar : bar.dataset.msubbar);
+  update(levelPatch(pulse ? 'levels' : 'subLevels', i, toggleLevel));
+}
+
+/** Adds a tap to the tap tempo series. */
+function tap() {
+  const r = tapTempo(taps, performance.now());
+  taps = r.taps;
+  for (const el of sheet.querySelectorAll('.mtap, #mTempo')) {
+    el.classList.remove('hit');
+    void (/** @type {HTMLElement} */ (el).offsetWidth); // restart the animation
+    el.classList.add('hit');
+  }
+  if (r.bpm) setTempo(r.bpm);
+}
+
+/**
  * Taps on the sheet and the mini-bar.
  * @param {MouseEvent} e
  */
@@ -512,39 +697,26 @@ function onClick(e) {
   const el = /** @type {HTMLElement} */ (e.target).closest('button');
   if (!el || el.disabled) return;
   const d = el.dataset;
-  if (d.step) {
-    if (e.detail === 0) setTempo(s.tempo + Number(d.step)); // keyboard; touch goes through pointerdown
-    return;
-  }
-  if (d.m === 'tap') return; // handled on pointerdown (more precise)
-  if (d.m === 'close') return closeOverlay();
+  // Pointer gestures (steps, TAP, bars) act on pointerdown; a click with
+  // detail 0 comes from the keyboard.
+  if (d.step) return e.detail === 0 && setTempo(s.tempo + Number(d.step));
+  if (d.m === 'tap') return e.detail === 0 && tap();
+  if (d.mbar !== undefined || d.msubbar !== undefined) return e.detail === 0 && toggleBar(el);
+  if (d.m === 'close' || d.m === 'back') return closeOverlay();
   if (d.m === 'open') return openSheet();
   if (d.m === 'play' || d.m === 'stop') return togglePlay();
   if (d.m === 'minus') return setTempo(s.tempo - 1);
   if (d.m === 'plus') return setTempo(s.tempo + 1);
-  if (d.m === 'presets' || d.m === 'main') {
-    view = d.m === 'presets' ? 'presets' : 'main';
-    editing = null;
-    return render();
-  }
-  if (d.mbar !== undefined || d.msubbar !== undefined) {
-    if (e.detail === 0) toggleBar(el); // keyboard; touch goes through pointerdown
-    return;
-  }
+  if (d.m === 'presets') return openPage('presets');
+  if (d.page) return openPage(d.page);
   if (d.mcut) return replace(withGroups(s, cutOrJoin(s.groups, Number(d.mcut))));
   if (d.msub) return replace(withSubdiv(s, d.msub));
-  if (d.mjazz) return update({ jazz: s.jazz === d.mjazz ? 'off' : d.mjazz });
-  if (d.mopt) {
-    update({ [d.mopt]: !s[d.mopt] });
-    return syncWake();
-  }
   if (d.load) {
     const p = presets.find((x) => x.id === d.load);
     if (p) {
       s = applyPreset(s, p);
       save();
-      view = 'main';
-      render();
+      closeOverlay(); // back to the main page
     }
     return;
   }
@@ -560,26 +732,6 @@ function onClick(e) {
       savePresets();
       render();
     });
-}
-
-/**
- * Replaces the settings with derived ones, then saves and redraws.
- * @param {module:metronome~MetroSettings} next
- */
-function replace(next) {
-  s = next;
-  save();
-  render();
-}
-
-/**
- * Switches a bar on or off (it keeps its level).
- * @param {HTMLElement} bar
- */
-function toggleBar(bar) {
-  const pulse = bar.dataset.mbar !== undefined;
-  const i = Number(pulse ? bar.dataset.mbar : bar.dataset.msubbar);
-  update(levelPatch(pulse ? 'levels' : 'subLevels', i, toggleLevel));
 }
 
 /**
@@ -605,30 +757,32 @@ function onSubmit(e) {
 }
 
 /**
- * Sliders while moving (no redraw: the finger keeps the slider).
+ * Swing slider while moving (no redraw: the finger keeps the slider).
  * @param {Event} e
  */
 function onInput(e) {
   const el = /** @type {HTMLInputElement} */ (e.target);
-  if (el.type !== 'range') return;
-  if (el.dataset.k === 'swing') {
-    s = { ...s, swing: Number(el.value) };
-    const out = sheet.querySelector('#mSwingVal');
-    if (out) out.textContent = swingLabel(s.swing);
-  }
+  if (el.dataset.k !== 'swing') return;
+  s = { ...s, swing: Number(el.value) };
+  const out = sheet.querySelector('#mSwingVal');
+  if (out) out.textContent = swingLabel(s.swing);
   scheduleConfigure();
 }
 
 /**
- * Selects, check box, end of a slider move: saved.
+ * Menus, choices, switches, end of a slider move: saved.
  * @param {Event} e
  */
 function onChange(e) {
   const el = /** @type {HTMLInputElement} */ (e.target);
   const k = el.dataset.k;
-  if (k === 'sound') return update({ sound: el.value });
+  if (k === 'sound' || k === 'jazz') return update({ [k]: el.value });
   if (k === 'onceBeat') return update({ onceBeat: Number(el.value) });
   if (k === 'twoBars') return update({ twoBars: el.checked });
+  if (k === 'vibrate' || k === 'flash' || k === 'wake') {
+    update({ [k]: el.checked });
+    return syncWake();
+  }
   if (k === 'num') return replace(withMeter(s, Number(el.value), s.den));
   if (k === 'den') return replace(withMeter(s, s.num, Number(el.value)));
   if (k === 'shortcut') return el.value !== '' && replace(withShortcut(s, Number(el.value)));
@@ -637,49 +791,44 @@ function onChange(e) {
   if (k === 'swing') save();
 }
 
-/** Repeat timer of a held −/+ button. */
+/** Repeat timer of a held − or + button. */
 let repeat = 0;
 
 /**
- * Pointer down: tap tempo (on the press, more precise than the click), held
- * −/+ buttons (repeat), tempo drag on the big number.
+ * Pointer down: TAP (on the press, more precise than the click), − and +
+ * (a tap = 1, held = steps of 5), the tempo number (tap or drag), the bars.
  * @param {PointerEvent} e
  */
 function onPointerDown(e) {
   const tgt = /** @type {HTMLElement} */ (e.target);
-  const tap = tgt.closest('[data-m="tap"]');
-  if (tap) {
-    const r = tapTempo(taps, performance.now());
-    taps = r.taps;
-    tap.classList.remove('hit');
-    void (/** @type {HTMLElement} */ (tap).offsetWidth);
-    tap.classList.add('hit');
-    if (r.bpm) setTempo(r.bpm);
-    return;
-  }
+  if (tgt.closest('[data-m="tap"]')) return tap();
   const st = /** @type {HTMLElement} */ (tgt.closest('[data-step]'));
-  if (st) {
-    const d = Number(st.dataset.step);
-    setTempo(s.tempo + d);
-    const stopRepeat = () => {
-      clearTimeout(repeat);
-      repeat = 0;
-      window.removeEventListener('pointerup', stopRepeat);
-      window.removeEventListener('pointercancel', stopRepeat);
-    };
-    const again = () => {
-      setTempo(s.tempo + d);
-      repeat = setTimeout(again, 90);
-    };
-    repeat = setTimeout(again, 450);
-    window.addEventListener('pointerup', stopRepeat);
-    window.addEventListener('pointercancel', stopRepeat);
-    return;
-  }
+  if (st) return holdStep(Math.sign(Number(st.dataset.step)));
   const bar = /** @type {HTMLElement} */ (tgt.closest('[data-mbar], [data-msubbar]'));
   if (bar) return dragBar(bar, e);
   const zone = /** @type {HTMLElement} */ (tgt.closest('#mTempo'));
   if (zone) dragTempo(zone, e);
+}
+
+/**
+ * − or + held: one step right away, then steps of 5 while held.
+ * @param {number} dir -1 or 1.
+ */
+function holdStep(dir) {
+  setTempo(s.tempo + dir);
+  const stopRepeat = () => {
+    clearTimeout(repeat);
+    repeat = 0;
+    window.removeEventListener('pointerup', stopRepeat);
+    window.removeEventListener('pointercancel', stopRepeat);
+  };
+  const again = () => {
+    setTempo(s.tempo + 5 * dir);
+    repeat = setTimeout(again, 220);
+  };
+  repeat = setTimeout(again, 450);
+  window.addEventListener('pointerup', stopRepeat);
+  window.addEventListener('pointercancel', stopRepeat);
 }
 
 /**
@@ -698,11 +847,10 @@ function dragBar(bar, e) {
   bar.setPointerCapture(e.pointerId);
   const move = (ev) => {
     const dy = y0 - ev.clientY;
-    if (!moved && Math.abs(dy) < 6) return;
+    if (!moved && Math.abs(dy) < SLOP) return;
     moved = true;
     const lv = Math.max(0, Math.min(LEVEL_MAX, start + Math.round(dy / LEVEL_PX)));
-    const patch = levelPatch(field, i, () => lv);
-    s = sanitizeMetro({ ...s, ...patch });
+    s = sanitizeMetro({ ...s, ...levelPatch(field, i, () => lv) });
     bar.style.setProperty('--lv', String(lv / LEVEL_MAX));
     bar.classList.toggle('off', lv === 0);
     scheduleConfigure();
@@ -722,22 +870,35 @@ function dragBar(bar, e) {
 }
 
 /**
- * Tempo drag: up = faster, one BPM every {@link DRAG_PX} px.
+ * Tempo number gesture: a tap is a tap-tempo tap (timed at the press); a
+ * drag changes the tempo, up = faster, one BPM every {@link DRAG_PX} px.
  * @param {HTMLElement} zone
  * @param {PointerEvent} e
  */
 function dragTempo(zone, e) {
   const y0 = e.clientY;
   const t0 = s.tempo;
+  const pressed = performance.now();
+  let moved = false;
   zone.setPointerCapture(e.pointerId);
-  zone.classList.add('drag');
-  const move = (ev) => setTempo(t0 + Math.round((y0 - ev.clientY) / DRAG_PX), false);
+  const move = (ev) => {
+    if (!moved && Math.abs(y0 - ev.clientY) < SLOP) return;
+    moved = true;
+    zone.classList.add('drag');
+    setTempo(t0 + Math.round((y0 - ev.clientY) / DRAG_PX), false);
+  };
   const end = () => {
     zone.classList.remove('drag');
     zone.removeEventListener('pointermove', move);
     zone.removeEventListener('pointerup', end);
     zone.removeEventListener('pointercancel', end);
-    setMeta({ metro: s });
+    if (moved) setMeta({ metro: s });
+    else {
+      // Timed at the press, like the TAP button.
+      const r = tapTempo(taps, pressed);
+      taps = r.taps;
+      if (r.bpm) setTempo(r.bpm);
+    }
   };
   zone.addEventListener('pointermove', move);
   zone.addEventListener('pointerup', end);
@@ -749,6 +910,13 @@ sheet.addEventListener('submit', onSubmit);
 sheet.addEventListener('input', onInput);
 sheet.addEventListener('change', onChange);
 sheet.addEventListener('pointerdown', onPointerDown);
+sheet.addEventListener('keydown', (e) => {
+  // The tempo number is a tap zone for the keyboard too.
+  if (/** @type {HTMLElement} */ (e.target).id === 'mTempo' && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    tap();
+  }
+});
 
 // The ♩ button of every screen header (headers are redrawn often).
 document.addEventListener('click', (e) => {
