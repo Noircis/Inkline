@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/exercises.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,17 +53,17 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/exercises
  * @description
- * **Entraînement › Exercices aléatoires** (2.8), en deux écrans :
+ * **Practice › Random exercises** (2.8), in two screens:
  *
- * 1. `gen` : les réglages (mesure, longueur, notes par mesure, positions
- *    permises pour la première note, subdivision), puis « Générer » ;
- * 2. `genPlay` : l'exercice en grand, son numéro (↻ pour un autre), et une
- *    barre de lecture en bas (tempo, swing, boucle, métronome).
+ * 1. `gen`: the settings (time signature, length, notes per measure, allowed
+ *    positions for the first note, subdivision), then "Generate";
+ * 2. `genPlay`: the exercise in large print, its number (↻ for another one),
+ *    and a playback bar at the bottom (tempo, swing, loop, metronome).
  *
- * Le tirage est fait par le module pur {@link module:exercise|exercise} ;
- * l'écriture des mesures, par {@link module:placements|placements}. Les
- * réglages sont mémorisés (`meta.gen`), avec le numéro du dernier exercice :
- * revenir sur l'écran redonne le même.
+ * The draw is done by the pure module {@link module:exercise|exercise}; the
+ * writing of the measures by {@link module:placements|placements}. Settings
+ * are remembered (`meta.gen`), with the number of the last exercise: coming
+ * back to the screen gives the same one.
  */
 
 import { t } from '../i18n.js';
@@ -92,11 +92,11 @@ import {
   highlight,
 } from './drill-kit.js';
 
-/** Identifiant de lecture de l'exercice. */
+/** Playback id of the exercise. */
 const PLAY_ID = 'gen';
 
 /**
- * Réglages courants des exercices.
+ * Current exercise settings.
  * @returns {module:storage~GenSettings}
  */
 function gen() {
@@ -104,7 +104,7 @@ function gen() {
 }
 
 /**
- * Modifie et mémorise des réglages.
+ * Changes and remembers settings.
  * @param {Object} patch
  */
 function updateGen(patch) {
@@ -112,7 +112,7 @@ function updateGen(patch) {
 }
 
 /**
- * Positions permises pour la première note (toutes par défaut).
+ * Allowed positions for the first note (all by default).
  * @param {module:placements~Meter} m
  * @returns {Array.&lt;number>}
  */
@@ -121,7 +121,7 @@ function startsFor(m) {
 }
 
 /**
- * Bouton « − valeur + ».
+ * "− value +" button.
  * @param {string} key
  * @param {string} label
  * @param {number} value
@@ -131,7 +131,7 @@ const stepper = (key, label, value) =>
   `&lt;span class="stepper" role="group" aria-label="${esc(label)}">&lt;button type="button" class="btn" data-step="${key}" data-d="-1" aria-label="${esc(label + ' : ' + t('ex.less'))}">&amp;minus;&lt;/button>&lt;output id="v_${key}">${value}&lt;/output>&lt;button type="button" class="btn" data-step="${key}" data-d="1" aria-label="${esc(label + ' : ' + t('ex.more'))}">+&lt;/button>&lt;/span>`;
 
 /**
- * Écran des réglages.
+ * Settings screen.
  */
 function renderGen() {
   audio.stop();
@@ -190,7 +190,7 @@ function renderGen() {
       const d = Number(el.dataset.d);
       if (el.dataset.step === 'min') {
         min = Math.max(1, Math.min(n, min + d));
-        max = Math.max(max, min); // « de » ne dépasse jamais « à »
+        max = Math.max(max, min); // "from" never goes beyond "to"
       } else {
         max = Math.max(1, Math.min(n, max + d));
         min = Math.min(min, max);
@@ -225,7 +225,7 @@ function renderGen() {
 registerScreen('gen', renderGen);
 
 /**
- * Réglages complets d'un exercice, d'après les réglages mémorisés.
+ * Full settings of an exercise, from the remembered settings.
  * @returns {module:exercise~ExerciseSettings}
  */
 function exerciseSettings() {
@@ -235,8 +235,8 @@ function exerciseSettings() {
 }
 
 /**
- * Prévient quand les réglages ne permettent pas assez de mesures différentes
- * (une mesure reviendra forcément).
+ * Warns when the settings do not allow enough distinct measures (a measure
+ * will necessarily come back).
  */
 function updateFewHint() {
   const el = /** @type {HTMLElement} */ (app.querySelector('#fewHint'));
@@ -247,11 +247,11 @@ function updateFewHint() {
   el.textContent = n === 1 ? t('ex.onlyOne') : t('ex.onlyN', { n });
 }
 
-/** Bloc de l'exercice affiché. */
+/** Block of the exercise shown. */
 let block = null;
 
 /**
- * Construit le bloc de l'exercice courant (réglages + numéro).
+ * Builds the block of the current exercise (settings + number).
  * @returns {module:model~StaffBlock}
  */
 function buildBlock() {
@@ -260,7 +260,7 @@ function buildBlock() {
 }
 
 /**
- * Écran de l'exercice.
+ * Exercise screen.
  */
 function renderGenPlay() {
   audio.stop();
@@ -309,13 +309,13 @@ function renderGenPlay() {
     metroBtn.setAttribute('aria-expanded', String(!panel.hidden));
   });
   app.querySelector(`[data-play="${PLAY_ID}"]`).addEventListener('click', () => play());
-  // Appui long : « Jouer d'ici » ou boucle sur des mesures de l'exercice (2.8.4).
+  // Long press: "Play from here" or loop over measures of the exercise (2.8.4).
   const st = /** @type {HTMLElement} */ (app.querySelector('#genStaff'));
   bindMeasureSelect(
     st,
     staffTarget(st, () => (st._W &amp;&amp; block ? layout(block, st._W, false, null) : null), {
       playId: () => PLAY_ID,
-      // Une mesure : jusqu'à la fin, en boucle si « Boucle » est activé.
+      // One measure: to the end, looping if "Loop" is on.
       play: (a, to, loop, done) => play({ from: a, to, loop: loop || settings().loop }, done),
     }),
   );
@@ -325,9 +325,9 @@ function renderGenPlay() {
 registerScreen('genPlay', renderGenPlay);
 
 /**
- * Lance ou arrête l'exercice.
- * @param {module:audio~PlayOptions} [extra] Partie à jouer (sélection de mesures, 2.8.4).
- * @param {function()} [done] À la fin de la lecture.
+ * Starts or stops the exercise.
+ * @param {module:audio~PlayOptions} [extra] Part to play (measure selection, 2.8.4).
+ * @param {function()} [done] At the end of playback.
  */
 function play(extra = {}, done = () => {}) {
   const el = app.querySelector('#genStaff');
@@ -347,9 +347,9 @@ function play(extra = {}, done = () => {}) {
 }
 
 /**
- * Dessine l'exercice. La portée est dessinée plus étroite que l'écran puis
- * agrandie par le CSS (×1,15) (`width: 100%`) : les notes sont plus grosses, à lire
- * de loin, pupitre posé.
+ * Draws the exercise. The staff is drawn narrower than the screen, then
+ * enlarged by CSS (×1.15) (`width: 100%`): the notes are bigger, readable
+ * from a distance with the phone on a music stand.
  */
 function draw() {
   const el = /** @type {HTMLElement} */ (app.querySelector('#genStaff'));

@@ -1,17 +1,17 @@
 /**
  * @module ui/folder-sheet
  * @description
- * **Éditeur de dossier** : un panneau qui monte du bas de l'écran (bottom
- * sheet), pour créer, renommer, recolorer ou supprimer un dossier. Il est
- * ouvert depuis la barre de dossiers de l'accueil, le sélecteur « Dossier »
- * d'une note et la section Dossiers des Options.
+ * **Folder editor**: a panel that slides up from the bottom of the screen
+ * (bottom sheet), to create, rename, recolor or delete a folder. It is
+ * opened from the folder bar of the home screen, the "Folder" picker of a
+ * note and the Folders section of Settings.
  *
- * Supprimer un dossier ne supprime **aucune** note : elles redeviennent
- * « non classées » ({@link module:folders.deleteFolder|deleteFolder}).
+ * Deleting a folder deletes **no** note: they become "Unfiled" again
+ * ({@link module:folders.deleteFolder|deleteFolder}).
  *
- * Depuis la 2.8.6, le module ouvre aussi le panneau des **catégories** d'un
- * dossier ({@link openCategoriesSheet}) et le panneau **Ranger la note**
- * ({@link openArrangeSheet}) : dossier et catégories d'une note.
+ * Since 2.8.6, the module also opens a folder's **categories** panel
+ * ({@link openCategoriesSheet}) and the **File note** panel
+ * ({@link openArrangeSheet}): folder and categories of a note.
  */
 
 import { t } from '../i18n.js';
@@ -35,9 +35,9 @@ import { flushSave, saveFolders } from '../storage.js';
 import { confirmTap } from './common.js';
 
 /**
- * HTML du panneau.
- * @param {boolean} editing Modification (sinon création).
- * @param {string} color Couleur cochée.
+ * HTML of the panel.
+ * @param {boolean} editing Editing (otherwise creating).
+ * @param {string} color Checked color.
  * @returns {string}
  */
 function sheetHtml(editing, color) {
@@ -61,9 +61,9 @@ function sheetHtml(editing, color) {
 }
 
 /**
- * Branche la suppression en deux temps : les notes du dossier passent dans
- * « Non classées », aucune n'est supprimée.
- * @param {HTMLElement} back Fond du panneau.
+ * Wires the two-step deletion: the folder's notes move to "Unfiled", none is
+ * deleted.
+ * @param {HTMLElement} back Panel backdrop.
  * @param {module:folders~Folder} folder
  * @param {function((module:folders~Folder|null))} close
  */
@@ -82,11 +82,11 @@ function bindDelete(back, folder, close) {
 }
 
 /**
- * Ouvre l'éditeur.
+ * Opens the editor.
  *
- * @param {module:folders~Folder|null} folder Dossier à modifier, ou `null` pour en créer un.
- * @param {function((module:folders~Folder|null))} [onDone] Appelé à la fermeture avec
- *   le dossier enregistré, ou `null` (annulé ou supprimé).
+ * @param {module:folders~Folder|null} folder Folder to edit, or `null` to create one.
+ * @param {function((module:folders~Folder|null))} [onDone] Called on close with the
+ *   saved folder, or `null` (cancelled or deleted).
  */
 export function openFolderSheet(folder, onDone = () => {}) {
   closeFolderSheet();
@@ -105,7 +105,7 @@ export function openFolderSheet(folder, onDone = () => {}) {
     onDone(result);
   };
   back.addEventListener('click', (e) => {
-    if (e.target === back) close(null); // toucher hors du panneau = annuler
+    if (e.target === back) close(null); // tap outside the panel = cancel
   });
   back.querySelector('#fsCancel').addEventListener('click', () => close(null));
   back.querySelectorAll('[data-color]').forEach((b) => {
@@ -131,32 +131,31 @@ export function openFolderSheet(folder, onDone = () => {}) {
   });
   if (editing) bindDelete(back, folder, close);
 
-  // Sur la création, le clavier s'ouvre directement ; en modification, on
-  // évite qu'il cache le panneau (on modifie souvent seulement la couleur).
+  // When creating, the keyboard opens right away; when editing, keep it
+  // from hiding the panel (often only the color is changed).
   if (!editing) requestAnimationFrame(() => name.focus());
 }
 
-/** Ferme l'éditeur s'il est ouvert (sans rappel). */
+/** Closes the editor if it is open (no callback). */
 function closeFolderSheet() {
   const el = document.getElementById('folderSheet');
   if (el) el.remove();
 }
 
-// ---------- Catégories (2.8.6) ----------
+// ---------- Categories (2.8.6) ----------
 
 /**
- * Ouvre le panneau **Catégories** d'un dossier : ajouter, renommer, changer
- * l'ordre (↑ ↓), supprimer. On travaille sur une copie : rien ne change avant
- * « Enregistrer ». Supprimer une catégorie ne supprime aucune note : elle
- * est seulement retirée des notes qui l'avaient.
+ * Opens a folder's **Categories** panel: add, rename, reorder (↑ ↓), delete.
+ * Work is done on a copy: nothing changes before "Save". Deleting a category
+ * deletes no note: it is only removed from the notes that had it.
  *
  * @param {module:folders~Folder} folder
- * @param {function(boolean)} [onDone] Appelé à la fermeture (`true` si enregistré).
- * @param {{focusNew: (boolean|undefined)}} [opt] `focusNew` : clavier ouvert sur « Nouvelle catégorie ».
+ * @param {function(boolean)} [onDone] Called on close (`true` if saved).
+ * @param {{focusNew: (boolean|undefined)}} [opt] `focusNew`: keyboard open on "New category".
  */
 export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
   closeFolderSheet();
-  /** Copie de travail : `{id, name}`, `id` absent pour une catégorie nouvelle. */
+  /** Working copy: `{id, name}`, `id` missing for a new category. */
   const work = (folder.cats || []).map((c) => ({ ...c }));
   const back = document.createElement('div');
   back.className = 'sheet-back';
@@ -235,15 +234,15 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
     back.querySelector('form').addEventListener('submit', (e) => {
       e.preventDefault();
       const pending = /** @type {HTMLInputElement} */ (back.querySelector('#csNew'));
-      // La touche ✓ du clavier dans « Nouvelle catégorie » envoie le formulaire
-      // (sur Android, elle n'arrive pas toujours comme une touche Entrée) :
-      // elle ajoute la catégorie au lieu d'enregistrer et de fermer.
+      // The keyboard's ✓ key in "New category" submits the form
+      // (on Android it does not always arrive as an Enter key):
+      // it adds the category instead of saving and closing.
       const submitter = /** @type {SubmitEvent} */ (e).submitter;
       if (!submitter && document.activeElement === pending && pending.value.trim()) {
         add();
         return;
       }
-      // Un nom tapé mais pas encore ajouté n'est jamais perdu.
+      // A name typed but not added yet is never lost.
       const extra = cleanFolderName(pending.value, CAT_NAME_MAX);
       if (
         extra &&
@@ -251,7 +250,7 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
         !work.some((c) => c.name.localeCompare(extra, 'fr', { sensitivity: 'base' }) === 0)
       )
         work.push({ name: extra });
-      // Catégories supprimées : retirées des notes ; puis ordre et noms.
+      // Deleted categories: removed from notes; then order and names.
       const kept = new Set(work.map((c) => c.id).filter(Boolean));
       (folder.cats || [])
         .filter((c) => !kept.has(c.id))
@@ -259,10 +258,10 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
       folder.cats = [];
       work.forEach((c) => {
         const name = cleanFolderName(c.name, CAT_NAME_MAX);
-        if (!name) return; // nom effacé : catégorie ignorée (les notes la perdent)
+        if (!name) return; // name erased: category ignored (notes lose it)
         folder.cats.push({ id: c.id || uid(), name });
       });
-      // Une catégorie vidée de son nom disparaît aussi des notes.
+      // A category whose name was erased also disappears from notes.
       const ids = new Set(folder.cats.map((c) => c.id));
       Object.values(state.notes).forEach((n) => {
         if (n.folder !== folder.id || !n.cats) return;
@@ -284,12 +283,12 @@ export function openCategoriesSheet(folder, onDone = () => {}, opt = {}) {
 }
 
 /**
- * Ouvre le panneau **Ranger la note** : son dossier (un seul) et, dans ce
- * dossier, ses catégories (autant qu'on veut). Chaque choix s'applique tout
- * de suite ; changer de dossier efface les catégories.
+ * Opens the **File note** panel: its folder (only one) and, in that folder,
+ * its categories (as many as wanted). Each choice applies at once; changing
+ * the folder clears the categories.
  *
  * @param {module:model~Note} note
- * @param {function()} onChange Après chaque changement (enregistrement compris).
+ * @param {function()} onChange After each change (save included).
  */
 export function openArrangeSheet(note, onChange) {
   closeFolderSheet();
@@ -346,7 +345,7 @@ export function openArrangeSheet(note, onChange) {
       }),
     );
     const input = /** @type {?HTMLInputElement} */ (back.querySelector('#arNew'));
-    /** Crée la catégorie tapée et la coche sur la note. */
+    /** Creates the typed category and checks it on the note. */
     const addTyped = () => {
       const f = state.folders[note.folder];
       const c = f && input && addCategory(f, input.value);
@@ -356,14 +355,14 @@ export function openArrangeSheet(note, onChange) {
       onChange();
       return true;
     };
-    // Bouton « Ajouter » ou touche ✓ du clavier (envoi du formulaire : plus
-    // fiable sur Android qu'une touche Entrée).
+    // "Add" button or the keyboard's ✓ key (form submission: more
+    // reliable on Android than an Enter key).
     back.querySelector('#arNewForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
       if (addTyped()) render();
     });
     back.querySelector('#arDone').addEventListener('click', () => {
-      addTyped(); // un nom tapé mais pas ajouté n'est pas perdu
+      addTyped(); // a name typed but not added is not lost
       close();
     });
     back.querySelector('#arNewFolder').addEventListener('click', () =>

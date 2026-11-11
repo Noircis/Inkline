@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>chords.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,24 +53,24 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module chords
  * @description
- * Analyse des **accords chiffrés** saisis en texte libre (`Cm7`, `Bb7alt`,
- * `F#m7b5`, `Ebmaj9/G`…).
+ * Parsing of **chord symbols** typed as free text (`Cm7`, `Bb7alt`, `F#m7b5`,
+ * `Ebmaj9/G`…).
  *
- * L'utilisateur peut écrire les qualités de plusieurs façons (`maj7`, `Δ`, `^7`,
- * `M7` ; `m7`, `-7`, `min7` ; `m7b5`, `ø` ; `dim7`, `°7`, `o7`). Ce module :
+ * The user can write qualities in several ways (`maj7`, `Δ`, `^7`, `M7`;
+ * `m7`, `-7`, `min7`; `m7b5`, `ø`; `dim7`, `°7`, `o7`). This module:
  *
- * - **découpe** un accord en fondamentale / qualité / basse ({@link module:chords.CHORD_RE|CHORD_RE}) ;
- * - le **met en forme** pour l'affichage avec la qualité en exposant
- *   ({@link module:chords.chordHtml|chordHtml}) ;
- * - en déduit les **notes à jouer** ({@link module:chords.chordTones|chordTones}).
+ * - **splits** a chord into root / quality / bass ({@link module:chords.CHORD_RE|CHORD_RE});
+ * - **formats** it for display with the quality as superscript
+ *   ({@link module:chords.chordHtml|chordHtml});
+ * - derives the **notes to play** ({@link module:chords.chordTones|chordTones}).
  *
- * La conversion vers et depuis la notation iReal Pro est dans {@link module:ireal|ireal}.
+ * Conversion to and from iReal Pro notation is in {@link module:ireal|ireal}.
  */
 
 import { esc, mod } from './util.js';
 
 /**
- * Découpage d'un accord : `[1]` lettre, `[2]` altération, `[3]` qualité, `[4]` basse.
+ * Splitting a chord: `[1]` letter, `[2]` accidental, `[3]` quality, `[4]` bass.
  *
  * @example
  * CHORD_RE.exec('Bbm7/F')  // ['Bbm7/F', 'B', 'b', 'm7', 'F']
@@ -78,12 +78,12 @@ import { esc, mod } from './util.js';
  */
 export const CHORD_RE = /^([A-G])([b#♭♯]?)([^/]*)(?:\/([A-G][b#♭♯]?))?$/;
 
-/** Classe de hauteur (0 = do … 11 = si) de chaque lettre. */
+/** Pitch class (0 = C … 11 = B) of each letter. */
 const LETTER_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
 /**
- * Classe de hauteur d'un nom de note (`'Bb'` → 10, `'F#'` → 6).
- * @param {string} s Lettre + altération éventuelle.
+ * Pitch class of a note name (`'Bb'` → 10, `'F#'` → 6).
+ * @param {string} s Letter + optional accidental.
  * @returns {number}
  */
 function pitchClass(s) {
@@ -91,14 +91,14 @@ function pitchClass(s) {
   return LETTER_PC[s[0]] + (/[b♭]/.test(acc) ? -1 : /[#♯]/.test(acc) ? 1 : 0);
 }
 
-/** Lettres dans l'ordre des degrés. */
+/** Letters in degree order. */
 const LETTERS = 'CDEFGAB';
 
 /**
- * Transpose un nom de note (« Bb », « F# », « C ») de `steps` degrés et
- * `semis` demi-tons, en gardant l'orthographe musicale : do + sixte majeure
- * donne la (pas si♭♭), si♭ + sixte majeure donne sol. Si l'orthographe
- * demandait un double dièse ou un double bémol, on prend le nom voisin.
+ * Transposes a note name ("Bb", "F#", "C") by `steps` degrees and `semis`
+ * semitones, keeping the musical spelling: C + major sixth gives A (not
+ * B𝄫), B♭ + major sixth gives G. If the spelling would need a double sharp
+ * or a double flat, the neighboring name is used.
  * @param {string} name
  * @param {number} steps
  * @param {number} semis
@@ -116,14 +116,14 @@ function transposeName(name, steps, semis) {
 }
 
 /**
- * Transpose un accord chiffré (fondamentale et basse). Les symboles
- * spéciaux et les textes non reconnus sont rendus tels quels.
+ * Transposes a chord symbol (root and bass). Special symbols and
+ * unrecognized texts are returned as is.
  *
  * @example
- * transposeChord('Bb7/D', 5, 9) // 'G7/B' (do → la : sixte majeure)
+ * transposeChord('Bb7/D', 5, 9) // 'G7/B' (C → A: major sixth)
  * @param {string} c
- * @param {number} steps Degrés.
- * @param {number} semis Demi-tons.
+ * @param {number} steps Degrees.
+ * @param {number} semis Semitones.
  * @returns {string}
  */
 export function transposeChord(c, steps, semis) {
@@ -135,8 +135,8 @@ export function transposeChord(c, steps, semis) {
 }
 
 /**
- * Indique si une case de grille est valide : accord reconnu, case vide
- * (prolongation), *no chord* ou répétition de mesure.
+ * Tells whether a chart slot is valid: recognized chord, empty slot
+ * (continuation), *no chord* or measure repeat.
  * @param {string} c
  * @returns {boolean}
  */
@@ -145,12 +145,11 @@ export function chordOk(c) {
 }
 
 /**
- * Met la qualité en forme pour l'affichage, comme iReal Pro (2.8.5) :
- * mineur `−`, majeur 7 `Δ7`, demi-diminué `ø7`, diminué `°`, augmenté `+`,
- * et `b`/`#` → `♭`/`♯`. Toutes les façons de l'écrire au clavier donnent le
- * même affichage :
+ * Formats the quality for display, like iReal Pro (2.8.5): minor `−`, major
+ * 7 `Δ7`, half-diminished `ø7`, diminished `°`, augmented `+`, and `b`/`#` →
+ * `♭`/`♯`. Every way of typing it gives the same display:
  *
- * | Saisie                          | Affichage |
+ * | Typed                           | Display   |
  * |---------------------------------|-----------|
  * | `m7`, `-7`, `min7`, `mi7`       | `−7`      |
  * | `maj7`, `^7`, `^`, `Δ`, `M7`    | `Δ7`      |
@@ -160,7 +159,7 @@ export function chordOk(c) {
  * | `dim7`, `o7`, `°7`              | `°7`      |
  * | `aug`, `+`                      | `+`       |
  *
- * @param {string} q Qualité brute.
+ * @param {string} q Raw quality.
  * @returns {string}
  */
 function prettyQuality(q) {
@@ -176,18 +175,18 @@ function prettyQuality(q) {
 }
 
 /**
- * Parties d'affichage d'un accord.
+ * Display parts of a chord.
  * @typedef {Object} ChordParts
- * @property {string} root Fondamentale avec altération (« B♭ »).
- * @property {string} quality Qualité mise en forme (« –7 », « Δ », « 7♭9 »), à afficher en exposant.
- * @property {string} bass Basse (« /F ») ou chaîne vide.
+ * @property {string} root Root with accidental ("B♭").
+ * @property {string} quality Formatted quality ("–7", "Δ", "7♭9"), shown as superscript.
+ * @property {string} bass Bass ("/F") or empty string.
  */
 
 /**
- * Découpe un accord pour l'affichage (utilisé par le HTML de la grille et
- * par l'export en image).
+ * Splits a chord for display (used by the chart HTML and by the image
+ * export).
  * @param {string} c
- * @returns {ChordParts|null} `null` si l'accord n'est pas reconnu.
+ * @returns {ChordParts|null} `null` if the chord is not recognized.
  */
 export function chordParts(c) {
   const m = CHORD_RE.exec(c);
@@ -197,12 +196,12 @@ export function chordParts(c) {
 }
 
 /**
- * HTML d'affichage d'une case de grille : fondamentale en gros, qualité en
- * exposant, basse en petit. Une case invalide est rendue telle quelle avec la
- * classe `bad` (soulignée en rouge par le CSS).
+ * Display HTML of a chart slot: large root, quality as superscript, small
+ * bass. An invalid slot is rendered as is with the `bad` class (underlined
+ * in red by the CSS).
  *
- * @param {string} c Contenu de la case.
- * @returns {string} Fragment HTML (déjà échappé).
+ * @param {string} c Slot content.
+ * @returns {string} HTML fragment (already escaped).
  */
 export function chordHtml(c) {
   if (c === '') return '&lt;span class="slash">/&lt;/span>';
@@ -213,44 +212,44 @@ export function chordHtml(c) {
 }
 
 /**
- * Voicing jouable d'un accord.
+ * Playable voicing of a chord.
  * @typedef {Object} ChordVoicing
- * @property {number} bass Note MIDI de basse (entre mi 2 et ré♯ 3).
- * @property {number[]} notes Notes MIDI de l'accord (entre mi 3 et do 5).
+ * @property {number} bass MIDI bass note (between E2 and D♯3).
+ * @property {number[]} notes MIDI notes of the chord (between E3 and C5).
  */
 
 /**
- * Déduit les notes d'un accord à partir de sa qualité.
+ * Derives the notes of a chord from its quality.
  *
- * ## Analyse de la qualité
+ * ## Parsing the quality
  *
- * On détecte d'abord la famille (majeur 7, mineur, demi-diminué, diminué),
- * puis les ajouts dans le reste de la chaîne :
+ * The family is detected first (major 7, minor, half-diminished,
+ * diminished), then the additions in the rest of the string:
  *
- * | Indice        | Effet                              |
- * |---------------|------------------------------------|
- * | 7, 9, 11, 13  | septième mineure (ou majeure si maj) |
- * | 6 (sans 7)    | sixte à la place de la septième    |
- * | sus           | quarte à la place de la tierce     |
- * | b5 / #5, +    | quinte diminuée / augmentée        |
- * | b9 / #9 / 9   | neuvième                           |
- * | #11, 13, b13  | extensions                         |
- * | alt           | ♭9 + ♯9 + ♯5                       |
+ * | Clue          | Effect                              |
+ * |---------------|-------------------------------------|
+ * | 7, 9, 11, 13  | minor seventh (or major if maj)     |
+ * | 6 (no 7)      | sixth instead of the seventh        |
+ * | sus           | fourth instead of the third         |
+ * | b5 / #5, +    | diminished / augmented fifth        |
+ * | b9 / #9 / 9   | ninth                               |
+ * | #11, 13, b13  | extensions                          |
+ * | alt           | ♭9 + ♯9 + ♯5                        |
  *
  * ## Voicing
  *
- * La fondamentale est jouée à la basse **et** dans l'accord (depuis la 2.8.8).
- * Sans elle, deux accords différents pouvaient donner exactement la même
- * nappe : Fmaj7 sans fa et F♯ø7 sans fa♯ donnent tous deux la, do, mi. Au
- * téléphone, où la basse s'entend peu, on n'entendait alors aucun changement.
+ * The root is played in the bass **and** in the chord (since 2.8.8).
+ * Without it, two different chords could give exactly the same pad: Fmaj7
+ * without F and F♯ø7 without F♯ both give A, C, E. On a phone, where the
+ * bass is barely heard, no change could be heard at all.
  *
- * Les intervalles sont repliés dans une tessiture fixe (MIDI 52 à 72) : on
- * obtient des voicings serrés, et des enchaînements avec peu de mouvement,
- * sans algorithme de conduite des voix. La quinte, la note la moins utile,
- * est omise dès qu'il y a deux extensions.
+ * Intervals are folded into a fixed range (MIDI 52 to 72): this gives close
+ * voicings, and progressions with little movement, with no voice-leading
+ * algorithm. The fifth, the least useful note, is left out as soon as there
+ * are two extensions.
  *
- * @param {string} c Accord.
- * @returns {ChordVoicing|null} `null` si l'accord n'est pas reconnu.
+ * @param {string} c Chord.
+ * @returns {ChordVoicing|null} `null` if the chord is not recognized.
  */
 export function chordTones(c) {
   const m = CHORD_RE.exec(c);
@@ -272,7 +271,7 @@ export function chordTones(c) {
   if (isMaj || minMaj) sev = 11;
   else if (isHalf) sev = 10;
   else if (isDim)
-    sev = /7/.test(body) ? 9 : null; // septième diminuée = 9 demi-tons
+    sev = /7/.test(body) ? 9 : null; // diminished seventh = 9 semitones
   else if (hasExt) sev = 10;
   if (/(^|[^1b#])6/.test(body) &amp;&amp; !/7/.test(body)) sev = 9;
   if (/sus/.test(body)) third = 5;

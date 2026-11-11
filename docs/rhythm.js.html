@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>rhythm.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,19 +53,18 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module rhythm
  * @description
- * Tout ce qui relève du **temps** sur une portée, indépendamment du dessin :
+ * Everything about **time** on a staff, independent of drawing:
  *
- * - découpage en mesures ({@link module:rhythm.segmentMeasures|segmentMeasures}),
- * - regroupement des triolets ({@link module:rhythm.tupletGroups|tupletGroups}),
- * - regroupement des ligatures ({@link module:rhythm.beamGroups|beamGroups}),
- * - ordre de lecture avec reprises ({@link module:rhythm.staffPlayOrder|staffPlayOrder}),
+ * - splitting into measures ({@link module:rhythm.segmentMeasures|segmentMeasures}),
+ * - grouping triplets ({@link module:rhythm.tupletGroups|tupletGroups}),
+ * - grouping beams ({@link module:rhythm.beamGroups|beamGroups}),
+ * - playback order with repeats ({@link module:rhythm.staffPlayOrder|staffPlayOrder}),
  * - swing ({@link module:rhythm.swingWarp|swingWarp}),
- * - calcul de la liste d'événements sonores ({@link module:rhythm.staffEvents|staffEvents}).
+ * - computing the list of sound events ({@link module:rhythm.staffEvents|staffEvents}).
  *
- * Ces fonctions sont **pures** (sans DOM, sans effet de bord) : le moteur de
- * mise en page, le rendu SVG et le lecteur audio s'appuient tous dessus, ce
- * qui garantit qu'ils sont d'accord entre eux. Elles sont couvertes par
- * `tests/rhythm.test.js`.
+ * These functions are **pure** (no DOM, no side effects): the layout engine,
+ * the SVG renderer and the audio player all rely on them, which guarantees
+ * they agree with each other. They are covered by `tests/rhythm.test.js`.
  */
 
 import { EPS, snap } from './util.js';
@@ -73,29 +72,30 @@ import { qlen, writtenLen, mlen, groupStarts } from './model.js';
 import { resolveMidis } from './pitch.js';
 
 /**
- * Une mesure issue du découpage.
+ * A measure produced by the split.
  * @typedef {Object} Measure
- * @property {number[]} idx Index des éléments de la mesure, dans l'ordre.
- * @property {boolean} full `true` si la mesure est fermée (pleine, ou fermée par une barre).
- * @property {module:model~BarType} [type] Barre qui ferme la mesure (`'single'` par défaut).
- * @property {boolean} rs La mesure commence par un début de reprise.
+ * @property {number[]} idx Indices of the measure's items, in order.
+ * @property {boolean} full `true` if the measure is closed (full, or closed by a barline).
+ * @property {module:model~BarType} [type] Barline closing the measure (`'single'` by default).
+ * @property {boolean} rs The measure starts with a start repeat.
  */
 
 /**
- * Découpe une suite d'éléments en mesures.
+ * Splits a sequence of items into measures.
  *
- * Règles, dans l'ordre :
- * 1. un élément marqué `rs` (début de reprise) ouvre toujours une nouvelle
- *    mesure ; la mesure en cours est fermée par une barre simple ;
- * 2. un élément portant une barre (`bar`) ferme la mesure **même si elle est
- *    incomplète** : c'est ce qui permet de terminer un motif n'importe où ;
- * 3. sinon la mesure se ferme quand la somme des durées atteint la capacité.
+ * Rules, in order:
+ * 1. an item marked `rs` (start repeat) always opens a new measure; the
+ *    current measure is closed by a single barline;
+ * 2. an item carrying a barline (`bar`) closes the measure **even if it is
+ *    incomplete**: this is what allows ending a pattern anywhere;
+ * 3. otherwise the measure closes when the sum of durations reaches its
+ *    capacity.
  *
- * La dernière mesure peut rester ouverte (`full: false`) : c'est là que
- * l'utilisateur ajoute les notes suivantes.
+ * The last measure may stay open (`full: false`): that is where the user
+ * adds the next notes.
  *
  * @param {module:model~StaffItem[]} items
- * @param {string} time Chiffrage de mesure.
+ * @param {string} time Time signature.
  * @returns {Measure[]}
  */
 export function segmentMeasures(items, time) {
@@ -123,7 +123,7 @@ export function segmentMeasures(items, time) {
     }
   });
   if (cur.length) measures.push({ idx: cur, full: false, rs: false });
-  // Le drapeau rs est porté par le premier élément de la mesure.
+  // The rs flag is carried by the first item of the measure.
   measures.forEach((m) => {
     m.rs = !!items[m.idx[0]].rs;
   });
@@ -131,9 +131,9 @@ export function segmentMeasures(items, time) {
 }
 
 /**
- * Index de mesure de chaque élément (table inverse de {@link segmentMeasures}).
+ * Measure index of each item (inverse table of {@link segmentMeasures}).
  * @param {Measure[]} measures
- * @param {number} count Nombre d'éléments.
+ * @param {number} count Number of items.
  * @returns {number[]}
  */
 function measureOfItem(measures, count) {
@@ -147,30 +147,30 @@ function measureOfItem(measures, count) {
 }
 
 /**
- * Un groupe de triolet.
+ * A triplet group.
  * @typedef {Object} TupletGroup
- * @property {number[]} idx Index des éléments du groupe.
- * @property {boolean} complete `true` si le groupe remplit exactement ses
- *   « 3 pour 2 » ; un groupe incomplet est quand même dessiné, pour que
- *   l'utilisateur voie qu'il manque une note.
+ * @property {number[]} idx Indices of the group's items.
+ * @property {boolean} complete `true` if the group exactly fills its "3 in
+ *   the time of 2"; an incomplete group is still drawn, so the user sees a
+ *   note is missing.
  */
 
 /**
- * Regroupe les éléments de triolet consécutifs en triolets.
+ * Groups consecutive triplet items into triplets.
  *
- * ## Règle de fermeture d'un groupe
+ * ## Rule for closing a group
  *
- * Un triolet, c'est **3 fois la plus petite valeur du groupe, jouées dans le
- * temps de 2**. On suit donc la plus petite durée écrite `min` rencontrée et la
- * somme écrite `written` ; le groupe est complet quand `written ≥ 3 × min`.
+ * A triplet is **3 times the smallest value of the group, played in the time
+ * of 2**. So the smallest written duration `min` met so far and the written
+ * sum `written` are tracked; the group is complete when `written ≥ 3 × min`.
  *
- * Ça couvre les cas usuels :
- * - croche-croche-croche : min = ½, 3 × ½ = 1.5 = somme → complet (dure 1 noire)
- * - noire-croche : min = ½, 1 + ½ = 1.5 → complet (dure 1 noire)
- * - noire-noire-noire : min = 1 → complet sur 3 (dure 2 noires)
+ * This covers the usual cases:
+ * - eighth-eighth-eighth: min = ½, 3 × ½ = 1.5 = sum → complete (lasts 1 quarter)
+ * - quarter-eighth: min = ½, 1 + ½ = 1.5 → complete (lasts 1 quarter)
+ * - quarter-quarter-quarter: min = 1 → complete on 3 (lasts 2 quarters)
  *
- * Un groupe est aussi coupé, même incomplet, par un élément sans `tup` ou
- * par une barre de mesure.
+ * A group is also cut, even incomplete, by an item without `tup` or by a
+ * barline.
  *
  * @param {module:model~StaffItem[]} items
  * @param {string} time
@@ -204,7 +204,7 @@ export function tupletGroups(items, time) {
 }
 
 /**
- * Pour chaque élément, l'index de son groupe de triolet, ou -1.
+ * For each item, the index of its triplet group, or -1.
  * @param {TupletGroup[]} groups
  * @param {number} count
  * @returns {number[]}
@@ -220,29 +220,29 @@ function tupletIndex(groups, count) {
 }
 
 /**
- * Regroupe les croches et doubles croches à relier par une ligature.
+ * Groups the eighth and sixteenth notes to be joined by a beam.
  *
- * Règles :
- * - seules les notes (pas les silences) de valeur croche ou double croche sont ligaturées ;
- * - un groupe ne dépasse pas un **temps** (une noire en x/4, une noire pointée en x/8) ;
- * - un groupe ne traverse ni une barre de mesure ni la frontière d'un triolet
- *   (un triolet de croches forme sa propre ligature) ;
- * - un groupe d'un seul élément n'est pas une ligature (la note garde son crochet).
+ * Rules:
+ * - only notes (not rests) of eighth or sixteenth value are beamed;
+ * - a group does not exceed one **beat** (a quarter in x/4, a dotted quarter in x/8);
+ * - a group crosses neither a barline nor a triplet boundary (a triplet of
+ *   eighths forms its own beam);
+ * - a single-item group is not a beam (the note keeps its flag).
  *
- * Le découpage par **ligne** (système) n'est pas fait ici : il dépend de la
- * mise en page et est appliqué par le rendu.
+ * Splitting by **line** (system) is not done here: it depends on the layout
+ * and is applied by the renderer.
  *
  * @param {module:model~StaffItem[]} items
  * @param {string} time
- * @param {Array.&lt;number>} [meter] Groupement des croches (2.8, voir {@link module:model.meterGroups|meterGroups}).
- * @returns {number[][]} Groupes d'index (longueur ≥ 2).
+ * @param {Array.&lt;number>} [meter] Eighth-note grouping (2.8, see {@link module:model.meterGroups|meterGroups}).
+ * @returns {number[][]} Index groups (length ≥ 2).
  */
 export function beamGroups(items, time, meter) {
   const starts = groupStarts({ time, groups: meter });
-  /** Groupe (temps) qui contient la position `q` de la mesure. */
+  /** Group (beat) containing position `q` of the measure. */
   const end = mlen(time);
   const groupAt = (q) => {
-    if (q >= end - EPS) return starts.length + Math.floor(q - end + EPS); // mesure trop pleine
+    if (q >= end - EPS) return starts.length + Math.floor(q - end + EPS); // overfull measure
     let k = 0;
     while (k + 1 &lt; starts.length &amp;&amp; starts[k + 1] &lt;= q + EPS) k++;
     return k;
@@ -263,7 +263,7 @@ export function beamGroups(items, time, meter) {
     m.idx.forEach((i) => {
       const it = items[i];
       const beat = groupAt(snap(pos));
-      // Clé de regroupement : même temps ET même triolet (ou hors triolet).
+      // Grouping key: same beat AND same triplet (or outside a triplet).
       const key = tIdx[i] >= 0 ? 't' + tIdx[i] : 'b' + beat;
       if (!it.r &amp;&amp; (it.d === '8' || it.d === '16')) {
         if (key !== curKey) flush();
@@ -280,18 +280,17 @@ export function beamGroups(items, time, meter) {
 }
 
 /**
- * Ordre de lecture des éléments, reprises déroulées.
+ * Playback order of items, repeats unrolled.
  *
- * On parcourt les éléments en mémorisant le dernier début de reprise `rs`.
- * En arrivant sur une fin de reprise (`bar: 'rep'`) pour la première fois,
- * on revient au début de reprise ; la deuxième fois on continue. L'ensemble
- * `done` mémorise les fins de reprise déjà prises.
+ * Items are walked through while remembering the last start repeat `rs`.
+ * On reaching an end repeat (`bar: 'rep'`) for the first time, playback goes
+ * back to the start repeat; the second time it continues. The `done` set
+ * remembers the end repeats already taken.
  *
- * Une garde de 4000 éléments empêche toute boucle infinie sur des données
- * incohérentes.
+ * A guard of 4000 items prevents any infinite loop on inconsistent data.
  *
  * @param {module:model~StaffItem[]} items
- * @returns {number[]} Suite d'index, éventuellement avec répétitions.
+ * @returns {number[]} Sequence of indices, possibly with repetitions.
  */
 export function staffPlayOrder(items) {
   const order = [];
@@ -305,7 +304,7 @@ export function staffPlayOrder(items) {
       if (!done.has(i)) {
         done.add(i);
         i = rs - 1;
-      } // -1 car la boucle fait i++
+      } // -1 because the loop does i++
       else rs = i + 1;
     }
   }
@@ -313,21 +312,21 @@ export function staffPlayOrder(items) {
 }
 
 /**
- * Déformation temporelle du swing (croches ternaires).
+ * Swing time warp (triplet-feel eighths).
  *
- * À l'intérieur de chaque temps (partie fractionnaire `r` de la position en
- * noires), la première moitié est étirée à 2/3 et la seconde comprimée à 1/3 :
- * la croche du levé tombe aux 2/3 du temps, comme une croche de triolet.
+ * Within each beat (fractional part `r` of the position in quarter notes),
+ * the first half is stretched to 2/3 and the second compressed to 1/3: the
+ * offbeat eighth falls at 2/3 of the beat, like a triplet eighth.
  *
  * ```
- * r :   0 ──── 0.5 ──── 1
- * w :   0 ──── 0.667 ── 1
+ * r:   0 ──── 0.5 ──── 1
+ * w:   0 ──── 0.667 ── 1
  * ```
  *
- * La fonction est continue et monotone : l'ordre des événements est conservé.
+ * The function is continuous and monotonic: event order is preserved.
  *
- * @param {number} q Position en noires.
- * @returns {number} Position déformée en noires.
+ * @param {number} q Position in quarter notes.
+ * @returns {number} Warped position in quarter notes.
  */
 export function swingWarp(q) {
   const f = Math.floor(q + 1e-9);
@@ -336,18 +335,18 @@ export function swingWarp(q) {
 }
 
 /**
- * Temps à jouer **droits** malgré le swing : ceux où une note (hors triolet)
- * commence ou finit ailleurs que sur le temps ou sur la croche du levé.
+ * Beats to play **straight** despite swing: those where a note (outside a
+ * triplet) starts or ends somewhere other than on the beat or on the
+ * offbeat eighth.
  *
- * Pourquoi : {@link swingWarp} est pensé pour des croches. Appliqué à des
- * doubles croches, il les rendait inégales (1/3, 1/3, 1/6, 1/6 du temps au
- * lieu de quatre quarts égaux). En jazz, un passage en doubles croches dans
- * un morceau swing se joue droit (comme en « double time ») : seuls les
- * temps écrits en croches sont swingués.
+ * Why: {@link swingWarp} is meant for eighth notes. Applied to sixteenths,
+ * it made them uneven (1/3, 1/3, 1/6, 1/6 of the beat instead of four equal
+ * quarters). In jazz, a sixteenth-note passage in a swing tune is played
+ * straight (as in "double time"): only beats written in eighths are swung.
  *
  * @param {module:model~StaffItem[]} items
- * @param {number[]} order Ordre de lecture ({@link staffPlayOrder}).
- * @returns {Set.&lt;number>} Index des temps (en noires depuis le début de la lecture).
+ * @param {number[]} order Playback order ({@link staffPlayOrder}).
+ * @returns {Set.&lt;number>} Indices of the beats (in quarter notes from the start of playback).
  */
 function straightBeats(items, order) {
   const out = new Set();
@@ -368,38 +367,39 @@ function straightBeats(items, order) {
 }
 
 /**
- * Un événement sonore d'une portée, prêt à être programmé par l'audio.
- * Les temps sont en **noires** depuis le début ; l'audio les convertit en
- * secondes avec le tempo.
+ * A sound event of a staff, ready to be scheduled by audio.
+ * Times are in **quarter notes** from the start; audio converts them to
+ * seconds with the tempo.
  *
  * @typedef {Object} StaffEvent
- * @property {number} i Index de l'élément (pour le surlignage pendant la lecture).
- * @property {number} start Début en noires (swing appliqué).
- * @property {number} end Fin en noires (swing appliqué ; prolongée par les liaisons).
- * @property {number|null} midi Hauteur, `null` pour un silence ou une ligne rythmique.
- * @property {boolean} rest Silence.
- * @property {boolean} held Note liée à la précédente : elle n'est **pas**
- *   rejouée (la précédente est prolongée), mais l'événement sert au surlignage.
- * @property {boolean} downbeat Premier temps de la mesure (accent sur la ligne rythmique).
+ * @property {number} i Item index (for highlighting during playback).
+ * @property {number} start Start in quarter notes (swing applied).
+ * @property {number} end End in quarter notes (swing applied; extended by ties).
+ * @property {number|null} midi Pitch, `null` for a rest or a rhythm line.
+ * @property {boolean} rest Rest.
+ * @property {boolean} held Note tied to the previous one: it is **not**
+ *   replayed (the previous one is extended), but the event is used for highlighting.
+ * @property {boolean} downbeat First beat of the measure (accent on the rhythm line).
  */
 
 /**
- * Construit la liste des événements sonores d'une portée.
+ * Builds the list of sound events of a staff.
  *
- * Étapes :
- * 1. ordre de lecture avec reprises ({@link staffPlayOrder}) ;
- * 2. positions en noires par cumul des durées réelles (triolets compris) ;
- * 3. liaisons : si l'élément précédent dans l'ordre de lecture est la note
- *    juste avant dans la partition et qu'elle est liée, on prolonge sa fin au
- *    lieu de déclencher une nouvelle note ;
- * 4. swing : on applique {@link swingWarp} temps par temps, **seulement aux
- *    temps écrits en croches** ({@link straightBeats}) : un temps qui contient
- *    des doubles croches (ou un point qui tombe au quart de temps) est joué
- *    droit. Les notes de triolet ne sont jamais déformées (déjà ternaires).
- *    Le swing n'est pas appliqué en mesure composée (x/8).
+ * Steps:
+ * 1. playback order with repeats ({@link staffPlayOrder});
+ * 2. positions in quarter notes by summing the actual durations (triplets
+ *    included);
+ * 3. ties: if the previous item in playback order is the note right before
+ *    in the score and it is tied, its end is extended instead of triggering
+ *    a new note;
+ * 4. swing: {@link swingWarp} is applied beat by beat, **only to beats
+ *    written in eighths** ({@link straightBeats}): a beat containing
+ *    sixteenths (or a dot falling on a quarter of a beat) is played
+ *    straight. Triplet notes are never warped (already ternary). Swing is
+ *    not applied in compound time (x/8).
  *
  * @param {module:model~StaffBlock} b
- * @returns {{events: StaffEvent[], total: number}} Événements et durée totale en noires.
+ * @returns {{events: StaffEvent[], total: number}} Events and total duration in quarter notes.
  */
 export function staffEvents(b) {
   const items = b.items;
@@ -413,7 +413,7 @@ export function staffEvents(b) {
   const events = [];
   let q = 0;
   let mpos = 0;
-  let lastSounding = null; // dernier événement réellement joué (pour les liaisons)
+  let lastSounding = null; // last event actually played (for ties)
   order.forEach((i, k) => {
     const it = items[i];
     if (it.rs) mpos = 0;
@@ -432,7 +432,7 @@ export function staffEvents(b) {
     const prev = items[i - 1];
     if (!it.r &amp;&amp; prevIdx === i - 1 &amp;&amp; prev &amp;&amp; prev.tie &amp;&amp; !prev.r &amp;&amp; lastSounding) {
       ev.held = true;
-      lastSounding.end = ev.end; // prolonge la note précédente
+      lastSounding.end = ev.end; // extends the previous note
     } else if (!it.r) {
       lastSounding = ev;
     }
@@ -444,31 +444,31 @@ export function staffEvents(b) {
 }
 
 /**
- * Une partie de la lecture d'une portée (2.8.4) : de la mesure `from` à la
- * mesure `to` (index d'écriture, à partir de 0).
+ * A part of a staff's playback (2.8.4): from measure `from` to measure `to`
+ * (written index, from 0).
  *
- * La lecture déroulée (reprises comprises) passe par une suite de mesures,
- * certaines plusieurs fois. Le segment commence au **premier passage** par
- * `from` et s'arrête au premier passage par `to` qui suit (une reprise
- * contenue dans le segment est donc jouée dépliée). Les instants sont
- * ramenés au début du segment.
+ * Unrolled playback (repeats included) goes through a sequence of measures,
+ * some of them several times. The segment starts at the **first pass**
+ * through `from` and stops at the first pass through `to` that follows (a
+ * repeat contained in the segment is therefore played unrolled). Times are
+ * shifted to the start of the segment.
  *
- * Une note liée qui arrive d'avant le segment est attaquée (sinon le
- * segment commencerait par un silence).
+ * A tied note arriving from before the segment is attacked (otherwise the
+ * segment would start with silence).
  *
  * @param {module:model~StaffBlock} b
  * @param {number} from
  * @param {number} to
  * @returns {?{events: StaffEvent[], total: number, measures: number}} `null`
- *   si `from` n'est jamais jouée. `measures` : nombre de mesures du segment.
+ *   if `from` is never played. `measures`: number of measures in the segment.
  */
 export function staffSegment(b, from, to) {
   const { events, total } = staffEvents(b);
-  /** Mesure d'écriture de chaque élément. */
+  /** Written measure of each item. */
   const mOf = [];
   segmentMeasures(b.items, b.time).forEach((m, mi) => m.idx.forEach((i) => (mOf[i] = mi)));
-  // Passages successifs par les mesures : un nouveau passage commence quand
-  // on change de mesure ou qu'on saute (reprise).
+  // Successive passes through the measures: a new pass starts when the
+  // measure changes or playback jumps (repeat).
   const occOf = [];
   const occStart = [];
   const occMeasure = [];
@@ -488,13 +488,13 @@ export function staffSegment(b, from, to) {
   const t1 = k2 + 1 &lt; occStart.length ? occStart[k2 + 1] : total;
   /** @type {StaffEvent[]} */
   const out = [];
-  let head = null; // note qui sonne (pour prolonger les liaisons)
+  let head = null; // sounding note (to extend ties)
   events.forEach((e, k) => {
     if (occOf[k] &lt; k1 || occOf[k] > k2) return;
     const ev = { ...e, start: e.start - t0, end: Math.min(e.end, t1) - t0 };
     if (ev.held) {
       if (head) head.end = Math.max(head.end, ev.end);
-      else ev.held = false; // liaison entrante : on attaque la note
+      else ev.held = false; // incoming tie: attack the note
     }
     if (!ev.rest &amp;&amp; !ev.held) head = ev;
     if (ev.rest) head = null;

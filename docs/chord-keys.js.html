@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>chord-keys.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,40 +53,39 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module chord-keys
  * @description
- * **Clavier d'accords** (2.8.5) : ce que fait chaque touche. Fonctions pures,
- * l'interface est dans {@link module:ui/chord-keyboard|ui/chord-keyboard}.
+ * **Chord keyboard** (2.8.5): what each key does. Pure functions; the
+ * interface is in {@link module:ui/chord-keyboard|ui/chord-keyboard}.
  *
- * On saisit un accord en deux temps : la **fondamentale** (`C` … `B`, puis
- * ♭ ou ♯), puis la **couleur** d'un seul toucher (`7`, `−7`, `Δ7`, `ø7`…).
- * Le pavé détaillé (`⋯`) ajoute les morceaux un par un pour les accords
- * rares (`C7♯9♭13`).
+ * A chord is typed in two steps: the **root** (`C` … `B`, then ♭ or ♯), then
+ * the **quality** in a single tap (`7`, `−7`, `Δ7`, `ø7`…). The detailed pad
+ * (`⋯`) adds pieces one by one for rare chords (`C7♯9♭13`).
  *
- * Les accords sont **enregistrés en texte** dans la notation d'iReal Pro
- * (`-7`, `^7`, `h7`, `o7`), que le reste de l'appli lit déjà
- * ({@link module:chords|chords}, {@link module:ireal|ireal}) ; l'affichage
- * les met en forme (`C−7`, `CΔ7`, `Cø7`, `C°7`).
+ * Chords are **stored as text** in iReal Pro notation (`-7`, `^7`, `h7`,
+ * `o7`), which the rest of the app already reads
+ * ({@link module:chords|chords}, {@link module:ireal|ireal}); the display
+ * formats them (`C−7`, `CΔ7`, `Cø7`, `C°7`).
  *
- * Une mesure de grille est une liste de cases (`ch`) ; on écrit toujours dans
- * la **dernière** case. `␣` en ouvre une nouvelle (deux accords dans la
- * mesure), `⌫` efface le dernier morceau tapé.
+ * A chart measure is a list of slots (`ch`); typing always goes into the
+ * **last** slot. `␣` opens a new one (two chords in the measure), `⌫` erases
+ * the last piece typed.
  */
 
 /**
- * Une touche.
+ * A key.
  * @typedef {Object} ChordKey
- * @property {'root'|'acc'|'qual'|'add'|'slash'|'nc'|'sim'|'space'|'back'} t Type :
- *   fondamentale (ou basse après `/`), altération de la dernière lettre,
- *   couleur complète (remplace), morceau de couleur (ajoute), basse,
- *   *no chord*, mesure répétée, case suivante, effacement.
- * @property {string} [v] Valeur : lettre, `b`/`#`, qualité en notation iReal.
+ * @property {'root'|'acc'|'qual'|'add'|'slash'|'nc'|'sim'|'space'|'back'} t Kind:
+ *   root (or bass after `/`), accidental of the last letter, full quality
+ *   (replaces), quality piece (appends), bass, *no chord*, repeated measure,
+ *   next slot, erase.
+ * @property {string} [v] Value: letter, `b`/`#`, quality in iReal notation.
  */
 
-/** Cases au plus dans une mesure. */
+/** Maximum number of slots in a measure. */
 export const MAX_SLOTS = 4;
 
 /**
- * Découpe un accord en cours de saisie. La basse peut être en attente
- * (`C/`, après la touche `/`).
+ * Splits a chord being typed. The bass may be pending (`C/`, after the `/`
+ * key).
  * @param {string} c
  * @returns {?{root: string, q: string, slash: boolean, bass: string}}
  */
@@ -96,14 +95,14 @@ export function splitChord(c) {
   return { root: m[1], q: m[2], slash: !!m[3], bass: m[4] || '' };
 }
 
-/** Recompose un accord. */
+/** Rebuilds a chord. */
 const join = (p) => p.root + p.q + (p.slash ? '/' + p.bass : '');
 
 /**
- * Ajoute, change ou retire l'altération d'un nom de note (même touche deux
- * fois : retirée).
+ * Adds, changes or removes the accidental of a note name (same key twice:
+ * removed).
  * @param {string} name `C`, `Bb`…
- * @param {string} acc `b` ou `#`.
+ * @param {string} acc `b` or `#`.
  * @returns {string}
  */
 function toggleAcc(name, acc) {
@@ -112,8 +111,7 @@ function toggleAcc(name, acc) {
 }
 
 /**
- * Applique une touche à une mesure (ou à l'accord d'une note : une seule
- * case).
+ * Applies a key to a measure (or to a note's chord: a single slot).
  *
  * @example
  * applyChordKey([], { t: 'root', v: 'B' })          // ['B']
@@ -122,14 +120,14 @@ function toggleAcc(name, acc) {
  * applyChordKey(['Bb-7'], { t: 'space' })           // ['Bb-7', '']
  * applyChordKey(['Bb-7', ''], { t: 'root', v: 'E' }) // ['Bb-7', 'E']
  *
- * @param {Array.&lt;string>} slots Cases de la mesure (non modifiées).
+ * @param {Array.&lt;string>} slots Slots of the measure (not modified).
  * @param {ChordKey} key
- * @returns {Array.&lt;string>} Nouvelles cases (`[]` : mesure vide).
+ * @returns {Array.&lt;string>} New slots (`[]`: empty measure).
  */
 export function applyChordKey(slots, key) {
   if (key.t === 'sim') return ['%'];
   const s = slots.length ? slots.slice() : [''];
-  if (s.length === 1 &amp;&amp; s[0] === '%') s[0] = ''; // on écrit par-dessus la répétition
+  if (s.length === 1 &amp;&amp; s[0] === '%') s[0] = ''; // typing over the repeat sign
   const i = s.length - 1;
   let c = s[i];
   if (c === 'n' &amp;&amp; key.t !== 'back' &amp;&amp; key.t !== 'space') c = '';
@@ -138,14 +136,14 @@ export function applyChordKey(slots, key) {
   switch (key.t) {
     case 'root':
       if (p &amp;&amp; p.slash &amp;&amp; !p.bass) c = join({ ...p, bass: key.v });
-      else c = key.v; // nouvel accord dans la case
+      else c = key.v; // new chord in the slot
       break;
     case 'acc':
       if (!p) break;
       if (p.slash &amp;&amp; p.bass) c = join({ ...p, bass: toggleAcc(p.bass, key.v) });
       else c = join({ ...p, root: toggleAcc(p.root, key.v) });
       break;
-    case 'qual': // couleur complète ; la même touche deux fois l'enlève
+    case 'qual': // full quality; the same key twice removes it
       if (!p) break;
       c = join({ ...p, q: p.q === key.v ? '' : key.v });
       break;
@@ -182,9 +180,8 @@ export function applyChordKey(slots, key) {
 }
 
 /**
- * Efface le dernier morceau d'un accord : altération de la basse, basse,
- * barre, dernier morceau de couleur (`alt`, `sus`, `11`, `♭9`, `7`…),
- * altération de la fondamentale, fondamentale.
+ * Erases the last piece of a chord: bass accidental, bass, slash, last
+ * quality piece (`alt`, `sus`, `11`, `♭9`, `7`…), root accidental, root.
  * @param {string} c
  * @returns {string}
  */

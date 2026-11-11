@@ -24,7 +24,7 @@
     "typedefs": true,
     "meta": {
       "title": "Inkline · documentation",
-      "description": "Documentation du code d'Inkline"
+      "description": "Inkline code documentation"
     },
     "menu": {
       "Application": { "href": "../", "target": "_blank", "class": "menu-item" }

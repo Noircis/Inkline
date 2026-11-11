@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/folder-sheet - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,15 +63,15 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Éditeur de dossier</strong> : un panneau qui monte du bas de l'écran (bottom
-sheet), pour créer, renommer, recolorer ou supprimer un dossier. Il est
-ouvert depuis la barre de dossiers de l'accueil, le sélecteur « Dossier »
-d'une note et la section Dossiers des Options.</p>
-<p>Supprimer un dossier ne supprime <strong>aucune</strong> note : elles redeviennent
-« non classées » (<a href="module-folders.html#.deleteFolder">deleteFolder</a>).</p>
-<p>Depuis la 2.8.6, le module ouvre aussi le panneau des <strong>catégories</strong> d'un
-dossier (openCategoriesSheet) et le panneau <strong>Ranger la note</strong>
-(openArrangeSheet) : dossier et catégories d'une note.</p></div>
+                <div class="description usertext"><p><strong>Folder editor</strong>: a panel that slides up from the bottom of the screen
+(bottom sheet), to create, rename, recolor or delete a folder. It is
+opened from the folder bar of the home screen, the &quot;Folder&quot; picker of a
+note and the Folders section of Settings.</p>
+<p>Deleting a folder deletes <strong>no</strong> note: they become &quot;Unfiled&quot; again
+(<a href="module-folders.html#.deleteFolder">deleteFolder</a>).</p>
+<p>Since 2.8.6, the module also opens a folder's <strong>categories</strong> panel
+(openCategoriesSheet) and the <strong>File note</strong> panel
+(openArrangeSheet): folder and categories of a note.</p></div>
             
 
             
@@ -83,15 +83,15 @@ dossier (openCategoriesSheet) et le panneau <strong>Ranger la note</strong>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Éditeur de dossier</strong> : un panneau qui monte du bas de l'écran (bottom
-sheet), pour créer, renommer, recolorer ou supprimer un dossier. Il est
-ouvert depuis la barre de dossiers de l'accueil, le sélecteur « Dossier »
-d'une note et la section Dossiers des Options.</p>
-<p>Supprimer un dossier ne supprime <strong>aucune</strong> note : elles redeviennent
-« non classées » (<a href="module-folders.html#.deleteFolder">deleteFolder</a>).</p>
-<p>Depuis la 2.8.6, le module ouvre aussi le panneau des <strong>catégories</strong> d'un
-dossier (openCategoriesSheet) et le panneau <strong>Ranger la note</strong>
-(openArrangeSheet) : dossier et catégories d'une note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Folder editor</strong>: a panel that slides up from the bottom of the screen
+(bottom sheet), to create, rename, recolor or delete a folder. It is
+opened from the folder bar of the home screen, the &quot;Folder&quot; picker of a
+note and the Folders section of Settings.</p>
+<p>Deleting a folder deletes <strong>no</strong> note: they become &quot;Unfiled&quot; again
+(<a href="module-folders.html#.deleteFolder">deleteFolder</a>).</p>
+<p>Since 2.8.6, the module also opens a folder's <strong>categories</strong> panel
+(openCategoriesSheet) and the <strong>File note</strong> panel
+(openArrangeSheet): folder and categories of a note.</p></li></ul></dd>
     
 
     
@@ -198,15 +198,15 @@ dossier (openCategoriesSheet) et le panneau <strong>Ranger la note</strong>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre le panneau <strong>Ranger la note</strong> : son dossier (un seul) et, dans ce
-dossier, ses catégories (autant qu'on veut). Chaque choix s'applique tout
-de suite ; changer de dossier efface les catégories.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens the <strong>File note</strong> panel: its folder (only one) and, in that folder,
+its categories (as many as wanted). Each choice applies at once; changing
+the folder clears the categories.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_folder-sheet.js.html">ui/folder-sheet.js</a>, <a href="ui_folder-sheet.js.html#line294">line 294</a>
+        <a href="ui_folder-sheet.js.html">ui/folder-sheet.js</a>, <a href="ui_folder-sheet.js.html#line293">line 293</a>
     </li></ul></dd>
     
 
@@ -319,7 +319,7 @@ de suite ; changer de dossier efface les catégories.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Après chaque changement (enregistrement compris).</p></td>
+            <td class="description last"><p>After each change (save included).</p></td>
         </tr>
 
     
@@ -359,16 +359,15 @@ de suite ; changer de dossier efface les catégories.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre le panneau <strong>Catégories</strong> d'un dossier : ajouter, renommer, changer
-l'ordre (↑ ↓), supprimer. On travaille sur une copie : rien ne change avant
-« Enregistrer ». Supprimer une catégorie ne supprime aucune note : elle
-est seulement retirée des notes qui l'avaient.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens a folder's <strong>Categories</strong> panel: add, rename, reorder (↑ ↓), delete.
+Work is done on a copy: nothing changes before &quot;Save&quot;. Deleting a category
+deletes no note: it is only removed from the notes that had it.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_folder-sheet.js.html">ui/folder-sheet.js</a>, <a href="ui_folder-sheet.js.html#line157">line 157</a>
+        <a href="ui_folder-sheet.js.html">ui/folder-sheet.js</a>, <a href="ui_folder-sheet.js.html#line156">line 156</a>
     </li></ul></dd>
     
 
@@ -501,7 +500,7 @@ est seulement retirée des notes qui l'avaient.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Appelé à la fermeture (<code>true</code> si enregistré).</p></td>
+            <td class="description last"><p>Called on close (<code>true</code> if saved).</p></td>
         </tr>
 
     
@@ -535,7 +534,7 @@ est seulement retirée des notes qui l'avaient.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p><code>focusNew</code> : clavier ouvert sur « Nouvelle catégorie ».</p></td>
+            <td class="description last"><p><code>focusNew</code>: keyboard open on &quot;New category&quot;.</p></td>
         </tr>
 
     
@@ -575,7 +574,7 @@ est seulement retirée des notes qui l'avaient.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre l'éditeur.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens the editor.</p></li></ul></dd>
     
 
     
@@ -683,7 +682,7 @@ est seulement retirée des notes qui l'avaient.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Dossier à modifier, ou <code>null</code> pour en créer un.</p></td>
+            <td class="description last"><p>Folder to edit, or <code>null</code> to create one.</p></td>
         </tr>
 
     
@@ -717,8 +716,8 @@ est seulement retirée des notes qui l'avaient.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Appelé à la fermeture avec
-le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
+            <td class="description last"><p>Called on close with the
+saved folder, or <code>null</code> (cancelled or deleted).</p></td>
         </tr>
 
     
@@ -758,8 +757,8 @@ le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche la suppression en deux temps : les notes du dossier passent dans
-« Non classées », aucune n'est supprimée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires the two-step deletion: the folder's notes move to &quot;Unfiled&quot;, none is
+deleted.</p></li></ul></dd>
     
 
     
@@ -854,7 +853,7 @@ le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
 
             
 
-            <td class="description last"><p>Fond du panneau.</p></td>
+            <td class="description last"><p>Panel backdrop.</p></td>
         </tr>
 
     
@@ -942,7 +941,7 @@ le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ferme l'éditeur s'il est ouvert (sans rappel).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Closes the editor if it is open (no callback).</p></li></ul></dd>
     
 
     
@@ -1027,7 +1026,7 @@ le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML du panneau.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of the panel.</p></li></ul></dd>
     
 
     
@@ -1122,7 +1121,7 @@ le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
 
             
 
-            <td class="description last"><p>Modification (sinon création).</p></td>
+            <td class="description last"><p>Editing (otherwise creating).</p></td>
         </tr>
 
     
@@ -1146,7 +1145,7 @@ le dossier enregistré, ou <code>null</code> (annulé ou supprimé).</p></td>
 
             
 
-            <td class="description last"><p>Couleur cochée.</p></td>
+            <td class="description last"><p>Checked color.</p></td>
         </tr>
 
     

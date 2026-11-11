@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>grid - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,49 +63,49 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Logique <strong>pure</strong> des grilles d'accords (façon iReal Pro) : saisie, durées,
-ordre de lecture, rendu HTML (écran) et SVG (export en image). L'interaction (palette, clics) est dans
-<a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p>
-<h2>Rendu</h2>
-<p>La grille est une CSS Grid de 4 colonnes : une mesure par cellule, 4 mesures
-par ligne comme dans iReal. Les barres de mesure ne sont pas dessinées :
-ce sont les <strong>bordures</strong> des cellules, choisies par classes CSS selon les
-drapeaux de la mesure et de sa voisine de gauche :</p>
+                <div class="description usertext"><p><strong>Pure</strong> logic of chord charts (iReal Pro style): input, durations,
+playback order, HTML rendering (screen) and SVG rendering (image export).
+Interaction (palette, taps) is in <a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p>
+<h2>Rendering</h2>
+<p>The chart is a 4-column CSS Grid: one measure per cell, 4 measures per
+line as in iReal. Barlines are not drawn: they are the cells' <strong>borders</strong>,
+chosen through CSS classes from the flags of the measure and of its left
+neighbor:</p>
 <table>
 <thead>
 <tr>
-<th>Classe</th>
-<th>Signification</th>
+<th>Class</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>lb-rs</code></td>
-<td>bord gauche = début de reprise <code>‖:</code></td>
+<td>left border = start repeat <code>‖:</code></td>
 </tr>
 <tr>
 <td><code>lb-dbl</code></td>
-<td>bord gauche = double barre (début de section)</td>
+<td>left border = double barline (section start)</td>
 </tr>
 <tr>
 <td><code>lb-none</code></td>
-<td>pas de bord gauche (la voisine a déjà une barre spéciale)</td>
+<td>no left border (the neighbor already has a special barline)</td>
 </tr>
 <tr>
 <td><code>rb-re</code></td>
-<td>bord droit = fin de reprise <code>:‖</code></td>
+<td>right border = end repeat <code>:‖</code></td>
 </tr>
 <tr>
 <td><code>rb-dbl</code></td>
-<td>bord droit = double barre</td>
+<td>right border = double barline</td>
 </tr>
 <tr>
 <td><code>rb-fin</code></td>
-<td>bord droit = barre de fin</td>
+<td>right border = final barline</td>
 </tr>
 <tr>
 <td><code>rb</code></td>
-<td>bord droit simple (fin de ligne)</td>
+<td>simple right border (end of line)</td>
 </tr>
 </tbody>
 </table></div>
@@ -120,49 +120,49 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Logique <strong>pure</strong> des grilles d'accords (façon iReal Pro) : saisie, durées,
-ordre de lecture, rendu HTML (écran) et SVG (export en image). L'interaction (palette, clics) est dans
-<a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p>
-<h2>Rendu</h2>
-<p>La grille est une CSS Grid de 4 colonnes : une mesure par cellule, 4 mesures
-par ligne comme dans iReal. Les barres de mesure ne sont pas dessinées :
-ce sont les <strong>bordures</strong> des cellules, choisies par classes CSS selon les
-drapeaux de la mesure et de sa voisine de gauche :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Pure</strong> logic of chord charts (iReal Pro style): input, durations,
+playback order, HTML rendering (screen) and SVG rendering (image export).
+Interaction (palette, taps) is in <a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p>
+<h2>Rendering</h2>
+<p>The chart is a 4-column CSS Grid: one measure per cell, 4 measures per
+line as in iReal. Barlines are not drawn: they are the cells' <strong>borders</strong>,
+chosen through CSS classes from the flags of the measure and of its left
+neighbor:</p>
 <table>
 <thead>
 <tr>
-<th>Classe</th>
-<th>Signification</th>
+<th>Class</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>lb-rs</code></td>
-<td>bord gauche = début de reprise <code>‖:</code></td>
+<td>left border = start repeat <code>‖:</code></td>
 </tr>
 <tr>
 <td><code>lb-dbl</code></td>
-<td>bord gauche = double barre (début de section)</td>
+<td>left border = double barline (section start)</td>
 </tr>
 <tr>
 <td><code>lb-none</code></td>
-<td>pas de bord gauche (la voisine a déjà une barre spéciale)</td>
+<td>no left border (the neighbor already has a special barline)</td>
 </tr>
 <tr>
 <td><code>rb-re</code></td>
-<td>bord droit = fin de reprise <code>:‖</code></td>
+<td>right border = end repeat <code>:‖</code></td>
 </tr>
 <tr>
 <td><code>rb-dbl</code></td>
-<td>bord droit = double barre</td>
+<td>right border = double barline</td>
 </tr>
 <tr>
 <td><code>rb-fin</code></td>
-<td>bord droit = barre de fin</td>
+<td>right border = final barline</td>
 </tr>
 <tr>
 <td><code>rb</code></td>
-<td>bord droit simple (fin de ligne)</td>
+<td>simple right border (end of line)</td>
 </tr>
 </tbody>
 </table></li></ul></dd>
@@ -266,7 +266,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Les 12 toniques, notation iReal (bémols plutôt que dièses, sauf exceptions usuelles).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>The 12 tonics, iReal notation (flats rather than sharps, except the usual exceptions).</p></li></ul></dd>
     
 
     
@@ -312,7 +312,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 
 
 <div class="description usertext">
-    <p>Les 12 toniques, notation iReal (bémols plutôt que dièses, sauf exceptions usuelles).</p>
+    <p>The 12 tonics, iReal notation (flats rather than sharps, except the usual exceptions).</p>
 </div>
 
 
@@ -333,7 +333,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Séquence des repères de section parcourue par le bouton « Section ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sequence of section marks cycled by the &quot;Section&quot; button.</p></li></ul></dd>
     
 
     
@@ -379,7 +379,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 
 
 <div class="description usertext">
-    <p>Séquence des repères de section parcourue par le bouton « Section ».</p>
+    <p>Sequence of section marks cycled by the &quot;Section&quot; button.</p>
 </div>
 
 
@@ -400,7 +400,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Styles iReal Pro proposés (le style d'un morceau importé est ajouté s'il manque).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>iReal Pro styles offered (an imported tune's style is added if missing).</p></li></ul></dd>
     
 
     
@@ -446,7 +446,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 
 
 <div class="description usertext">
-    <p>Styles iReal Pro proposés (le style d'un morceau importé est ajouté s'il manque).</p>
+    <p>iReal Pro styles offered (an imported tune's style is added if missing).</p>
 </div>
 
 
@@ -467,7 +467,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Espace entre deux lignes de mesures (px), où se placent sections et voltas.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Space between two lines of measures (px), where sections and endings go.</p></li></ul></dd>
     
 
     
@@ -513,7 +513,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 
 
 <div class="description usertext">
-    <p>Espace entre deux lignes de mesures (px), où se placent sections et voltas.</p>
+    <p>Space between two lines of measures (px), where sections and endings go.</p>
 </div>
 
 
@@ -534,7 +534,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Hauteur d'une mesure dans l'export (px).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Height of a measure in the export (px).</p></li></ul></dd>
     
 
     
@@ -580,7 +580,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 
 
 <div class="description usertext">
-    <p>Hauteur d'une mesure dans l'export (px).</p>
+    <p>Height of a measure in the export (px).</p>
 </div>
 
 
@@ -601,7 +601,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Marge haute réservée aux repères de la première ligne (px).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Top margin reserved for the marks of the first line (px).</p></li></ul></dd>
     
 
     
@@ -647,7 +647,7 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 
 
 <div class="description usertext">
-    <p>Marge haute réservée aux repères de la première ligne (px).</p>
+    <p>Top margin reserved for the marks of the first line (px).</p>
 </div>
 
 
@@ -678,10 +678,10 @@ drapeaux de la mesure et de sa voisine de gauche :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML de la grille.</p>
-<p>Chaque mesure est un <code>&lt;button data-gm=&quot;index&quot;&gt;</code> (zone de toucher native,
-accessible au clavier). Une cellule <code>+</code> termine la grille tant qu'elle
-n'est pas fermée par une barre de fin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of the chart.</p>
+<p>Each measure is a <code>&lt;button data-gm=&quot;index&quot;&gt;</code> (native touch target,
+keyboard accessible). A <code>+</code> cell ends the chart as long as it is not
+closed by a final barline.</p></li></ul></dd>
     
 
     
@@ -831,7 +831,7 @@ n'est pas fermée par une barre de fin.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Mesure sélectionnée.</p></td>
+            <td class="description last"><p>Selected measure.</p></td>
         </tr>
 
     
@@ -870,7 +870,7 @@ n'est pas fermée par une barre de fin.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Mesure en cours de lecture.</p></td>
+            <td class="description last"><p>Measure being played.</p></td>
         </tr>
 
     
@@ -910,8 +910,8 @@ n'est pas fermée par une barre de fin.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>N'afficher que les <code>limit</code> premières mesures
-(bloc réduit, sans cellule <code>+</code>). 0 : toutes.</p></td>
+            <td class="description last"><p>Show only the first <code>limit</code> measures (collapsed
+block, no <code>+</code> cell). 0: all.</p></td>
         </tr>
 
     
@@ -970,21 +970,21 @@ n'est pas fermée par une barre de fin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ordre de lecture des mesures, avec reprises et voltas.</p>
-<p>Automate à trois variables :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playback order of the measures, with repeats and endings.</p>
+<p>State machine with three variables:</p>
 <ul>
-<li><code>rsI</code> : index du dernier début de reprise (0 par défaut) ;</li>
-<li><code>pass</code> : 1er ou 2e passage dans la reprise courante ;</li>
-<li><code>jumped</code> : fins de reprise déjà prises.</li>
+<li><code>rsI</code>: index of the last start repeat (0 by default);</li>
+<li><code>pass</code>: 1st or 2nd pass through the current repeat;</li>
+<li><code>jumped</code>: end repeats already taken.</li>
 </ul>
-<p>Transitions :</p>
+<p>Transitions:</p>
 <ul>
-<li>une nouvelle mesure <code>rs</code> (autre que celle où l'on vient de sauter) ouvre
-une reprise : <code>pass = 1</code> ;</li>
-<li>au 2e passage, une mesure qui commence la 1re fin fait sauter
-directement à la 2e fin ;</li>
-<li>une fin de reprise non encore prise renvoie à <code>rsI</code> avec <code>pass = 2</code> ;</li>
-<li>une barre de fin arrête la lecture.</li>
+<li>a new <code>rs</code> measure (other than the one just jumped to) opens a repeat:
+<code>pass = 1</code>;</li>
+<li>on the 2nd pass, a measure starting the 1st ending jumps straight to the
+2nd ending;</li>
+<li>an end repeat not yet taken goes back to <code>rsI</code> with <code>pass = 2</code>;</li>
+<li>a final barline stops playback.</li>
 </ul></li></ul></dd>
     
 
@@ -1106,7 +1106,7 @@ directement à la 2e fin ;</li>
 
         
 <div class="param-desc">
-    <p>Suite d'index de mesures.</p>
+    <p>Sequence of measure indices.</p>
 </div>
 
 
@@ -1143,19 +1143,18 @@ directement à la 2e fin ;</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Rendu SVG d'une grille, pour l'export en image ou en PDF.</p>
-<p>Même logique que <a href="module-grid.html#.gridHtml">gridHtml</a>, mais les barres sont
-de vrais traits (pas des bordures CSS) et les accords des <code>&lt;text&gt;</code> :
-le résultat est autonome et peut être rasterisé.</p>
-<p>Mise en page : 4 mesures par ligne, cellules de <code>W / 4</code> de large. Les
-repères de section et de volta débordent au-dessus de chaque ligne, d'où
-l'espace réservé en haut.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>SVG rendering of a chart, for image or PDF export.</p>
+<p>Same logic as <a href="module-grid.html#.gridHtml">gridHtml</a>, but barlines are real
+strokes (not CSS borders) and chords are <code>&lt;text&gt;</code> elements: the result is
+self-contained and can be rasterized.</p>
+<p>Layout: 4 measures per line, cells <code>W / 4</code> wide. Section and ending marks
+overflow above each line, hence the space reserved at the top.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line259">line 259</a>
+        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line258">line 258</a>
     </li></ul></dd>
     
 
@@ -1268,7 +1267,7 @@ l'espace réservé en haut.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Largeur en px.</p></td>
+            <td class="description last"><p>Width in px.</p></td>
         </tr>
 
     
@@ -1294,7 +1293,7 @@ l'espace réservé en haut.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Fragment SVG (sans balise <code>&lt;svg&gt;</code> englobante) et hauteur.</p>
+    <p>SVG fragment (no enclosing <code>&lt;svg&gt;</code> tag) and height.</p>
 </div>
 
 
@@ -1331,13 +1330,13 @@ l'espace réservé en haut.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Transforme la saisie d'une mesure en cases.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Turns a measure's input into slots.</p>
 <ul>
-<li>séparateurs : espaces et virgules ;</li>
-<li><code>/</code> → case vide (prolonge l'accord précédent) ;</li>
-<li><code>n</code>, <code>NC</code>, <code>N.C.</code> → <em>no chord</em> ;</li>
-<li><code>%</code> → répétition de la mesure ;</li>
-<li>la première lettre est mise en majuscule (<code>bb7</code> → <code>Bb7</code>), pratique au clavier du téléphone.</li>
+<li>separators: spaces and commas;</li>
+<li><code>/</code> → empty slot (continues the previous chord);</li>
+<li><code>n</code>, <code>NC</code>, <code>N.C.</code> → <em>no chord</em>;</li>
+<li><code>%</code> → measure repeat;</li>
+<li>the first letter is capitalized (<code>bb7</code> → <code>Bb7</code>), handy on a phone keyboard.</li>
 </ul></li></ul></dd>
     
 
@@ -1497,7 +1496,7 @@ l'espace réservé en haut.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Libellé français d'une tonalité iReal (<code>'Bb'</code> → <code>'B♭ majeur'</code>, <code>'C-'</code> → <code>'C mineur'</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Label of an iReal key in the interface language (<code>'Bb'</code> → <code>'B♭ major'</code>, <code>'C-'</code> → <code>'C minor'</code>).</p></li></ul></dd>
     
 
     
@@ -1651,7 +1650,7 @@ l'espace réservé en haut.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Texte d'édition d'une mesure (opération inverse de gridTokens).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Edit text of a measure (inverse of gridTokens).</p></li></ul></dd>
     
 
     
@@ -1805,13 +1804,13 @@ l'espace réservé en haut.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Durée (en noires) de chacune des <code>k</code> cases d'une mesure.</p>
-<p>On répartit les <strong>temps</strong> de la mesure entre les cases, les premières
-recevant le surplus, comme iReal :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Duration (in quarter notes) of each of the <code>k</code> slots of a measure.</p>
+<p>The measure's <strong>beats</strong> are spread over the slots, the first ones getting
+the surplus, as in iReal:</p>
 <ul>
-<li>4/4, 2 accords → 2 + 2 ; 3 accords → 2 + 1 + 1 ; 4 accords → 1 chacun ;</li>
-<li>3/4, 2 accords → 2 + 1.
-En mesure composée (x/8), le temps est la noire pointée.</li>
+<li>4/4, 2 chords → 2 + 2; 3 chords → 2 + 1 + 1; 4 chords → 1 each;</li>
+<li>3/4, 2 chords → 2 + 1.
+In compound time (x/8), the beat is the dotted quarter note.</li>
 </ul></li></ul></dd>
     
 
@@ -1907,7 +1906,7 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 
             
 
-            <td class="description last"><p>Nombre de cases.</p></td>
+            <td class="description last"><p>Number of slots.</p></td>
         </tr>
 
     
@@ -1990,14 +1989,14 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Barres gauche et droite de la mesure <code>i</code> (même logique que les classes
-<code>lb-*</code> / <code>rb-*</code> de <a href="module-grid.html#.gridHtml">gridHtml</a>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Left and right barlines of measure <code>i</code> (same logic as the <code>lb-*</code> / <code>rb-*</code>
+classes of <a href="module-grid.html#.gridHtml">gridHtml</a>).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line287">line 287</a>
+        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line286">line 286</a>
     </li></ul></dd>
     
 
@@ -2134,7 +2133,7 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 
             
 
-            <td class="description last"><p>Colonne (0 à 3).</p></td>
+            <td class="description last"><p>Column (0 to 3).</p></td>
         </tr>
 
     
@@ -2158,7 +2157,7 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 
             
 
-            <td class="description last"><p>Bord gauche.</p></td>
+            <td class="description last"><p>Left edge.</p></td>
         </tr>
 
     
@@ -2182,7 +2181,7 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 
             
 
-            <td class="description last"><p>Bord droit.</p></td>
+            <td class="description last"><p>Right edge.</p></td>
         </tr>
 
     
@@ -2206,7 +2205,7 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 
             
 
-            <td class="description last"><p>Haut de la mesure.</p></td>
+            <td class="description last"><p>Top of the measure.</p></td>
         </tr>
 
     
@@ -2265,15 +2264,15 @@ En mesure composée (x/8), le temps est la noire pointée.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Accords d'une mesure, entre <code>left</code> et <code>right</code>.
-1 ou 2 accords : sur une ligne ; 3 ou 4 : en carré 2 × 2 (plus petit).
-La qualité est en exposant (<code>tspan</code> décalé de 42 % de la taille de police).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Chords of a measure, between <code>left</code> and <code>right</code>.
+1 or 2 chords: on one line; 3 or 4: in a 2 × 2 square (smaller).
+The quality is superscript (<code>tspan</code> shifted by 42% of the font size).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line339">line 339</a>
+        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line338">line 338</a>
     </li></ul></dd>
     
 
@@ -2493,7 +2492,7 @@ La qualité est en exposant (<code>tspan</code> décalé de 42 % de la taille de
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Deux points de reprise centrés verticalement.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Two repeat dots, vertically centered.</p></li></ul></dd>
     
 
     
@@ -2578,13 +2577,13 @@ La qualité est en exposant (<code>tspan</code> décalé de 42 % de la taille de
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Repère de section (étiquette pleine) et volta (crochet), au-dessus de la mesure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Section mark (filled label) and ending (bracket), above the measure.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line315">line 315</a>
+        <a href="grid.js.html">grid.js</a>, <a href="grid.js.html#line314">line 314</a>
     </li></ul></dd>
     
 
@@ -2804,7 +2803,7 @@ La qualité est en exposant (<code>tspan</code> décalé de 42 % de la taille de
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Trait vertical de barre (rectangle, pour une épaisseur nette).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Vertical barline stroke (rectangle, for a crisp thickness).</p></li></ul></dd>
     
 
     

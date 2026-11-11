@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/chord.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,12 +53,12 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/staff/chord
  * @description
- * **Accord chiffré** au-dessus d'une note (bouton « Acc. » de la palette).
+ * **Chord symbol** above a note (the palette's "Chd" button).
  *
- * Depuis la 2.8.5, il se saisit au **clavier d'accords**
- * ({@link module:ui/chord-keyboard|ui/chord-keyboard}) qui remplace la
- * palette le temps de la saisie ; `⌨` repasse au champ texte (clavier du
- * téléphone ou de l'ordinateur). L'accord n'est appliqué qu'à « OK ».
+ * Since 2.8.5 it is typed on the **chord keyboard**
+ * ({@link module:ui/chord-keyboard|ui/chord-keyboard}), which replaces the
+ * palette while typing; `⌨` switches to the text field (phone or computer
+ * keyboard). The chord is applied only on "OK".
  */
 
 import { state, curNote, touch } from '../state.js';
@@ -73,9 +73,9 @@ const chordText = /** @type {HTMLElement} */ (document.getElementById('chordText
 const chordIn = /** @type {HTMLInputElement} */ (document.getElementById('chordIn'));
 const chordKeys = /** @type {HTMLElement} */ (document.getElementById('chordKeys'));
 
-/** Accord en cours de saisie (une case). */
+/** Chord being typed (one slot). */
 let buf = [];
-/** Saisie au champ texte plutôt qu'au clavier d'accords (gardé le temps de la session). */
+/** Typing in the text field rather than on the chord keyboard (kept for the session). */
 let textMode = false;
 
 const kb = mountChordKeyboard(chordKeys, {
@@ -89,7 +89,7 @@ const kb = mountChordKeyboard(chordKeys, {
 });
 
 /**
- * Passe du clavier d'accords au champ texte, ou l'inverse (en gardant l'accord).
+ * Switches from the chord keyboard to the text field, or back (keeping the chord).
  * @param {boolean} on
  */
 function setTextMode(on) {
@@ -106,14 +106,14 @@ function setTextMode(on) {
 }
 
 /**
- * Ouvre la saisie d'accord pour la note visée (sélection, ou note avant le curseur).
+ * Opens chord input for the target note (selection, or the note before the cursor).
  * @param {module:model~StaffBlock} b
  */
 export function openChord(b) {
   barBar.hidden = true;
   staffUi.chordTarget = { b, i: targetIndex(b) };
   if (state.mode === 'edit' &amp;&amp; state.sel == null) state.sel = staffUi.chordTarget.i;
-  hooks.redraw(b.id); // surligne la note visée
+  hooks.redraw(b.id); // highlights the target note
   const c = b.items[staffUi.chordTarget.i].c || '';
   buf = c ? [c] : [];
   chordBar.hidden = false;
@@ -121,13 +121,13 @@ export function openChord(b) {
   hooks.refreshPalette();
 }
 
-/** Ferme la saisie d'accord sans appliquer. */
+/** Closes chord input without applying it. */
 export function closeChord() {
   chordBar.hidden = true;
   staffUi.chordTarget = null;
 }
 
-/** Applique l'accord saisi (vide = suppression), 16 caractères au plus. */
+/** Applies the typed chord (empty = removal), 16 characters at most. */
 function applyChord() {
   const t = staffUi.chordTarget;
   if (!t) return;

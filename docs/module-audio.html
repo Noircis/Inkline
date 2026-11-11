@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>audio - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,27 +63,26 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Lecture audio avec la <strong>Web Audio API</strong> : un petit synthétiseur et un
-séquenceur.</p>
-<h2>Séquencement</h2>
-<p>Toutes les notes d'un morceau sont <strong>programmées d'avance</strong> sur l'horloge
-audio (<code>AudioContext.currentTime</code>), qui est précise à l'échantillon près et
-insensible aux ralentissements du thread principal. Les <code>setTimeout</code> ne
-servent qu'au surlignage visuel (léger décalage possible, invisible à
-l'oreille) et à la détection de fin.</p>
-<p>Un seul morceau joue à la fois : lancer une lecture arrête la précédente,
-relancer le même bloc l'arrête (bouton bascule).</p>
-<h2>Synthèse</h2>
+                <div class="description usertext"><p>Audio playback with the <strong>Web Audio API</strong>: a small synthesizer and a
+sequencer.</p>
+<h2>Sequencing</h2>
+<p>All the notes of a piece are <strong>scheduled in advance</strong> on the audio clock
+(<code>AudioContext.currentTime</code>), which is sample-accurate and immune to
+main-thread slowdowns. <code>setTimeout</code> is only used for the visual highlight
+(a slight offset is possible, inaudible) and to detect the end.</p>
+<p>Only one piece plays at a time: starting playback stops the previous one,
+starting the same block again stops it (toggle button).</p>
+<h2>Synthesis</h2>
 <ul>
-<li><strong>Mélodie</strong> (tone) : dent de scie + triangle → filtre passe-bas
-dont la coupure suit une petite enveloppe (attaque brillante qui
-s'adoucit) → gain avec enveloppe attaque / déclin / relâchement.</li>
-<li><strong>Accords</strong> (pad) : triangle + sinus à l'octave, plus doux.</li>
-<li><strong>Percussion</strong> (perc) : sinus dont la fréquence chute très vite
-(effet « clave »), accentué sur le premier temps.</li>
+<li><strong>Melody</strong> (tone): sawtooth + triangle → low-pass filter whose
+cutoff follows a small envelope (bright attack that softens) → gain with
+an attack / decay / release envelope.</li>
+<li><strong>Chords</strong> (pad): triangle + sine an octave up, softer.</li>
+<li><strong>Percussion</strong> (perc): sine whose frequency drops very fast
+(&quot;clave&quot; effect), accented on the first beat.</li>
 </ul>
-<p>Les navigateurs n'autorisent le son qu'après une interaction de
-l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></div>
+<p>Browsers only allow sound after a user interaction: the context is
+created (or resumed) on the first call.</p></div>
             
 
             
@@ -95,27 +94,26 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></di
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lecture audio avec la <strong>Web Audio API</strong> : un petit synthétiseur et un
-séquenceur.</p>
-<h2>Séquencement</h2>
-<p>Toutes les notes d'un morceau sont <strong>programmées d'avance</strong> sur l'horloge
-audio (<code>AudioContext.currentTime</code>), qui est précise à l'échantillon près et
-insensible aux ralentissements du thread principal. Les <code>setTimeout</code> ne
-servent qu'au surlignage visuel (léger décalage possible, invisible à
-l'oreille) et à la détection de fin.</p>
-<p>Un seul morceau joue à la fois : lancer une lecture arrête la précédente,
-relancer le même bloc l'arrête (bouton bascule).</p>
-<h2>Synthèse</h2>
+    <dd class="tag-description"><ul class="dummy"><li><p>Audio playback with the <strong>Web Audio API</strong>: a small synthesizer and a
+sequencer.</p>
+<h2>Sequencing</h2>
+<p>All the notes of a piece are <strong>scheduled in advance</strong> on the audio clock
+(<code>AudioContext.currentTime</code>), which is sample-accurate and immune to
+main-thread slowdowns. <code>setTimeout</code> is only used for the visual highlight
+(a slight offset is possible, inaudible) and to detect the end.</p>
+<p>Only one piece plays at a time: starting playback stops the previous one,
+starting the same block again stops it (toggle button).</p>
+<h2>Synthesis</h2>
 <ul>
-<li><strong>Mélodie</strong> (tone) : dent de scie + triangle → filtre passe-bas
-dont la coupure suit une petite enveloppe (attaque brillante qui
-s'adoucit) → gain avec enveloppe attaque / déclin / relâchement.</li>
-<li><strong>Accords</strong> (pad) : triangle + sinus à l'octave, plus doux.</li>
-<li><strong>Percussion</strong> (perc) : sinus dont la fréquence chute très vite
-(effet « clave »), accentué sur le premier temps.</li>
+<li><strong>Melody</strong> (tone): sawtooth + triangle → low-pass filter whose
+cutoff follows a small envelope (bright attack that softens) → gain with
+an attack / decay / release envelope.</li>
+<li><strong>Chords</strong> (pad): triangle + sine an octave up, softer.</li>
+<li><strong>Percussion</strong> (perc): sine whose frequency drops very fast
+(&quot;clave&quot; effect), accented on the first beat.</li>
 </ul>
-<p>Les navigateurs n'autorisent le son qu'après une interaction de
-l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li></ul></dd>
+<p>Browsers only allow sound after a user interaction: the context is
+created (or resumed) on the first call.</p></li></ul></dd>
     
 
     
@@ -216,13 +214,13 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Décompte : tous les temps cliquent.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Count-in: every beat clicks.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line341">line 341</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line340">line 340</a>
     </li></ul></dd>
     
 
@@ -262,7 +260,7 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
 
 
 <div class="description usertext">
-    <p>Décompte : tous les temps cliquent.</p>
+    <p>Count-in: every beat clicks.</p>
 </div>
 
 
@@ -286,7 +284,7 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line38">line 38</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -360,7 +358,7 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line50">line 50</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line49">line 49</a>
     </li></ul></dd>
     
 
@@ -441,13 +439,13 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Le bloc <code>id</code> est-il en cours de lecture ?</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Is block <code>id</code> being played?</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line268">line 268</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line267">line 267</a>
     </li></ul></dd>
     
 
@@ -595,13 +593,13 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue une note d'accord (son de nappe).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a chord note (pad sound).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line170">line 170</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line169">line 169</a>
     </li></ul></dd>
     
 
@@ -802,22 +800,22 @@ l'utilisateur : le contexte est créé (ou réveillé) au premier appel.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue une grille (bascule lecture/arrêt) : basse + accords en nappe, et un
-« charleston » sur les temps 2 et 4 pour les styles swing.</p>
-<p>Chaque mesure suit <a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a> ; à l'intérieur, les
-cases se partagent la mesure selon <a href="module-grid.html#.slotDurations">slotDurations</a>.
-Une mesure vide prolonge le dernier accord, <code>%</code> rejoue la mesure précédente.</p>
-<p>Options (2.8.4) : <code>from</code> / <code>to</code> pour ne jouer qu'une partie (même règle
-que <a href="module-rhythm.html#.staffSegment">staffSegment</a> : premier passage par
-<code>from</code>, jusqu'au passage par <code>to</code> qui suit), <code>loop</code>, <code>countIn</code>. L'accord
-qui sonne sur une case vide ou un <code>%</code> ne dépend pas du point de départ :
-le début de la grille est parcouru en silence pour le retrouver.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a chart (play/stop toggle): bass + pad chords, and a hi-hat on
+beats 2 and 4 for swing styles.</p>
+<p>Each measure follows <a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a>; inside
+it, the slots share the measure according to <a href="module-grid.html#.slotDurations">slotDurations</a>.
+An empty measure continues the last chord, <code>%</code> replays the previous measure.</p>
+<p>Options (2.8.4): <code>from</code> / <code>to</code> to play only a part (same rule as
+<a href="module-rhythm.html#.staffSegment">staffSegment</a>: first pass through <code>from</code>,
+up to the following pass through <code>to</code>), <code>loop</code>, <code>countIn</code>. The chord
+sounding on an empty slot or a <code>%</code> does not depend on the starting point:
+the start of the chart is walked through silently to find it.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line446">line 446</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line445">line 445</a>
     </li></ul></dd>
     
 
@@ -998,7 +996,7 @@ le début de la grille est parcouru en silence pour le retrouver.</p></li></ul><
                 </td>
             
 
-            <td class="description last"><p>Seuls <code>from</code>, <code>to</code>, <code>loop</code> et <code>countIn</code> comptent ici.</p></td>
+            <td class="description last"><p>Only <code>from</code>, <code>to</code>, <code>loop</code> and <code>countIn</code> matter here.</p></td>
         </tr>
 
     
@@ -1038,18 +1036,18 @@ le début de la grille est parcouru en silence pour le retrouver.</p></li></ul><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue une portée (bascule lecture/arrêt).</p>
-<p>Les événements viennent de <a href="module-rhythm.html#.staffEvents">staffEvents</a> (reprises,
-liaisons, triolets et swing déjà résolus) ; il ne reste qu'à convertir les
-noires en secondes : <code>secondes = noires × 60 / tempo</code>.</p>
-<p>Avec des PlayOptions (entraînement) : mesure de décompte, métronome
-sur les temps choisis, rythme coupé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a staff (play/stop toggle).</p>
+<p>Events come from <a href="module-rhythm.html#.staffEvents">staffEvents</a> (repeats,
+ties, triplets and swing already resolved); all that is left is converting
+quarter notes to seconds: <code>seconds = quarters × 60 / tempo</code>.</p>
+<p>With PlayOptions (practice): count-in measure, metronome on the
+chosen beats, muted rhythm.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line379">line 379</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line378">line 378</a>
     </li></ul></dd>
     
 
@@ -1270,13 +1268,13 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Fait entendre un élément de portée isolé (retour sonore à la saisie).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a single staff item (audio feedback while typing).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line254">line 254</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line253">line 253</a>
     </li></ul></dd>
     
 
@@ -1429,13 +1427,13 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Arrête la lecture en cours (s'il y en a une) et appelle son rappel de fin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Stops current playback (if any) and calls its end callback.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line275">line 275</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line274">line 274</a>
     </li></ul></dd>
     
 
@@ -1514,13 +1512,13 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Programme un rappel visuel à un instant de l'horloge audio.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Schedules a visual callback at a time of the audio clock.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line320">line 320</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line319">line 319</a>
     </li></ul></dd>
     
 
@@ -1657,7 +1655,7 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Instant audio (s).</p></td>
+            <td class="description last"><p>Audio time (s).</p></td>
         </tr>
 
     
@@ -1721,13 +1719,13 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Contexte audio, créé à la demande et réveillé s'il est suspendu.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Audio context, created on demand and resumed if suspended.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line56">line 56</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -1792,7 +1790,7 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>null</code> si la Web Audio API est absente.</p>
+    <p><code>null</code> if the Web Audio API is missing.</p>
 </div>
 
 
@@ -1832,18 +1830,18 @@ sur les temps choisis, rythme coupé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue une note de <strong>basse</strong> de grille (2.8.8), façon contrebasse pincée.</p>
-<p>La basse sonne entre 82 et 155 Hz, là où un haut-parleur de téléphone ne
-rend presque rien. On entend pourtant la hauteur d'une note grave par ses
-<strong>harmoniques</strong> (l'oreille reconstitue la fondamentale absente) : le son est
-donc riche (dent de scie peu filtrée) et doublé d'une octave douce, pour
-que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a chart <strong>bass</strong> note (2.8.8), like a plucked double bass.</p>
+<p>The bass sounds between 82 and 155 Hz, where a phone speaker renders
+almost nothing. Yet the pitch of a low note is heard through its
+<strong>harmonics</strong> (the ear rebuilds the missing fundamental): the sound is
+therefore rich (lightly filtered sawtooth) and doubled by a soft octave,
+so that the bass movement stays audible even on a small speaker.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line127">line 127</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line126">line 126</a>
     </li></ul></dd>
     
 
@@ -2044,13 +2042,13 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Prépare une lecture : arrête la précédente, ou bascule (arrêt) si c'est le même bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Prepares playback: stops the previous one, or toggles (stops) if it is the same block.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line303">line 303</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line302">line 302</a>
     </li></ul></dd>
     
 
@@ -2189,7 +2187,7 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 
         
 <div class="param-desc">
-    <p><code>null</code> si on vient d'arrêter ce bloc.</p>
+    <p><code>null</code> if this block was just stopped.</p>
 </div>
 
 
@@ -2229,14 +2227,14 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Clic de métronome : bref et aigu (onde triangle), pour se distinguer du
-« tic » plus grave des lignes rythmiques (perc).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Metronome click: short and high (triangle wave), to stand apart from the
+lower &quot;tick&quot; of rhythm lines (perc).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line232">line 232</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line231">line 231</a>
     </li></ul></dd>
     
 
@@ -2335,7 +2333,7 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 
             
 
-            <td class="description last"><p>Instant audio (s).</p></td>
+            <td class="description last"><p>Audio time (s).</p></td>
         </tr>
 
     
@@ -2367,7 +2365,7 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 
             
 
-            <td class="description last"><p>Clic accentué (plus aigu et plus fort).</p></td>
+            <td class="description last"><p>Accented click (higher and louder).</p></td>
         </tr>
 
     
@@ -2441,13 +2439,13 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Fréquence (Hz) d'un numéro MIDI (la 4 = 69 = 440 Hz).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Frequency (Hz) of a MIDI number (A4 = 69 = 440 Hz).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line67">line 67</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -2526,16 +2524,16 @@ que le mouvement de basse reste audible même sur un petit haut-parleur.</p></li
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Programme les clics de métronome de <code>measures</code> mesures à partir de <code>t0</code>.
-Un clic par groupe de croches (<a href="module-model.html#.groupStarts">groupStarts</a>) :
-chaque temps en x/4, chaque noire pointée en x/8, et en 7/8 « 2+2+3 » trois
-clics inégaux.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Schedules the metronome clicks of <code>measures</code> measures from <code>t0</code>.
+One click per group of eighth notes (<a href="module-model.html#.groupStarts">groupStarts</a>):
+each beat in x/4, each dotted quarter note in x/8, and in 7/8 &quot;2+2+3&quot;
+three uneven clicks.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line356">line 356</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line355">line 355</a>
     </li></ul></dd>
     
 
@@ -2648,7 +2646,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Instant audio du début (s).</p></td>
+            <td class="description last"><p>Audio time of the start (s).</p></td>
         </tr>
 
     
@@ -2672,7 +2670,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Nombre de mesures.</p></td>
+            <td class="description last"><p>Number of measures.</p></td>
         </tr>
 
     
@@ -2696,7 +2694,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Chiffrage et groupement.</p></td>
+            <td class="description last"><p>Time signature and grouping.</p></td>
         </tr>
 
     
@@ -2720,7 +2718,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Secondes par noire.</p></td>
+            <td class="description last"><p>Seconds per quarter note.</p></td>
         </tr>
 
     
@@ -2744,7 +2742,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Temps qui cliquent.</p></td>
+            <td class="description last"><p>Beats that click.</p></td>
         </tr>
 
     
@@ -2808,13 +2806,13 @@ clics inégaux.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue un coup de percussion.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a percussion hit.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line207">line 207</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line206">line 206</a>
     </li></ul></dd>
     
 
@@ -2945,7 +2943,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Premier temps (plus aigu, plus fort).</p></td>
+            <td class="description last"><p>First beat (higher, louder).</p></td>
         </tr>
 
     
@@ -3019,13 +3017,13 @@ clics inégaux.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue une note mélodique.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a melody note.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line76">line 76</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -3124,7 +3122,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Instant de début (secondes, horloge audio).</p></td>
+            <td class="description last"><p>Start time (seconds, audio clock).</p></td>
         </tr>
 
     
@@ -3156,7 +3154,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Durée (s).</p></td>
+            <td class="description last"><p>Duration (s).</p></td>
         </tr>
 
     
@@ -3225,7 +3223,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Collecteur pour pouvoir couper.</p></td>
+            <td class="description last"><p>Collector, to be able to cut.</p></td>
         </tr>
 
     
@@ -3267,13 +3265,13 @@ clics inégaux.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Rappels de lecture.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playback callbacks.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line290">line 290</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line289">line 289</a>
     </li></ul></dd>
     
 
@@ -3353,7 +3351,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Élément (ou mesure) qui commence.</p></td>
+            <td class="description last"><p>Item (or measure) starting.</p></td>
         </tr>
 
     
@@ -3377,7 +3375,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Fin ou arrêt.</p></td>
+            <td class="description last"><p>End or stop.</p></td>
         </tr>
 
     
@@ -3390,7 +3388,7 @@ clics inégaux.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Rappels de lecture.</p>
+    <p>Playback callbacks.</p>
 </div>
 
 
@@ -3422,13 +3420,13 @@ clics inégaux.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Options de lecture d'une portée (utilisées par l'entraînement).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Staff playback options (used by practice).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line324">line 324</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line323">line 323</a>
     </li></ul></dd>
     
 
@@ -3518,7 +3516,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Une mesure de décompte (tous les temps) avant de commencer.</p></td>
+            <td class="description last"><p>One count-in measure (all beats) before starting.</p></td>
         </tr>
 
     
@@ -3552,8 +3550,8 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Métronome : temps de la mesure qui cliquent
-(<code>[true, false, true, false]</code> = 1 et 3). Absent : pas de métronome.</p></td>
+            <td class="description last"><p>Metronome: beats of the measure that click
+(<code>[true, false, true, false]</code> = 1 and 3). Missing: no metronome.</p></td>
         </tr>
 
     
@@ -3585,7 +3583,7 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Accentuer le clic du premier temps.</p></td>
+            <td class="description last"><p>Accent the first-beat click.</p></td>
         </tr>
 
     
@@ -3617,8 +3615,8 @@ clics inégaux.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ne pas jouer le rythme lui-même (métronome seul) ;
-le surlignage suit quand même la lecture.</p></td>
+            <td class="description last"><p>Do not play the rhythm itself (metronome only);
+the highlight still follows playback.</p></td>
         </tr>
 
     
@@ -3650,8 +3648,8 @@ le surlignage suit quand même la lecture.</p></td>
 
             
 
-            <td class="description last"><p>Rejouer en boucle jusqu'à l'arrêt (2.8), sans
-nouveau décompte. Chaque passage dure un nombre entier de mesures.</p></td>
+            <td class="description last"><p>Replay in a loop until stopped (2.8), with no
+new count-in. Each pass lasts a whole number of measures.</p></td>
         </tr>
 
     
@@ -3683,8 +3681,8 @@ nouveau décompte. Chaque passage dure un nombre entier de mesures.</p></td>
 
             
 
-            <td class="description last"><p>Jouer à partir de cette mesure (2.8.4, index
-d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.</p></td>
+            <td class="description last"><p>Play from this measure (2.8.4, written index).
+See <a href="module-rhythm.html#.staffSegment">staffSegment</a>.</p></td>
         </tr>
 
     
@@ -3716,7 +3714,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
             
 
-            <td class="description last"><p>… jusqu'à cette mesure (comprise). Absent : jusqu'à la fin.</p></td>
+            <td class="description last"><p>… up to this measure (included). Missing: to the end.</p></td>
         </tr>
 
     
@@ -3729,7 +3727,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
 
 <div class="description usertext">
-    <p>Options de lecture d'une portée (utilisées par l'entraînement).</p>
+    <p>Staff playback options (used by practice).</p>
 </div>
 
 
@@ -3761,13 +3759,13 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lecture en cours.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playback in progress.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line40">line 40</a>
+        <a href="audio.js.html">audio.js</a>, <a href="audio.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -3847,7 +3845,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
             
 
-            <td class="description last"><p>Bloc joué.</p></td>
+            <td class="description last"><p>Block being played.</p></td>
         </tr>
 
     
@@ -3871,7 +3869,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
             
 
-            <td class="description last"><p><code>setTimeout</code> à annuler à l'arrêt.</p></td>
+            <td class="description last"><p><code>setTimeout</code>s to cancel on stop.</p></td>
         </tr>
 
     
@@ -3895,7 +3893,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
             
 
-            <td class="description last"><p>Oscillateurs à couper à l'arrêt.</p></td>
+            <td class="description last"><p>Oscillators to cut on stop.</p></td>
         </tr>
 
     
@@ -3919,7 +3917,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
             
 
-            <td class="description last"><p>Rappel de fin (appelé aussi en cas d'arrêt).</p></td>
+            <td class="description last"><p>End callback (also called on stop).</p></td>
         </tr>
 
     
@@ -3932,7 +3930,7 @@ d'écriture). Voir <a href="module-rhythm.html#.staffSegment">staffSegment</a>.<
 
 
 <div class="description usertext">
-    <p>Lecture en cours.</p>
+    <p>Playback in progress.</p>
 </div>
 
 

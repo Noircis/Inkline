@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/home - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,25 +63,25 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Accueil</strong> : recherche, barre de dossiers, tri et liste des notes.</p>
+                <div class="description usertext"><p><strong>Home</strong>: search, folder bar, sort and note list.</p>
 <pre class="prettyprint source"><code>┌ Inkline ─────────────── ⚙  + Note ┐
-│ 🔍 Rechercher…                     │
-│ [Toutes 12] [● Jazz 5] [● Cours 4] [Non classées 3] [+] │  ← défile horizontalement
-│ Jazz · 5 notes   Modifier   [Tri ▾]│
-│ ┌ carte ┐ ┌ carte ┐ …              │
+│ 🔍 Search…                         │
+│ [All 12] [● Jazz 5] [● Lessons 4] [Unfiled 3] [+] │  ← scrolls horizontally
+│ Jazz · 5 notes       Edit  [Sort ▾]│
+│ ┌ card ┐ ┌ card ┐ …                │
 </code></pre>
-<h2>Règles</h2>
+<h2>Rules</h2>
 <ul>
-<li>La <strong>sélection</strong> de la barre (<code>Toutes</code>, un dossier, <code>Non classées</code>) est
-mémorisée (<a href="module-storage.html#~Meta">meta.folder</a>), comme le <strong>tri</strong>,
-mémorisé pour chaque sélection (<code>meta.sorts</code>).</li>
-<li>Toucher de nouveau le dossier sélectionné ouvre son éditeur.</li>
-<li>Une <strong>recherche</strong> non vide porte sur <strong>toutes</strong> les notes, quel que soit
-le dossier sélectionné : on cherche une note dont on a oublié le
-rangement. Les résultats indiquent alors le dossier de chaque note.</li>
-<li>Une note créée depuis un dossier est rangée dans ce dossier.</li>
-<li>Taper dans la recherche ne redessine que la liste (le champ garde le
-focus et le clavier reste ouvert).</li>
+<li>The bar's <strong>selection</strong> (<code>All</code>, a folder, <code>Unfiled</code>) is remembered
+(<a href="module-storage.html#~Meta">meta.folder</a>), as is the <strong>sort</strong>, remembered
+for each selection (<code>meta.sorts</code>).</li>
+<li>Tapping the selected folder again opens its editor.</li>
+<li>A non-empty <strong>search</strong> covers <strong>all</strong> notes, whatever folder is
+selected: you are looking for a note whose filing you forgot. The results
+then show each note's folder.</li>
+<li>A note created from a folder is filed in that folder.</li>
+<li>Typing in the search only redraws the list (the field keeps the focus
+and the keyboard stays open).</li>
 </ul></div>
             
 
@@ -94,25 +94,25 @@ focus et le clavier reste ouvert).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Accueil</strong> : recherche, barre de dossiers, tri et liste des notes.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Home</strong>: search, folder bar, sort and note list.</p>
 <pre class="prettyprint source"><code>┌ Inkline ─────────────── ⚙  + Note ┐
-│ 🔍 Rechercher…                     │
-│ [Toutes 12] [● Jazz 5] [● Cours 4] [Non classées 3] [+] │  ← défile horizontalement
-│ Jazz · 5 notes   Modifier   [Tri ▾]│
-│ ┌ carte ┐ ┌ carte ┐ …              │
+│ 🔍 Search…                         │
+│ [All 12] [● Jazz 5] [● Lessons 4] [Unfiled 3] [+] │  ← scrolls horizontally
+│ Jazz · 5 notes       Edit  [Sort ▾]│
+│ ┌ card ┐ ┌ card ┐ …                │
 </code></pre>
-<h2>Règles</h2>
+<h2>Rules</h2>
 <ul>
-<li>La <strong>sélection</strong> de la barre (<code>Toutes</code>, un dossier, <code>Non classées</code>) est
-mémorisée (<a href="module-storage.html#~Meta">meta.folder</a>), comme le <strong>tri</strong>,
-mémorisé pour chaque sélection (<code>meta.sorts</code>).</li>
-<li>Toucher de nouveau le dossier sélectionné ouvre son éditeur.</li>
-<li>Une <strong>recherche</strong> non vide porte sur <strong>toutes</strong> les notes, quel que soit
-le dossier sélectionné : on cherche une note dont on a oublié le
-rangement. Les résultats indiquent alors le dossier de chaque note.</li>
-<li>Une note créée depuis un dossier est rangée dans ce dossier.</li>
-<li>Taper dans la recherche ne redessine que la liste (le champ garde le
-focus et le clavier reste ouvert).</li>
+<li>The bar's <strong>selection</strong> (<code>All</code>, a folder, <code>Unfiled</code>) is remembered
+(<a href="module-storage.html#~Meta">meta.folder</a>), as is the <strong>sort</strong>, remembered
+for each selection (<code>meta.sorts</code>).</li>
+<li>Tapping the selected folder again opens its editor.</li>
+<li>A non-empty <strong>search</strong> covers <strong>all</strong> notes, whatever folder is
+selected: you are looking for a note whose filing you forgot. The results
+then show each note's folder.</li>
+<li>A note created from a folder is filed in that folder.</li>
+<li>Typing in the search only redraws the list (the field keeps the focus
+and the keyboard stays open).</li>
 </ul></li></ul></dd>
     
 
@@ -366,8 +366,8 @@ focus et le clavier reste ouvert).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche la barre de catégories : toucher une catégorie la choisit ;
-toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires the category bar: tapping a category chooses it; tapping the one
+already chosen (or &quot;+&quot;) opens the categories panel.</p></li></ul></dd>
     
 
     
@@ -462,7 +462,7 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 
             
 
-            <td class="description last"><p>Dossier choisi.</p></td>
+            <td class="description last"><p>Chosen folder.</p></td>
         </tr>
 
     
@@ -502,7 +502,7 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML de la barre de catégories d'un dossier (2e rangée de puces).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of a folder's category bar (second row of chips).</p></li></ul></dd>
     
 
     
@@ -621,7 +621,7 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 
             
 
-            <td class="description last"><p>Catégorie choisie.</p></td>
+            <td class="description last"><p>Chosen category.</p></td>
         </tr>
 
     
@@ -680,7 +680,7 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML de la barre de dossiers.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of the folder bar.</p></li></ul></dd>
     
 
     
@@ -775,7 +775,7 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 
             
 
-            <td class="description last"><p>Sélection courante.</p></td>
+            <td class="description last"><p>Current selection.</p></td>
         </tr>
 
     
@@ -834,8 +834,8 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Catégorie choisie dans un dossier (2.8.6) : <a href="module-folders.html#.ALL_CATS">ALL_CATS</a>,
-<a href="module-folders.html#.NO_CAT">NO_CAT</a> ou un id de catégorie existante.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Category chosen in a folder (2.8.6): <a href="module-folders.html#.ALL_CATS">ALL_CATS</a>,
+<a href="module-folders.html#.NO_CAT">NO_CAT</a> or the id of an existing category.</p></li></ul></dd>
     
 
     
@@ -1001,8 +1001,8 @@ toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.</p><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection courante de la barre de dossiers. Un dossier supprimé entre-temps
-ramène sur « Toutes ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Current selection of the folder bar. A folder deleted in the meantime
+brings back &quot;All&quot;.</p></li></ul></dd>
     
 
     
@@ -1106,7 +1106,7 @@ ramène sur « Toutes ».</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre l'éditeur d'un dossier depuis l'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens a folder's editor from home.</p></li></ul></dd>
     
 
     
@@ -1241,7 +1241,7 @@ ramène sur « Toutes ».</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Message affiché quand la liste est vide.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Message shown when the list is empty.</p></li></ul></dd>
     
 
     
@@ -1443,7 +1443,7 @@ ramène sur « Toutes ».</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Crée une note (dans le dossier sélectionné, s'il y en a un) et l'ouvre.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Creates a note (in the selected folder, if there is one) and opens it.</p></li></ul></dd>
     
 
     
@@ -1528,8 +1528,8 @@ ramène sur « Toutes ».</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Recalcule et redessine la liste (recherche, sélection, tri), sans toucher
-au reste de l'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Recomputes and redraws the list (search, selection, sort), without
+touching the rest of home.</p></li></ul></dd>
     
 
     
@@ -1614,7 +1614,7 @@ au reste de l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écran d'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Home screen.</p></li></ul></dd>
     
 
     
@@ -1718,7 +1718,7 @@ au reste de l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Premier lancement : on montre ce que fait l'app avec une vraie portée d'exemple.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>First launch: show what the app does with a real example staff.</p></li></ul></dd>
     
 
     
@@ -1853,9 +1853,9 @@ au reste de l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Liste d'un dossier en sections, une par catégorie (puis « Sans
-catégorie »). Une note de plusieurs catégories apparaît dans chacune.
-L'état replié de chaque section est mémorisé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A folder's list in sections, one per category (then &quot;No category&quot;). A note
+with several categories appears in each. The collapsed state of each
+section is remembered.</p></li></ul></dd>
     
 
     
@@ -1974,7 +1974,7 @@ L'état replié de chaque section est mémorisé.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Notes du dossier, triées.</p></td>
+            <td class="description last"><p>Notes of the folder, sorted.</p></td>
         </tr>
 
     
@@ -2022,7 +2022,7 @@ L'état replié de chaque section est mémorisé.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Options de <a href="module-ui_list-view.html#.renderNoteList">renderNoteList</a>.</p></td>
+            <td class="description last"><p>Options of <a href="module-ui_list-view.html#.renderNoteList">renderNoteList</a>.</p></td>
         </tr>
 
     
@@ -2062,7 +2062,7 @@ L'état replié de chaque section est mémorisé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Change la sélection de la barre et redessine l'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Changes the bar's selection and redraws home.</p></li></ul></dd>
     
 
     
@@ -2147,7 +2147,7 @@ L'état replié de chaque section est mémorisé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Tri mémorisé pour une sélection.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sort remembered for a selection.</p></li></ul></dd>
     
 
     

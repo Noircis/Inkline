@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/chord-keyboard.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,23 +53,23 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/chord-keyboard
  * @description
- * **Clavier d'accords** à l'écran (2.8.5), à la place du clavier du
- * téléphone : plus de majuscules ni de « b » à taper pour ♭.
+ * On-screen **chord keyboard** (2.8.5), instead of the phone keyboard: no
+ * more capitals or "b" to type for ♭.
  *
  * ```
- *  C   D   E   F   G   A   B   ♭   ♯       ← fondamentale (ou basse après /)
- *  7  −7  Δ7  ø7  °7 7alt  6  −6   +       ← couleur, en un toucher
- * sus4 7sus4 9 −9  Δ9 7♭9 7♯9  13   ⋯      ← ⋯ : pavé détaillé
- *  /  N.C.  %   ␣   ⌫   ⌨   Suivant →
+ *  C   D   E   F   G   A   B   ♭   ♯       ← root (or bass after /)
+ *  7  −7  Δ7  ø7  °7 7alt  6  −6   +       ← quality, in one tap
+ * sus4 7sus4 9 −9  Δ9 7♭9 7♯9  13   ⋯      ← ⋯: detailed pad
+ *  /  N.C.  %   ␣   ⌫   ⌨   Next →
  * ```
  *
- * Ce module ne fait que l'affichage et les touchers ; l'effet de chaque
- * touche est décrit dans {@link module:chord-keys|chord-keys}.
+ * This module only handles display and taps; the effect of each key is
+ * described in {@link module:chord-keys|chord-keys}.
  *
- * Deux usages : la grille (une mesure, plusieurs cases, `%`, `N.C.`, `␣`) et
- * l'accord au-dessus d'une note (une seule case, « OK »). La touche `⌨`
- * repasse au champ texte (clavier du téléphone ou de l'ordinateur), pour
- * coller un accord ou écrire au clavier physique.
+ * Two uses: the chart (one measure, several slots, `%`, `N.C.`, `␣`) and the
+ * chord above a note (a single slot, "OK"). The `⌨` key switches to the text
+ * field (phone or computer keyboard), to paste a chord or type on a physical
+ * keyboard.
  */
 
 import { t } from '../i18n.js';
@@ -77,12 +77,12 @@ import { esc } from '../util.js';
 import { chordHtml } from '../chords.js';
 import { splitChord } from '../chord-keys.js';
 
-/** Fondamentales. */
+/** Roots. */
 const ROOTS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 
 /**
- * Couleurs en un toucher : `[libellé, qualité enregistrée]`.
- * Libellés comme à l'affichage, valeurs en notation iReal.
+ * One-tap qualities: `[label, stored quality]`.
+ * Labels as displayed, values in iReal notation.
  */
 const COLORS = [
   [
@@ -108,7 +108,7 @@ const COLORS = [
   ],
 ];
 
-/** Pavé détaillé : morceaux ajoutés un par un. */
+/** Detailed pad: pieces added one by one. */
 const DETAIL = [
   [
     ['−', '-'],
@@ -141,19 +141,19 @@ const DETAIL = [
 ];
 
 /**
- * Options d'un clavier.
+ * Keyboard options.
  * @typedef {Object} KeyboardOptions
- * @property {'grid'|'staff'} mode Grille (plusieurs cases, `%`, `N.C.`, `␣`) ou note.
- * @property {function(module:chord-keys~ChordKey): void} onKey Touche d'accord.
- * @property {function(): void} onNext « Suivant » (grille) ou « OK » (note).
- * @property {function(): void} onText Touche `⌨` : passer au champ texte.
- * @property {function(): void} [onUndo] Annuler (grille).
+ * @property {'grid'|'staff'} mode Chart (several slots, `%`, `N.C.`, `␣`) or note.
+ * @property {function(module:chord-keys~ChordKey): void} onKey Chord key.
+ * @property {function(): void} onNext "Next" (chart) or "OK" (note).
+ * @property {function(): void} onText `⌨` key: switch to the text field.
+ * @property {function(): void} [onUndo] Undo (chart).
  */
 
 /**
- * HTML d'une touche.
+ * HTML of a key.
  * @param {string} label
- * @param {string} attrs Attributs `data-*`.
+ * @param {string} attrs `data-*` attributes.
  * @param {string} [cls='']
  * @param {string} [aria='']
  */
@@ -161,11 +161,11 @@ const key = (label, attrs, cls = '', aria = '') =>
   `&lt;button type="button" class="ck-k${cls ? ' ' + cls : ''}" ${attrs}${aria ? ` aria-label="${esc(aria)}"` : ''}>${label}&lt;/button>`;
 
 /**
- * Monte un clavier d'accords dans `root` (une seule fois).
+ * Mounts a chord keyboard in `root` (once).
  * @param {HTMLElement} root
  * @param {KeyboardOptions} opt
- * @returns {{show: function(Array.&lt;string>): void}} `show(cases)` met à jour
- *   l'aperçu et l'état des touches.
+ * @returns {{show: function(Array.&lt;string>): void}} `show(slots)` updates the
+ *   preview and the key states.
  */
 export function mountChordKeyboard(root, opt) {
   const grid = opt.mode === 'grid';
@@ -219,7 +219,7 @@ export function mountChordKeyboard(root, opt) {
   };
 
   /**
-   * Aperçu de la mesure (ou de l'accord) et état des touches de couleur.
+   * Preview of the measure (or chord) and state of the quality keys.
    * @param {Array.&lt;string>} slots
    */
   function show(slots) {
@@ -231,7 +231,7 @@ export function mountChordKeyboard(root, opt) {
           const cur = k === parts.length - 1 ? ' cur' : '';
           if (c === '' &amp;&amp; k === parts.length - 1) return `&lt;span class="ck-slot${cur}">&lt;/span>`;
           const p = splitChord(c);
-          // Basse en attente (« C/ ») : on montre l'accord puis la barre.
+          // Pending bass ("C/"): show the chord, then the slash.
           const html =
             p &amp;&amp; p.slash &amp;&amp; !p.bass ? chordHtml(p.root + p.q) + '&lt;span class="cb">/&lt;/span>' : chordHtml(c);
           return `&lt;span class="ck-slot${cur}">${html}&lt;/span>`;
@@ -243,8 +243,8 @@ export function mountChordKeyboard(root, opt) {
     });
   }
 
-  // pointerdown + preventDefault : le toucher ne retire pas le focus (pas de
-  // clavier qui se ferme, pas de défilement parasite).
+  // pointerdown + preventDefault: the tap does not take the focus away (no
+  // keyboard closing, no stray scrolling).
   keys.addEventListener('pointerdown', (e) => {
     if (/** @type {Element} */ (e.target).closest('.ck-k')) e.preventDefault();
   });

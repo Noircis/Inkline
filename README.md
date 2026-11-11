@@ -1,170 +1,176 @@
 # Inkline
 
-Carnet de notes musicales pour téléphone Android : du texte, des portées, des lignes rythmiques et des grilles d'accords dans une même note, saisis au doigt et écoutables.
+Music notebook for Android phones: text, staves, rhythm lines and chord charts in a single note, entered with a finger and playable.
 
-Application web progressive (PWA) **sans framework ni étape de build** : des modules ES natifs servis tels quels, installables et utilisables hors ligne.
+Progressive web app (PWA) with **no framework and no build step**: native ES modules served as is, installable and usable offline. The interface is in English or French (2.9).
 
-## Démarrage
+## Getting started
 
 ```bash
-npm install        # outils de développement uniquement (JSDoc, Prettier, ESLint, Playwright…)
-npm test           # tests unitaires (node:test)
-npm run test:e2e   # tests d'interface dans un vrai navigateur (Playwright)
-npm run lint       # analyse du code (ESLint)
-npm run format     # formatage automatique (Prettier)
-npm run check      # format + lint + tests : à lancer avant chaque commit
-npm run docs       # génère la documentation dans docs/
-npm run dev        # aperçu en direct sur http://localhost:5500 (rechargement automatique)
+npm install        # development tools only (JSDoc, Prettier, ESLint, Playwright…)
+npm test           # unit tests (node:test)
+npm run test:e2e   # interface tests in a real browser (Playwright)
+npm run lint       # code analysis (ESLint)
+npm run format     # automatic formatting (Prettier)
+npm run check      # format + lint + tests: run before every commit
+npm run docs       # generates the documentation in docs/
+npm run dev        # live preview on http://localhost:5500 (automatic reload)
 ```
 
-La première fois sur un ordinateur, avant `npm run test:e2e` : `npx playwright install chromium` (télécharge le navigateur des tests).
+The first time on a computer, before `npm run test:e2e`: `npx playwright install chromium` (downloads the test browser).
 
-L'app elle-même n'a besoin d'aucune installation : n'importe quel serveur statique HTTPS convient (GitHub Pages, par exemple).
+The app itself needs no installation: any static HTTPS server will do (GitHub Pages, for example).
 
-## Environnement de développement
+## Development environment
 
-Le projet est réglé pour **Visual Studio Code** (dossier `.vscode/`, partagé dans le dépôt) : à l'ouverture, VS Code propose les extensions conseillées, **ESLint** (erreurs soulignées en direct) et **Prettier** (formatage à chaque enregistrement, avec les réglages du projet).
+The project is set up for **Visual Studio Code** (`.vscode/` folder, shared in the repository): on opening, VS Code suggests the recommended extensions, **ESLint** (errors underlined live) and **Prettier** (formatting on every save, with the project settings).
 
-**Aperçu en direct** : `npm run dev` (dans le terminal de VS Code, Ctrl+ù), puis ouvrir `http://localhost:5500/`. Chaque enregistrement recharge la page.
+**Live preview**: `npm run dev` (in the VS Code terminal), then open `http://localhost:5500/`. Every save reloads the page.
 
-- Dans VS Code même : Ctrl+Maj+P › « Simple Browser: Show » › `http://localhost:5500/`, puis glisser l'onglet à côté du code.
-- Le serveur de développement (`scripts/dev.mjs`, sans dépendance) neutralise le service worker : pas de version en cache à purger.
-- L'extension « Live Server » ne convient pas : elle injecte un script dans la page, que la Content Security Policy bloque.
-- Pour simuler un téléphone : outils de développement de Chrome (F12) › icône téléphone/tablette.
-- Pour déboguer sur un vrai téléphone Android (débogage USB activé) : `chrome://inspect` dans Chrome sur l'ordinateur.
+- Inside VS Code: Ctrl+Shift+P › "Simple Browser: Show" › `http://localhost:5500/`, then drag the tab next to the code.
+- The development server (`scripts/dev.mjs`, no dependencies) disables the service worker: no cached version to purge.
+- The "Live Server" extension does not fit: it injects a script into the page, which the Content Security Policy blocks.
+- To simulate a phone: Chrome developer tools (F12) › phone/tablet icon.
+- To debug on a real Android phone (USB debugging on): `chrome://inspect` in Chrome on the computer.
 
-## Tests et intégration continue
+## Tests and continuous integration
 
-- **Tests unitaires** (`tests/*.test.js`, `npm test`) : les modules purs (rythme, mise en page, mise en mesure, accords, iReal, stockage…), dont un test aléatoire sur la mise en mesure.
-- **Tests d'interface** (`tests/e2e/*.spec.js`, `npm run test:e2e`) : Playwright pilote un vrai Chromium au format téléphone et rejoue les parcours importants (saisie sur une portée, modes, mise en mesure, dossiers, recherche, sauvegarde, blocs réduits, partage, entraînement, hors ligne). Les coordonnées des touchers sont calculées par le moteur de mise en page de l'appli : les tests ne dépendent pas des pixels. Le serveur est lancé tout seul (`scripts/dev.mjs --static`).
-- **Intégration continue** (`.github/workflows/check.yml`) : à chaque push, GitHub lance `npm run check` puis les tests d'interface. Résultat dans l'onglet **Actions** du dépôt, et en coche verte ou croix rouge à côté de chaque commit. En cas d'échec, les captures et traces sont jointes au rapport.
+- **Unit tests** (`tests/*.test.js`, `npm test`): the pure modules (rhythm, layout, fitting into measures, chords, iReal, storage, translations…), including a randomized test of measure fitting.
+- **Interface tests** (`tests/e2e/*.spec.js`, `npm run test:e2e`): Playwright drives a real Chromium in phone format and replays the important flows (staff input, modes, measure fitting, folders, categories, search, backup, collapsed blocks, sharing, practice, measure selection, chord keyboard, English interface, offline). Tap coordinates are computed by the app's layout engine: the tests do not depend on pixels. The server starts on its own (`scripts/dev.mjs --static`).
+- **Continuous integration** (`.github/workflows/check.yml`): on every push, GitHub runs `npm run check` then the interface tests. Results are in the repository's **Actions** tab, and as a green check or red cross next to each commit. On failure, screenshots and traces are attached to the report.
 
-## Conventions de code
+## Code conventions
 
-- **Formatage** : Prettier (`.prettierrc.json`), lignes de 110 caractères au plus. Ne pas formater à la main : `npm run format`.
-- **Analyse** : ESLint (`eslint.config.js`), règles recommandées + variables inutilisées, `===`, `const`.
-- **Exports** : un module n'exporte que ce qui est utilisé ailleurs ou testé ; le reste est privé et apparaît dans la doc comme membre interne (`~`).
-- **Commentaires** : JSDoc en français sur chaque module et chaque fonction ; les algorithmes sont expliqués en tête de fonction.
-- **Fonctions longues** : découpées en étapes nommées (par exemple `render-staff` : une fonction par couche de dessin).
+- **Formatting**: Prettier (`.prettierrc.json`), lines of 110 characters at most. Don't format by hand: `npm run format`.
+- **Analysis**: ESLint (`eslint.config.js`), recommended rules + unused variables, `===`, `const`.
+- **Exports**: a module only exports what is used elsewhere or tested; the rest is private and shows up in the docs as an inner member (`~`).
+- **Comments**: JSDoc in English on every module and function; algorithms are explained at the top of the function.
+- **Interface texts**: never written in the code; always `t('key')` from `js/i18n.js`, with the text in `js/locales/en.js` and `js/locales/fr.js` (a test checks both have the same keys).
+- **Long functions**: split into named steps (for example `render-staff`: one function per drawing layer).
 
-## Arborescence
+## Tree
 
 ```
-index.html            balisage des palettes, CSP, chargement de js/main.js
-css/*.css             feuilles de style par zone (ordre et thème : voir css/base.css)
-css/fonts.css         déclaration des polices hébergées
-fonts/                polices woff2 (licence SIL OFL)
-sw.js                 service worker (hors ligne)
-manifest.webmanifest  nom, icônes, mode « standalone »
-icon-*.png, apple-touch-icon.png, inkline-icon*.svg   icônes (any, maskable, iOS, SVG source)
+index.html            palette markup, CSP, loading of js/main.js
+css/*.css             stylesheets by area (order and theme: see css/base.css)
+css/fonts.css         declaration of the hosted fonts
+fonts/                woff2 fonts (SIL OFL license)
+sw.js                 service worker (offline)
+manifest.webmanifest  name, icons, "standalone" mode
+icon-*.png, apple-touch-icon.png, inkline-icon*.svg   icons (any, maskable, iOS, SVG source)
 js/
-  main.js             point d'entrée
-  util.js             utilitaires (uid, mod, échappement…)
-  model.js            types de données (@typedef) et fabriques
-  pitch.js            position sur la portée ↔ hauteur MIDI, altérations, liaisons
-  rhythm.js           mesures, triolets, ligatures, reprises, swing, événements sonores
-  layout.js           mise en page d'une portée (coupure de lignes, justification)
-  render-staff.js     rendu SVG d'une portée
-  chords.js           analyse des accords chiffrés, voicings
-  grid.js             grilles d'accords : saisie, durées, ordre de lecture, rendu HTML
-  ireal.js            import/export iReal Pro (irealb://)
-  audio.js            synthé et séquenceur Web Audio
-  storage.js          enregistrement du carnet, migration, sauvegarde/restauration, fichiers .inkline
-  db.js               petite couche au-dessus d'IndexedDB (ouvrir, lire, écrire en transaction)
-  sanitize.js         validation des données importées (liste blanche)
-  folders.js          dossiers : modèle, sélection, compteurs, suppression
-  search.js           recherche (titres, textes, accords) et tri
-  folding.js          règle d'affichage réduit des blocs longs
-  placements.js       entraînement rythmique : mesures, écriture des placements, séries
-  exercise.js         exercices rythmiques aléatoires (tirage reproductible par numéro)
-  transpose.js        instruments transpositeurs : réécrire une portée pour un autre instrument
-  chord-keys.js       clavier d'accords : effet de chaque touche
-  i18n.js             langue de l'interface : t('clé'), pluriels, détection
-  lang-init.js        fixe la langue au démarrage (importé en premier)
-  locales/en.js       textes en anglais
-  locales/fr.js       textes en français (mêmes clés, vérifié par les tests)
-  measure-fit.js      mise en mesure : liaisons automatiques aux barres, compensation par des silences
-  export.js           partage d'une note : .inkline, PNG, PDF
-  pdf.js              générateur PDF minimal (images JPEG)
-  history.js          annulation (instantanés)
+  main.js             entry point
+  util.js             helpers (uid, mod, escaping…)
+  model.js            data types (@typedef) and factories
+  pitch.js            staff position ↔ MIDI pitch, accidentals, ties
+  rhythm.js           measures, triplets, beams, repeats, swing, sound events
+  layout.js           staff layout (line breaking, justification)
+  render-staff.js     SVG rendering of a staff
+  chords.js           chord symbol parsing, voicings
+  grid.js             chord charts: input, durations, playback order, HTML rendering
+  ireal.js            iReal Pro import/export (irealb://)
+  audio.js            Web Audio synth and sequencer
+  storage.js          notebook saving, migration, backup/restore, .inkline files
+  db.js               thin layer over IndexedDB (open, read, write in a transaction)
+  sanitize.js         validation of imported data (allowlist)
+  folders.js          folders and categories: model, selection, counters, deletion
+  search.js           search (titles, texts, chords) and sort
+  folding.js          collapsed display rule for long blocks
+  placements.js       rhythm practice: time signatures, writing placements, series
+  exercise.js         random rhythm exercises (reproducible draw by number)
+  transpose.js        transposing instruments: rewriting a staff for another instrument
+  chord-keys.js       chord keyboard: effect of each key
+  i18n.js             interface language: t('key'), plurals, detection
+  lang-init.js        sets the language at startup (imported first)
+  locales/en.js       English texts
+  locales/fr.js       French texts (same keys, checked by the tests)
+  measure-fit.js      fitting into measures: automatic ties at barlines, compensation with rests
+  export.js           sharing a note: .inkline, PNG, PDF
+  pdf.js              minimal PDF generator (JPEG images)
+  history.js          undo (snapshots)
   ui/
-    state.js          état de l'interface
-    nav.js            registre des écrans, navigation, bouton retour d'Android
-    blocks.js         registre des blocs musicaux, bloc actif, annulation
-    common.js         version, petits outils d'interface partagés
-    icons.js          pictogrammes SVG
-    home.js           accueil : recherche, barre de dossiers, tri, liste
-    note.js           écran note : titre, dossier, épingle, blocs, partage
-    folder-sheet.js   éditeur de dossier (panneau du bas)
-    fold.js           blocs longs réduits : bouton, fondu, toucher
-    training.js       écrans Entraînement et Placements
-    exercises.js      écrans des exercices aléatoires (réglages, lecture)
-    drill-kit.js      pièces communes de l'entraînement (réglages, métronome, lecture)
-    measure-select.js sélection de mesures à l'appui long (jouer d'ici, boucle)
-    chord-keyboard.js clavier d'accords à l'écran (grille, accord d'une note)
-    staff/            bloc portée : index (enregistrement), view (en-tête, dessin),
-                      input (toucher, modes), palette, bars, chord, shared (socle commun)
-    grid-ui.js        bloc grille : saisie, palette, panneau iReal
-    options.js        écran Options : affichage, dossiers, sauvegarde, import, iReal, à propos
-    list-view.js      affichages de la liste : Cartes, Mosaïque, Liste
-tests/                tests unitaires des modules purs
-docs/                 documentation générée (npm run docs)
+    state.js          interface state
+    nav.js            screen registry, navigation, Android back button
+    blocks.js         musical block registry, active block, undo
+    common.js         version, small shared interface helpers
+    icons.js          SVG pictograms
+    home.js           home: search, folder bar, categories, sort, list
+    note.js           note screen: title, filing, pin, blocks, sharing
+    folder-sheet.js   folder editor, categories panel, File note panel
+    fold.js           collapsed long blocks: button, fade, tap
+    training.js       Practice and Placements screens
+    exercises.js      random exercise screens (settings, playback)
+    drill-kit.js      shared practice pieces (settings, metronome, playback)
+    measure-select.js measure selection by long press (play from here, loop)
+    chord-keyboard.js on-screen chord keyboard (chart, note chord)
+    staff/            staff block: index (registration), view (header, drawing),
+                      input (taps, modes), palette, bars, chord, shared (common base)
+    grid-ui.js        chart block: input, palette, iReal panel
+    options.js        Settings screen: language, display, folders, backup, import, iReal, about
+    list-view.js      list displays: Cards, Mosaic, List
+tests/                unit tests of the pure modules
+tests/e2e/            interface tests (Playwright)
+docs/                 generated documentation (npm run docs)
 ```
 
 ## Architecture
 
-Le code est séparé en deux couches :
+The code is split into two layers:
 
-- **Modules purs** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `measure-fit`) : pas de DOM, pas d'effet de bord, testés sous Node. Ils contiennent toute la logique musicale et d'organisation.
-- **Interface** (`ui/*`, `audio`, `storage`, `main`) : branche la logique sur le navigateur.
+- **Pure modules** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `chord-keys`, `measure-fit`, `i18n`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
+- **Interface** (`ui/*`, `audio`, `storage`, `main`): wires the logic to the browser.
 
-Les écrans (`ui/home`, `ui/note`, `ui/options`) et les blocs musicaux (`ui/staff`, `ui/grid-ui`) **s'enregistrent** au chargement auprès de deux registres, `ui/nav` et `ui/blocks`, qui les appellent ensuite par leur nom. Ces registres n'importent aucun écran : le graphe d'imports est sans cycle (voir le module `main`).
+Screens (`ui/home`, `ui/note`, `ui/options`…) and musical blocks (`ui/staff`, `ui/grid-ui`) **register** at load time with two registries, `ui/nav` and `ui/blocks`, which then call them by name. These registries import no screen: the import graph has no cycle (see the `main` module).
 
-Le rendu suit un modèle _immediate mode_ : l'état est modifié, puis la partie concernée de l'écran est régénérée (template strings → `innerHTML`, SVG en chaîne). Pas de DOM virtuel ni de réactivité : à cette échelle, c'est le plus simple, et c'est assez rapide.
+Rendering follows an _immediate mode_ model: the state is changed, then the affected part of the screen is regenerated (template strings → `innerHTML`, SVG as a string). No virtual DOM, no reactivity: at this scale it is the simplest, and fast enough.
 
-Le moteur de mise en page (`layout`) est utilisé **à la fois** par le rendu et par le hit-testing : ce que l'on voit et ce que l'on touche sont calculés par la même fonction.
+The layout engine (`layout`) is used **both** by rendering and by hit testing: what you see and what you touch are computed by the same function.
 
-## Sécurité
+## Languages
 
-L'app n'a ni serveur ni compte : la seule entrée non fiable, ce sont les **fichiers importés** (note reçue, sauvegarde, lien iReal). Trois couches indépendantes :
+Every visible text goes through `t('key', params)` (`js/i18n.js`). The language is set at startup by `js/lang-init.js`, the first module imported by `main`: `auto` (French if the browser is in French, English otherwise), `en` or `fr`, chosen in Settings › Language. Plurals use `Intl.PluralRules`; static texts of `index.html` carry `data-i18n` attributes. Before the language is set (engine unit tests), the default is French.
 
-1. **Validation** (`sanitize`) : toute donnée importée ou chargée est reconstruite champ par champ à partir d'une liste blanche (types, énumérations, bornes, longueurs) ; les identifiants invalides sont régénérés.
-2. **Échappement** : toute valeur insérée dans du HTML ou du SVG passe par `esc()` ; les sélecteurs CSS par `CSS.escape()`.
-3. **Content Security Policy** (`index.html`) : seuls les fichiers `.js` de l'app peuvent s'exécuter ; aucune origine tierce n'est contactée.
+## Security
 
-`tests/security-export.test.js` vérifie qu'un fichier piégé est neutralisé.
+The app has no server and no account: the only untrusted input is **imported files** (received note, backup, iReal link). Three independent layers:
 
-## Données
+1. **Validation** (`sanitize`): all imported or loaded data is rebuilt field by field from an allowlist (types, enumerations, bounds, lengths); invalid ids are regenerated.
+2. **Escaping**: every value inserted into HTML or SVG goes through `esc()`; CSS selectors through `CSS.escape()`.
+3. **Content Security Policy** (`index.html`): only the app's `.js` files can run; no third-party origin is contacted.
 
-Voir le module `model` pour le détail des types. En bref :
+`tests/security-export.test.js` checks that a booby-trapped file is neutralized.
 
-- une note = une liste de blocs (texte, portée, grille) ;
-- une hauteur est stockée en **position sur la portée** (ce que l'on touche), convertie en MIDI à la demande ;
-- les durées sont en **noires** (point ×1.5, triolet ×2/3) ;
-- les champs optionnels sont absents plutôt que `false`.
+## Data
 
-Le format est rétrocompatible : une note créée en 1.0 s'ouvre dans la dernière version. Chaque note porte une date de création (`created`) et de modification (`updated`) ; pour les notes antérieures à la 1.7.0, la date de création a été initialisée avec la date de modification.
+See the `model` module for the details of the types. In short:
 
-Depuis la 2.0, une note peut porter `folder` (id de dossier) et `pinned`. Les dossiers `{ id, name, color, created }` sont stockés à part ; une note sans dossier, ou dont le dossier a disparu, est « non classée ».
+- a note = a list of blocks (text, staff, chart);
+- a pitch is stored as a **position on the staff** (what you touch), converted to MIDI on demand;
+- durations are in **quarter notes** (dot ×1.5, triplet ×2/3);
+- optional fields are absent rather than `false`.
 
-Une note partagée est un fichier `.inkline` : du JSON `{ app: 'inkline', kind: 'note', version: 1, note }`, **sans** `folder` ni `pinned` (le rangement reste chez soi).
+The format is backward compatible: a note created in 1.0 opens in the latest version. Each note carries a creation date (`created`) and a modification date (`updated`); for notes from before 1.7.0, the creation date was initialized with the modification date.
 
-Une sauvegarde est du JSON `{ app, version: 2, exported, notes, folders }` ; les sauvegardes `version: 1` (sans dossiers) restent importables.
+Since 2.0, a note can carry `folder` (folder id) and `pinned`; since 2.8.6, `cats` (ids of categories of its folder). Folders `{ id, name, color, created, cats }` are stored separately; a note without a folder, or whose folder disappeared, is "unfiled".
 
-## Stockage
+A shared note is an `.inkline` file: JSON `{ app: 'inkline', kind: 'note', version: 1, note }`, **without** `folder`, `cats` or `pinned` (filing stays at home).
 
-Depuis la 2.1, le carnet est enregistré dans **IndexedDB** (base `inkline`, magasins `notes` et `folders`, une entrée par note et par dossier). Les métadonnées (affichage, dossier sélectionné, tris, date de dernière sauvegarde) restent dans `localStorage` (clé `inkline-meta`).
+A backup is JSON `{ app, version: 2, exported, notes, folders }`; `version: 1` backups (no folders) can still be imported.
 
-- **Migration** : au premier lancement de la 2.1, le carnet de `localStorage` (clés `carnet-portees-v1` et `inkline-folders`) est copié en une transaction, seulement si la base est vide. L'ancienne copie est conservée, figée à la date de la migration.
-- **Écritures** : seule la note modifiée est écrite ; après une opération groupée, une comparaison avec la dernière version écrite (JSON) détecte toutes les modifications et suppressions.
-- **Repli** : si IndexedDB est indisponible, l'app fonctionne comme avant avec `localStorage`. Les Options indiquent le stockage utilisé (À propos).
-- **Tests** : `tests/storage-idb.test.js` utilise `fake-indexeddb`, une implémentation en mémoire d'IndexedDB pour Node.
+## Storage
 
-## Publier une nouvelle version
+Since 2.1, the notebook is stored in **IndexedDB** (database `inkline`, stores `notes` and `folders`, one entry per note and per folder). The metadata (display, selected folder, sorts, language, last backup date) stay in `localStorage` (key `inkline-meta`).
 
-1. Mettre à jour `APP_VERSION` dans `js/ui/common.js`, `version` dans `package.json` et `CACHE` dans `sw.js`.
-2. Ajouter l'entrée correspondante dans `CHANGELOG.md`.
-3. `npm test`, puis `npm run docs`.
-4. Pousser sur la branche publiée par GitHub Pages.
+- **Migration**: on the first launch of 2.1, the `localStorage` notebook (keys `carnet-portees-v1` and `inkline-folders`) is copied in one transaction, only if the database is empty. The old copy is kept, frozen at the migration date.
+- **Writes**: only the changed note is written; after a bulk operation, a comparison with the last written version (JSON) detects every change and deletion.
+- **Fallback**: if IndexedDB is unavailable, the app works as before with `localStorage`. Settings show the storage in use (About).
+- **Tests**: `tests/storage-idb.test.js` uses `fake-indexeddb`, an in-memory IndexedDB implementation for Node.
 
-Sur le téléphone, la nouvelle version s'affiche à la **deuxième** ouverture de l'app (stratégie _stale-while-revalidate_ du service worker).
+## Publishing a new version
+
+1. Update `APP_VERSION` in `js/ui/common.js`, `version` in `package.json` and `CACHE` in `sw.js`.
+2. Add the matching entry in `CHANGELOG.md` (in English since 2.9.1).
+3. `npm run check`, `npm run test:e2e`, then `npm run docs`.
+4. Push to the branch published by GitHub Pages.
+
+On the phone, the new version shows up on the **second** opening of the app (the service worker's _stale-while-revalidate_ strategy).

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>grid.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,26 +53,26 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module grid
  * @description
- * Logique **pure** des grilles d'accords (façon iReal Pro) : saisie, durées,
- * ordre de lecture, rendu HTML (écran) et SVG (export en image). L'interaction (palette, clics) est dans
- * {@link module:ui/grid-ui|ui/grid-ui}.
+ * **Pure** logic of chord charts (iReal Pro style): input, durations,
+ * playback order, HTML rendering (screen) and SVG rendering (image export).
+ * Interaction (palette, taps) is in {@link module:ui/grid-ui|ui/grid-ui}.
  *
- * ## Rendu
+ * ## Rendering
  *
- * La grille est une CSS Grid de 4 colonnes : une mesure par cellule, 4 mesures
- * par ligne comme dans iReal. Les barres de mesure ne sont pas dessinées :
- * ce sont les **bordures** des cellules, choisies par classes CSS selon les
- * drapeaux de la mesure et de sa voisine de gauche :
+ * The chart is a 4-column CSS Grid: one measure per cell, 4 measures per
+ * line as in iReal. Barlines are not drawn: they are the cells' **borders**,
+ * chosen through CSS classes from the flags of the measure and of its left
+ * neighbor:
  *
- * | Classe     | Signification                                   |
+ * | Class      | Meaning                                          |
  * |------------|--------------------------------------------------|
- * | `lb-rs`    | bord gauche = début de reprise `‖:`              |
- * | `lb-dbl`   | bord gauche = double barre (début de section)    |
- * | `lb-none`  | pas de bord gauche (la voisine a déjà une barre spéciale) |
- * | `rb-re`    | bord droit = fin de reprise `:‖`                 |
- * | `rb-dbl`   | bord droit = double barre                        |
- * | `rb-fin`   | bord droit = barre de fin                        |
- * | `rb`       | bord droit simple (fin de ligne)                 |
+ * | `lb-rs`    | left border = start repeat `‖:`                  |
+ * | `lb-dbl`   | left border = double barline (section start)     |
+ * | `lb-none`  | no left border (the neighbor already has a special barline) |
+ * | `rb-re`    | right border = end repeat `:‖`                   |
+ * | `rb-dbl`   | right border = double barline                    |
+ * | `rb-fin`   | right border = final barline                     |
+ * | `rb`       | simple right border (end of line)                |
  */
 
 import { t } from './i18n.js';
@@ -80,7 +80,7 @@ import { esc } from './util.js';
 import { mlen } from './model.js';
 import { chordHtml, chordParts } from './chords.js';
 
-/** Styles iReal Pro proposés (le style d'un morceau importé est ajouté s'il manque). */
+/** iReal Pro styles offered (an imported tune's style is added if missing). */
 export const STYLES = [
   'Medium Swing',
   'Medium Up Swing',
@@ -101,14 +101,14 @@ export const STYLES = [
   'Waltz',
 ];
 
-/** Les 12 toniques, notation iReal (bémols plutôt que dièses, sauf exceptions usuelles). */
+/** The 12 tonics, iReal notation (flats rather than sharps, except the usual exceptions). */
 export const KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
-/** Séquence des repères de section parcourue par le bouton « Section ». */
+/** Sequence of section marks cycled by the "Section" button. */
 export const SECTIONS = ['', 'A', 'B', 'C', 'D', 'Intro'];
 
 /**
- * Libellé français d'une tonalité iReal (`'Bb'` → `'B♭ majeur'`, `'C-'` → `'C mineur'`).
+ * Label of an iReal key in the interface language (`'Bb'` → `'B♭ major'`, `'C-'` → `'C minor'`).
  * @param {string} k
  * @returns {string}
  */
@@ -119,13 +119,13 @@ export function keyLabel(k) {
 }
 
 /**
- * Transforme la saisie d'une mesure en cases.
+ * Turns a measure's input into slots.
  *
- * - séparateurs : espaces et virgules ;
- * - `/` → case vide (prolonge l'accord précédent) ;
- * - `n`, `NC`, `N.C.` → *no chord* ;
- * - `%` → répétition de la mesure ;
- * - la première lettre est mise en majuscule (`bb7` → `Bb7`), pratique au clavier du téléphone.
+ * - separators: spaces and commas;
+ * - `/` → empty slot (continues the previous chord);
+ * - `n`, `NC`, `N.C.` → *no chord*;
+ * - `%` → measure repeat;
+ * - the first letter is capitalized (`bb7` → `Bb7`), handy on a phone keyboard.
  *
  * @example
  * gridTokens('cm7 / f7 NC')  // ['Cm7', '', 'F7', 'n']
@@ -147,7 +147,7 @@ export function gridTokens(txt) {
 }
 
 /**
- * Texte d'édition d'une mesure (opération inverse de {@link gridTokens}).
+ * Edit text of a measure (inverse of {@link gridTokens}).
  * @param {module:model~GridMeasure} m
  * @returns {string}
  */
@@ -156,15 +156,15 @@ export function measureText(m) {
 }
 
 /**
- * Durée (en noires) de chacune des `k` cases d'une mesure.
+ * Duration (in quarter notes) of each of the `k` slots of a measure.
  *
- * On répartit les **temps** de la mesure entre les cases, les premières
- * recevant le surplus, comme iReal :
- * - 4/4, 2 accords → 2 + 2 ; 3 accords → 2 + 1 + 1 ; 4 accords → 1 chacun ;
- * - 3/4, 2 accords → 2 + 1.
- * En mesure composée (x/8), le temps est la noire pointée.
+ * The measure's **beats** are spread over the slots, the first ones getting
+ * the surplus, as in iReal:
+ * - 4/4, 2 chords → 2 + 2; 3 chords → 2 + 1 + 1; 4 chords → 1 each;
+ * - 3/4, 2 chords → 2 + 1.
+ * In compound time (x/8), the beat is the dotted quarter note.
  *
- * @param {number} k Nombre de cases.
+ * @param {number} k Number of slots.
  * @param {string} time
  * @returns {number[]}
  */
@@ -180,23 +180,23 @@ export function slotDurations(k, time) {
 }
 
 /**
- * Ordre de lecture des mesures, avec reprises et voltas.
+ * Playback order of the measures, with repeats and endings.
  *
- * Automate à trois variables :
- * - `rsI` : index du dernier début de reprise (0 par défaut) ;
- * - `pass` : 1er ou 2e passage dans la reprise courante ;
- * - `jumped` : fins de reprise déjà prises.
+ * State machine with three variables:
+ * - `rsI`: index of the last start repeat (0 by default);
+ * - `pass`: 1st or 2nd pass through the current repeat;
+ * - `jumped`: end repeats already taken.
  *
- * Transitions :
- * - une nouvelle mesure `rs` (autre que celle où l'on vient de sauter) ouvre
- *   une reprise : `pass = 1` ;
- * - au 2e passage, une mesure qui commence la 1re fin fait sauter
- *   directement à la 2e fin ;
- * - une fin de reprise non encore prise renvoie à `rsI` avec `pass = 2` ;
- * - une barre de fin arrête la lecture.
+ * Transitions:
+ * - a new `rs` measure (other than the one just jumped to) opens a repeat:
+ *   `pass = 1`;
+ * - on the 2nd pass, a measure starting the 1st ending jumps straight to the
+ *   2nd ending;
+ * - an end repeat not yet taken goes back to `rsI` with `pass = 2`;
+ * - a final barline stops playback.
  *
  * @param {module:model~GridMeasure[]} M
- * @returns {number[]} Suite d'index de mesures.
+ * @returns {number[]} Sequence of measure indices.
  */
 export function gridPlayOrder(M) {
   const order = [];
@@ -231,17 +231,17 @@ export function gridPlayOrder(M) {
 }
 
 /**
- * HTML de la grille.
+ * HTML of the chart.
  *
- * Chaque mesure est un `&lt;button data-gm="index">` (zone de toucher native,
- * accessible au clavier). Une cellule `+` termine la grille tant qu'elle
- * n'est pas fermée par une barre de fin.
+ * Each measure is a `&lt;button data-gm="index">` (native touch target,
+ * keyboard accessible). A `+` cell ends the chart as long as it is not
+ * closed by a final barline.
  *
  * @param {module:model~GridBlock} b
- * @param {number|null} selI Mesure sélectionnée.
- * @param {number|null} playI Mesure en cours de lecture.
- * @param {number} [limit=0] N'afficher que les `limit` premières mesures
- *   (bloc réduit, sans cellule `+`). 0 : toutes.
+ * @param {number|null} selI Selected measure.
+ * @param {number|null} playI Measure being played.
+ * @param {number} [limit=0] Show only the first `limit` measures (collapsed
+ *   block, no `+` cell). 0: all.
  * @returns {string}
  */
 export function gridHtml(b, selI, playI, limit = 0) {
@@ -251,11 +251,11 @@ export function gridHtml(b, selI, playI, limit = 0) {
   let h = '&lt;div class="grid">';
   M.forEach((m, i) => {
     const prev = M[i - 1];
-    const c = ['gm', 'n' + Math.min(4, m.ch.length)]; // n0..n4 : taille de police selon le nombre d'accords
+    const c = ['gm', 'n' + Math.min(4, m.ch.length)]; // n0..n4: font size by number of chords
     if (i === selI) c.push('sel');
     if (i === playI) c.push('play');
-    // Barre de gauche : la voisine de gauche dessine déjà une barre spéciale
-    // sur la même ligne → on n'en remet pas une (évite les doubles traits).
+    // Left barline: the left neighbor already draws a special barline
+    // on the same line → don't add another (avoids double strokes).
     const special = prev &amp;&amp; (prev.re || prev.fin || prev.dbl);
     if (m.rs) c.push('lb-rs');
     else if (special &amp;&amp; i % 4 !== 0) c.push('lb-none');
@@ -279,34 +279,33 @@ export function gridHtml(b, selI, playI, limit = 0) {
   return h + '&lt;/div>';
 }
 
-/** Hauteur d'une mesure dans l'export (px). */
+/** Height of a measure in the export (px). */
 const SVG_ROW = 58;
-/** Espace entre deux lignes de mesures (px), où se placent sections et voltas. */
+/** Space between two lines of measures (px), where sections and endings go. */
 const SVG_GAP = 18;
-/** Marge haute réservée aux repères de la première ligne (px). */
+/** Top margin reserved for the marks of the first line (px). */
 const SVG_TOP = 14;
 
-/** Trait vertical de barre (rectangle, pour une épaisseur nette). */
+/** Vertical barline stroke (rectangle, for a crisp thickness). */
 const svgVline = (x, y, w = 1.4) => `&lt;rect class="f" x="${x}" y="${y}" width="${w}" height="${SVG_ROW}"/>`;
 
-/** Deux points de reprise centrés verticalement. */
+/** Two repeat dots, vertically centered. */
 const svgDots = (x, y) =>
   `&lt;circle class="f" cx="${x}" cy="${y + SVG_ROW / 2 - 6}" r="2.1"/>&lt;circle class="f" cx="${x}" cy="${y + SVG_ROW / 2 + 6}" r="2.1"/>`;
 
 /**
- * Rendu SVG d'une grille, pour l'export en image ou en PDF.
+ * SVG rendering of a chart, for image or PDF export.
  *
- * Même logique que {@link module:grid.gridHtml|gridHtml}, mais les barres sont
- * de vrais traits (pas des bordures CSS) et les accords des `&lt;text>` :
- * le résultat est autonome et peut être rasterisé.
+ * Same logic as {@link module:grid.gridHtml|gridHtml}, but barlines are real
+ * strokes (not CSS borders) and chords are `&lt;text>` elements: the result is
+ * self-contained and can be rasterized.
  *
- * Mise en page : 4 mesures par ligne, cellules de `W / 4` de large. Les
- * repères de section et de volta débordent au-dessus de chaque ligne, d'où
- * l'espace réservé en haut.
+ * Layout: 4 measures per line, cells `W / 4` wide. Section and ending marks
+ * overflow above each line, hence the space reserved at the top.
  *
  * @param {module:model~GridBlock} b
- * @param {number} W Largeur en px.
- * @returns {{svg: string, height: number}} Fragment SVG (sans balise `&lt;svg>` englobante) et hauteur.
+ * @param {number} W Width in px.
+ * @returns {{svg: string, height: number}} SVG fragment (no enclosing `&lt;svg>` tag) and height.
  */
 export function gridSvg(b, W) {
   const M = b.measures;
@@ -326,14 +325,14 @@ export function gridSvg(b, W) {
 }
 
 /**
- * Barres gauche et droite de la mesure `i` (même logique que les classes
- * `lb-*` / `rb-*` de {@link module:grid.gridHtml|gridHtml}).
+ * Left and right barlines of measure `i` (same logic as the `lb-*` / `rb-*`
+ * classes of {@link module:grid.gridHtml|gridHtml}).
  * @param {module:model~GridMeasure[]} M
  * @param {number} i
- * @param {number} col Colonne (0 à 3).
- * @param {number} x0 Bord gauche.
- * @param {number} x1 Bord droit.
- * @param {number} y0 Haut de la mesure.
+ * @param {number} col Column (0 to 3).
+ * @param {number} x0 Left edge.
+ * @param {number} x1 Right edge.
+ * @param {number} y0 Top of the measure.
  * @returns {string}
  */
 function svgBarlines(M, i, col, x0, x1, y0) {
@@ -341,14 +340,14 @@ function svgBarlines(M, i, col, x0, x1, y0) {
   const prev = M[i - 1];
   const prevSpecial = prev &amp;&amp; (prev.re || prev.fin || prev.dbl);
   let out = '';
-  // Gauche. Si la voisine de gauche (même ligne) a déjà une barre spéciale, on n'en remet pas.
+  // Left. If the left neighbor (same line) already has a special barline, don't add another.
   const leftAlreadyDrawn = prevSpecial &amp;&amp; col !== 0;
   if (m.rs) {
     out += svgVline(x0, y0, 4) + svgVline(x0 + 6, y0) + svgDots(x0 + 11.5, y0);
   } else if (!leftAlreadyDrawn) {
     out += m.sec || prevSpecial ? svgVline(x0, y0) + svgVline(x0 + 3.5, y0) : svgVline(x0, y0);
   }
-  // Droite.
+  // Right.
   if (m.re) out += svgDots(x1 - 11.5, y0) + svgVline(x1 - 7.4, y0) + svgVline(x1 - 4, y0, 4);
   else if (m.fin) out += svgVline(x1 - 7.4, y0) + svgVline(x1 - 4, y0, 4);
   else if (m.dbl) out += svgVline(x1 - 5, y0) + svgVline(x1 - 1.4, y0);
@@ -357,7 +356,7 @@ function svgBarlines(M, i, col, x0, x1, y0) {
 }
 
 /**
- * Repère de section (étiquette pleine) et volta (crochet), au-dessus de la mesure.
+ * Section mark (filled label) and ending (bracket), above the measure.
  * @param {module:model~GridMeasure} m
  * @param {number} x0
  * @param {number} x1
@@ -370,7 +369,7 @@ function svgLabels(m, x0, x1, y0) {
   if (m.sec) {
     const w = m.sec.length * 7.5 + 9;
     out += `&lt;rect class="f" x="${x0 - 3}" y="${y0 - 12}" width="${w}" height="16" rx="3"/>&lt;text class="secl" x="${x0 - 3 + w / 2}" y="${y0 + 0.5}" text-anchor="middle">${esc(m.sec)}&lt;/text>`;
-    voltaX = x0 + w + 4; // la volta commence après l'étiquette de section
+    voltaX = x0 + w + 4; // the ending starts after the section label
   }
   if (m.ending) {
     out += `&lt;path class="s" stroke-width="1.4" d="M${voltaX} ${y0 + 2} V${y0 - 9} H${x1 - 3}"/>&lt;text class="volt" x="${voltaX + 4}" y="${y0 + 1}">${esc(String(m.ending))}.&lt;/text>`;
@@ -379,9 +378,9 @@ function svgLabels(m, x0, x1, y0) {
 }
 
 /**
- * Accords d'une mesure, entre `left` et `right`.
- * 1 ou 2 accords : sur une ligne ; 3 ou 4 : en carré 2 × 2 (plus petit).
- * La qualité est en exposant (`tspan` décalé de 42 % de la taille de police).
+ * Chords of a measure, between `left` and `right`.
+ * 1 or 2 chords: on one line; 3 or 4: in a 2 × 2 square (smaller).
+ * The quality is superscript (`tspan` shifted by 42% of the font size).
  * @param {module:model~GridMeasure} m
  * @param {number} left
  * @param {number} right

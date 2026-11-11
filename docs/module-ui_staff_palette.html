@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/palette - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,19 +63,19 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Palette</strong> des portées, fixée en bas d'écran : mode (Écrire / Modifier),
-valeurs, point, triolet, silence, liaison, altérations, barres, accord
-chiffré, navigation, annuler, effacer.</p>
-<p>Chaque bouton agit selon le mode :</p>
+                <div class="description usertext"><p>Staff <strong>palette</strong>, fixed at the bottom of the screen: mode (Write / Edit),
+durations, dot, triplet, rest, tie, accidentals, barlines, chord symbol,
+navigation, undo, erase.</p>
+<p>Each button acts according to the mode:</p>
 <ul>
-<li><strong>Écrire</strong> : il règle la <strong>prochaine</strong> note
-(voir <a href="module-ui_state.html#~InputSettings">InputSettings</a>) ;</li>
-<li><strong>Modifier</strong> : il modifie la <strong>note sélectionnée</strong>. Changer sa durée
-garde la suite en place (compensation par des silences, voir
+<li><strong>Write</strong>: it sets the <strong>next</strong> note
+(see <a href="module-ui_state.html#~InputSettings">InputSettings</a>);</li>
+<li><strong>Edit</strong>: it changes the <strong>selected note</strong>. Changing its duration keeps
+what follows in place (compensated by rests, see
 <a href="module-measure-fit.html#.resizeEvent">resizeEvent</a>).</li>
 </ul>
-<p>Toute modification est précédée de <code>pushSnapshot</code> (annulation) et suivie de
-<code>touch</code> (sauvegarde), d'une remise en mesure et d'un redessin.</p></div>
+<p>Every change is preceded by <code>pushSnapshot</code> (undo) and followed by <code>touch</code>
+(save), a refit into measures and a redraw.</p></div>
             
 
             
@@ -87,19 +87,19 @@ garde la suite en place (compensation par des silences, voir
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Palette</strong> des portées, fixée en bas d'écran : mode (Écrire / Modifier),
-valeurs, point, triolet, silence, liaison, altérations, barres, accord
-chiffré, navigation, annuler, effacer.</p>
-<p>Chaque bouton agit selon le mode :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Staff <strong>palette</strong>, fixed at the bottom of the screen: mode (Write / Edit),
+durations, dot, triplet, rest, tie, accidentals, barlines, chord symbol,
+navigation, undo, erase.</p>
+<p>Each button acts according to the mode:</p>
 <ul>
-<li><strong>Écrire</strong> : il règle la <strong>prochaine</strong> note
-(voir <a href="module-ui_state.html#~InputSettings">InputSettings</a>) ;</li>
-<li><strong>Modifier</strong> : il modifie la <strong>note sélectionnée</strong>. Changer sa durée
-garde la suite en place (compensation par des silences, voir
+<li><strong>Write</strong>: it sets the <strong>next</strong> note
+(see <a href="module-ui_state.html#~InputSettings">InputSettings</a>);</li>
+<li><strong>Edit</strong>: it changes the <strong>selected note</strong>. Changing its duration keeps
+what follows in place (compensated by rests, see
 <a href="module-measure-fit.html#.resizeEvent">resizeEvent</a>).</li>
 </ul>
-<p>Toute modification est précédée de <code>pushSnapshot</code> (annulation) et suivie de
-<code>touch</code> (sauvegarde), d'une remise en mesure et d'un redessin.</p></li></ul></dd>
+<p>Every change is preceded by <code>pushSnapshot</code> (undo) and followed by <code>touch</code>
+(save), a refit into measures and a redraw.</p></li></ul></dd>
     
 
     
@@ -200,7 +200,7 @@ garde la suite en place (compensation par des silences, voir
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Boutons <code>data-act</code> de la palette.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>The palette's <code>data-act</code> buttons.</p></li></ul></dd>
     
 
     
@@ -246,7 +246,7 @@ garde la suite en place (compensation par des silences, voir
 
 
 <div class="description usertext">
-    <p>Boutons <code>data-act</code> de la palette.</p>
+    <p>The palette's <code>data-act</code> buttons.</p>
 </div>
 
 
@@ -278,7 +278,7 @@ garde la suite en place (compensation par des silences, voir
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Glyphes Unicode des boutons de valeur, en mode note et en mode silence.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Unicode glyphs of the duration buttons, in note mode and in rest mode.</p></li></ul></dd>
     
 
     
@@ -324,7 +324,7 @@ garde la suite en place (compensation par des silences, voir
 
 
 <div class="description usertext">
-    <p>Glyphes Unicode des boutons de valeur, en mode note et en mode silence.</p>
+    <p>Unicode glyphs of the duration buttons, in note mode and in rest mode.</p>
 </div>
 
 
@@ -345,7 +345,7 @@ garde la suite en place (compensation par des silences, voir
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Noms accessibles des boutons de valeur.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Accessible names of the duration buttons.</p></li></ul></dd>
     
 
     
@@ -391,7 +391,7 @@ garde la suite en place (compensation par des silences, voir
 
 
 <div class="description usertext">
-    <p>Noms accessibles des boutons de valeur.</p>
+    <p>Accessible names of the duration buttons.</p>
 </div>
 
 
@@ -422,7 +422,7 @@ garde la suite en place (compensation par des silences, voir
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Affiche ou cache la palette de portée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Shows or hides the staff palette.</p></li></ul></dd>
     
 
     
@@ -557,9 +557,9 @@ garde la suite en place (compensation par des silences, voir
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>⌫ : en mode Écrire, efface la note juste avant le curseur ; en mode
-Modifier, la note sélectionnée (à défaut, la dernière). Une note coupée
-s'efface en entier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>⌫: in Write mode, erases the note just before the cursor; in Edit mode,
+the selected note (failing that, the last one). A split note is erased
+entirely.</p></li></ul></dd>
     
 
     
@@ -718,7 +718,7 @@ s'efface en entier.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Message d'aide, du plus spécifique au plus général.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Help message, from the most specific to the most general.</p></li></ul></dd>
     
 
     
@@ -896,7 +896,7 @@ s'efface en entier.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton d'altération (♭ ♮ ♯).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Accidental button (♭ ♮ ♯).</p></li></ul></dd>
     
 
     
@@ -1055,7 +1055,7 @@ s'efface en entier.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton de valeur (ronde… double croche).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Duration button (whole… sixteenth).</p></li></ul></dd>
     
 
     
@@ -1190,8 +1190,8 @@ s'efface en entier.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Mode Modifier : change la durée de la note sélectionnée, en gardant la
-suite à sa place (<a href="module-measure-fit.html#.resizeEvent">resizeEvent</a>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Edit mode: changes the duration of the selected note, keeping what follows
+in place (<a href="module-measure-fit.html#.resizeEvent">resizeEvent</a>).</p></li></ul></dd>
     
 
     
@@ -1312,7 +1312,7 @@ suite à sa place (<a href="module-measure-fit.html#.resizeEvent">resizeEvent</a
 
         
 <div class="param-desc">
-    <p><code>false</code> hors mode Modifier ou sans sélection.</p>
+    <p><code>false</code> outside Edit mode or with no selection.</p>
 </div>
 
 
@@ -1349,7 +1349,7 @@ suite à sa place (<a href="module-measure-fit.html#.resizeEvent">resizeEvent</a
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bascule un réglage de saisie (mode Écrire) puis rafraîchit la palette.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Toggles an input setting (Write mode) then refreshes the palette.</p></li></ul></dd>
     
 
     
@@ -1484,9 +1484,9 @@ suite à sa place (<a href="module-measure-fit.html#.resizeEvent">resizeEvent</a
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valeurs que la palette doit montrer : celles de la note sélectionnée (mode
-Modifier ; une note coupée par une barre montre sa valeur entière), sinon
-les réglages de saisie.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Values the palette must show: those of the selected note (Edit mode; a
+note split by a barline shows its whole value), otherwise the input
+settings.</p></li></ul></dd>
     
 
     
@@ -1640,8 +1640,8 @@ les réglages de saisie.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>◀ ▶ : déplace le curseur (Écrire) ou la sélection (Modifier), d'une note
-logique à l'autre (jamais au milieu d'une note coupée).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>◀ ▶: moves the cursor (Write) or the selection (Edit), from one logical
+note to the next (never into the middle of a split note).</p></li></ul></dd>
     
 
     
@@ -1800,7 +1800,7 @@ logique à l'autre (jamais au milieu d'une note coupée).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Note ⇄ silence (toute la note logique, tous ses morceaux).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Note ⇄ rest (the whole logical note, all its pieces).</p></li></ul></dd>
     
 
     
@@ -1895,7 +1895,7 @@ logique à l'autre (jamais au milieu d'une note coupée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Premier morceau.</p></td>
+            <td class="description last"><p>First piece.</p></td>
         </tr>
 
     
@@ -1959,9 +1959,9 @@ logique à l'autre (jamais au milieu d'une note coupée).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Liaison : en mode Modifier, sur la note sélectionnée (la note suivante
-prend sa hauteur et perd son altération) ; en mode Écrire, la prochaine
-note sera liée à celle qui précède le curseur.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Tie: in Edit mode, on the selected note (the next note takes its pitch and
+loses its accidental); in Write mode, the next note will be tied to the one
+before the cursor.</p></li></ul></dd>
     
 
     
@@ -2096,8 +2096,8 @@ note sera liée à celle qui précède le curseur.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met la palette en accord avec le mode, la sélection ou les réglages de
-saisie : boutons enfoncés, glyphes (note ou silence), message d'aide.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Brings the palette in line with the mode, the selection or the input
+settings: pressed buttons, glyphs (note or rest), help message.</p></li></ul></dd>
     
 
     

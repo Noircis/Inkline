@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/exercises - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,17 +63,17 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Entraînement › Exercices aléatoires</strong> (2.8), en deux écrans :</p>
+                <div class="description usertext"><p><strong>Practice › Random exercises</strong> (2.8), in two screens:</p>
 <ol>
-<li><code>gen</code> : les réglages (mesure, longueur, notes par mesure, positions
-permises pour la première note, subdivision), puis « Générer » ;</li>
-<li><code>genPlay</code> : l'exercice en grand, son numéro (↻ pour un autre), et une
-barre de lecture en bas (tempo, swing, boucle, métronome).</li>
+<li><code>gen</code>: the settings (time signature, length, notes per measure, allowed
+positions for the first note, subdivision), then &quot;Generate&quot;;</li>
+<li><code>genPlay</code>: the exercise in large print, its number (↻ for another one),
+and a playback bar at the bottom (tempo, swing, loop, metronome).</li>
 </ol>
-<p>Le tirage est fait par le module pur <a href="module-exercise.html">exercise</a> ;
-l'écriture des mesures, par <a href="module-placements.html">placements</a>. Les
-réglages sont mémorisés (<code>meta.gen</code>), avec le numéro du dernier exercice :
-revenir sur l'écran redonne le même.</p></div>
+<p>The draw is done by the pure module <a href="module-exercise.html">exercise</a>; the
+writing of the measures by <a href="module-placements.html">placements</a>. Settings
+are remembered (<code>meta.gen</code>), with the number of the last exercise: coming
+back to the screen gives the same one.</p></div>
             
 
             
@@ -85,17 +85,17 @@ revenir sur l'écran redonne le même.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Entraînement › Exercices aléatoires</strong> (2.8), en deux écrans :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Practice › Random exercises</strong> (2.8), in two screens:</p>
 <ol>
-<li><code>gen</code> : les réglages (mesure, longueur, notes par mesure, positions
-permises pour la première note, subdivision), puis « Générer » ;</li>
-<li><code>genPlay</code> : l'exercice en grand, son numéro (↻ pour un autre), et une
-barre de lecture en bas (tempo, swing, boucle, métronome).</li>
+<li><code>gen</code>: the settings (time signature, length, notes per measure, allowed
+positions for the first note, subdivision), then &quot;Generate&quot;;</li>
+<li><code>genPlay</code>: the exercise in large print, its number (↻ for another one),
+and a playback bar at the bottom (tempo, swing, loop, metronome).</li>
 </ol>
-<p>Le tirage est fait par le module pur <a href="module-exercise.html">exercise</a> ;
-l'écriture des mesures, par <a href="module-placements.html">placements</a>. Les
-réglages sont mémorisés (<code>meta.gen</code>), avec le numéro du dernier exercice :
-revenir sur l'écran redonne le même.</p></li></ul></dd>
+<p>The draw is done by the pure module <a href="module-exercise.html">exercise</a>; the
+writing of the measures by <a href="module-placements.html">placements</a>. Settings
+are remembered (<code>meta.gen</code>), with the number of the last exercise: coming
+back to the screen gives the same one.</p></li></ul></dd>
     
 
     
@@ -196,7 +196,7 @@ revenir sur l'écran redonne le même.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Identifiant de lecture de l'exercice.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playback id of the exercise.</p></li></ul></dd>
     
 
     
@@ -242,7 +242,7 @@ revenir sur l'écran redonne le même.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Identifiant de lecture de l'exercice.</p>
+    <p>Playback id of the exercise.</p>
 </div>
 
 
@@ -263,7 +263,7 @@ revenir sur l'écran redonne le même.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bloc de l'exercice affiché.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Block of the exercise shown.</p></li></ul></dd>
     
 
     
@@ -309,7 +309,7 @@ revenir sur l'écran redonne le même.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Bloc de l'exercice affiché.</p>
+    <p>Block of the exercise shown.</p>
 </div>
 
 
@@ -340,7 +340,7 @@ revenir sur l'écran redonne le même.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Construit le bloc de l'exercice courant (réglages + numéro).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Builds the block of the current exercise (settings + number).</p></li></ul></dd>
     
 
     
@@ -444,9 +444,9 @@ revenir sur l'écran redonne le même.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine l'exercice. La portée est dessinée plus étroite que l'écran puis
-agrandie par le CSS (×1,15) (<code>width: 100%</code>) : les notes sont plus grosses, à lire
-de loin, pupitre posé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws the exercise. The staff is drawn narrower than the screen, then
+enlarged by CSS (×1.15) (<code>width: 100%</code>): the notes are bigger, readable
+from a distance with the phone on a music stand.</p></li></ul></dd>
     
 
     
@@ -531,7 +531,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages complets d'un exercice, d'après les réglages mémorisés.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Full settings of an exercise, from the remembered settings.</p></li></ul></dd>
     
 
     
@@ -635,7 +635,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages courants des exercices.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Current exercise settings.</p></li></ul></dd>
     
 
     
@@ -739,7 +739,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lance ou arrête l'exercice.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Starts or stops the exercise.</p></li></ul></dd>
     
 
     
@@ -846,7 +846,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Partie à jouer (sélection de mesures, 2.8.4).</p></td>
+            <td class="description last"><p>Part to play (measure selection, 2.8.4).</p></td>
         </tr>
 
     
@@ -880,7 +880,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>À la fin de la lecture.</p></td>
+            <td class="description last"><p>At the end of playback.</p></td>
         </tr>
 
     
@@ -920,7 +920,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écran des réglages.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Settings screen.</p></li></ul></dd>
     
 
     
@@ -1005,7 +1005,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écran de l'exercice.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Exercise screen.</p></li></ul></dd>
     
 
     
@@ -1090,7 +1090,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Positions permises pour la première note (toutes par défaut).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Allowed positions for the first note (all by default).</p></li></ul></dd>
     
 
     
@@ -1244,7 +1244,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton « − valeur + ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>&quot;− value +&quot; button.</p></li></ul></dd>
     
 
     
@@ -1446,8 +1446,8 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Prévient quand les réglages ne permettent pas assez de mesures différentes
-(une mesure reviendra forcément).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Warns when the settings do not allow enough distinct measures (a measure
+will necessarily come back).</p></li></ul></dd>
     
 
     
@@ -1532,7 +1532,7 @@ de loin, pupitre posé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Modifie et mémorise des réglages.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Changes and remembers settings.</p></li></ul></dd>
     
 
     

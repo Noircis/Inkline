@@ -1,7 +1,7 @@
-/* Inkline · Affichages de la liste : Cartes, Mosaïque, Liste. */
+/* Inkline · List displays: Cards, Mosaic, List. */
 
-/* 9. Affichages de la liste */
-/* Mosaïque : carrés, 2 par ligne */
+/* 9. List displays */
+/* Mosaic: squares, 2 per row */
 .mosaic {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -88,7 +88,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* Liste : une ligne par note */
+/* List: one line per note */
 .rows {
   margin-top: 6px;
   background: var(--surface);
@@ -138,7 +138,7 @@
   color: var(--muted);
   white-space: nowrap;
 }
-/* Sélecteur segmenté (Options) */
+/* Segmented picker (Settings) */
 .seg {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

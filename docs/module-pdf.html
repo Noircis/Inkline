@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>pdf - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,29 +63,29 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Générateur de <strong>PDF minimal</strong>, écrit à la main, sans bibliothèque.</p>
-<p>Chaque page contient une seule image JPEG pleine largeur. C'est tout ce
-dont l'export a besoin : la note est déjà dessinée en image par
-<a href="module-export.html">export</a>. Le texte n'est pas sélectionnable, mais le
-fichier fait ~30 lignes de code au lieu d'une dépendance de 300 Ko.</p>
-<h2>Structure d'un PDF</h2>
-<p>Un PDF est un fichier texte (avec des blocs binaires) composé d'<strong>objets</strong>
-numérotés qui se référencent (<code>3 0 R</code> = « l'objet n° 3 ») :</p>
+                <div class="description usertext"><p><strong>Minimal PDF</strong> generator, written by hand, with no library.</p>
+<p>Each page holds a single full-width JPEG image. That is all the export
+needs: the note is already drawn as an image by <a href="module-export.html">export</a>.
+The text cannot be selected, but the file takes ~30 lines of code instead
+of a 300 KB dependency.</p>
+<h2>Structure of a PDF</h2>
+<p>A PDF is a text file (with binary blocks) made of numbered <strong>objects</strong> that
+reference each other (<code>3 0 R</code> = &quot;object number 3&quot;):</p>
 <pre class="prettyprint source"><code>%PDF-1.4
-1 0 obj &lt;&lt; /Type /Catalog /Pages 2 0 R >> endobj      racine
-2 0 obj &lt;&lt; /Type /Pages /Kids [...] /Count n >> endobj liste des pages
-pour chaque page :
+1 0 obj &lt;&lt; /Type /Catalog /Pages 2 0 R >> endobj      root
+2 0 obj &lt;&lt; /Type /Pages /Kids [...] /Count n >> endobj page list
+for each page:
   &lt;&lt; /Type /Page /MediaBox [...] /Resources &lt;&lt; /XObject &lt;&lt; /Im0 … >> >> /Contents … >>
-  flux de contenu : « q a 0 0 d e f cm /Im0 Do Q »  (place et dessine l'image)
-  image : &lt;&lt; /Subtype /Image /Filter /DCTDecode … >> stream &lt;octets JPEG> endstream
-xref        table des positions (en octets) de chaque objet
-trailer     &lt;&lt; /Size … /Root 1 0 R >>  puis startxref &lt;position de xref>
+  content stream: &quot;q a 0 0 d e f cm /Im0 Do Q&quot;  (places and draws the image)
+  image: &lt;&lt; /Subtype /Image /Filter /DCTDecode … >> stream &lt;JPEG bytes> endstream
+xref        table of the positions (in bytes) of each object
+trailer     &lt;&lt; /Size … /Root 1 0 R >>  then startxref &lt;position of xref>
 </code></pre>
-<p>Le filtre <code>DCTDecode</code> signifie « ce flux est un JPEG » : on recopie les
-octets produits par le navigateur sans aucun décodage. C'est ce qui rend
-ce générateur si court.</p>
-<p>L'origine des coordonnées PDF est <strong>en bas à gauche</strong>, en points (1/72 de
-pouce) ; une page A4 mesure 595.28 × 841.89 points.</p></div>
+<p>The <code>DCTDecode</code> filter means &quot;this stream is a JPEG&quot;: the bytes produced by
+the browser are copied without any decoding. That is what makes this
+generator so short.</p>
+<p>The origin of PDF coordinates is <strong>at the bottom left</strong>, in points (1/72
+inch); an A4 page measures 595.28 × 841.89 points.</p></div>
             
 
             
@@ -97,29 +97,29 @@ pouce) ; une page A4 mesure 595.28 × 841.89 points.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Générateur de <strong>PDF minimal</strong>, écrit à la main, sans bibliothèque.</p>
-<p>Chaque page contient une seule image JPEG pleine largeur. C'est tout ce
-dont l'export a besoin : la note est déjà dessinée en image par
-<a href="module-export.html">export</a>. Le texte n'est pas sélectionnable, mais le
-fichier fait ~30 lignes de code au lieu d'une dépendance de 300 Ko.</p>
-<h2>Structure d'un PDF</h2>
-<p>Un PDF est un fichier texte (avec des blocs binaires) composé d'<strong>objets</strong>
-numérotés qui se référencent (<code>3 0 R</code> = « l'objet n° 3 ») :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Minimal PDF</strong> generator, written by hand, with no library.</p>
+<p>Each page holds a single full-width JPEG image. That is all the export
+needs: the note is already drawn as an image by <a href="module-export.html">export</a>.
+The text cannot be selected, but the file takes ~30 lines of code instead
+of a 300 KB dependency.</p>
+<h2>Structure of a PDF</h2>
+<p>A PDF is a text file (with binary blocks) made of numbered <strong>objects</strong> that
+reference each other (<code>3 0 R</code> = &quot;object number 3&quot;):</p>
 <pre class="prettyprint source"><code>%PDF-1.4
-1 0 obj &lt;&lt; /Type /Catalog /Pages 2 0 R >> endobj      racine
-2 0 obj &lt;&lt; /Type /Pages /Kids [...] /Count n >> endobj liste des pages
-pour chaque page :
+1 0 obj &lt;&lt; /Type /Catalog /Pages 2 0 R >> endobj      root
+2 0 obj &lt;&lt; /Type /Pages /Kids [...] /Count n >> endobj page list
+for each page:
   &lt;&lt; /Type /Page /MediaBox [...] /Resources &lt;&lt; /XObject &lt;&lt; /Im0 … >> >> /Contents … >>
-  flux de contenu : « q a 0 0 d e f cm /Im0 Do Q »  (place et dessine l'image)
-  image : &lt;&lt; /Subtype /Image /Filter /DCTDecode … >> stream &lt;octets JPEG> endstream
-xref        table des positions (en octets) de chaque objet
-trailer     &lt;&lt; /Size … /Root 1 0 R >>  puis startxref &lt;position de xref>
+  content stream: &quot;q a 0 0 d e f cm /Im0 Do Q&quot;  (places and draws the image)
+  image: &lt;&lt; /Subtype /Image /Filter /DCTDecode … >> stream &lt;JPEG bytes> endstream
+xref        table of the positions (in bytes) of each object
+trailer     &lt;&lt; /Size … /Root 1 0 R >>  then startxref &lt;position of xref>
 </code></pre>
-<p>Le filtre <code>DCTDecode</code> signifie « ce flux est un JPEG » : on recopie les
-octets produits par le navigateur sans aucun décodage. C'est ce qui rend
-ce générateur si court.</p>
-<p>L'origine des coordonnées PDF est <strong>en bas à gauche</strong>, en points (1/72 de
-pouce) ; une page A4 mesure 595.28 × 841.89 points.</p></li></ul></dd>
+<p>The <code>DCTDecode</code> filter means &quot;this stream is a JPEG&quot;: the bytes produced by
+the browser are copied without any decoding. That is what makes this
+generator so short.</p>
+<p>The origin of PDF coordinates is <strong>at the bottom left</strong>, in points (1/72
+inch); an A4 page measures 595.28 × 841.89 points.</p></li></ul></dd>
     
 
     
@@ -220,7 +220,7 @@ pouce) ; une page A4 mesure 595.28 × 841.89 points.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dimensions d'une page A4 en points.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Dimensions of an A4 page in points.</p></li></ul></dd>
     
 
     
@@ -266,7 +266,7 @@ pouce) ; une page A4 mesure 595.28 × 841.89 points.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Dimensions d'une page A4 en points.</p>
+    <p>Dimensions of an A4 page in points.</p>
 </div>
 
 
@@ -297,8 +297,8 @@ pouce) ; une page A4 mesure 595.28 × 841.89 points.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Construit un PDF A4 où chaque page affiche une image JPEG en pleine largeur,
-alignée en haut.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Builds an A4 PDF where each page shows a full-width JPEG image, aligned at
+the top.</p></li></ul></dd>
     
 
     
@@ -419,7 +419,7 @@ alignée en haut.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Le fichier PDF.</p>
+    <p>The PDF file.</p>
 </div>
 
 
@@ -458,7 +458,7 @@ alignée en haut.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une page à produire.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A page to produce.</p></li></ul></dd>
     
 
     
@@ -544,7 +544,7 @@ alignée en haut.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Octets d'une image JPEG.</p></td>
+            <td class="description last"><p>Bytes of a JPEG image.</p></td>
         </tr>
 
     
@@ -568,7 +568,7 @@ alignée en haut.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Largeur de l'image en pixels.</p></td>
+            <td class="description last"><p>Image width in pixels.</p></td>
         </tr>
 
     
@@ -592,7 +592,7 @@ alignée en haut.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Hauteur de l'image en pixels.</p></td>
+            <td class="description last"><p>Image height in pixels.</p></td>
         </tr>
 
     
@@ -605,7 +605,7 @@ alignée en haut.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Une page à produire.</p>
+    <p>A page to produce.</p>
 </div>
 
 

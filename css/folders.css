@@ -1,6 +1,6 @@
-/* Inkline · Dossiers, recherche et tri (2.0). */
+/* Inkline · Folders, search and sort (2.0). */
 
-/* 10. Dossiers, recherche et tri (2.0) */
+/* 10. Folders, search and sort (2.0) */
 .fc-red {
   --fc: var(--fc-red);
 }
@@ -45,7 +45,7 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-/* Recherche */
+/* Search */
 .search {
   position: relative;
   display: flex;
@@ -88,7 +88,7 @@
   font-size: 22px;
   line-height: 1;
 }
-/* Barre de dossiers : défile horizontalement, déborde jusqu'aux bords de l'écran. */
+/* Folder bar: scrolls horizontally, runs to the edges of the screen. */
 .chips {
   display: flex;
   gap: 6px;
@@ -147,7 +147,7 @@
   border-style: dashed;
   font-weight: 600;
 }
-/* Ligne au-dessus de la liste : contexte, Modifier, tri */
+/* Row above the list: context, Edit, sort */
 .listbar {
   display: flex;
   align-items: center;
@@ -195,7 +195,7 @@
 .empty-mini .hint {
   font-size: 13px;
 }
-/* Étiquettes de dossier et épingle dans la liste */
+/* Folder labels and pin in the list */
 .ftag {
   display: inline-flex;
   align-items: center;
@@ -224,7 +224,7 @@
   width: 14px;
   height: 14px;
 }
-/* Écran note : dossier et épingle */
+/* Note screen: folder and pin */
 .note-folder {
   display: inline-flex;
   align-items: center;
@@ -251,7 +251,7 @@
   color: var(--sel);
   border-color: var(--sel);
 }
-/* Options : lignes de dossier */
+/* Settings: folder rows */
 .opt-row .opt-folder {
   flex-direction: row;
   align-items: center;
@@ -261,7 +261,7 @@
   display: flex;
   flex-direction: column;
 }
-/* Éditeur de dossier (panneau qui monte du bas) */
+/* Folder editor (panel sliding up from the bottom) */
 .sheet-back {
   position: fixed;
   inset: 0;
@@ -355,7 +355,7 @@
   }
 }
 
-/* Catégories de dossier (2.8.6) */
+/* Folder categories (2.8.6) */
 .cat-chips {
   margin-top: 6px;
 }
@@ -404,7 +404,7 @@
 .cat-body[hidden] {
   display: none;
 }
-/* Bouton de rangement d'une note */
+/* Filing button of a note */
 button.note-folder {
   padding: 6px 12px 6px 10px;
   color: var(--ink);
@@ -425,7 +425,7 @@ button.note-folder {
   color: var(--muted);
   font-size: 11px;
 }
-/* Panneau des catégories */
+/* Categories panel */
 .cat-list {
   list-style: none;
   margin: 0 0 10px;
@@ -462,7 +462,7 @@ button.note-folder {
   color: var(--muted);
   margin: 8px 0 0;
 }
-/* Panneau Ranger la note */
+/* File note panel */
 .ar-head {
   display: flex;
   align-items: center;

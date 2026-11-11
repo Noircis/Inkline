@@ -1,4 +1,4 @@
-// Tests des instruments transpositeurs (2.8.3).
+// Tests for transposing instruments (2.8.3).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { changeInstrument, fifthsOf } from '../js/transpose.js';
@@ -20,8 +20,8 @@ const staff = (items, ks, tr) => ({
 });
 const names = (b) => b.items.map((it) => (it.r ? 'r' : pitchName(b.clef, it.s, it.a, b.ks))).join(' ');
 
-test('son réel : une note écrite pour un instrument sonne plus bas', () => {
-  // Do 5 écrit : en ut 72 ; au sax alto (mi♭), mi♭ 4 = 63 ; au ténor, si♭ 3 = 58.
+test('concert pitch: a note written for an instrument sounds lower', () => {
+  // Written C5: in C 72; on alto sax (E♭), E♭4 = 63; on tenor, B♭3 = 58.
   assert.deepEqual(resolveMidis(staff([5])), [72]);
   assert.deepEqual(resolveMidis(staff([5], 0, 'Eb')), [63]);
   assert.deepEqual(resolveMidis(staff([5], 0, 'Bb8')), [58]);
@@ -29,28 +29,28 @@ test('son réel : une note écrite pour un instrument sonne plus bas', () => {
   assert.equal(instrumentOf('nimporte').key, 'C');
 });
 
-test('armure : déplacement dans le cycle des quintes', () => {
-  assert.equal(fifthsOf(2), 2); // seconde majeure : +2 dièses
-  assert.equal(fifthsOf(9), 3); // sixte majeure
-  assert.equal(fifthsOf(14), 2); // neuvième = seconde
-  assert.equal(fifthsOf(7), 1); // quinte
-  assert.equal(fifthsOf(5), -1); // quarte
+test('key signature: moving around the circle of fifths', () => {
+  assert.equal(fifthsOf(2), 2); // major second: +2 sharps
+  assert.equal(fifthsOf(9), 3); // major sixth
+  assert.equal(fifthsOf(14), 2); // ninth = second
+  assert.equal(fifthsOf(7), 1); // fifth
+  assert.equal(fifthsOf(5), -1); // fourth
   assert.equal(fifthsOf(-9), -3);
 });
 
-test('transposer : gamme de do en ut → la majeur au sax alto, même son', () => {
+test('transpose: C scale in C → A major on alto sax, same sound', () => {
   const b = staff([-2, -1, 0, 1, 2, 3, 4, 5]);
   const before = resolveMidis(b);
   changeInstrument(b, 'Eb');
   assert.equal(b.tr, 'Eb');
   assert.equal(b.ks, 3);
   assert.equal(names(b), 'La 4 Si 4 Do♯ 5 Ré 5 Mi 5 Fa♯ 5 Sol♯ 5 La 5');
-  assert.ok(b.items.every((it) => it.a == null)); // l'armure suffit
+  assert.ok(b.items.every((it) => it.a == null)); // the key signature is enough
   assert.deepEqual(resolveMidis(b), before);
 });
 
-test('transposer : altérations accidentelles, report dans la mesure, liaisons', () => {
-  // Fa majeur : mi♭, mi♭ (reporté), la♯, la♯ (reporté) | si lié à la mesure suivante
+test('transpose: accidentals, carried within the measure, ties', () => {
+  // F major: E♭, E♭ (carried), A♯, A♯ (carried) | B tied to the next measure
   const b = staff(
     [
       { d: 'q', s: 0, a: -1 },
@@ -65,13 +65,13 @@ test('transposer : altérations accidentelles, report dans la mesure, liaisons',
   changeInstrument(b, 'Bb8');
   assert.equal(b.ks, 1);
   assert.deepEqual(resolveMidis(b), before);
-  assert.equal(b.items[0].a, 0); // fa bécarre en sol majeur
-  assert.equal(b.items[1].a, undefined); // reporté dans la mesure
-  assert.equal(b.items[4].s, b.items[3].s); // note liée : même position
+  assert.equal(b.items[0].a, 0); // F natural in G major
+  assert.equal(b.items[1].a, undefined); // carried within the measure
+  assert.equal(b.items[4].s, b.items[3].s); // tied note: same position
 });
 
-test('armure de plus de 7 altérations : réécrite à l’enharmonique', () => {
-  // Fa♯ majeur (6♯) + sixte majeure = ré♯ majeur (9♯) → mi♭ majeur (3♭).
+test('key signature with more than 7 accidentals: rewritten enharmonically', () => {
+  // F♯ major (6♯) + major sixth = D♯ major (9♯) → E♭ major (3♭).
   const b = staff([1, 2, 4, 6], 6);
   const before = resolveMidis(b);
   changeInstrument(b, 'Eb');
@@ -80,7 +80,7 @@ test('armure de plus de 7 altérations : réécrite à l’enharmonique', () => 
   assert.deepEqual(resolveMidis(b), before);
 });
 
-test('aller-retour et tous les instruments : le son ne change jamais', () => {
+test('round trip and every instrument: the sound never changes', () => {
   const items = [-6, -3, 0, { d: 'q', s: 2, a: 1 }, { d: 'q', r: true }, 4, { d: 'h', s: 7, a: -1 }, 9, 11];
   for (const ks of [-4, -1, 0, 2, 5])
     for (const a of INSTRUMENTS)
@@ -94,14 +94,14 @@ test('aller-retour et tous les instruments : le son ne change jamais', () => {
       }
 });
 
-test('note qui sortirait de la portée : ramenée d’une octave, et signalée', () => {
+test('note that would leave the staff: brought back an octave, and reported', () => {
   const b = staff([18]);
-  const { octaves } = changeInstrument(b, 'Bb8'); // +8 degrés : 26 > 20
+  const { octaves } = changeInstrument(b, 'Bb8'); // +8 degrees: 26 > 20
   assert.equal(octaves, 1);
   assert.equal(b.items[0].s, 19);
 });
 
-test('garder l’écriture : les notes et l’armure ne bougent pas, le son change', () => {
+test('keep the writing: notes and key signature do not move, the sound changes', () => {
   const b = staff([4, 5], 2);
   const before = resolveMidis(b);
   changeInstrument(b, 'Eb', { keep: true });
@@ -118,7 +118,7 @@ test('garder l’écriture : les notes et l’armure ne bougent pas, le son chan
   assert.equal(b.tr, undefined);
 });
 
-test('accords chiffrés transposés avec la bonne orthographe', () => {
+test('chord symbols transposed with the right spelling', () => {
   assert.equal(transposeChord('F', 5, 9), 'D');
   assert.equal(transposeChord('Bb7', 5, 9), 'G7');
   assert.equal(transposeChord('Ebmaj7/G', 1, 2), 'Fmaj7/A');
@@ -130,7 +130,7 @@ test('accords chiffrés transposés avec la bonne orthographe', () => {
   assert.equal(b.items[0].c, 'G7');
 });
 
-test('étiquette sur la portée et import', () => {
+test('tag on the staff and import', () => {
   assert.match(staffSvg(staff([4], 0, 'Eb'), 360).svg, /class="t trtag"[^>]*>E♭</);
   assert.doesNotMatch(staffSvg(staff([4]), 360).svg, /trtag/);
   assert.equal(sanitizeBlock(staff([4], 0, 'Bb8')).tr, 'Bb8');

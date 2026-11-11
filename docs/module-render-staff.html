@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>render-staff - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,35 +63,34 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Rendu d'une portée en <strong>SVG</strong>, sous forme de chaîne de caractères.</p>
-<p>Le rendu part de la mise en page (<a href="module-layout.html#.layout">layout</a>) et dessine
-par couches, dans cet ordre (l'ordre SVG est l'ordre de peinture) :</p>
+                <div class="description usertext"><p>Rendering of a staff as <strong>SVG</strong>, as a string.</p>
+<p>Rendering starts from the layout (<a href="module-layout.html#.layout">layout</a>) and
+draws in layers, in this order (SVG order is painting order):</p>
 <ol>
-<li>fond de la zone d'ajout (si le bloc est en édition) ;</li>
-<li>lignes de portée, clé, chiffrage, numéros de mesure ;</li>
-<li>barres de mesure et débuts de reprise ;</li>
-<li>éléments : surlignage, accord chiffré, tête, altération, point, hampe, crochets ;</li>
-<li>ligatures ;</li>
-<li>liaisons de prolongation ;</li>
-<li>crochets de triolet ;</li>
-<li>curseur d'ajout.</li>
+<li>background of the add zone (if the block is being edited);</li>
+<li>staff lines, clef, time signature, measure numbers;</li>
+<li>barlines and start repeats;</li>
+<li>items: highlight, chord symbol, head, accidental, dot, stem, flags;</li>
+<li>beams;</li>
+<li>ties;</li>
+<li>triplet brackets;</li>
+<li>add cursor.</li>
 </ol>
-<h2>Conventions graphiques</h2>
+<h2>Graphic conventions</h2>
 <ul>
-<li>Les couleurs ne sont jamais écrites en dur : chaque forme reçoit une
-classe CSS (<code>f</code> = remplie, <code>s</code> = trait, <code>h</code> = tête creuse, <code>l</code> = ligne de
-portée…) dont la couleur vient des variables du thème. Le SVG suit donc
-automatiquement le mode clair/sombre.</li>
-<li>Les têtes sont des ellipses tournées, les hampes des lignes, les
-ligatures des polygones (pour gérer la pente), les silences et les
-altérations des chemins de Bézier dessinés à la main.</li>
-<li>Les clés utilisent les glyphes Unicode du bloc « Musical Symbols »
-(U+1D11E clé de sol, U+1D122 clé de fa) avec la police Noto Music.</li>
+<li>Colors are never hard-coded: each shape gets a CSS class (<code>f</code> = filled,
+<code>s</code> = stroke, <code>h</code> = hollow head, <code>l</code> = staff line…) whose color comes
+from the theme variables. The SVG thus follows light/dark mode
+automatically.</li>
+<li>Heads are rotated ellipses, stems are lines, beams are polygons (to
+handle the slope), rests and accidentals are hand-drawn Bézier paths.</li>
+<li>Clefs use the Unicode glyphs of the &quot;Musical Symbols&quot; block (U+1D11E
+treble clef, U+1D122 bass clef) with the Noto Music font.</li>
 </ul>
-<h2>Sens des hampes</h2>
-<p>Note isolée : hampe vers le haut si la tête est sous la 3e ligne (<code>s &lt; 4</code>),
-sinon vers le bas. Groupe ligaturé : un seul sens pour tout le groupe,
-d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></div>
+<h2>Stem direction</h2>
+<p>Single note: stem up if the head is below the 3rd line (<code>s &lt; 4</code>),
+otherwise down. Beamed group: one direction for the whole group, from the
+average position. Rhythm line: always up.</p></div>
             
 
             
@@ -103,35 +102,34 @@ d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Rendu d'une portée en <strong>SVG</strong>, sous forme de chaîne de caractères.</p>
-<p>Le rendu part de la mise en page (<a href="module-layout.html#.layout">layout</a>) et dessine
-par couches, dans cet ordre (l'ordre SVG est l'ordre de peinture) :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Rendering of a staff as <strong>SVG</strong>, as a string.</p>
+<p>Rendering starts from the layout (<a href="module-layout.html#.layout">layout</a>) and
+draws in layers, in this order (SVG order is painting order):</p>
 <ol>
-<li>fond de la zone d'ajout (si le bloc est en édition) ;</li>
-<li>lignes de portée, clé, chiffrage, numéros de mesure ;</li>
-<li>barres de mesure et débuts de reprise ;</li>
-<li>éléments : surlignage, accord chiffré, tête, altération, point, hampe, crochets ;</li>
-<li>ligatures ;</li>
-<li>liaisons de prolongation ;</li>
-<li>crochets de triolet ;</li>
-<li>curseur d'ajout.</li>
+<li>background of the add zone (if the block is being edited);</li>
+<li>staff lines, clef, time signature, measure numbers;</li>
+<li>barlines and start repeats;</li>
+<li>items: highlight, chord symbol, head, accidental, dot, stem, flags;</li>
+<li>beams;</li>
+<li>ties;</li>
+<li>triplet brackets;</li>
+<li>add cursor.</li>
 </ol>
-<h2>Conventions graphiques</h2>
+<h2>Graphic conventions</h2>
 <ul>
-<li>Les couleurs ne sont jamais écrites en dur : chaque forme reçoit une
-classe CSS (<code>f</code> = remplie, <code>s</code> = trait, <code>h</code> = tête creuse, <code>l</code> = ligne de
-portée…) dont la couleur vient des variables du thème. Le SVG suit donc
-automatiquement le mode clair/sombre.</li>
-<li>Les têtes sont des ellipses tournées, les hampes des lignes, les
-ligatures des polygones (pour gérer la pente), les silences et les
-altérations des chemins de Bézier dessinés à la main.</li>
-<li>Les clés utilisent les glyphes Unicode du bloc « Musical Symbols »
-(U+1D11E clé de sol, U+1D122 clé de fa) avec la police Noto Music.</li>
+<li>Colors are never hard-coded: each shape gets a CSS class (<code>f</code> = filled,
+<code>s</code> = stroke, <code>h</code> = hollow head, <code>l</code> = staff line…) whose color comes
+from the theme variables. The SVG thus follows light/dark mode
+automatically.</li>
+<li>Heads are rotated ellipses, stems are lines, beams are polygons (to
+handle the slope), rests and accidentals are hand-drawn Bézier paths.</li>
+<li>Clefs use the Unicode glyphs of the &quot;Musical Symbols&quot; block (U+1D11E
+treble clef, U+1D122 bass clef) with the Noto Music font.</li>
 </ul>
-<h2>Sens des hampes</h2>
-<p>Note isolée : hampe vers le haut si la tête est sous la 3e ligne (<code>s &lt; 4</code>),
-sinon vers le bas. Groupe ligaturé : un seul sens pour tout le groupe,
-d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></li></ul></dd>
+<h2>Stem direction</h2>
+<p>Single note: stem up if the head is below the 3rd line (<code>s &lt; 4</code>),
+otherwise down. Beamed group: one direction for the whole group, from the
+average position. Rhythm line: always up.</p></li></ul></dd>
     
 
     
@@ -232,13 +230,13 @@ d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></li><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écart vertical entre la ligature principale et la secondaire (doubles croches).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Vertical gap between the main and secondary beam (sixteenths).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line196">line 196</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line195">line 195</a>
     </li></ul></dd>
     
 
@@ -278,7 +276,7 @@ d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></li><
 
 
 <div class="description usertext">
-    <p>Écart vertical entre la ligature principale et la secondaire (doubles croches).</p>
+    <p>Vertical gap between the main and secondary beam (sixteenths).</p>
 </div>
 
 
@@ -299,13 +297,13 @@ d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></li><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Épaisseur d'une ligature (px).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Thickness of a beam (px).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line193">line 193</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line192">line 192</a>
     </li></ul></dd>
     
 
@@ -345,7 +343,7 @@ d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></li><
 
 
 <div class="description usertext">
-    <p>Épaisseur d'une ligature (px).</p>
+    <p>Thickness of a beam (px).</p>
 </div>
 
 
@@ -366,14 +364,14 @@ d'après la position moyenne. Ligne rythmique : toujours vers le haut.</p></li><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Positions (<code>s</code>, clé de sol) des altérations de l'armure, dans l'ordre où
-on les écrit. En clé de fa, tout est deux positions plus bas.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Positions (<code>s</code>, treble clef) of the key signature accidentals, in the
+order they are written. In bass clef, everything is two positions lower.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line111">line 111</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line110">line 110</a>
     </li></ul></dd>
     
 
@@ -413,8 +411,8 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p></li></ul></d
 
 
 <div class="description usertext">
-    <p>Positions (<code>s</code>, clé de sol) des altérations de l'armure, dans l'ordre où
-on les écrit. En clé de fa, tout est deux positions plus bas.</p>
+    <p>Positions (<code>s</code>, treble clef) of the key signature accidentals, in the
+order they are written. In bass clef, everything is two positions lower.</p>
 </div>
 
 
@@ -435,13 +433,13 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Abscisse de la première altération de l'armure (juste après la clé).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>X of the first key signature accidental (right after the clef).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line117">line 117</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -481,7 +479,7 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 
 
 <div class="description usertext">
-    <p>Abscisse de la première altération de l'armure (juste après la clé).</p>
+    <p>X of the first key signature accidental (right after the clef).</p>
 </div>
 
 
@@ -502,13 +500,13 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Pente maximale d'une ligature (pour rester lisible).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum slope of a beam (to stay readable).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line199">line 199</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line198">line 198</a>
     </li></ul></dd>
     
 
@@ -548,7 +546,7 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 
 
 <div class="description usertext">
-    <p>Pente maximale d'une ligature (pour rester lisible).</p>
+    <p>Maximum slope of a beam (to stay readable).</p>
 </div>
 
 
@@ -569,13 +567,13 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Longueur minimale d'une hampe sous une ligature (px).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Minimum length of a stem under a beam (px).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line202">line 202</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line201">line 201</a>
     </li></ul></dd>
     
 
@@ -615,7 +613,7 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 
 
 <div class="description usertext">
-    <p>Longueur minimale d'une hampe sous une ligature (px).</p>
+    <p>Minimum length of a stem under a beam (px).</p>
 </div>
 
 
@@ -636,13 +634,13 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Longueur standard d'une hampe (px), un peu plus d'une octave.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Standard stem length (px), a little more than an octave.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line61">line 61</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line60">line 60</a>
     </li></ul></dd>
     
 
@@ -682,7 +680,7 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 
 
 <div class="description usertext">
-    <p>Longueur standard d'une hampe (px), un peu plus d'une octave.</p>
+    <p>Standard stem length (px), a little more than an octave.</p>
 </div>
 
 
@@ -703,13 +701,13 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Décalage horizontal (px) de la hampe par rapport au centre de la tête.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Horizontal offset (px) of the stem from the center of the head.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line64">line 64</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line63">line 63</a>
     </li></ul></dd>
     
 
@@ -749,7 +747,7 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 
 
 <div class="description usertext">
-    <p>Décalage horizontal (px) de la hampe par rapport au centre de la tête.</p>
+    <p>Horizontal offset (px) of the stem from the center of the head.</p>
 </div>
 
 
@@ -780,17 +778,17 @@ on les écrit. En clé de fa, tout est deux positions plus bas.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Rend une portée complète en SVG.</p>
-<p>Les couches sont calculées dans l'ordre des dépendances (les ligatures
-avant les notes, qui en reçoivent leurs hampes ; les notes avant les
-liaisons et triolets, qui ont besoin du sens des hampes et des points
-hauts), puis assemblées dans l'ordre de peinture décrit en tête de module.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Renders a full staff as SVG.</p>
+<p>Layers are computed in dependency order (beams before notes, which get
+their stems from them; notes before ties and triplets, which need stem
+directions and high points), then assembled in the painting order
+described in the module header.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line647">line 647</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line645">line 645</a>
     </li></ul></dd>
     
 
@@ -921,7 +919,7 @@ hauts), puis assemblées dans l'ordre de peinture décrit en tête de module.</p
 
             
 
-            <td class="description last"><p>Largeur en px.</p></td>
+            <td class="description last"><p>Width in px.</p></td>
         </tr>
 
     
@@ -981,8 +979,8 @@ hauts), puis assemblées dans l'ordre de peinture décrit en tête de module.</p
 
         
 <div class="param-desc">
-    <p>Le SVG et la mise
-en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
+    <p>The SVG and the layout
+used (reused by the caller for hit testing).</p>
 </div>
 
 
@@ -1019,13 +1017,13 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine une altération à gauche d'une tête.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws an accidental to the left of a head.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line99">line 99</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line98">line 98</a>
     </li></ul></dd>
     
 
@@ -1114,7 +1112,7 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 
             
 
-            <td class="description last"><p>Bémol, bécarre, dièse.</p></td>
+            <td class="description last"><p>Flat, natural, sharp.</p></td>
         </tr>
 
     
@@ -1138,7 +1136,7 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 
             
 
-            <td class="description last"><p>Centre de l'altération.</p></td>
+            <td class="description last"><p>Center of the accidental.</p></td>
         </tr>
 
     
@@ -1162,7 +1160,7 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 
             
 
-            <td class="description last"><p>Ordonnée de la tête.</p></td>
+            <td class="description last"><p>Y of the head.</p></td>
         </tr>
 
     
@@ -1221,13 +1219,13 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine une barre de mesure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws a barline.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line145">line 145</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line144">line 144</a>
     </li></ul></dd>
     
 
@@ -1316,7 +1314,7 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 
             
 
-            <td class="description last"><p><code>'single'</code>, <code>'double'</code>, <code>'final'</code>, <code>'rep'</code> (fin de reprise).</p></td>
+            <td class="description last"><p><code>'single'</code>, <code>'double'</code>, <code>'final'</code>, <code>'rep'</code> (end repeat).</p></td>
         </tr>
 
     
@@ -1340,7 +1338,7 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 
             
 
-            <td class="description last"><p>Abscisse de la barre (bord droit pour les barres composées).</p></td>
+            <td class="description last"><p>X of the barline (right edge for compound barlines).</p></td>
         </tr>
 
     
@@ -1412,7 +1410,7 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 
             
 
-            <td class="description last"><p><code>true</code> pour un début de reprise <code>‖:</code> (x = bord gauche).</p></td>
+            <td class="description last"><p><code>true</code> for a start repeat <code>‖:</code> (x = left edge).</p></td>
         </tr>
 
     
@@ -1471,14 +1469,13 @@ en page utilisée (réutilisée par l'appelant pour le hit-testing).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Groupes de ligature, découpés en plus par ligne : une ligature ne traverse
-pas un retour à la ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Beam groups, further split by line: a beam does not cross a line break.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line302">line 302</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line300">line 300</a>
     </li></ul></dd>
     
 
@@ -1626,15 +1623,15 @@ pas un retour à la ligne.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Accord chiffré en SVG, comme dans la grille et iReal Pro (2.8.5) :
-fondamentale, qualité en exposant (<code>−7</code>, <code>Δ7</code>, <code>ø7</code>), basse. Un texte non
-reconnu est écrit tel quel (♭ et ♯ mis en forme).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Chord symbol as SVG, as in the chart and iReal Pro (2.8.5): root, quality
+as superscript (<code>−7</code>, <code>Δ7</code>, <code>ø7</code>), bass. An unrecognized text is written as
+is (with ♭ and ♯ formatted).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line52">line 52</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -1749,7 +1746,7 @@ reconnu est écrit tel quel (♭ et ♯ mis en forme).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Contenu de l'élément <code>&lt;text&gt;</code> (échappé).</p>
+    <p>Content of the <code>&lt;text&gt;</code> element (escaped).</p>
 </div>
 
 
@@ -1786,13 +1783,13 @@ reconnu est écrit tel quel (♭ et ♯ mis en forme).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couches 1 et 8 : fond de la zone d'ajout et curseur pointillé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layers 1 and 8: add zone background and dotted cursor.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line609">line 609</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line607">line 607</a>
     </li></ul></dd>
     
 
@@ -1940,13 +1937,13 @@ reconnu est écrit tel quel (♭ et ♯ mis en forme).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couche 3 : barres de fin de mesure et débuts de reprise.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layer 3: end-of-measure barlines and start repeats.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line284">line 284</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line283">line 283</a>
     </li></ul></dd>
     
 
@@ -2094,24 +2091,24 @@ reconnu est écrit tel quel (♭ et ♯ mis en forme).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couche 5 : ligatures. Remplit aussi <code>beamStem</code>, <code>stemUp</code> et <code>beamOf</code>,
-car la ligature impose le sens et la longueur des hampes de son groupe.</p>
-<p>Calcul de la ligature d'un groupe :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layer 5: beams. Also fills <code>beamStem</code>, <code>stemUp</code> and <code>beamOf</code>, because the
+beam imposes the direction and length of its group's stems.</p>
+<p>Computing a group's beam:</p>
 <ol>
-<li>sens commun des hampes, d'après la position moyenne des têtes ;</li>
-<li>pente naturelle de l'extrémité de la 1re hampe à celle de la dernière,
-bornée à ±MAX_BEAM_SLOPE ;</li>
-<li>décalage de toute la ligature pour qu'aucune hampe ne fasse moins de
-MIN_BEAMED_STEM px, et que la ligature atteigne au moins la 3e ligne ;</li>
-<li>ligature secondaire pour les doubles croches : continue entre doubles
-croches voisines, sinon demi-ligature vers l'intérieur du groupe.</li>
+<li>common stem direction, from the average position of the heads;</li>
+<li>natural slope from the tip of the 1st stem to that of the last,
+bounded to ±MAX_BEAM_SLOPE;</li>
+<li>shift of the whole beam so that no stem is shorter than
+MIN_BEAMED_STEM px, and the beam reaches at least the 3rd line;</li>
+<li>secondary beam for sixteenths: continuous between neighboring
+sixteenths, otherwise a half beam toward the inside of the group.</li>
 </ol></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line335">line 335</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line333">line 333</a>
     </li></ul></dd>
     
 
@@ -2259,13 +2256,13 @@ croches voisines, sinon demi-ligature vers l'intérieur du groupe.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couche 4 : éléments (surlignage, accord chiffré, note ou silence).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layer 4: items (highlight, chord symbol, note or rest).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line506">line 506</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line504">line 504</a>
     </li></ul></dd>
     
 
@@ -2413,14 +2410,14 @@ croches voisines, sinon demi-ligature vers l'intérieur du groupe.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessin d'une note : lignes supplémentaires, tête, altération, point, hampe.
-Renseigne <code>tops[i]</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Drawing of a note: ledger lines, head, accidental, dot, stem.
+Fills in <code>tops[i]</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line465">line 465</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line463">line 463</a>
     </li></ul></dd>
     
 
@@ -2664,13 +2661,13 @@ Renseigne <code>tops[i]</code>.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couche 2 : lignes de portée, clé, chiffrage (1re ligne) ou numéro de mesure (lignes suivantes).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layer 2: staff lines, clef, time signature (1st line) or measure number (following lines).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line238">line 238</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line237">line 237</a>
     </li></ul></dd>
     
 
@@ -2818,17 +2815,17 @@ Renseigne <code>tops[i]</code>.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couche 6 : liaisons de prolongation.</p>
-<p>Une liaison va de la tête liée à la tête suivante, du côté opposé à la
-hampe. Si la note suivante est sur la ligne d'après, on dessine deux
-demi-liaisons : jusqu'au bout de la ligne, puis depuis le début de la
-suivante. Sans note suivante, une courte liaison « en attente ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layer 6: ties.</p>
+<p>A tie goes from the tied head to the next head, on the side opposite the
+stem. If the next note is on the following line, two half ties are drawn:
+to the end of the line, then from the start of the next one. With no next
+note, a short &quot;pending&quot; tie.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line545">line 545</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line543">line 543</a>
     </li></ul></dd>
     
 
@@ -2976,15 +2973,15 @@ suivante. Sans note suivante, une courte liaison « en attente ».</p></li></ul>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couche 7 : triolets. Un « 3 » au-dessus du groupe ; si le groupe n'est pas
-exactement une ligature hampes en haut, on ajoute un crochet horizontal
-avec deux petits retours vers le bas.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layer 7: triplets. A &quot;3&quot; above the group; if the group is not exactly a
+stems-up beam, a horizontal bracket with two small hooks pointing down is
+added.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line577">line 577</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line575">line 575</a>
     </li></ul></dd>
     
 
@@ -3132,15 +3129,15 @@ avec deux petits retours vers le bas.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Hampe (et crochets) d'une note non ligaturée.
-Hampe vers le haut si la tête est sous la 3e ligne ; elle atteint au
-moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Stem (and flags) of an unbeamed note.
+Stem up if the head is below the 3rd line; it reaches at least the middle
+line (engraving rule).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line434">line 434</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line432">line 432</a>
     </li></ul></dd>
     
 
@@ -3325,7 +3322,7 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Centre de la tête.</p></td>
+            <td class="description last"><p>Center of the head.</p></td>
         </tr>
 
     
@@ -3349,7 +3346,7 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ordonnée de la tête.</p></td>
+            <td class="description last"><p>Y of the head.</p></td>
         </tr>
 
     
@@ -3373,7 +3370,7 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Position de la tête.</p></td>
+            <td class="description last"><p>Position of the head.</p></td>
         </tr>
 
     
@@ -3399,7 +3396,7 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>top</code> : extrémité haute de la hampe si elle monte.</p>
+    <p><code>top</code>: top end of the stem if it goes up.</p>
 </div>
 
 
@@ -3436,13 +3433,13 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>L'élément <code>i</code> est-il sur une ligne dessinée ?</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Is item <code>i</code> on a drawn line?</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line229">line 229</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -3614,13 +3611,13 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine l'armure d'une ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws a line's key signature.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line126">line 126</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line125">line 125</a>
     </li></ul></dd>
     
 
@@ -3816,14 +3813,14 @@ moins la ligne du milieu (règle de gravure).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lignes supplémentaires d'une tête hors portée (sous la portée pour s ≤ -2,
-au-dessus pour s ≥ 10).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Ledger lines of a head outside the staff (below the staff for s ≤ -2,
+above for s ≥ 10).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line410">line 410</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line408">line 408</a>
     </li></ul></dd>
     
 
@@ -3960,7 +3957,7 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Centre de la tête.</p></td>
+            <td class="description last"><p>Center of the head.</p></td>
         </tr>
 
     
@@ -3984,7 +3981,7 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Position de la tête.</p></td>
+            <td class="description last"><p>Position of the head.</p></td>
         </tr>
 
     
@@ -4043,13 +4040,13 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine un silence.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws a rest.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line74">line 74</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -4162,7 +4159,7 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Centre.</p></td>
+            <td class="description last"><p>Center.</p></td>
         </tr>
 
     
@@ -4210,7 +4207,7 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ligne rythmique.</p></td>
+            <td class="description last"><p>Rhythm line.</p></td>
         </tr>
 
     
@@ -4236,7 +4233,7 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Fragment SVG.</p>
+    <p>SVG fragment.</p>
 </div>
 
 
@@ -4273,14 +4270,14 @@ au-dessus pour s ≥ 10).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine une liaison de prolongation : un croissant rempli (deux courbes de
-Bézier quadratiques de flèches différentes), plus élégant qu'un simple trait.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws a tie: a filled crescent (two quadratic Bézier curves with different
+heights), more elegant than a plain stroke.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line173">line 173</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -4369,7 +4366,7 @@ Bézier quadratiques de flèches différentes), plus élégant qu'un simple trai
 
             
 
-            <td class="description last"><p>Début.</p></td>
+            <td class="description last"><p>Start.</p></td>
         </tr>
 
     
@@ -4393,7 +4390,7 @@ Bézier quadratiques de flèches différentes), plus élégant qu'un simple trai
 
             
 
-            <td class="description last"><p>Fin.</p></td>
+            <td class="description last"><p>End.</p></td>
         </tr>
 
     
@@ -4417,7 +4414,7 @@ Bézier quadratiques de flèches différentes), plus élégant qu'un simple trai
 
             
 
-            <td class="description last"><p>Ordonnée des têtes.</p></td>
+            <td class="description last"><p>Y of the heads.</p></td>
         </tr>
 
     
@@ -4441,7 +4438,7 @@ Bézier quadratiques de flèches différentes), plus élégant qu'un simple trai
 
             
 
-            <td class="description last"><p><code>1</code> = liaison sous les têtes (courbe vers le bas), <code>-1</code> = au-dessus.</p></td>
+            <td class="description last"><p><code>1</code> = tie under the heads (curving down), <code>-1</code> = above.</p></td>
         </tr>
 
     
@@ -4502,15 +4499,15 @@ Bézier quadratiques de flèches différentes), plus élégant qu'un simple trai
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Données partagées par les fonctions de dessin d'une portée.</p>
-<p>Les tables <code>stemUp</code>, <code>beamOf</code> et <code>tops</code> sont remplies au fil des couches :
-ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Data shared by the drawing functions of a staff.</p>
+<p>The <code>stemUp</code>, <code>beamOf</code> and <code>tops</code> tables are filled as the layers go:
+beams first, then items; ties and triplets read them afterwards.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line204">line 204</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line203">line 203</a>
     </li></ul></dd>
     
 
@@ -4590,7 +4587,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Bloc dessiné.</p></td>
+            <td class="description last"><p>Block drawn.</p></td>
         </tr>
 
     
@@ -4614,7 +4611,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Ses éléments.</p></td>
+            <td class="description last"><p>Its items.</p></td>
         </tr>
 
     
@@ -4638,7 +4635,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Mise en page.</p></td>
+            <td class="description last"><p>Layout.</p></td>
         </tr>
 
     
@@ -4662,7 +4659,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Largeur en px.</p></td>
+            <td class="description last"><p>Width in px.</p></td>
         </tr>
 
     
@@ -4686,7 +4683,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Nombre de lignes dessinées.</p></td>
+            <td class="description last"><p>Number of lines drawn.</p></td>
         </tr>
 
     
@@ -4710,7 +4707,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Options de rendu.</p></td>
+            <td class="description last"><p>Render options.</p></td>
         </tr>
 
     
@@ -4734,7 +4731,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Hampe imposée par la ligature.</p></td>
+            <td class="description last"><p>Stem imposed by the beam.</p></td>
         </tr>
 
     
@@ -4758,7 +4755,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Sens de hampe de chaque note (<code>true</code> = vers le haut).</p></td>
+            <td class="description last"><p>Stem direction of each note (<code>true</code> = up).</p></td>
         </tr>
 
     
@@ -4782,7 +4779,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Groupe de ligature de chaque note.</p></td>
+            <td class="description last"><p>Beam group of each note.</p></td>
         </tr>
 
     
@@ -4806,7 +4803,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Point le plus haut de chaque élément (pour placer les triolets).</p></td>
+            <td class="description last"><p>Highest point of each item (to place triplets).</p></td>
         </tr>
 
     
@@ -4819,9 +4816,9 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
 
 <div class="description usertext">
-    <p>Données partagées par les fonctions de dessin d'une portée.</p>
-<p>Les tables <code>stemUp</code>, <code>beamOf</code> et <code>tops</code> sont remplies au fil des couches :
-ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p>
+    <p>Data shared by the drawing functions of a staff.</p>
+<p>The <code>stemUp</code>, <code>beamOf</code> and <code>tops</code> tables are filled as the layers go:
+beams first, then items; ties and triplets read them afterwards.</p>
 </div>
 
 
@@ -4853,13 +4850,13 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Options de rendu.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Render options.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line181">line 181</a>
+        <a href="render-staff.js.html">render-staff.js</a>, <a href="render-staff.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -4952,7 +4949,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Index de l'élément sélectionné (surligné).</p></td>
+            <td class="description last"><p>Index of the selected item (highlighted).</p></td>
         </tr>
 
     
@@ -4987,7 +4984,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Dernier élément surligné (note coupée en plusieurs morceaux) ; par défaut <code>sel</code>.</p></td>
+            <td class="description last"><p>Last highlighted item (note split into several pieces); <code>sel</code> by default.</p></td>
         </tr>
 
     
@@ -5022,7 +5019,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Index de l'élément en cours de lecture.</p></td>
+            <td class="description last"><p>Index of the item being played.</p></td>
         </tr>
 
     
@@ -5054,7 +5051,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Afficher la zone et le curseur d'ajout (bloc en édition, mode Écrire).</p></td>
+            <td class="description last"><p>Show the add zone and cursor (block being edited, Write mode).</p></td>
         </tr>
 
     
@@ -5088,7 +5085,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Curseur d'insertion devant cet élément (avec <code>cursor</code>) ; absent : en fin de portée.</p></td>
+            <td class="description last"><p>Insertion cursor before this item (with <code>cursor</code>); missing: at the end of the staff.</p></td>
         </tr>
 
     
@@ -5120,7 +5117,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
             
 
-            <td class="description last"><p>Limiter le nombre de lignes (vignettes de la liste).</p></td>
+            <td class="description last"><p>Limit the number of lines (list thumbnails).</p></td>
         </tr>
 
     
@@ -5133,7 +5130,7 @@ ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.</p
 
 
 <div class="description usertext">
-    <p>Options de rendu.</p>
+    <p>Render options.</p>
 </div>
 
 

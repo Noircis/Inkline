@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>sanitize - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,23 +63,21 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Validation des données venant de l'extérieur</strong> : fichiers <code>.inkline</code>
-reçus, sauvegardes importées, contenu du stockage local.</p>
-<h2>Pourquoi</h2>
-<p>Une donnée importée peut avoir été fabriquée par n'importe qui. Si elle
-était insérée telle quelle dans le HTML, un champ piégé
-(<code>id: '&quot;&gt;&lt;img src=x onerror=…&gt;'</code>) exécuterait du code dans l'app : c'est
-une injection (XSS). L'équivalent en C++ : un parseur de fichier qui ferait
-confiance aux tailles annoncées dans l'en-tête.</p>
-<h2>Principe : liste blanche</h2>
-<p>On ne « nettoie » pas l'objet reçu : on en <strong>reconstruit un neuf</strong> en ne
-recopiant que les champs connus, après vérification de leur type et de leur
-valeur (énumérations, bornes, longueurs). Tout le reste est ignoré. Les
-identifiants invalides sont régénérés.</p>
-<p>C'est la première ligne de défense. La deuxième est l'échappement
-systématique au rendu (<a href="module-util.html#.esc">esc</a>), la troisième la
-Content Security Policy d'<code>index.html</code>, qui interdit tout script non issu
-des fichiers de l'app.</p></div>
+                <div class="description usertext"><p><strong>Validation of data coming from outside</strong>: received <code>.inkline</code> files,
+imported backups, contents of local storage.</p>
+<h2>Why</h2>
+<p>Imported data may have been crafted by anyone. If it were inserted as is
+into the HTML, a booby-trapped field (<code>id: '&quot;&gt;&lt;img src=x onerror=…&gt;'</code>)
+would run code in the app: an injection (XSS). The C++ equivalent: a file
+parser that trusts the sizes announced in the header.</p>
+<h2>Principle: allowlist</h2>
+<p>The received object is not &quot;cleaned&quot;: a <strong>new one is rebuilt</strong> by copying
+only the known fields, after checking their type and value (enumerations,
+bounds, lengths). Everything else is ignored. Invalid ids are regenerated.</p>
+<p>This is the first line of defense. The second is systematic escaping at
+render time (<a href="module-util.html#.esc">esc</a>), the third the Content Security
+Policy of <code>index.html</code>, which forbids any script not coming from the app's
+files.</p></div>
             
 
             
@@ -91,23 +89,21 @@ des fichiers de l'app.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Validation des données venant de l'extérieur</strong> : fichiers <code>.inkline</code>
-reçus, sauvegardes importées, contenu du stockage local.</p>
-<h2>Pourquoi</h2>
-<p>Une donnée importée peut avoir été fabriquée par n'importe qui. Si elle
-était insérée telle quelle dans le HTML, un champ piégé
-(<code>id: '&quot;&gt;&lt;img src=x onerror=…&gt;'</code>) exécuterait du code dans l'app : c'est
-une injection (XSS). L'équivalent en C++ : un parseur de fichier qui ferait
-confiance aux tailles annoncées dans l'en-tête.</p>
-<h2>Principe : liste blanche</h2>
-<p>On ne « nettoie » pas l'objet reçu : on en <strong>reconstruit un neuf</strong> en ne
-recopiant que les champs connus, après vérification de leur type et de leur
-valeur (énumérations, bornes, longueurs). Tout le reste est ignoré. Les
-identifiants invalides sont régénérés.</p>
-<p>C'est la première ligne de défense. La deuxième est l'échappement
-systématique au rendu (<a href="module-util.html#.esc">esc</a>), la troisième la
-Content Security Policy d'<code>index.html</code>, qui interdit tout script non issu
-des fichiers de l'app.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Validation of data coming from outside</strong>: received <code>.inkline</code> files,
+imported backups, contents of local storage.</p>
+<h2>Why</h2>
+<p>Imported data may have been crafted by anyone. If it were inserted as is
+into the HTML, a booby-trapped field (<code>id: '&quot;&gt;&lt;img src=x onerror=…&gt;'</code>)
+would run code in the app: an injection (XSS). The C++ equivalent: a file
+parser that trusts the sizes announced in the header.</p>
+<h2>Principle: allowlist</h2>
+<p>The received object is not &quot;cleaned&quot;: a <strong>new one is rebuilt</strong> by copying
+only the known fields, after checking their type and value (enumerations,
+bounds, lengths). Everything else is ignored. Invalid ids are regenerated.</p>
+<p>This is the first line of defense. The second is systematic escaping at
+render time (<a href="module-util.html#.esc">esc</a>), the third the Content Security
+Policy of <code>index.html</code>, which forbids any script not coming from the app's
+files.</p></li></ul></dd>
     
 
     
@@ -208,13 +204,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valeurs possibles du champ <code>fold</code> d'un bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Possible values of a block's <code>fold</code> field.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line55">line 55</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line53">line 53</a>
     </li></ul></dd>
     
 
@@ -254,7 +250,7 @@ des fichiers de l'app.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Valeurs possibles du champ <code>fold</code> d'un bloc.</p>
+    <p>Possible values of a block's <code>fold</code> field.</p>
 </div>
 
 
@@ -275,13 +271,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Accepted format for an id: lowercase alphanumeric, 1 to 32 characters.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line33">line 33</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line31">line 31</a>
     </li></ul></dd>
     
 
@@ -321,7 +317,7 @@ des fichiers de l'app.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères.</p>
+    <p>Accepted format for an id: lowercase alphanumeric, 1 to 32 characters.</p>
 </div>
 
 
@@ -342,13 +338,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Tonalité iReal : lettre, altération éventuelle, <code>-</code> pour mineur.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>iReal key: letter, optional accidental, <code>-</code> for minor.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line36">line 36</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line34">line 34</a>
     </li></ul></dd>
     
 
@@ -388,7 +384,7 @@ des fichiers de l'app.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Tonalité iReal : lettre, altération éventuelle, <code>-</code> pour mineur.</p>
+    <p>iReal key: letter, optional accidental, <code>-</code> for minor.</p>
 </div>
 
 
@@ -409,13 +405,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Limites de taille : protègent contre des fichiers énormes qui gèleraient l'app.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Size limits: protect against huge files that would freeze the app.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line42">line 42</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -455,7 +451,7 @@ des fichiers de l'app.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Limites de taille : protègent contre des fichiers énormes qui gèleraient l'app.</p>
+    <p>Size limits: protect against huge files that would freeze the app.</p>
 </div>
 
 
@@ -476,13 +472,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Section de grille : quelques lettres (A, B, Intro, Verse…).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Chart section: a few letters (A, B, Intro, Verse…).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line39">line 39</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -522,7 +518,7 @@ des fichiers de l'app.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Section de grille : quelques lettres (A, B, Intro, Verse…).</p>
+    <p>Chart section: a few letters (A, B, Intro, Verse…).</p>
 </div>
 
 
@@ -553,13 +549,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide un bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a block.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line113">line 113</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line111">line 111</a>
     </li></ul></dd>
     
 
@@ -710,13 +706,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide la liste des dossiers (stockage local ou sauvegarde).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates the folder list (local storage or backup).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line250">line 250</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line248">line 248</a>
     </li></ul></dd>
     
 
@@ -864,13 +860,13 @@ des fichiers de l'app.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide une note complète.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a full note.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line160">line 160</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line158">line 158</a>
     </li></ul></dd>
     
 
@@ -969,7 +965,7 @@ des fichiers de l'app.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Valeur brute (issue de <code>JSON.parse</code>).</p></td>
+            <td class="description last"><p>Raw value (from <code>JSON.parse</code>).</p></td>
         </tr>
 
     
@@ -1003,9 +999,9 @@ des fichiers de l'app.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p><code>freshIds: true</code> régénère <strong>tous</strong> les
-identifiants : à utiliser pour une note reçue, qui devient une nouvelle
-note du carnet au lieu d'écraser une note existante de même id.</p></td>
+            <td class="description last"><p><code>freshIds: true</code> regenerates <strong>every</strong>
+id: use it for a received note, which becomes a new note in the notebook
+instead of overwriting an existing note with the same id.</p></td>
         </tr>
 
     
@@ -1031,7 +1027,7 @@ note du carnet au lieu d'écraser une note existante de même id.</p></td>
 
         
 <div class="param-desc">
-    <p><code>null</code> si ce n'est pas une note.</p>
+    <p><code>null</code> if it is not a note.</p>
 </div>
 
 
@@ -1071,14 +1067,14 @@ note du carnet au lieu d'écraser une note existante de même id.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide un carnet entier (stockage local ou sauvegarde).
-Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a whole notebook (local storage or backup).
+The dictionary keys are realigned on each note's id.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line202">line 202</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line200">line 200</a>
     </li></ul></dd>
     
 
@@ -1226,13 +1222,13 @@ Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></u
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide un élément de portée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a staff item.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line68">line 68</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -1321,7 +1317,7 @@ Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></u
 
             
 
-            <td class="description last"><p>Valeur brute.</p></td>
+            <td class="description last"><p>Raw value.</p></td>
         </tr>
 
     
@@ -1345,7 +1341,7 @@ Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></u
 
             
 
-            <td class="description last"><p>Ligne rythmique (pas de hauteur).</p></td>
+            <td class="description last"><p>Rhythm line (no pitch).</p></td>
         </tr>
 
     
@@ -1371,7 +1367,7 @@ Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></u
 
         
 <div class="param-desc">
-    <p><code>null</code> si l'élément est inutilisable.</p>
+    <p><code>null</code> if the item is unusable.</p>
 </div>
 
 
@@ -1411,13 +1407,13 @@ Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></u
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide une mesure de grille.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a chart measure.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line90">line 90</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line88">line 88</a>
     </li></ul></dd>
     
 
@@ -1568,13 +1564,13 @@ Les clés du dictionnaire sont réalignées sur l'id de chaque note.</p></li></u
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide un dossier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a folder.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line220">line 220</a>
+        <a href="sanitize.js.html">sanitize.js</a>, <a href="sanitize.js.html#line218">line 218</a>
     </li></ul></dd>
     
 

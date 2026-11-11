@@ -1,11 +1,11 @@
-// Tests du clavier d'accords (2.8.5) : effet des touches, affichage façon iReal.
+// Tests for the chord keyboard (2.8.5): effect of the keys, iReal-style display.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { applyChordKey, splitChord, MAX_SLOTS } from '../js/chord-keys.js';
 import { chordParts, chordTones, chordOk } from '../js/chords.js';
 import { toIRealMusic } from '../js/ireal.js';
 
-/** Tape une suite de touches (« C », « b », « q:-7 », « /», « ␣ », « ⌫ »…). */
+/** Types a sequence of keys ("C", "b", "q:-7", "/", "␣", "⌫"…). */
 const type = (keys, start = []) =>
   keys.reduce((s, k) => {
     if (/^[A-G]$/.test(k)) return applyChordKey(s, { t: 'root', v: k });
@@ -17,41 +17,41 @@ const type = (keys, start = []) =>
     return applyChordKey(s, { t });
   }, start);
 
-test('fondamentale, altération, couleur : deux ou trois touchers', () => {
+test('root, accidental, quality: two or three taps', () => {
   assert.deepEqual(type(['F', 'q:7']), ['F7']);
   assert.deepEqual(type(['B', '♭', 'q:-7']), ['Bb-7']);
   assert.deepEqual(type(['F', '♯', 'q:h7']), ['F#h7']);
-  // Même couleur deux fois : retirée ; autre couleur : remplacée.
+  // Same quality twice: removed; another quality: replaced.
   assert.deepEqual(type(['C', 'q:^7', 'q:^7']), ['C']);
   assert.deepEqual(type(['C', 'q:^7', 'q:-7']), ['C-7']);
-  // ♭ deux fois : retiré ; puis ♯ : remplace.
+  // ♭ twice: removed; then ♯: replaces.
   assert.deepEqual(type(['E', '♭', '♭']), ['E']);
   assert.deepEqual(type(['E', '♭', '♯']), ['E#']);
-  // Altération après la couleur : s'applique toujours à la fondamentale.
+  // Accidental after the quality: always applies to the root.
   assert.deepEqual(type(['E', 'q:7', '♭']), ['Eb7']);
 });
 
-test('basse, pavé détaillé, deux accords par mesure', () => {
+test('bass, detailed pad, two chords per measure', () => {
   assert.deepEqual(type(['A', '♭', 'q:^7', '/', 'C']), ['Ab^7/C']);
-  assert.deepEqual(type(['D', 'q:7', '/', 'F', '♯']), ['D7/F#']); // ♯ va à la basse
+  assert.deepEqual(type(['D', 'q:7', '/', 'F', '♯']), ['D7/F#']); // ♯ goes to the bass
   assert.deepEqual(type(['C', 'q:7', '+:#9', '+:b13']), ['C7#9b13']);
   assert.deepEqual(type(['D', 'q:-7', '␣', 'G', 'q:7']), ['D-7', 'G7']);
-  assert.deepEqual(type(['C', '␣']), ['C', '']); // case suivante en attente
-  // Pas plus de 4 cases ; ␣ sur une case vide ne fait rien.
+  assert.deepEqual(type(['C', '␣']), ['C', '']); // next slot pending
+  // No more than 4 slots; ␣ on an empty slot does nothing.
   assert.equal(type(['C', '␣', 'D', '␣', 'E', '␣', 'F', '␣', 'G']).length, MAX_SLOTS);
   assert.deepEqual(type(['␣']), []);
 });
 
-test('N.C., répétition de mesure ; une lettre avant la fondamentale ne fait rien d’autre', () => {
+test('N.C., measure repeat; a letter before the root does nothing else', () => {
   assert.deepEqual(type(['NC']), ['n']);
   assert.deepEqual(type(['NC', 'C']), ['C']);
   assert.deepEqual(type(['C', 'q:7', '%']), ['%']);
-  assert.deepEqual(type(['%', 'F']), ['F']); // on écrit par-dessus
-  assert.deepEqual(type(['q:7']), []); // couleur sans fondamentale : ignorée
+  assert.deepEqual(type(['%', 'F']), ['F']); // typing over it
+  assert.deepEqual(type(['q:7']), []); // quality without a root: ignored
   assert.deepEqual(type(['/']), []);
 });
 
-test('effacer : morceau par morceau, puis la case, puis la mesure', () => {
+test('erase: piece by piece, then the slot, then the measure', () => {
   const steps = [];
   let s = type(['B', '♭', 'q:7', '+:#11', '/', 'D', '♭']);
   assert.deepEqual(s, ['Bb7#11/Db']);
@@ -69,7 +69,7 @@ test('splitChord', () => {
   assert.equal(splitChord('n'), null);
 });
 
-test('affichage façon iReal, quelle que soit l’écriture', () => {
+test('iReal-style display, however it is typed', () => {
   const q = (c) => chordParts(c).quality;
   for (const c of ['Cm7', 'C-7', 'Cmin7', 'Cmi7']) assert.equal(q(c), '−7');
   for (const c of ['Cmaj7', 'C^7', 'C^', 'CΔ', 'CM7']) assert.equal(q(c), 'Δ7');
@@ -81,7 +81,7 @@ test('affichage façon iReal, quelle que soit l’écriture', () => {
   assert.equal(chordParts('Bb-7/F').root, 'B♭');
 });
 
-test('les accords du clavier se jouent et s’exportent comme les autres', () => {
+test('keyboard chords play and export like the others', () => {
   const same = (a, b) => assert.deepEqual(chordTones(a), chordTones(b), `${a} = ${b}`);
   same('C-7', 'Cm7');
   same('C^7', 'Cmaj7');

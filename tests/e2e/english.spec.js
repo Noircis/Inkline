@@ -1,17 +1,17 @@
-// Interface en anglais (2.9) : langue du navigateur, choix manuel dans les réglages.
+// English interface (2.9): browser language, manual choice in settings.
 import { test, expect } from '@playwright/test';
 import { openApp, newNoteWith, tapStaff, dragStaff, collectErrors } from './helpers.js';
 
 test.use({ locale: 'en-US' });
 
-test('navigateur en anglais : accueil, note, palettes et grille en anglais', async ({ page }) => {
+test('English browser: home, note, palettes and chart in English', async ({ page }) => {
   const errors = collectErrors(page);
   await openApp(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  // Premier lancement : écran d'accueil.
+  // First launch: home screen.
   await expect(page.locator('.empty h2')).toHaveText('Jot down an idea in three taps');
   await expect(page.locator('#tryEx')).toHaveText('Open the example');
-  await page.click('#tryEx'); // la note d'exemple est en anglais aussi
+  await page.click('#tryEx'); // the example note is in English too
   await expect(page.locator('#titleIn')).toHaveValue('Example · Bb blues lick');
   await page.click('#back');
   await expect(page.locator('#q')).toHaveAttribute('placeholder', 'Search titles, text, chords');
@@ -28,7 +28,7 @@ test('navigateur en anglais : accueil, note, palettes et grille en anglais', asy
   await expect(page.locator('.block.active [data-f=tr] option').nth(2)).toHaveText('B♭ tenor');
   await expect(page.locator('.block.active [data-f=ks] option').nth(1)).toHaveText('1♯ · G / Em');
   await expect(page.locator('.block.active .playbtn')).toHaveText('▶ Play');
-  // Bulle du glisser : nom de note anglais.
+  // Drag bubble: English note name.
   await dragStaff(page, { t: 'append', s: 4 }, [11], async () => {
     await expect(page.locator('.pitch-tip')).toHaveText('B5');
   });
@@ -37,7 +37,7 @@ test('navigateur en anglais : accueil, note, palettes et grille en anglais', asy
   expect(errors).toEqual([]);
 });
 
-test('grille et clavier d’accords en anglais', async ({ page }) => {
+test('chart and chord keyboard in English', async ({ page }) => {
   await openApp(page);
   await newNoteWith(page, 'grid');
   await expect(page.locator('#gInfo')).toHaveText('Bar 1');
@@ -47,7 +47,7 @@ test('grille et clavier d’accords en anglais', async ({ page }) => {
   await expect(page.locator('.block.active [data-f=key] option').first()).toHaveText('C major');
 });
 
-test('réglages : choix manuel de la langue, retenu au redémarrage', async ({ page }) => {
+test('settings: manual language choice, kept after restart', async ({ page }) => {
   await openApp(page);
   await page.click('#optBtn');
   await expect(page.locator('.top-title')).toHaveText('Settings');
@@ -59,13 +59,13 @@ test('réglages : choix manuel de la langue, retenu au redémarrage', async ({ p
   await expect(page.locator('.empty h2')).toHaveText('Notez une idée en trois touchers');
   await page.click('#optBtn');
   await expect(page.locator('[data-lang=fr]')).toHaveAttribute('aria-checked', 'true');
-  // Retour en automatique : le navigateur est en anglais.
+  // Back to automatic: the browser is in English.
   await page.click('[data-lang=auto]');
   await page.waitForLoadState('load');
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });
 
-test('entraînement en anglais', async ({ page }) => {
+test('practice in English', async ({ page }) => {
   await openApp(page);
   await page.click('#trainBtn');
   await expect(page.locator('#goExercises')).toContainText('Random exercises');

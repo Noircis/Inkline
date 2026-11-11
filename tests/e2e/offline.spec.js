@@ -1,11 +1,11 @@
-// Hors ligne : une fois l'appli chargée, le service worker la sert sans réseau.
+// Offline: once the app is loaded, the service worker serves it with no network.
 import { test, expect } from '@playwright/test';
 import { openApp } from './helpers.js';
 
-test('l’appli se recharge hors ligne', async ({ page, context }) => {
+test('the app reloads offline', async ({ page, context }) => {
   await openApp(page);
   await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.reload(); // le service worker contrôle maintenant la page
+  await page.reload(); // the service worker now controls the page
   await page.locator('#newNote').waitFor();
   await context.setOffline(true);
   await page.reload();

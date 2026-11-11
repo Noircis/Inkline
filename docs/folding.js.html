@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>folding.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,28 +53,28 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module folding
  * @description
- * **Règle d'affichage réduit** des blocs longs (2.2), sous forme de fonction
- * pure testable sous Node. L'interface correspondante est dans
+ * **Collapsed display rule** for long blocks (2.2), as a pure function
+ * testable in Node. The matching interface lives in
  * {@link module:ui/fold|ui/fold}.
  */
 
-/** Nombre de lignes à partir duquel un bloc peut être réduit. */
+/** Number of lines from which a block can be collapsed. */
 export const FOLD_MIN_LINES = 5;
 
-/** Nombre de lignes affichées quand un bloc est réduit. */
+/** Number of lines shown when a block is collapsed. */
 export const FOLD_PREVIEW_LINES = 3;
 
 /**
- * Le bloc doit-il s'afficher réduit ? Dans l'ordre :
- * 1. un bloc en cours d'édition est toujours affiché en entier ;
- * 2. un bloc de moins de {@link FOLD_MIN_LINES} lignes n'est jamais réduit ;
- * 3. le choix manuel mémorisé sur le bloc (`fold`) ;
- * 4. sinon, l'option « Réduire automatiquement les blocs longs ».
+ * Should the block be shown collapsed? In order:
+ * 1. a block being edited is always shown in full;
+ * 2. a block shorter than {@link FOLD_MIN_LINES} lines is never collapsed;
+ * 3. the manual choice stored on the block (`fold`);
+ * 4. otherwise, the "Collapse long blocks automatically" option.
  *
- * @param {{fold: (string|undefined)}} b Le bloc (seul son champ `fold` est lu).
- * @param {number} lines Nombre total de lignes du bloc.
- * @param {boolean} active Le bloc est en cours d'édition.
- * @param {boolean} autoFold Option de réduction automatique.
+ * @param {{fold: (string|undefined)}} b The block (only its `fold` field is read).
+ * @param {number} lines Total number of lines in the block.
+ * @param {boolean} active The block is being edited.
+ * @param {boolean} autoFold Automatic collapse option.
  * @returns {boolean}
  */
 export function shouldFold(b, lines, active, autoFold) {

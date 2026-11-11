@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>db.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,46 +53,46 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module db
  * @description
- * **Petite couche au-dessus d'IndexedDB** : ouvrir la base, lire tout un
- * magasin, écrire un lot de modifications. Le reste de l'app ne parle jamais
- * directement à IndexedDB : seul {@link module:storage|storage} utilise ce module.
+ * **Thin layer over IndexedDB**: open the database, read a whole store,
+ * write a batch of changes. The rest of the app never talks to IndexedDB
+ * directly: only {@link module:storage|storage} uses this module.
  *
- * ## IndexedDB en deux minutes (pour un développeur C++)
+ * ## IndexedDB in two minutes (for a C++ developer)
  *
- * IndexedDB est une base de données clé → valeur intégrée au navigateur, une
- * par site. On y range des objets JavaScript (copiés, comme un `memcpy`
- * profond : modifier l'objet après l'écriture ne change pas ce qui est stocké).
+ * IndexedDB is a key → value database built into the browser, one per site.
+ * It stores JavaScript objects (copied, like a deep `memcpy`: changing the
+ * object after writing it does not change what is stored).
  *
- * - Une **base** (`inkline`) contient des **magasins** (*object stores*),
- *   l'équivalent de tables : `notes` et `folders`. Chaque objet est rangé
- *   sous sa clé, ici son champ `id` (`keyPath: 'id'`).
- * - Toute lecture ou écriture se fait dans une **transaction** : soit toutes
- *   ses opérations réussissent, soit aucune (atomicité, comme en SQL). C'est
- *   ce qui rend la migration sûre : les notes sont toutes copiées, ou pas du tout.
- * - L'API est **asynchrone** : une opération ne renvoie pas son résultat,
- *   elle le livre plus tard via un événement (`onsuccess`, `oncomplete`). On
- *   l'enveloppe ici dans des `Promise` (proches d'un `std::future`), pour
- *   écrire `const notes = await getAll(db, 'notes')`, qui se lit comme du
- *   code séquentiel.
- * - La base a un **numéro de version**. Quand on l'ouvre avec un numéro plus
- *   grand que celui stocké, le navigateur appelle `onupgradeneeded` : c'est le
- *   seul endroit où l'on peut créer ou modifier des magasins (l'équivalent
- *   d'une migration de schéma).
+ * - A **database** (`inkline`) contains **object stores**, the equivalent of
+ *   tables: `notes` and `folders`. Each object is stored under its key, here
+ *   its `id` field (`keyPath: 'id'`).
+ * - Every read or write happens in a **transaction**: either all its
+ *   operations succeed, or none do (atomicity, as in SQL). This is what makes
+ *   migration safe: the notes are all copied, or none are.
+ * - The API is **asynchronous**: an operation does not return its result, it
+ *   delivers it later through an event (`onsuccess`, `oncomplete`). Here it
+ *   is wrapped in `Promise`s (close to a `std::future`), so we can write
+ *   `const notes = await getAll(db, 'notes')`, which reads like sequential
+ *   code.
+ * - The database has a **version number**. When it is opened with a higher
+ *   number than the stored one, the browser calls `onupgradeneeded`: the only
+ *   place where stores can be created or changed (the equivalent of a schema
+ *   migration).
  */
 
-/** Nom de la base. */
+/** Database name. */
 const DB_NAME = 'inkline';
 
-/** Version du schéma (magasins). À augmenter pour toute modification de structure. */
+/** Schema (stores) version. Increase it for any structural change. */
 const DB_VERSION = 1;
 
-/** Magasins de la base. */
+/** Stores of the database. */
 export const STORES = { notes: 'notes', folders: 'folders' };
 
 /**
- * Enveloppe une requête IndexedDB dans une `Promise`.
+ * Wraps an IndexedDB request in a `Promise`.
  * @param {IDBRequest} req
- * @returns {Promise&lt;*>} Le résultat de la requête.
+ * @returns {Promise&lt;*>} The result of the request.
  */
 function done(req) {
   return new Promise((resolve, reject) => {
@@ -102,10 +102,10 @@ function done(req) {
 }
 
 /**
- * Ouvre (et crée au besoin) la base.
- * @param {string} [name=DB_NAME] Nom de la base (les tests en utilisent d'autres).
+ * Opens (and creates if needed) the database.
+ * @param {string} [name=DB_NAME] Database name (tests use others).
  * @returns {Promise&lt;IDBDatabase>}
- * @throws {Error} Si IndexedDB est indisponible ou refuse l'ouverture.
+ * @throws {Error} If IndexedDB is unavailable or refuses to open.
  */
 export function openDb(name = DB_NAME) {
   return new Promise((resolve, reject) => {
@@ -114,7 +114,7 @@ export function openDb(name = DB_NAME) {
       return;
     }
     const req = indexedDB.open(name, DB_VERSION);
-    // Première ouverture (ou nouvelle version du schéma) : on crée les magasins.
+    // First opening (or new schema version): create the stores.
     req.onupgradeneeded = () => {
       const db = req.result;
       Object.values(STORES).forEach((s) => {
@@ -123,8 +123,8 @@ export function openDb(name = DB_NAME) {
     };
     req.onsuccess = () => {
       const db = req.result;
-      // Si une version plus récente de l'app (dans un autre onglet) veut
-      // modifier le schéma, on libère la base au lieu de la bloquer.
+      // If a newer version of the app (in another tab) wants to
+      // change the schema, release the database instead of blocking it.
       db.onversionchange = () => db.close();
       resolve(db);
     };
@@ -134,7 +134,7 @@ export function openDb(name = DB_NAME) {
 }
 
 /**
- * Lit tous les objets d'un magasin.
+ * Reads every object of a store.
  * @param {IDBDatabase} db
  * @param {string} store
  * @returns {Promise&lt;Array.&lt;Object>>}
@@ -144,23 +144,23 @@ export function getAll(db, store) {
 }
 
 /**
- * Lot d'écritures sur un magasin.
+ * Batch of writes on a store.
  * @typedef {Object} WriteBatch
- * @property {boolean} [clear] Vider le magasin d'abord.
- * @property {Array.&lt;Object>} [put] Objets à écrire (remplacent ceux de même id).
- * @property {Array.&lt;string>} [del] Ids à supprimer.
+ * @property {boolean} [clear] Empty the store first.
+ * @property {Array.&lt;Object>} [put] Objects to write (replace those with the same id).
+ * @property {Array.&lt;string>} [del] Ids to delete.
  */
 
 /**
- * Écrit des lots sur un ou plusieurs magasins, dans **une seule transaction**
- * : tout est écrit, ou rien.
+ * Writes batches to one or more stores, in **a single transaction**:
+ * everything is written, or nothing.
  *
  * @param {IDBDatabase} db
- * @param {Object.&lt;string, WriteBatch>} batches Clé : nom du magasin.
- * @param {boolean} [strict=false] Demander au navigateur d'attendre que les
- *   données soient physiquement sur le disque avant de confirmer (plus lent ;
- *   utilisé quand l'app passe en arrière-plan et risque d'être tuée).
- * @returns {Promise&lt;void>} Résolue quand la transaction est validée.
+ * @param {Object.&lt;string, WriteBatch>} batches Key: store name.
+ * @param {boolean} [strict=false] Ask the browser to wait until the data is
+ *   physically on disk before confirming (slower; used when the app goes to
+ *   the background and may be killed).
+ * @returns {Promise&lt;void>} Resolved when the transaction is committed.
  */
 export function write(db, batches, strict = false) {
   return new Promise((resolve, reject) => {

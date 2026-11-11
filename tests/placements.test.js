@@ -1,4 +1,4 @@
-// Tests de l'entraînement rythmique (2.3) : génération et écriture des placements.
+// Tests for rhythm practice (2.3): generating and writing placements.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { combinations, placementItems, placementSeries, seriesBlock, SLOTS } from '../js/placements.js';
@@ -9,7 +9,7 @@ const write = (pos) =>
     .map((it) => (it.r ? 'r' : '') + it.d)
     .join(' ');
 
-test('combinations : nombre de placements = coefficient binomial', () => {
+test('combinations: number of placements = binomial coefficient', () => {
   assert.deepEqual(
     [0, 1, 2, 3, 4, 5, 8].map((k) => combinations(SLOTS, k).length),
     [1, 8, 28, 56, 70, 56, 1],
@@ -25,7 +25,7 @@ test('combinations : nombre de placements = coefficient binomial', () => {
   assert.deepEqual(combinations(3, 4), []);
 });
 
-test('une note : les 8 mesures de l’exemple', () => {
+test('one note: the 8 measures of the example', () => {
   assert.deepEqual(combinations(SLOTS, 1).map(write), [
     'q rq rh',
     'r8 8 rq rh',
@@ -38,14 +38,14 @@ test('une note : les 8 mesures de l’exemple', () => {
   ]);
 });
 
-test('règles : croches ligaturées sur un temps, pas de demi-pause sur 2-3', () => {
+test('rules: eighths beamed within a beat, no half rest on 2-3', () => {
   assert.equal(write([0, 1]), '8 8 rq rh');
-  assert.equal(write([0, 6]), 'q rq rq q'); // temps 2-3 vides : deux soupirs
+  assert.equal(write([0, 6]), 'q rq rq q'); // beats 2-3 empty: two quarter rests
   assert.equal(write([1, 7]), 'r8 8 rq rq r8 8');
   assert.equal(write([0, 1, 2, 3, 4, 5, 6, 7]), '8 8 8 8 8 8 8 8');
 });
 
-test('chaque mesure générée dure exactement 4 noires', () => {
+test('each generated measure lasts exactly 4 quarter notes', () => {
   for (let k = 1; k <= SLOTS; k++)
     combinations(SLOTS, k).forEach((pos) => {
       const total = placementItems(pos).reduce((s, it) => s + qlen(it), 0);
@@ -53,7 +53,7 @@ test('chaque mesure générée dure exactement 4 noires', () => {
     });
 });
 
-test('séries : regroupées par position de la première note ; une seule série pour une note', () => {
+test('series: grouped by position of the first note; a single series for one note', () => {
   assert.equal(placementSeries(1).length, 1);
   assert.equal(placementSeries(1)[0].length, 8);
   const two = placementSeries(2);
@@ -65,7 +65,7 @@ test('séries : regroupées par position de la première note ; une seule série
   assert.equal(placementSeries(8).length, 1);
 });
 
-test('seriesBlock : une mesure par placement, réglages de lecture repris', () => {
+test('seriesBlock: one measure per placement, playback settings carried over', () => {
   const s = placementSeries(2)[0];
   const b = seriesBlock(s, { tempo: 90, swing: true }, 'x');
   assert.equal(
@@ -76,7 +76,7 @@ test('seriesBlock : une mesure par placement, réglages de lecture repris', () =
   assert.equal(b.swing, true);
 });
 
-// --- 2.8 : toutes les mesures ---------------------------------------------
+// --- 2.8: every time signature --------------------------------------------
 import { METERS, meterOf, slotsOf, startGlyphs, startLabel } from '../js/placements.js';
 import { mlen, defaultGroups, meterGroups, groupStarts } from '../js/model.js';
 import { beamGroups } from '../js/rhythm.js';
@@ -86,7 +86,7 @@ const w = (pos, key) =>
     .map((it) => (it.r ? 'r' : '') + it.d + (it.dot ? '.' : ''))
     .join(' ');
 
-test('mesure composée : les 8 écritures d’un temps de 3 croches', () => {
+test('compound time: the 8 ways to write a beat of 3 eighths', () => {
   const beat = (pos) => w(pos, '6/8').replace(/ rq\.$/, '');
   assert.equal(beat([0]), 'q.');
   assert.equal(beat([1]), 'r8 8 r8');
@@ -98,18 +98,18 @@ test('mesure composée : les 8 écritures d’un temps de 3 croches', () => {
   assert.equal(w([3], '6/8'), 'rq. q.');
 });
 
-test('regroupement des silences selon la mesure', () => {
-  assert.equal(w([4], '3/4'), 'rh q'); // 3/4 : temps 1-2
-  assert.equal(w([0], '3/4'), 'q rh'); // 3/4 : temps 2-3 aussi
-  assert.equal(w([0], '5/4'), 'q rq rh rq'); // 5/4 : 3-4 seulement
+test('merging rests depending on the time signature', () => {
+  assert.equal(w([4], '3/4'), 'rh q'); // 3/4: beats 1-2
+  assert.equal(w([0], '3/4'), 'q rh'); // 3/4: beats 2-3 too
+  assert.equal(w([0], '5/4'), 'q rq rh rq'); // 5/4: 3-4 only
   assert.equal(w([0], '9/8'), 'q. rh.');
-  assert.equal(w([3], '12/8'), 'rq. q. rh.'); // 12/8 : jamais 2-3
+  assert.equal(w([3], '12/8'), 'rq. q. rh.'); // 12/8: never 2-3
   assert.equal(w([9], '12/8'), 'rh. rq. q.');
-  assert.equal(w([0], '7/8:2+2+3'), 'q rq rq.'); // asymétrique : jamais
+  assert.equal(w([0], '7/8:2+2+3'), 'q rq rq.'); // odd meter: never
   assert.equal(w([4], '5/8:3+2'), 'rq. r8 8');
 });
 
-test('toutes les mesures : chaque placement remplit exactement la mesure', () => {
+test('every time signature: each placement fills the measure exactly', () => {
   METERS.forEach((m) => {
     const n = slotsOf(m);
     assert.equal(n, mlen(m.time) * 2, m.key);
@@ -121,7 +121,7 @@ test('toutes les mesures : chaque placement remplit exactement la mesure', () =>
   });
 });
 
-test('séries et titres en notation', () => {
+test('series and titles in notation', () => {
   const m = meterOf('6/8');
   assert.equal(placementSeries(2, m).length, 5);
   assert.equal(
@@ -129,21 +129,21 @@ test('séries et titres en notation', () => {
     924,
   );
   assert.equal(startGlyphs(0), '\u{1D160}');
-  assert.equal(startGlyphs(5), '\u{1D13C}\u{1D13E}\u{1D160}'); // 3 et : demi-pause, demi-soupir
-  assert.equal(startGlyphs(4, m), '\u{1D13D}.\u{1D13E}\u{1D160}'); // soupir pointé, demi-soupir
+  assert.equal(startGlyphs(5), '\u{1D13C}\u{1D13E}\u{1D160}'); // 3 &: half rest, eighth rest
+  assert.equal(startGlyphs(4, m), '\u{1D13D}.\u{1D13E}\u{1D160}'); // dotted quarter rest, eighth rest
   assert.equal(startLabel(3), '2 et');
   assert.equal(startLabel(6, meterOf('7/8:2+3+2')), 'temps 3, 2e croche');
 });
 
-test('groupement : valeurs par défaut, blocs et ligatures', () => {
+test('grouping: default values, blocks and beams', () => {
   assert.deepEqual(defaultGroups('4/4'), [2, 2, 2, 2]);
   assert.deepEqual(defaultGroups('12/8'), [3, 3, 3, 3]);
   assert.deepEqual(defaultGroups('7/8'), [2, 2, 3]);
   assert.deepEqual(defaultGroups('5/8'), [2, 3]);
   assert.deepEqual(meterGroups({ time: '7/8', groups: [3, 2, 2] }), [3, 2, 2]);
-  assert.deepEqual(meterGroups({ time: '7/8', groups: [3, 3] }), [2, 2, 3]); // incohérent : ignoré
+  assert.deepEqual(meterGroups({ time: '7/8', groups: [3, 3] }), [2, 2, 3]); // inconsistent: ignored
   assert.deepEqual(groupStarts({ time: '7/8', groups: [2, 3, 2] }), [0, 1, 2.5]);
-  // 7 croches en 7/8 : ligatures 2+3+2 ou 3+2+2 selon le groupement.
+  // 7 eighths in 7/8: beams 2+3+2 or 3+2+2 depending on the grouping.
   const items = Array.from({ length: 7 }, () => ({ d: '8' }));
   assert.deepEqual(
     beamGroups(items, '7/8', [2, 3, 2]).map((g) => g.length),
@@ -155,5 +155,5 @@ test('groupement : valeurs par défaut, blocs et ligatures', () => {
   );
   const b = seriesBlock([[0, 1, 2, 3, 4, 5, 6]], { tempo: 80, swing: true }, 'x', meterOf('7/8:2+3+2'));
   assert.deepEqual(b.groups, [2, 3, 2]);
-  assert.equal(b.swing, false); // pas de swing hors mesure simple
+  assert.equal(b.swing, false); // no swing outside simple time
 });

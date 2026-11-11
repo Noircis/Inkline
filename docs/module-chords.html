@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>chords - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,17 +63,17 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Analyse des <strong>accords chiffrés</strong> saisis en texte libre (<code>Cm7</code>, <code>Bb7alt</code>,
-<code>F#m7b5</code>, <code>Ebmaj9/G</code>…).</p>
-<p>L'utilisateur peut écrire les qualités de plusieurs façons (<code>maj7</code>, <code>Δ</code>, <code>^7</code>,
-<code>M7</code> ; <code>m7</code>, <code>-7</code>, <code>min7</code> ; <code>m7b5</code>, <code>ø</code> ; <code>dim7</code>, <code>°7</code>, <code>o7</code>). Ce module :</p>
+                <div class="description usertext"><p>Parsing of <strong>chord symbols</strong> typed as free text (<code>Cm7</code>, <code>Bb7alt</code>, <code>F#m7b5</code>,
+<code>Ebmaj9/G</code>…).</p>
+<p>The user can write qualities in several ways (<code>maj7</code>, <code>Δ</code>, <code>^7</code>, <code>M7</code>;
+<code>m7</code>, <code>-7</code>, <code>min7</code>; <code>m7b5</code>, <code>ø</code>; <code>dim7</code>, <code>°7</code>, <code>o7</code>). This module:</p>
 <ul>
-<li><strong>découpe</strong> un accord en fondamentale / qualité / basse (<a href="module-chords.html#.CHORD_RE">CHORD_RE</a>) ;</li>
-<li>le <strong>met en forme</strong> pour l'affichage avec la qualité en exposant
-(<a href="module-chords.html#.chordHtml">chordHtml</a>) ;</li>
-<li>en déduit les <strong>notes à jouer</strong> (<a href="module-chords.html#.chordTones">chordTones</a>).</li>
+<li><strong>splits</strong> a chord into root / quality / bass (<a href="module-chords.html#.CHORD_RE">CHORD_RE</a>);</li>
+<li><strong>formats</strong> it for display with the quality as superscript
+(<a href="module-chords.html#.chordHtml">chordHtml</a>);</li>
+<li>derives the <strong>notes to play</strong> (<a href="module-chords.html#.chordTones">chordTones</a>).</li>
 </ul>
-<p>La conversion vers et depuis la notation iReal Pro est dans <a href="module-ireal.html">ireal</a>.</p></div>
+<p>Conversion to and from iReal Pro notation is in <a href="module-ireal.html">ireal</a>.</p></div>
             
 
             
@@ -85,17 +85,17 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Analyse des <strong>accords chiffrés</strong> saisis en texte libre (<code>Cm7</code>, <code>Bb7alt</code>,
-<code>F#m7b5</code>, <code>Ebmaj9/G</code>…).</p>
-<p>L'utilisateur peut écrire les qualités de plusieurs façons (<code>maj7</code>, <code>Δ</code>, <code>^7</code>,
-<code>M7</code> ; <code>m7</code>, <code>-7</code>, <code>min7</code> ; <code>m7b5</code>, <code>ø</code> ; <code>dim7</code>, <code>°7</code>, <code>o7</code>). Ce module :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Parsing of <strong>chord symbols</strong> typed as free text (<code>Cm7</code>, <code>Bb7alt</code>, <code>F#m7b5</code>,
+<code>Ebmaj9/G</code>…).</p>
+<p>The user can write qualities in several ways (<code>maj7</code>, <code>Δ</code>, <code>^7</code>, <code>M7</code>;
+<code>m7</code>, <code>-7</code>, <code>min7</code>; <code>m7b5</code>, <code>ø</code>; <code>dim7</code>, <code>°7</code>, <code>o7</code>). This module:</p>
 <ul>
-<li><strong>découpe</strong> un accord en fondamentale / qualité / basse (<a href="module-chords.html#.CHORD_RE">CHORD_RE</a>) ;</li>
-<li>le <strong>met en forme</strong> pour l'affichage avec la qualité en exposant
-(<a href="module-chords.html#.chordHtml">chordHtml</a>) ;</li>
-<li>en déduit les <strong>notes à jouer</strong> (<a href="module-chords.html#.chordTones">chordTones</a>).</li>
+<li><strong>splits</strong> a chord into root / quality / bass (<a href="module-chords.html#.CHORD_RE">CHORD_RE</a>);</li>
+<li><strong>formats</strong> it for display with the quality as superscript
+(<a href="module-chords.html#.chordHtml">chordHtml</a>);</li>
+<li>derives the <strong>notes to play</strong> (<a href="module-chords.html#.chordTones">chordTones</a>).</li>
 </ul>
-<p>La conversion vers et depuis la notation iReal Pro est dans <a href="module-ireal.html">ireal</a>.</p></li></ul></dd>
+<p>Conversion to and from iReal Pro notation is in <a href="module-ireal.html">ireal</a>.</p></li></ul></dd>
     
 
     
@@ -196,7 +196,7 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Découpage d'un accord : <code>[1]</code> lettre, <code>[2]</code> altération, <code>[3]</code> qualité, <code>[4]</code> basse.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Splitting a chord: <code>[1]</code> letter, <code>[2]</code> accidental, <code>[3]</code> quality, <code>[4]</code> bass.</p></li></ul></dd>
     
 
     
@@ -242,7 +242,7 @@
 
 
 <div class="description usertext">
-    <p>Découpage d'un accord : <code>[1]</code> lettre, <code>[2]</code> altération, <code>[3]</code> qualité, <code>[4]</code> basse.</p>
+    <p>Splitting a chord: <code>[1]</code> letter, <code>[2]</code> accidental, <code>[3]</code> quality, <code>[4]</code> bass.</p>
 </div>
 
 
@@ -279,7 +279,7 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lettres dans l'ordre des degrés.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Letters in degree order.</p></li></ul></dd>
     
 
     
@@ -325,7 +325,7 @@
 
 
 <div class="description usertext">
-    <p>Lettres dans l'ordre des degrés.</p>
+    <p>Letters in degree order.</p>
 </div>
 
 
@@ -346,7 +346,7 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Classe de hauteur (0 = do … 11 = si) de chaque lettre.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Pitch class (0 = C … 11 = B) of each letter.</p></li></ul></dd>
     
 
     
@@ -392,7 +392,7 @@
 
 
 <div class="description usertext">
-    <p>Classe de hauteur (0 = do … 11 = si) de chaque lettre.</p>
+    <p>Pitch class (0 = C … 11 = B) of each letter.</p>
 </div>
 
 
@@ -423,15 +423,15 @@
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML d'affichage d'une case de grille : fondamentale en gros, qualité en
-exposant, basse en petit. Une case invalide est rendue telle quelle avec la
-classe <code>bad</code> (soulignée en rouge par le CSS).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Display HTML of a chart slot: large root, quality as superscript, small
+bass. An invalid slot is rendered as is with the <code>bad</code> class (underlined
+in red by the CSS).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line155">line 155</a>
+        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line154">line 154</a>
     </li></ul></dd>
     
 
@@ -520,7 +520,7 @@ classe <code>bad</code> (soulignée en rouge par le CSS).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Contenu de la case.</p></td>
+            <td class="description last"><p>Slot content.</p></td>
         </tr>
 
     
@@ -546,7 +546,7 @@ classe <code>bad</code> (soulignée en rouge par le CSS).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Fragment HTML (déjà échappé).</p>
+    <p>HTML fragment (already escaped).</p>
 </div>
 
 
@@ -583,8 +583,8 @@ classe <code>bad</code> (soulignée en rouge par le CSS).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Indique si une case de grille est valide : accord reconnu, case vide
-(prolongation), <em>no chord</em> ou répétition de mesure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Tells whether a chart slot is valid: recognized chord, empty slot
+(continuation), <em>no chord</em> or measure repeat.</p></li></ul></dd>
     
 
     
@@ -738,14 +738,14 @@ classe <code>bad</code> (soulignée en rouge par le CSS).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Découpe un accord pour l'affichage (utilisé par le HTML de la grille et
-par l'export en image).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Splits a chord for display (used by the chart HTML and by the image
+export).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line140">line 140</a>
+        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line139">line 139</a>
     </li></ul></dd>
     
 
@@ -860,7 +860,7 @@ par l'export en image).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>null</code> si l'accord n'est pas reconnu.</p>
+    <p><code>null</code> if the chord is not recognized.</p>
 </div>
 
 
@@ -900,37 +900,37 @@ par l'export en image).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Déduit les notes d'un accord à partir de sa qualité.</p>
-<h2>Analyse de la qualité</h2>
-<p>On détecte d'abord la famille (majeur 7, mineur, demi-diminué, diminué),
-puis les ajouts dans le reste de la chaîne :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Derives the notes of a chord from its quality.</p>
+<h2>Parsing the quality</h2>
+<p>The family is detected first (major 7, minor, half-diminished,
+diminished), then the additions in the rest of the string:</p>
 <table>
 <thead>
 <tr>
-<th>Indice</th>
-<th>Effet</th>
+<th>Clue</th>
+<th>Effect</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>7, 9, 11, 13</td>
-<td>septième mineure (ou majeure si maj)</td>
+<td>minor seventh (or major if maj)</td>
 </tr>
 <tr>
-<td>6 (sans 7)</td>
-<td>sixte à la place de la septième</td>
+<td>6 (no 7)</td>
+<td>sixth instead of the seventh</td>
 </tr>
 <tr>
 <td>sus</td>
-<td>quarte à la place de la tierce</td>
+<td>fourth instead of the third</td>
 </tr>
 <tr>
 <td>b5 / #5, +</td>
-<td>quinte diminuée / augmentée</td>
+<td>diminished / augmented fifth</td>
 </tr>
 <tr>
 <td>b9 / #9 / 9</td>
-<td>neuvième</td>
+<td>ninth</td>
 </tr>
 <tr>
 <td>#11, 13, b13</td>
@@ -943,20 +943,20 @@ puis les ajouts dans le reste de la chaîne :</p>
 </tbody>
 </table>
 <h2>Voicing</h2>
-<p>La fondamentale est jouée à la basse <strong>et</strong> dans l'accord (depuis la 2.8.8).
-Sans elle, deux accords différents pouvaient donner exactement la même
-nappe : Fmaj7 sans fa et F♯ø7 sans fa♯ donnent tous deux la, do, mi. Au
-téléphone, où la basse s'entend peu, on n'entendait alors aucun changement.</p>
-<p>Les intervalles sont repliés dans une tessiture fixe (MIDI 52 à 72) : on
-obtient des voicings serrés, et des enchaînements avec peu de mouvement,
-sans algorithme de conduite des voix. La quinte, la note la moins utile,
-est omise dès qu'il y a deux extensions.</p></li></ul></dd>
+<p>The root is played in the bass <strong>and</strong> in the chord (since 2.8.8).
+Without it, two different chords could give exactly the same pad: Fmaj7
+without F and F♯ø7 without F♯ both give A, C, E. On a phone, where the
+bass is barely heard, no change could be heard at all.</p>
+<p>Intervals are folded into a fixed range (MIDI 52 to 72): this gives close
+voicings, and progressions with little movement, with no voice-leading
+algorithm. The fifth, the least useful note, is left out as soon as there
+are two extensions.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line203">line 203</a>
+        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line202">line 202</a>
     </li></ul></dd>
     
 
@@ -1045,7 +1045,7 @@ est omise dès qu'il y a deux extensions.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Accord.</p></td>
+            <td class="description last"><p>Chord.</p></td>
         </tr>
 
     
@@ -1071,7 +1071,7 @@ est omise dès qu'il y a deux extensions.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>null</code> si l'accord n'est pas reconnu.</p>
+    <p><code>null</code> if the chord is not recognized.</p>
 </div>
 
 
@@ -1111,8 +1111,8 @@ est omise dès qu'il y a deux extensions.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Transpose un accord chiffré (fondamentale et basse). Les symboles
-spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Transposes a chord symbol (root and bass). Special symbols and
+unrecognized texts are returned as is.</p></li></ul></dd>
     
 
     
@@ -1165,7 +1165,7 @@ spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>transposeChord('Bb7/D', 5, 9) // 'G7/B' (do → la : sixte majeure)</code></pre>
+    <pre class="prettyprint"><code>transposeChord('Bb7/D', 5, 9) // 'G7/B' (C → A: major sixth)</code></pre>
 
 
 
@@ -1236,7 +1236,7 @@ spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Degrés.</p></td>
+            <td class="description last"><p>Degrees.</p></td>
         </tr>
 
     
@@ -1260,7 +1260,7 @@ spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Demi-tons.</p></td>
+            <td class="description last"><p>Semitones.</p></td>
         </tr>
 
     
@@ -1319,7 +1319,7 @@ spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Classe de hauteur d'un nom de note (<code>'Bb'</code> → 10, <code>'F#'</code> → 6).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Pitch class of a note name (<code>'Bb'</code> → 10, <code>'F#'</code> → 6).</p></li></ul></dd>
     
 
     
@@ -1414,7 +1414,7 @@ spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Lettre + altération éventuelle.</p></td>
+            <td class="description last"><p>Letter + optional accidental.</p></td>
         </tr>
 
     
@@ -1473,15 +1473,14 @@ spéciaux et les textes non reconnus sont rendus tels quels.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met la qualité en forme pour l'affichage, comme iReal Pro (2.8.5) :
-mineur <code>−</code>, majeur 7 <code>Δ7</code>, demi-diminué <code>ø7</code>, diminué <code>°</code>, augmenté <code>+</code>,
-et <code>b</code>/<code>#</code> → <code>♭</code>/<code>♯</code>. Toutes les façons de l'écrire au clavier donnent le
-même affichage :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Formats the quality for display, like iReal Pro (2.8.5): minor <code>−</code>, major
+7 <code>Δ7</code>, half-diminished <code>ø7</code>, diminished <code>°</code>, augmented <code>+</code>, and <code>b</code>/<code>#</code> →
+<code>♭</code>/<code>♯</code>. Every way of typing it gives the same display:</p>
 <table>
 <thead>
 <tr>
-<th>Saisie</th>
-<th>Affichage</th>
+<th>Typed</th>
+<th>Display</th>
 </tr>
 </thead>
 <tbody>
@@ -1520,7 +1519,7 @@ même affichage :</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line114">line 114</a>
+        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line113">line 113</a>
     </li></ul></dd>
     
 
@@ -1609,7 +1608,7 @@ même affichage :</p>
 
             
 
-            <td class="description last"><p>Qualité brute.</p></td>
+            <td class="description last"><p>Raw quality.</p></td>
         </tr>
 
     
@@ -1668,10 +1667,10 @@ même affichage :</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Transpose un nom de note (« Bb », « F# », « C ») de <code>steps</code> degrés et
-<code>semis</code> demi-tons, en gardant l'orthographe musicale : do + sixte majeure
-donne la (pas si♭♭), si♭ + sixte majeure donne sol. Si l'orthographe
-demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Transposes a note name (&quot;Bb&quot;, &quot;F#&quot;, &quot;C&quot;) by <code>steps</code> degrees and <code>semis</code>
+semitones, keeping the musical spelling: C + major sixth gives A (not
+B𝄫), B♭ + major sixth gives G. If the spelling would need a double sharp
+or a double flat, the neighboring name is used.</p></li></ul></dd>
     
 
     
@@ -1875,13 +1874,13 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Parties d'affichage d'un accord.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Display parts of a chord.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line126">line 126</a>
+        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line125">line 125</a>
     </li></ul></dd>
     
 
@@ -1961,7 +1960,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
             
 
-            <td class="description last"><p>Fondamentale avec altération (« B♭ »).</p></td>
+            <td class="description last"><p>Root with accidental (&quot;B♭&quot;).</p></td>
         </tr>
 
     
@@ -1985,7 +1984,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
             
 
-            <td class="description last"><p>Qualité mise en forme (« –7 », « Δ », « 7♭9 »), à afficher en exposant.</p></td>
+            <td class="description last"><p>Formatted quality (&quot;–7&quot;, &quot;Δ&quot;, &quot;7♭9&quot;), shown as superscript.</p></td>
         </tr>
 
     
@@ -2009,7 +2008,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
             
 
-            <td class="description last"><p>Basse (« /F ») ou chaîne vide.</p></td>
+            <td class="description last"><p>Bass (&quot;/F&quot;) or empty string.</p></td>
         </tr>
 
     
@@ -2022,7 +2021,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
 
 <div class="description usertext">
-    <p>Parties d'affichage d'un accord.</p>
+    <p>Display parts of a chord.</p>
 </div>
 
 
@@ -2054,13 +2053,13 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Voicing jouable d'un accord.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playable voicing of a chord.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line163">line 163</a>
+        <a href="chords.js.html">chords.js</a>, <a href="chords.js.html#line162">line 162</a>
     </li></ul></dd>
     
 
@@ -2140,7 +2139,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
             
 
-            <td class="description last"><p>Note MIDI de basse (entre mi 2 et ré♯ 3).</p></td>
+            <td class="description last"><p>MIDI bass note (between E2 and D♯3).</p></td>
         </tr>
 
     
@@ -2164,7 +2163,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
             
 
-            <td class="description last"><p>Notes MIDI de l'accord (entre mi 3 et do 5).</p></td>
+            <td class="description last"><p>MIDI notes of the chord (between E3 and C5).</p></td>
         </tr>
 
     
@@ -2177,7 +2176,7 @@ demandait un double dièse ou un double bémol, on prend le nom voisin.</p></li>
 
 
 <div class="description usertext">
-    <p>Voicing jouable d'un accord.</p>
+    <p>Playable voicing of a chord.</p>
 </div>
 
 

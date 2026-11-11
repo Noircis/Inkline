@@ -1,23 +1,23 @@
 /**
  * @module ui/staff/input
  * @description
- * **Toucher sur la portée** et **modes de saisie** (2.5), sur le modèle du
- * mode « N » de MuseScore :
+ * **Taps on the staff** and **input modes** (2.5), modeled on MuseScore's
+ * "N" mode:
  *
- * - **Écrire** : la palette règle la prochaine note ; toucher une note place
- *   le curseur d'insertion devant elle ; la zone bleue insère une note.
- * - **Modifier** : toucher une note la sélectionne ; la palette la modifie ;
- *   toucher plus haut ou plus bas la déplace.
+ * - **Write**: the palette sets the next note; tapping a note puts the
+ *   insertion cursor before it; the blue zone inserts a note.
+ * - **Edit**: tapping a note selects it; the palette changes it; tapping
+ *   higher or lower moves it.
  *
- * **Glisser** (2.8.2) : le doigt n'est pas toujours précis. Dans la zone
- * d'insertion (Écrire) ou sur la note sélectionnée (Modifier), la note suit
- * le doigt tant qu'il reste posé : on l'entend changer de hauteur, et une
- * bulle au-dessus du doigt affiche son nom. Elle est posée en levant le doigt.
- * Ailleurs, rien ne change : on peut faire défiler la page depuis la portée.
+ * **Dragging** (2.8.2): fingers are not always precise. In the insertion zone
+ * (Write) or on the selected note (Edit), the note follows the finger as long
+ * as it stays down: you hear it change pitch, and a bubble above the finger
+ * shows its name. It is placed when the finger lifts. Elsewhere, nothing
+ * changes: the page can be scrolled from the staff.
  *
- * Après toute insertion, la portée est remise en mesure
- * ({@link module:ui/staff/shared.refit|refit}) : une note qui déborde est
- * coupée à la barre et liée.
+ * After any insertion, the staff is fitted back into measures
+ * ({@link module:ui/staff/shared.refit|refit}): a note that overflows is
+ * split at the barline and tied.
  */
 
 import { t } from '../../i18n.js';
@@ -32,12 +32,12 @@ import { hooks, clampCursor, refit, flash, insertIndex } from './shared.js';
 import { closeChord } from './chord.js';
 
 /**
- * Élément à insérer, construit à partir des réglages de saisie.
+ * Item to insert, built from the input settings.
  * @param {module:model~StaffBlock} b
  * @param {module:layout~Layout} L
- * @param {module:layout~SystemGeom} g Géométrie de la ligne touchée.
- * @param {number} y Ordonnée du toucher (hauteur de la note).
- * @param {number} at Index d'insertion.
+ * @param {module:layout~SystemGeom} g Geometry of the tapped line.
+ * @param {number} y Y of the tap (pitch of the note).
+ * @param {number} at Insertion index.
  * @returns {module:model~StaffItem}
  */
 function newItem(b, L, g, y, at) {
@@ -47,13 +47,13 @@ function newItem(b, L, g, y, at) {
   if (inp.dot) it.dot = true;
   if (inp.tup) it.tup = 3;
   const prev = b.items[at - 1];
-  // Une liaison qui partait de la note précédente visait l'ancienne voisine :
-  // elle n'a plus de sens si l'on insère une autre note entre les deux.
+  // A tie starting from the previous note was aimed at the old neighbor:
+  // it no longer makes sense if another note is inserted between the two.
   if (prev && prev.tie && !(inp.tie && !inp.rest)) delete prev.tie;
   if (inp.rest) {
     it.r = true;
   } else if (inp.tie && prev && !prev.r) {
-    // Note liée : même hauteur que la précédente, la position touchée est ignorée.
+    // Tied note: same pitch as the previous one, the tapped position is ignored.
     prev.tie = true;
     if (!L.rh) it.s = prev.s;
   } else if (!L.rh) {
@@ -65,16 +65,16 @@ function newItem(b, L, g, y, at) {
 }
 
 /**
- * Insère une note (ou un silence) avec les réglages de saisie, à la position
- * `at`, puis remet la portée en mesure. Un triolet qui traverserait une barre
- * est refusé (message dans la palette).
+ * Inserts a note (or a rest) with the input settings, at position `at`, then
+ * fits the staff back into measures. A triplet that would cross a barline is
+ * refused (message in the palette).
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
  * @param {module:layout~Layout} L
  * @param {module:layout~SystemGeom} g
  * @param {number} y
  * @param {number} at
- * @returns {number} Index de la note insérée (premier morceau), -1 si refusée.
+ * @returns {number} Index of the inserted note (first piece), -1 if refused.
  */
 function insertNote(n, b, L, g, y, at) {
   const before = b.items.map((it) => ({ ...it }));
@@ -82,7 +82,7 @@ function insertNote(n, b, L, g, y, at) {
   pushSnapshot(n);
   const it = newItem(b, L, g, y, at);
   b.items.splice(at, 0, it);
-  // Le curseur reste juste après la note insérée : on peut enchaîner.
+  // The cursor stays right after the inserted note: you can keep going.
   if (state.cursor != null) state.cursor = at + 1;
   const res = refit(b);
   const idx = res.startOf[at];
@@ -93,7 +93,7 @@ function insertNote(n, b, L, g, y, at) {
     flash(t('hint.tripletBar'));
     return -1;
   }
-  // Réglages « à usage unique » consommés ; triolet et silence restent actifs.
+  // "Single use" settings consumed; triplet and rest stay on.
   const inp = state.input;
   inp.acc = null;
   inp.rs = false;
@@ -104,13 +104,12 @@ function insertNote(n, b, L, g, y, at) {
 }
 
 /**
- * Met la note `h` (et les notes qui lui sont liées) à la position `s`, sans
- * annulation ni sauvegarde. Une liaison relie deux notes de même hauteur :
- * déplacer une note rompt la liaison qui y arrive, et entraîne les notes qui
- * lui sont liées.
+ * Puts note `h` (and the notes tied to it) at position `s`, without undo or
+ * save. A tie joins two notes of the same pitch: moving a note breaks the
+ * tie coming into it, and drags along the notes tied to it.
  * @param {module:model~StaffBlock} b
- * @param {number} h Index de la note.
- * @param {number} s Nouvelle position.
+ * @param {number} h Index of the note.
+ * @param {number} s New position.
  */
 function setStep(b, h, s) {
   b.items[h].s = s;
@@ -121,12 +120,12 @@ function setStep(b, h, s) {
 }
 
 /**
- * Où tombe un toucher : ligne, élément touché, zones d'insertion. Refait la
- * mise en page avec la même largeur et le même curseur que le rendu.
+ * Where a tap lands: line, item touched, insertion zones. Redoes the layout
+ * with the same width and cursor as the render.
  * @param {module:model~StaffBlock} b
  * @param {HTMLElement} wrap
- * @param {number} cx Abscisse dans la fenêtre.
- * @param {number} cy Ordonnée dans la fenêtre.
+ * @param {number} cx X in the window.
+ * @param {number} cy Y in the window.
  */
 function hitTest(b, wrap, cx, cy) {
   const r = wrap.getBoundingClientRect();
@@ -143,25 +142,26 @@ function hitTest(b, wrap, cx, cy) {
 }
 
 /**
- * Gère un toucher sur la portée.
+ * Handles a tap on the staff.
  *
- * 1. Active le bloc s'il ne l'était pas (et ferme le clavier éventuel).
- * 2. Refait la mise en page avec la même largeur et le même curseur que le
- *    rendu, puis convertit les coordonnées : ligne = `floor(y / hauteurDeLigne)`,
- *    élément = celui dont l'intervalle `[x0, x1)` contient x, hauteur =
+ * 1. Activates the block if it was not active (and closes any keyboard).
+ * 2. Redoes the layout with the same width and cursor as the render, then
+ *    converts the coordinates: line = `floor(y / lineHeight)`, item = the one
+ *    whose interval `[x0, x1)` contains x, pitch =
  *    {@link module:layout.stepFromY|stepFromY}.
- * 3. **Mode Écrire** :
- *    - **zone bleue** (au curseur, ou en fin de portée) : insère une note avec
- *      les réglages de saisie, à la hauteur touchée ;
- *    - **une note** : place le curseur juste avant elle (rien n'est modifié) ;
- *    - **fin de portée**, quand le curseur est au milieu : y ramène le curseur.
- * 4. **Mode Modifier** :
- *    - **la note déjà sélectionnée** : la déplace à la hauteur touchée ;
- *    - **une autre note** : la sélectionne ;
- *    - ailleurs : désélectionne.
+ * 3. **Write mode**:
+ *    - **blue zone** (at the cursor, or at the end of the staff): inserts a
+ *      note with the input settings, at the tapped pitch;
+ *    - **a note**: puts the cursor just before it (nothing is changed);
+ *    - **end of staff**, when the cursor is in the middle: brings the cursor
+ *      back there.
+ * 4. **Edit mode**:
+ *    - **the note already selected**: moves it to the tapped pitch;
+ *    - **another note**: selects it;
+ *    - elsewhere: deselects.
  *
- * Une note coupée par une barre est traitée en entier : on la sélectionne, ou
- * on place le curseur, toujours sur son premier morceau.
+ * A note split by a barline is handled as a whole: it is selected, or the
+ * cursor placed, always on its first piece.
  *
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
@@ -204,18 +204,18 @@ function staffTap(n, b, e) {
 }
 
 /**
- * Zones où un glisser peut commencer, posées en calques invisibles sur la
- * portée (`touch-action: none`). Le navigateur décide de faire défiler la
- * page dès que le doigt touche l'écran, avant même nos gestionnaires : il
- * faut donc lui dire à l'avance où le doigt sert à placer une note. Partout
- * ailleurs, la page défile comme avant.
+ * Zones where a drag can start, laid as invisible overlays on the staff
+ * (`touch-action: none`). The browser decides to scroll the page as soon as
+ * the finger touches the screen, before our handlers even run: it must
+ * therefore be told in advance where the finger is used to place a note.
+ * Everywhere else, the page scrolls as before.
  *
- * Mêmes zones que {@link hitTest} : la zone d'insertion et la zone d'ajout
- * (Écrire), la note sélectionnée (Modifier), sur toute la hauteur de la ligne.
+ * Same zones as {@link hitTest}: the insertion zone and the add zone (Write),
+ * the selected note (Edit), over the full height of the line.
  *
  * @param {module:model~StaffBlock} b
- * @param {number} W Largeur du rendu.
- * @returns {string} HTML des calques (vide si aucun).
+ * @param {number} W Render width.
+ * @returns {string} HTML of the overlays (empty if none).
  */
 export function dragZonesHtml(b, W) {
   if (state.activeId !== b.id || b.clef === 'rhythm') return '';
@@ -237,11 +237,11 @@ export function dragZonesHtml(b, W) {
   return out;
 }
 
-/** Bulle qui affiche le nom de la note pendant un glisser (créée au premier usage). */
+/** Bubble showing the note name during a drag (created on first use). */
 let tip = null;
 
 /**
- * Affiche (ou cache, `text` vide) la bulle au-dessus du doigt.
+ * Shows (or hides, with empty `text`) the bubble above the finger.
  * @param {string} text
  * @param {number} [cx]
  * @param {number} [cy]
@@ -257,43 +257,43 @@ function showTip(text, cx = 0, cy = 0) {
   if (!text) return;
   tip.textContent = text;
   tip.style.left = `${cx}px`;
-  tip.style.top = `${cy - 44}px`; // au-dessus du doigt, qui cache la note
+  tip.style.top = `${cy - 44}px`; // above the finger, which hides the note
 }
 
 /**
- * Branche le toucher sur la zone d'une portée : glisser une note (2.8.2) et
- * touchers simples ({@link staffTap}).
+ * Wires touch on a staff's area: note dragging (2.8.2) and simple taps
+ * ({@link staffTap}).
  *
- * Un glisser commence au `pointerdown` :
- * - **Écrire**, dans la zone d'insertion (ou la zone d'ajout en fin de
- *   portée) : la note est insérée tout de suite, à la hauteur du doigt ;
- * - **Modifier**, sur la note déjà sélectionnée : elle va à la hauteur du doigt.
+ * A drag starts on `pointerdown`:
+ * - **Write**, in the insertion zone (or the add zone at the end of the
+ *   staff): the note is inserted right away, at the finger's pitch;
+ * - **Edit**, on the note already selected: it goes to the finger's pitch.
  *
- * Puis, tant que le doigt reste posé, la note suit (`pointermove`) ; on la
- * pose en levant le doigt. Tout le geste ne compte que pour une annulation.
- * Pendant le geste, le défilement de la page est bloqué (`touchmove`
- * annulé) ; partout ailleurs sur la portée, la page défile normalement.
+ * Then, as long as the finger stays down, the note follows (`pointermove`);
+ * it is placed when the finger lifts. The whole gesture counts as a single
+ * undo. During the gesture, page scrolling is blocked (`touchmove`
+ * cancelled); everywhere else on the staff, the page scrolls normally.
  *
- * Le point de repère vertical est figé au début du geste : si la portée
- * s'agrandit (note très aiguë), la note ne s'emballe pas sous le doigt.
+ * The vertical reference is frozen at the start of the gesture: if the staff
+ * grows (very high note), the note does not run away under the finger.
  *
- * Un toucher qui ne commence pas de glisser reste un simple `click`
- * ({@link staffTap}) : placer le curseur, sélectionner, désélectionner.
+ * A tap that does not start a drag stays a simple `click` ({@link staffTap}):
+ * place the cursor, select, deselect.
  *
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
  * @param {HTMLElement} wrap
  */
 export function bindStaffInput(n, b, wrap) {
-  /** Geste en cours. */
+  /** Gesture in progress. */
   let drag = null;
-  /** Le `click` qui suit un geste ne doit pas être traité une 2e fois. */
+  /** The `click` following a gesture must not be handled a second time. */
   let consumed = false;
 
   wrap.addEventListener('pointerdown', (e) => {
     consumed = false;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
-    // Bloc inactif ou réduit : le premier toucher l'active (voir staffTap / fold).
+    // Inactive or collapsed block: the first tap activates it (see staffTap / fold).
     if (state.activeId !== b.id || wrap.closest('.folded')) return;
     clampCursor(b);
     const ht = hitTest(b, wrap, e.clientX, e.clientY);
@@ -311,7 +311,7 @@ export function bindStaffInput(n, b, wrap) {
       consumed = true;
       hooks.redraw(b.id);
       if (h < 0) return;
-      // Silence, note liée (hauteur imposée), ligne rythmique : rien à glisser.
+      // Rest, tied note (pitch imposed), rhythm line: nothing to drag.
       movable = !b.items[h].r && !ht.L.rh && !tie;
       drag = { h, g: ht.g, top: ht.top, id: e.pointerId, s: b.items[h].s, start: b.items[h].s, fresh: true };
     } else {
@@ -332,15 +332,15 @@ export function bindStaffInput(n, b, wrap) {
     try {
       wrap.setPointerCapture(e.pointerId);
     } catch {
-      /* pointeur déjà relâché */
+      /* pointer already released */
     }
     showTip(pitchName(b.clef, drag.s, b.items[h].a, b.ks), e.clientX, e.clientY);
   });
 
   /**
-   * Met la note du geste à la position `s` et redessine.
+   * Puts the gesture's note at position `s` and redraws.
    * @param {number} s
-   * @returns {boolean} La hauteur a changé.
+   * @returns {boolean} The pitch changed.
    */
   function moveTo(s) {
     if (s === drag.s) return false;
@@ -359,13 +359,13 @@ export function bindStaffInput(n, b, wrap) {
   const end = (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     if (drag.s !== drag.start) touch(n);
-    else if (!drag.fresh) discardSnapshot(n); // touché sans rien changer
+    else if (!drag.fresh) discardSnapshot(n); // touched without changing anything
     drag = null;
     showTip('');
   };
   wrap.addEventListener('pointerup', end);
   wrap.addEventListener('pointercancel', end);
-  // Pendant un glisser, le doigt déplace la note, pas la page.
+  // During a drag, the finger moves the note, not the page.
   wrap.addEventListener(
     'touchmove',
     (e) => {
@@ -383,9 +383,9 @@ export function bindStaffInput(n, b, wrap) {
 }
 
 /**
- * Change de mode. En passant en Modifier, la note juste avant le curseur est
- * sélectionnée ; en revenant en Écrire, le curseur se place juste après la
- * note qui était sélectionnée : on reprend là où on en était.
+ * Changes mode. Switching to Edit selects the note just before the cursor;
+ * returning to Write puts the cursor just after the note that was selected:
+ * you pick up where you left off.
  * @param {'write'|'edit'} mode
  */
 export function setMode(mode) {

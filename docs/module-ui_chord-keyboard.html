@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/chord-keyboard - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,19 +63,19 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Clavier d'accords</strong> à l'écran (2.8.5), à la place du clavier du
-téléphone : plus de majuscules ni de « b » à taper pour ♭.</p>
-<pre class="prettyprint source"><code> C   D   E   F   G   A   B   ♭   ♯       ← fondamentale (ou basse après /)
- 7  −7  Δ7  ø7  °7 7alt  6  −6   +       ← couleur, en un toucher
-sus4 7sus4 9 −9  Δ9 7♭9 7♯9  13   ⋯      ← ⋯ : pavé détaillé
- /  N.C.  %   ␣   ⌫   ⌨   Suivant →
+                <div class="description usertext"><p>On-screen <strong>chord keyboard</strong> (2.8.5), instead of the phone keyboard: no
+more capitals or &quot;b&quot; to type for ♭.</p>
+<pre class="prettyprint source"><code> C   D   E   F   G   A   B   ♭   ♯       ← root (or bass after /)
+ 7  −7  Δ7  ø7  °7 7alt  6  −6   +       ← quality, in one tap
+sus4 7sus4 9 −9  Δ9 7♭9 7♯9  13   ⋯      ← ⋯: detailed pad
+ /  N.C.  %   ␣   ⌫   ⌨   Next →
 </code></pre>
-<p>Ce module ne fait que l'affichage et les touchers ; l'effet de chaque
-touche est décrit dans <a href="module-chord-keys.html">chord-keys</a>.</p>
-<p>Deux usages : la grille (une mesure, plusieurs cases, <code>%</code>, <code>N.C.</code>, <code>␣</code>) et
-l'accord au-dessus d'une note (une seule case, « OK »). La touche <code>⌨</code>
-repasse au champ texte (clavier du téléphone ou de l'ordinateur), pour
-coller un accord ou écrire au clavier physique.</p></div>
+<p>This module only handles display and taps; the effect of each key is
+described in <a href="module-chord-keys.html">chord-keys</a>.</p>
+<p>Two uses: the chart (one measure, several slots, <code>%</code>, <code>N.C.</code>, <code>␣</code>) and the
+chord above a note (a single slot, &quot;OK&quot;). The <code>⌨</code> key switches to the text
+field (phone or computer keyboard), to paste a chord or type on a physical
+keyboard.</p></div>
             
 
             
@@ -87,19 +87,19 @@ coller un accord ou écrire au clavier physique.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Clavier d'accords</strong> à l'écran (2.8.5), à la place du clavier du
-téléphone : plus de majuscules ni de « b » à taper pour ♭.</p>
-<pre class="prettyprint source"><code> C   D   E   F   G   A   B   ♭   ♯       ← fondamentale (ou basse après /)
- 7  −7  Δ7  ø7  °7 7alt  6  −6   +       ← couleur, en un toucher
-sus4 7sus4 9 −9  Δ9 7♭9 7♯9  13   ⋯      ← ⋯ : pavé détaillé
- /  N.C.  %   ␣   ⌫   ⌨   Suivant →
+    <dd class="tag-description"><ul class="dummy"><li><p>On-screen <strong>chord keyboard</strong> (2.8.5), instead of the phone keyboard: no
+more capitals or &quot;b&quot; to type for ♭.</p>
+<pre class="prettyprint source"><code> C   D   E   F   G   A   B   ♭   ♯       ← root (or bass after /)
+ 7  −7  Δ7  ø7  °7 7alt  6  −6   +       ← quality, in one tap
+sus4 7sus4 9 −9  Δ9 7♭9 7♯9  13   ⋯      ← ⋯: detailed pad
+ /  N.C.  %   ␣   ⌫   ⌨   Next →
 </code></pre>
-<p>Ce module ne fait que l'affichage et les touchers ; l'effet de chaque
-touche est décrit dans <a href="module-chord-keys.html">chord-keys</a>.</p>
-<p>Deux usages : la grille (une mesure, plusieurs cases, <code>%</code>, <code>N.C.</code>, <code>␣</code>) et
-l'accord au-dessus d'une note (une seule case, « OK »). La touche <code>⌨</code>
-repasse au champ texte (clavier du téléphone ou de l'ordinateur), pour
-coller un accord ou écrire au clavier physique.</p></li></ul></dd>
+<p>This module only handles display and taps; the effect of each key is
+described in <a href="module-chord-keys.html">chord-keys</a>.</p>
+<p>Two uses: the chart (one measure, several slots, <code>%</code>, <code>N.C.</code>, <code>␣</code>) and the
+chord above a note (a single slot, &quot;OK&quot;). The <code>⌨</code> key switches to the text
+field (phone or computer keyboard), to paste a chord or type on a physical
+keyboard.</p></li></ul></dd>
     
 
     
@@ -200,8 +200,8 @@ coller un accord ou écrire au clavier physique.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couleurs en un toucher : <code>[libellé, qualité enregistrée]</code>.
-Libellés comme à l'affichage, valeurs en notation iReal.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>One-tap qualities: <code>[label, stored quality]</code>.
+Labels as displayed, values in iReal notation.</p></li></ul></dd>
     
 
     
@@ -247,8 +247,8 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Couleurs en un toucher : <code>[libellé, qualité enregistrée]</code>.
-Libellés comme à l'affichage, valeurs en notation iReal.</p>
+    <p>One-tap qualities: <code>[label, stored quality]</code>.
+Labels as displayed, values in iReal notation.</p>
 </div>
 
 
@@ -269,7 +269,7 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Pavé détaillé : morceaux ajoutés un par un.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Detailed pad: pieces added one by one.</p></li></ul></dd>
     
 
     
@@ -315,7 +315,7 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p>
 
 
 <div class="description usertext">
-    <p>Pavé détaillé : morceaux ajoutés un par un.</p>
+    <p>Detailed pad: pieces added one by one.</p>
 </div>
 
 
@@ -336,7 +336,7 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Fondamentales.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Roots.</p></li></ul></dd>
     
 
     
@@ -382,7 +382,7 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p>
 
 
 <div class="description usertext">
-    <p>Fondamentales.</p>
+    <p>Roots.</p>
 </div>
 
 
@@ -413,7 +413,7 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Monte un clavier d'accords dans <code>root</code> (une seule fois).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Mounts a chord keyboard in <code>root</code> (once).</p></li></ul></dd>
     
 
     
@@ -558,8 +558,8 @@ Libellés comme à l'affichage, valeurs en notation iReal.</p>
 
         
 <div class="param-desc">
-    <p><code>show(cases)</code> met à jour
-l'aperçu et l'état des touches.</p>
+    <p><code>show(slots)</code> updates the
+preview and the key states.</p>
 </div>
 
 
@@ -596,7 +596,7 @@ l'aperçu et l'état des touches.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML d'une touche.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of a key.</p></li></ul></dd>
     
 
     
@@ -743,7 +743,7 @@ l'aperçu et l'état des touches.</p>
                 </td>
             
 
-            <td class="description last"><p>Attributs <code>data-*</code>.</p></td>
+            <td class="description last"><p><code>data-*</code> attributes.</p></td>
         </tr>
 
     
@@ -865,7 +865,7 @@ l'aperçu et l'état des touches.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Options d'un clavier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Keyboard options.</p></li></ul></dd>
     
 
     
@@ -962,7 +962,7 @@ l'aperçu et l'état des touches.</p>
 
             
 
-            <td class="description last"><p>Grille (plusieurs cases, <code>%</code>, <code>N.C.</code>, <code>␣</code>) ou note.</p></td>
+            <td class="description last"><p>Chart (several slots, <code>%</code>, <code>N.C.</code>, <code>␣</code>) or note.</p></td>
         </tr>
 
     
@@ -992,7 +992,7 @@ l'aperçu et l'état des touches.</p>
 
             
 
-            <td class="description last"><p>Touche d'accord.</p></td>
+            <td class="description last"><p>Chord key.</p></td>
         </tr>
 
     
@@ -1022,7 +1022,7 @@ l'aperçu et l'état des touches.</p>
 
             
 
-            <td class="description last"><p>« Suivant » (grille) ou « OK » (note).</p></td>
+            <td class="description last"><p>&quot;Next&quot; (chart) or &quot;OK&quot; (note).</p></td>
         </tr>
 
     
@@ -1052,7 +1052,7 @@ l'aperçu et l'état des touches.</p>
 
             
 
-            <td class="description last"><p>Touche <code>⌨</code> : passer au champ texte.</p></td>
+            <td class="description last"><p><code>⌨</code> key: switch to the text field.</p></td>
         </tr>
 
     
@@ -1084,7 +1084,7 @@ l'aperçu et l'état des touches.</p>
 
             
 
-            <td class="description last"><p>Annuler (grille).</p></td>
+            <td class="description last"><p>Undo (chart).</p></td>
         </tr>
 
     
@@ -1097,7 +1097,7 @@ l'aperçu et l'état des touches.</p>
 
 
 <div class="description usertext">
-    <p>Options d'un clavier.</p>
+    <p>Keyboard options.</p>
 </div>
 
 

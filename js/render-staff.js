@@ -1,37 +1,36 @@
 /**
  * @module render-staff
  * @description
- * Rendu d'une portée en **SVG**, sous forme de chaîne de caractères.
+ * Rendering of a staff as **SVG**, as a string.
  *
- * Le rendu part de la mise en page ({@link module:layout.layout|layout}) et dessine
- * par couches, dans cet ordre (l'ordre SVG est l'ordre de peinture) :
+ * Rendering starts from the layout ({@link module:layout.layout|layout}) and
+ * draws in layers, in this order (SVG order is painting order):
  *
- * 1. fond de la zone d'ajout (si le bloc est en édition) ;
- * 2. lignes de portée, clé, chiffrage, numéros de mesure ;
- * 3. barres de mesure et débuts de reprise ;
- * 4. éléments : surlignage, accord chiffré, tête, altération, point, hampe, crochets ;
- * 5. ligatures ;
- * 6. liaisons de prolongation ;
- * 7. crochets de triolet ;
- * 8. curseur d'ajout.
+ * 1. background of the add zone (if the block is being edited);
+ * 2. staff lines, clef, time signature, measure numbers;
+ * 3. barlines and start repeats;
+ * 4. items: highlight, chord symbol, head, accidental, dot, stem, flags;
+ * 5. beams;
+ * 6. ties;
+ * 7. triplet brackets;
+ * 8. add cursor.
  *
- * ## Conventions graphiques
+ * ## Graphic conventions
  *
- * - Les couleurs ne sont jamais écrites en dur : chaque forme reçoit une
- *   classe CSS (`f` = remplie, `s` = trait, `h` = tête creuse, `l` = ligne de
- *   portée…) dont la couleur vient des variables du thème. Le SVG suit donc
- *   automatiquement le mode clair/sombre.
- * - Les têtes sont des ellipses tournées, les hampes des lignes, les
- *   ligatures des polygones (pour gérer la pente), les silences et les
- *   altérations des chemins de Bézier dessinés à la main.
- * - Les clés utilisent les glyphes Unicode du bloc « Musical Symbols »
- *   (U+1D11E clé de sol, U+1D122 clé de fa) avec la police Noto Music.
+ * - Colors are never hard-coded: each shape gets a CSS class (`f` = filled,
+ *   `s` = stroke, `h` = hollow head, `l` = staff line…) whose color comes
+ *   from the theme variables. The SVG thus follows light/dark mode
+ *   automatically.
+ * - Heads are rotated ellipses, stems are lines, beams are polygons (to
+ *   handle the slope), rests and accidentals are hand-drawn Bézier paths.
+ * - Clefs use the Unicode glyphs of the "Musical Symbols" block (U+1D11E
+ *   treble clef, U+1D122 bass clef) with the Noto Music font.
  *
- * ## Sens des hampes
+ * ## Stem direction
  *
- * Note isolée : hampe vers le haut si la tête est sous la 3e ligne (`s < 4`),
- * sinon vers le bas. Groupe ligaturé : un seul sens pour tout le groupe,
- * d'après la position moyenne. Ligne rythmique : toujours vers le haut.
+ * Single note: stem up if the head is below the 3rd line (`s < 4`),
+ * otherwise down. Beamed group: one direction for the whole group, from the
+ * average position. Rhythm line: always up.
  */
 
 import { t } from './i18n.js';
@@ -41,13 +40,13 @@ import { beamGroups, tupletGroups } from './rhythm.js';
 import { instrumentOf } from './model.js';
 import { chordParts } from './chords.js';
 
-/** Remplace `b` et `#` par les vrais signes ♭ et ♯ dans un accord chiffré. */
+/** Replaces `b` and `#` with the real ♭ and ♯ signs in a chord symbol. */
 /**
- * Accord chiffré en SVG, comme dans la grille et iReal Pro (2.8.5) :
- * fondamentale, qualité en exposant (`−7`, `Δ7`, `ø7`), basse. Un texte non
- * reconnu est écrit tel quel (♭ et ♯ mis en forme).
+ * Chord symbol as SVG, as in the chart and iReal Pro (2.8.5): root, quality
+ * as superscript (`−7`, `Δ7`, `ø7`), bass. An unrecognized text is written as
+ * is (with ♭ and ♯ formatted).
  * @param {string} c
- * @returns {string} Contenu de l'élément `<text>` (échappé).
+ * @returns {string} Content of the `<text>` element (escaped).
  */
 function chordSvgText(c) {
   const p = chordParts(c);
@@ -57,32 +56,32 @@ function chordSvgText(c) {
   return esc(p.root) + q + bass;
 }
 
-/** Longueur standard d'une hampe (px), un peu plus d'une octave. */
+/** Standard stem length (px), a little more than an octave. */
 const STEM = 34;
 
-/** Décalage horizontal (px) de la hampe par rapport au centre de la tête. */
+/** Horizontal offset (px) of the stem from the center of the head. */
 const STEM_DX = 5.6;
 
 /**
- * Dessine un silence.
+ * Draws a rest.
  * @param {module:model~DurationCode} d
- * @param {number} x Centre.
+ * @param {number} x Center.
  * @param {module:layout~SystemGeom} g
- * @param {boolean} rh Ligne rythmique.
- * @returns {string} Fragment SVG.
+ * @param {boolean} rh Rhythm line.
+ * @returns {string} SVG fragment.
  */
 function restSvg(d, x, g, rh) {
   const m = g.mid;
-  // Pause : rectangle sous la 4e ligne. Demi-pause : posée sur la 3e ligne.
+  // Whole rest: rectangle under the 4th line. Half rest: sitting on the 3rd line.
   if (d === 'w') {
     const y = rh ? m : g.staffTop + 10;
     return `<rect class="f" x="${x - 6}" y="${y}" width="12" height="5"/>`;
   }
   if (d === 'h') return `<rect class="f" x="${x - 6}" y="${m - 5}" width="12" height="5"/>`;
-  // Soupir : zigzag en trait épais terminé par un crochet.
+  // Quarter rest: thick zigzag stroke ending with a hook.
   if (d === 'q')
     return `<path class="s" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" d="M${x - 2} ${m - 15} L${x + 4} ${m - 8} L${x - 1} ${m - 2} L${x + 4} ${m + 4} C${x - 2} ${m + 1} ${x - 4} ${m + 8} ${x + 1} ${m + 12}"/>`;
-  // Demi-soupir (et quart de soupir) : un (deux) point(s) avec crochet, sur une tige oblique.
+  // Eighth (and sixteenth) rest: one (two) dot(s) with a hook, on a slanted stem.
   let s = `<circle class="f" cx="${x - 3}" cy="${m - 5}" r="2.6"/><path class="s" stroke-width="1.6" stroke-linecap="round" d="M${x - 3} ${m - 3} Q${x + 1} ${m - 2} ${x + 4} ${m - 7} L${x - 1} ${m + (d === '16' ? 14 : 10)}"/>`;
   if (d === '16')
     s += `<circle class="f" cx="${x - 5}" cy="${m + 2}" r="2.6"/><path class="s" stroke-width="1.6" stroke-linecap="round" d="M${x - 5} ${m + 4} Q${x - 1} ${m + 5} ${x + 2} ${m + 1}"/>`;
@@ -90,10 +89,10 @@ function restSvg(d, x, g, rh) {
 }
 
 /**
- * Dessine une altération à gauche d'une tête.
- * @param {number} a Bémol, bécarre, dièse.
- * @param {number} x Centre de l'altération.
- * @param {number} y Ordonnée de la tête.
+ * Draws an accidental to the left of a head.
+ * @param {number} a Flat, natural, sharp.
+ * @param {number} x Center of the accidental.
+ * @param {number} y Y of the head.
  * @returns {string}
  */
 function accSvg(a, x, y) {
@@ -105,19 +104,19 @@ function accSvg(a, x, y) {
 }
 
 /**
- * Positions (`s`, clé de sol) des altérations de l'armure, dans l'ordre où
- * on les écrit. En clé de fa, tout est deux positions plus bas.
+ * Positions (`s`, treble clef) of the key signature accidentals, in the
+ * order they are written. In bass clef, everything is two positions lower.
  */
 const KEY_POS = {
-  sharp: [8, 5, 9, 6, 3, 7, 4], // fa5 do5 sol5 ré5 la4 mi5 si4
-  flat: [4, 7, 3, 6, 2, 5, 1], // si4 mi5 la4 ré5 sol4 do5 fa4
+  sharp: [8, 5, 9, 6, 3, 7, 4], // F5 C5 G5 D5 A4 E5 B4
+  flat: [4, 7, 3, 6, 2, 5, 1], // B4 E5 A4 D5 G4 C5 F4
 };
 
-/** Abscisse de la première altération de l'armure (juste après la clé). */
+/** X of the first key signature accidental (right after the clef). */
 const KEY_X = 36;
 
 /**
- * Dessine l'armure d'une ligne.
+ * Draws a line's key signature.
  * @param {module:model~StaffBlock} b
  * @param {module:layout~Layout} L
  * @param {module:layout~SystemGeom} g
@@ -134,12 +133,12 @@ function keySigSvg(b, L, g) {
 }
 
 /**
- * Dessine une barre de mesure.
- * @param {string} type `'single'`, `'double'`, `'final'`, `'rep'` (fin de reprise).
- * @param {number} x Abscisse de la barre (bord droit pour les barres composées).
+ * Draws a barline.
+ * @param {string} type `'single'`, `'double'`, `'final'`, `'rep'` (end repeat).
+ * @param {number} x X of the barline (right edge for compound barlines).
  * @param {module:layout~SystemGeom} g
  * @param {boolean} rh
- * @param {boolean} start `true` pour un début de reprise `‖:` (x = bord gauche).
+ * @param {boolean} start `true` for a start repeat `‖:` (x = left edge).
  * @returns {string}
  */
 function barSvg(type, x, g, rh, start) {
@@ -148,7 +147,7 @@ function barSvg(type, x, g, rh, start) {
   const h = y2 - y1;
   const thin = (xx) => `<line class="bar" x1="${xx}" x2="${xx}" y1="${y1}" y2="${y2}"/>`;
   const thick = (xx) => `<rect class="f" x="${xx}" y="${y1}" width="4" height="${h}"/>`;
-  // Points de reprise : dans les 2e et 3e interlignes.
+  // Repeat dots: in the 2nd and 3rd spaces.
   const dots = (xx) =>
     (rh ? [g.line - 5, g.line + 5] : [g.staffTop + 15, g.staffTop + 25])
       .map((y) => `<circle class="f" cx="${xx}" cy="${y}" r="2"/>`)
@@ -161,67 +160,67 @@ function barSvg(type, x, g, rh, start) {
 }
 
 /**
- * Dessine une liaison de prolongation : un croissant rempli (deux courbes de
- * Bézier quadratiques de flèches différentes), plus élégant qu'un simple trait.
+ * Draws a tie: a filled crescent (two quadratic Bézier curves with different
+ * heights), more elegant than a plain stroke.
  *
- * @param {number} x1 Début.
- * @param {number} x2 Fin.
- * @param {number} y Ordonnée des têtes.
- * @param {number} dir `1` = liaison sous les têtes (courbe vers le bas), `-1` = au-dessus.
+ * @param {number} x1 Start.
+ * @param {number} x2 End.
+ * @param {number} y Y of the heads.
+ * @param {number} dir `1` = tie under the heads (curving down), `-1` = above.
  * @returns {string}
  */
 function tieSvg(x1, x2, y, dir) {
   if (x2 - x1 < 4) return '';
   const xm = (x1 + x2) / 2;
-  const h = Math.max(4, Math.min(9, (x2 - x1) * 0.15)); // flèche proportionnelle à la longueur
-  const y0 = y + dir * 6; // départ légèrement décollé de la tête
+  const h = Math.max(4, Math.min(9, (x2 - x1) * 0.15)); // height proportional to the length
+  const y0 = y + dir * 6; // starts slightly away from the head
   return `<path class="f" d="M${x1} ${y0} Q${xm} ${y0 + dir * h * 2} ${x2} ${y0} Q${xm} ${y0 + dir * (h * 2 - 2.6)} ${x1} ${y0} Z"/>`;
 }
 
 /**
- * Options de rendu.
+ * Render options.
  * @typedef {Object} StaffSvgOptions
- * @property {number|null} [sel] Index de l'élément sélectionné (surligné).
- * @property {number|null} [selEnd] Dernier élément surligné (note coupée en plusieurs morceaux) ; par défaut `sel`.
- * @property {number|null} [play] Index de l'élément en cours de lecture.
- * @property {boolean} [cursor] Afficher la zone et le curseur d'ajout (bloc en édition, mode Écrire).
- * @property {?number} [insertAt] Curseur d'insertion devant cet élément (avec `cursor`) ; absent : en fin de portée.
- * @property {number} [maxSystems] Limiter le nombre de lignes (vignettes de la liste).
+ * @property {number|null} [sel] Index of the selected item (highlighted).
+ * @property {number|null} [selEnd] Last highlighted item (note split into several pieces); `sel` by default.
+ * @property {number|null} [play] Index of the item being played.
+ * @property {boolean} [cursor] Show the add zone and cursor (block being edited, Write mode).
+ * @property {?number} [insertAt] Insertion cursor before this item (with `cursor`); missing: at the end of the staff.
+ * @property {number} [maxSystems] Limit the number of lines (list thumbnails).
  */
 
-/** Épaisseur d'une ligature (px). */
+/** Thickness of a beam (px). */
 const BEAM_THICKNESS = 4.6;
 
-/** Écart vertical entre la ligature principale et la secondaire (doubles croches). */
+/** Vertical gap between the main and secondary beam (sixteenths). */
 const BEAM_GAP = 7.4;
 
-/** Pente maximale d'une ligature (pour rester lisible). */
+/** Maximum slope of a beam (to stay readable). */
 const MAX_BEAM_SLOPE = 0.22;
 
-/** Longueur minimale d'une hampe sous une ligature (px). */
+/** Minimum length of a stem under a beam (px). */
 const MIN_BEAMED_STEM = 27;
 
 /**
- * Données partagées par les fonctions de dessin d'une portée.
+ * Data shared by the drawing functions of a staff.
  *
- * Les tables `stemUp`, `beamOf` et `tops` sont remplies au fil des couches :
- * ligatures d'abord, puis éléments ; liaisons et triolets les lisent ensuite.
+ * The `stemUp`, `beamOf` and `tops` tables are filled as the layers go:
+ * beams first, then items; ties and triplets read them afterwards.
  *
  * @typedef {Object} RenderContext
- * @property {module:model~StaffBlock} b Bloc dessiné.
- * @property {module:model~StaffItem[]} items Ses éléments.
- * @property {module:layout~Layout} L Mise en page.
- * @property {number} W Largeur en px.
- * @property {number} sysCount Nombre de lignes dessinées.
- * @property {StaffSvgOptions} opt Options de rendu.
- * @property {Object.<number, {sx: number, y1: number, y2: number}>} beamStem Hampe imposée par la ligature.
- * @property {Object.<number, boolean>} stemUp Sens de hampe de chaque note (`true` = vers le haut).
- * @property {Object.<number, number>} beamOf Groupe de ligature de chaque note.
- * @property {Object.<number, number>} tops Point le plus haut de chaque élément (pour placer les triolets).
+ * @property {module:model~StaffBlock} b Block drawn.
+ * @property {module:model~StaffItem[]} items Its items.
+ * @property {module:layout~Layout} L Layout.
+ * @property {number} W Width in px.
+ * @property {number} sysCount Number of lines drawn.
+ * @property {StaffSvgOptions} opt Render options.
+ * @property {Object.<number, {sx: number, y1: number, y2: number}>} beamStem Stem imposed by the beam.
+ * @property {Object.<number, boolean>} stemUp Stem direction of each note (`true` = up).
+ * @property {Object.<number, number>} beamOf Beam group of each note.
+ * @property {Object.<number, number>} tops Highest point of each item (to place triplets).
  */
 
 /**
- * L'élément `i` est-il sur une ligne dessinée ?
+ * Is item `i` on a drawn line?
  * @param {RenderContext} ctx
  * @param {number} i
  * @returns {boolean}
@@ -231,7 +230,7 @@ function isVisible(ctx, i) {
 }
 
 /**
- * Couche 2 : lignes de portée, clé, chiffrage (1re ligne) ou numéro de mesure (lignes suivantes).
+ * Layer 2: staff lines, clef, time signature (1st line) or measure number (following lines).
  * @param {RenderContext} ctx
  * @returns {string}
  */
@@ -241,11 +240,11 @@ function drawStaffLines(ctx) {
   for (let sys = 0; sys < ctx.sysCount; sys++) {
     const g = geom(L, sys);
     const system = L.systems[sys];
-    // Après une barre de fin, les lignes s'arrêtent à la barre (convention de gravure).
+    // After a final barline, the lines stop at the barline (engraving convention).
     const xEnd = L.ended && sys === L.systems.length - 1 ? system.end : W;
     if (L.rh) {
       out += `<line class="l" x1="0" x2="${xEnd}" y1="${g.line}" y2="${g.line}"/>`;
-      // « Clé » de percussion : deux barres verticales.
+      // Percussion "clef": two vertical bars.
       out += `<rect class="f" x="9" y="${g.line - 10}" width="3.2" height="20"/><rect class="f" x="15" y="${g.line - 10}" width="3.2" height="20"/>`;
     } else {
       for (let k = 0; k < 5; k++) {
@@ -265,7 +264,7 @@ function drawStaffLines(ctx) {
       out += L.rh
         ? `<text class="t" x="34" y="${g.line - 3}" font-size="15" text-anchor="middle">${num}</text><text class="t" x="34" y="${g.line + 14}" font-size="15" text-anchor="middle">${den}</text>`
         : `<text class="t" x="${tx}" y="${g.staffTop + 17}" font-size="21" text-anchor="middle">${num}</text><text class="t" x="${tx}" y="${g.staffTop + 37}" font-size="21" text-anchor="middle">${den}</text>`;
-      // Instrument transpositeur (2.8.3) : « E♭ », « B♭ »… au-dessus du chiffrage.
+      // Transposing instrument (2.8.3): "E♭", "B♭"… above the time signature.
       const tag = L.rh ? '' : instrumentOf(b.tr).tag;
       if (tag)
         out += `<text class="t trtag" x="${tx}" y="${g.staffTop - 7}" font-size="13" text-anchor="middle">${esc(tag)}</text>`;
@@ -277,7 +276,7 @@ function drawStaffLines(ctx) {
 }
 
 /**
- * Couche 3 : barres de fin de mesure et débuts de reprise.
+ * Layer 3: end-of-measure barlines and start repeats.
  * @param {RenderContext} ctx
  * @returns {string}
  */
@@ -294,8 +293,7 @@ function drawBars(ctx) {
 }
 
 /**
- * Groupes de ligature, découpés en plus par ligne : une ligature ne traverse
- * pas un retour à la ligne.
+ * Beam groups, further split by line: a beam does not cross a line break.
  * @param {RenderContext} ctx
  * @returns {number[][]}
  */
@@ -317,17 +315,17 @@ function beamGroupsBySystem(ctx) {
 }
 
 /**
- * Couche 5 : ligatures. Remplit aussi `beamStem`, `stemUp` et `beamOf`,
- * car la ligature impose le sens et la longueur des hampes de son groupe.
+ * Layer 5: beams. Also fills `beamStem`, `stemUp` and `beamOf`, because the
+ * beam imposes the direction and length of its group's stems.
  *
- * Calcul de la ligature d'un groupe :
- * 1. sens commun des hampes, d'après la position moyenne des têtes ;
- * 2. pente naturelle de l'extrémité de la 1re hampe à celle de la dernière,
- *    bornée à ±{@link MAX_BEAM_SLOPE} ;
- * 3. décalage de toute la ligature pour qu'aucune hampe ne fasse moins de
- *    {@link MIN_BEAMED_STEM} px, et que la ligature atteigne au moins la 3e ligne ;
- * 4. ligature secondaire pour les doubles croches : continue entre doubles
- *    croches voisines, sinon demi-ligature vers l'intérieur du groupe.
+ * Computing a group's beam:
+ * 1. common stem direction, from the average position of the heads;
+ * 2. natural slope from the tip of the 1st stem to that of the last,
+ *    bounded to ±{@link MAX_BEAM_SLOPE};
+ * 3. shift of the whole beam so that no stem is shorter than
+ *    {@link MIN_BEAMED_STEM} px, and the beam reaches at least the 3rd line;
+ * 4. secondary beam for sixteenths: continuous between neighboring
+ *    sixteenths, otherwise a half beam toward the inside of the group.
  *
  * @param {RenderContext} ctx
  * @returns {string}
@@ -359,8 +357,8 @@ function drawBeams(ctx) {
     points.forEach((p) => {
       const missing = up ? naturalY(p.sx) - (p.y - MIN_BEAMED_STEM) : p.y + MIN_BEAMED_STEM - naturalY(p.sx);
       if (missing > shift) shift = missing;
-      // Comme une hampe seule : la ligature atteint au moins la 3e ligne
-      // (notes très aiguës ou très graves, 2.8.2).
+      // Like a single stem: the beam reaches at least the 3rd line
+      // (very high or very low notes, 2.8.2).
       if (!L.rh) {
         const toMid = up ? naturalY(p.sx) - g.mid : g.mid - naturalY(p.sx);
         if (toMid > shift) shift = toMid;
@@ -399,12 +397,12 @@ function drawBeams(ctx) {
 }
 
 /**
- * Lignes supplémentaires d'une tête hors portée (sous la portée pour s ≤ -2,
- * au-dessus pour s ≥ 10).
+ * Ledger lines of a head outside the staff (below the staff for s ≤ -2,
+ * above for s ≥ 10).
  * @param {RenderContext} ctx
  * @param {module:layout~SystemGeom} g
- * @param {number} x Centre de la tête.
- * @param {number} step Position de la tête.
+ * @param {number} x Center of the head.
+ * @param {number} step Position of the head.
  * @returns {string}
  */
 function ledgerLines(ctx, g, x, step) {
@@ -419,17 +417,17 @@ function ledgerLines(ctx, g, x, step) {
 }
 
 /**
- * Hampe (et crochets) d'une note non ligaturée.
- * Hampe vers le haut si la tête est sous la 3e ligne ; elle atteint au
- * moins la ligne du milieu (règle de gravure).
+ * Stem (and flags) of an unbeamed note.
+ * Stem up if the head is below the 3rd line; it reaches at least the middle
+ * line (engraving rule).
  * @param {RenderContext} ctx
  * @param {module:model~StaffItem} it
  * @param {number} i
  * @param {module:layout~SystemGeom} g
- * @param {number} x Centre de la tête.
- * @param {number} y Ordonnée de la tête.
- * @param {number} step Position de la tête.
- * @returns {{svg: string, top: number|null}} `top` : extrémité haute de la hampe si elle monte.
+ * @param {number} x Center of the head.
+ * @param {number} y Y of the head.
+ * @param {number} step Position of the head.
+ * @returns {{svg: string, top: number|null}} `top`: top end of the stem if it goes up.
  */
 function freeStem(ctx, it, i, g, x, y, step) {
   const rh = ctx.L.rh;
@@ -453,8 +451,8 @@ function freeStem(ctx, it, i, g, x, y, step) {
 }
 
 /**
- * Dessin d'une note : lignes supplémentaires, tête, altération, point, hampe.
- * Renseigne `tops[i]`.
+ * Drawing of a note: ledger lines, head, accidental, dot, stem.
+ * Fills in `tops[i]`.
  * @param {RenderContext} ctx
  * @param {module:model~StaffItem} it
  * @param {number} i
@@ -468,7 +466,7 @@ function drawNote(ctx, it, i, g, x) {
   const y = yOfStep(ctx.L, g, step);
   let out = rh ? '' : ledgerLines(ctx, g, x, step);
 
-  // Tête : creuse pour ronde et blanche, pleine sinon.
+  // Head: hollow for whole and half notes, filled otherwise.
   const whole = it.d === 'w';
   const hollow = whole || it.d === 'h';
   const rx = whole ? 7.6 : 6.2;
@@ -476,7 +474,7 @@ function drawNote(ctx, it, i, g, x) {
   out += `<ellipse class="${hollow ? 'h' : 'f'}" cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" transform="rotate(${whole ? -8 : -22} ${x} ${y})"${hollow ? ' stroke-width="' + (whole ? 2.4 : 1.8) + '"' : ''}/>`;
   if (it.a != null && !rh) out += accSvg(it.a, x - 15, y);
 
-  // Point : dans l'interligne au-dessus si la tête est sur une ligne.
+  // Dot: in the space above if the head is on a line.
   if (it.dot) {
     const dy = rh || mod(step, 2) === 0 ? y - HALF_SPACE : y;
     out += `<circle class="f" cx="${x + (whole ? 13 : 11)}" cy="${dy}" r="1.9"/>`;
@@ -484,7 +482,7 @@ function drawNote(ctx, it, i, g, x) {
 
   let top = y - 6;
   if (whole) {
-    ctx.stemUp[i] = step < 4; // pas de hampe, mais le sens sert aux liaisons
+    ctx.stemUp[i] = step < 4; // no stem, but the direction is used by ties
   } else if (ctx.beamStem[i]) {
     const st = ctx.beamStem[i];
     out += `<line class="s" stroke-width="1.3" x1="${st.sx}" x2="${st.sx}" y1="${st.y1}" y2="${st.y2}"/>`;
@@ -499,7 +497,7 @@ function drawNote(ctx, it, i, g, x) {
 }
 
 /**
- * Couche 4 : éléments (surlignage, accord chiffré, note ou silence).
+ * Layer 4: items (highlight, chord symbol, note or rest).
  * @param {RenderContext} ctx
  * @returns {string}
  */
@@ -510,7 +508,7 @@ function drawItems(ctx) {
     if (!isVisible(ctx, i)) return;
     const p = L.pos[i];
     const g = geom(L, p.sys);
-    // Une note coupée par une barre (morceaux automatiques) est surlignée en entier.
+    // A note split by a barline (automatic pieces) is highlighted as a whole.
     const selected = opt.sel != null && i >= opt.sel && i <= (opt.selEnd ?? opt.sel);
     const cls = 'it' + (selected ? ' sel' : '') + (opt.play === i ? ' play' : '');
     let s = `<g class="${cls}">`;
@@ -532,12 +530,12 @@ function drawItems(ctx) {
 }
 
 /**
- * Couche 6 : liaisons de prolongation.
+ * Layer 6: ties.
  *
- * Une liaison va de la tête liée à la tête suivante, du côté opposé à la
- * hampe. Si la note suivante est sur la ligne d'après, on dessine deux
- * demi-liaisons : jusqu'au bout de la ligne, puis depuis le début de la
- * suivante. Sans note suivante, une courte liaison « en attente ».
+ * A tie goes from the tied head to the next head, on the side opposite the
+ * stem. If the next note is on the following line, two half ties are drawn:
+ * to the end of the line, then from the start of the next one. With no next
+ * note, a short "pending" tie.
  *
  * @param {RenderContext} ctx
  * @returns {string}
@@ -568,9 +566,9 @@ function drawTies(ctx) {
 }
 
 /**
- * Couche 7 : triolets. Un « 3 » au-dessus du groupe ; si le groupe n'est pas
- * exactement une ligature hampes en haut, on ajoute un crochet horizontal
- * avec deux petits retours vers le bas.
+ * Layer 7: triplets. A "3" above the group; if the group is not exactly a
+ * stems-up beam, a horizontal bracket with two small hooks pointing down is
+ * added.
  * @param {RenderContext} ctx
  * @returns {string}
  */
@@ -581,7 +579,7 @@ function drawTuplets(ctx) {
     const shown = tg.idx.filter((i) => isVisible(ctx, i));
     if (!shown.length) return;
     const sys = L.pos[shown[0]].sys;
-    const onLine = shown.filter((i) => L.pos[i].sys === sys); // seule la 1re ligne du groupe porte le chiffre
+    const onLine = shown.filter((i) => L.pos[i].sys === sys); // only the 1st line of the group carries the number
     const g = geom(L, sys);
     const x0 = L.pos[onLine[0]].x - 8;
     const x1 = L.pos[onLine[onLine.length - 1]].x + 8;
@@ -602,7 +600,7 @@ function drawTuplets(ctx) {
 }
 
 /**
- * Couches 1 et 8 : fond de la zone d'ajout et curseur pointillé.
+ * Layers 1 and 8: add zone background and dotted cursor.
  * @param {RenderContext} ctx
  * @returns {{background: string, cursor: string}}
  */
@@ -610,7 +608,7 @@ function drawAppendZone(ctx) {
   const { L, W } = ctx;
   if (!ctx.opt.cursor) return { background: '', cursor: '' };
   if (L.insertX != null && L.insertSys < ctx.sysCount) {
-    // Curseur d'insertion au milieu de la portée : zone étroite dans le trou ouvert.
+    // Insertion cursor in the middle of the staff: narrow zone in the opened gap.
     const g = geom(L, L.insertSys);
     const y1 = L.rh ? g.line - 18 : g.staffTop - 10;
     const y2 = L.rh ? g.line + 18 : g.staffBottom + 10;
@@ -631,18 +629,18 @@ function drawAppendZone(ctx) {
 }
 
 /**
- * Rend une portée complète en SVG.
+ * Renders a full staff as SVG.
  *
- * Les couches sont calculées dans l'ordre des dépendances (les ligatures
- * avant les notes, qui en reçoivent leurs hampes ; les notes avant les
- * liaisons et triolets, qui ont besoin du sens des hampes et des points
- * hauts), puis assemblées dans l'ordre de peinture décrit en tête de module.
+ * Layers are computed in dependency order (beams before notes, which get
+ * their stems from them; notes before ties and triplets, which need stem
+ * directions and high points), then assembled in the painting order
+ * described in the module header.
  *
  * @param {module:model~StaffBlock} b
- * @param {number} W Largeur en px.
+ * @param {number} W Width in px.
  * @param {StaffSvgOptions} [opt]
- * @returns {{svg: string, L: module:layout~Layout}} Le SVG et la mise
- *   en page utilisée (réutilisée par l'appelant pour le hit-testing).
+ * @returns {{svg: string, L: module:layout~Layout}} The SVG and the layout
+ *   used (reused by the caller for hit testing).
  */
 export function staffSvg(b, W, opt = {}) {
   const L = layout(b, W, !!opt.cursor, opt.cursor ? (opt.insertAt ?? null) : null);

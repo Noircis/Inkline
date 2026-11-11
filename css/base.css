@@ -1,27 +1,28 @@
 /*
- * Inkline · feuilles de style.
+ * Inkline · stylesheets.
  *
- * Une feuille par zone de l'appli, chargées par index.html dans cet ordre
- * (l'ordre compte : à spécificité égale, la dernière règle l'emporte) :
+ * One stylesheet per area of the app, loaded by index.html in this order
+ * (order matters: at equal specificity, the last rule wins):
  *
- *   base         réinitialisation, jetons de thème (couleurs, polices) : clair
- *                par défaut, sombre via prefers-color-scheme ou [data-theme="dark"]
- *   list         accueil : en-tête, liste des notes
- *   note         écran note et blocs
- *   staff        portées : dessin SVG (couleurs via les jetons), palettes
- *   grid         grilles d'accords
- *   share        partage d'une note
- *   options      roue crantée et écran Options
- *   list-views   affichages de la liste : Cartes, Mosaïque, Liste
- *   folders      dossiers, recherche, tri, éditeur de dossier (2.0)
- *   fold         blocs longs réduits (2.2)
- *   training     entraînement (2.3)
- *   staff-modes  modes de saisie des portées, armure (2.5)
+ *   base         reset, theme tokens (colors, fonts): light by default,
+ *                dark through prefers-color-scheme or [data-theme="dark"]
+ *   list         home: header, note list
+ *   note         note screen and blocks
+ *   staff        staves: SVG drawing (colors through the tokens), palettes
+ *   grid         chord charts
+ *   share        sharing a note
+ *   options      gear and Settings screen
+ *   list-views   list displays: Cards, Mosaic, List
+ *   folders      folders, search, sort, folder editor (2.0), categories (2.8.6)
+ *   fold         collapsed long blocks (2.2)
+ *   training     practice (2.3)
+ *   staff-modes  staff input modes, key signature (2.5)
+ *   chord-keys   chord keyboard (2.8.5)
  *
- * Aucune couleur n'est écrite en dur hors des jetons (base.css).
+ * No color is hard-coded outside the tokens (base.css).
  */
 
-/* 1. Réinitialisation */
+/* 1. Reset */
 :root {
   color-scheme: light;
   padding-top: env(safe-area-inset-top, 0px);
@@ -44,7 +45,7 @@ img {
   display: none !important;
 }
 
-/* 2. Jetons de thème. Mise en page : une colonne étroite de blocs, palette fixée en bas pendant l'édition. */
+/* 2. Theme tokens. Layout: a narrow column of blocks, palette fixed at the bottom while editing. */
 :root {
   --bg: #f2f4f8;
   --surface: #ffffff;
@@ -60,7 +61,7 @@ img {
   --f-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --f-music: 'Noto Music', 'Noto Sans Symbols 2', 'Segoe UI Symbol', serif;
   --pal-h: 0px;
-  /* Couleurs des dossiers (2.0) : on ne stocke que la clé, la teinte suit le thème. */
+  /* Folder colors (2.0): only the key is stored, the hue follows the theme. */
   --fc-red: #d23c3c;
   --fc-orange: #e07316;
   --fc-yellow: #c99a06;

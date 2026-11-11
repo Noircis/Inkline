@@ -1,4 +1,4 @@
-// Accueil : migration d'un ancien carnet, dossiers, recherche, tri, sauvegarde.
+// Home: migration of an old notebook, folders, search, sort, backup.
 import { test, expect } from '@playwright/test';
 import { seedStorage, openApp, storedNotes, collectErrors } from './helpers.js';
 
@@ -15,7 +15,7 @@ const OLD = {
   b: {
     id: 'b',
     title: 'Réponse',
-    updated: now - 2 * DAY, // note d'avant la 1.7 : sans date de création
+    updated: now - 2 * DAY, // note from before 1.7: no creation date
     blocks: [{ id: 't', type: 'text', text: 'Idée de réponse' }],
   },
 };
@@ -24,7 +24,7 @@ test.beforeEach(async ({ context }) => {
   await seedStorage(context, { 'carnet-portees-v1': OLD });
 });
 
-test('migration : le carnet de localStorage passe dans IndexedDB', async ({ page }) => {
+test('migration: the localStorage notebook moves to IndexedDB', async ({ page }) => {
   const errors = collectErrors(page);
   await openApp(page);
   await expect(page.locator('.card')).toHaveCount(2);
@@ -37,7 +37,7 @@ test('migration : le carnet de localStorage passe dans IndexedDB', async ({ page
   expect(errors).toEqual([]);
 });
 
-test('dossiers : créer, ranger une note, filtrer, supprimer', async ({ page }) => {
+test('folders: create, file a note, filter, delete', async ({ page }) => {
   await openApp(page);
   await page.click('#addFolder');
   await page.fill('#fsName', 'Harmonie');
@@ -48,7 +48,7 @@ test('dossiers : créer, ranger une note, filtrer, supprimer', async ({ page }) 
   await page.click('.chip[data-sel=all]');
   await page.locator('.card', { hasText: 'Blues en F' }).click();
   const fid = (await storedNotes(page)).folders[0].id;
-  // Panneau « Ranger la note » (2.8.6), à la place de l'ancien menu.
+  // "File note" panel (2.8.6), replacing the old menu.
   await page.click('#folderBtn');
   await page.click(`[data-folder="${fid}"]`);
   await page.click('#arDone');
@@ -59,7 +59,7 @@ test('dossiers : créer, ranger une note, filtrer, supprimer', async ({ page }) 
   const blues = (await storedNotes(page)).notes.find((n) => n.id === 'a');
   expect(blues.folder).toBe(fid);
   expect(blues.pinned).toBe(true);
-  expect(blues.updated).toBe(OLD.a.updated); // ranger n'est pas modifier
+  expect(blues.updated).toBe(OLD.a.updated); // filing is not editing
 
   await page.click(`.chip[data-sel="${fid}"]`);
   await expect(page.locator('.card')).toHaveCount(1);
@@ -70,10 +70,10 @@ test('dossiers : créer, ranger une note, filtrer, supprimer', async ({ page }) 
   await page.waitForTimeout(300);
   const after = await storedNotes(page);
   expect(after.folders).toEqual([]);
-  expect(after.notes).toHaveLength(2); // aucune note supprimée
+  expect(after.notes).toHaveLength(2); // no note deleted
 });
 
-test('recherche (accents, accords) et tri', async ({ page }) => {
+test('search (accents, chords) and sort', async ({ page }) => {
   await openApp(page);
   await page.fill('#q', 'reponse');
   await expect(page.locator('.card h3')).toHaveText(['Réponse']);
@@ -84,7 +84,7 @@ test('recherche (accents, accords) et tri', async ({ page }) => {
   await expect(page.locator('.card h3')).toHaveText(['Blues en F', 'Réponse']);
 });
 
-test('sauvegarde : export puis réimport (notes et dossiers)', async ({ page }) => {
+test('backup: export then reimport (notes and folders)', async ({ page }) => {
   await openApp(page);
   await page.click('#addFolder');
   await page.fill('#fsName', 'Cours');

@@ -1,14 +1,14 @@
 /*
- * Polices hébergées dans le dépôt (dossier fonts/, licence SIL OFL 1.1).
- * Avant la 1.5.0 elles venaient de Google Fonts : chaque ouverture envoyait
- * l'adresse IP de l'utilisateur à Google. Les héberger ici rend l'app
- * autonome (hors ligne, export d'images) et respecte mieux la vie privée.
+ * Fonts hosted in the repository (fonts/ folder, SIL OFL 1.1 license).
+ * Before 1.5.0 they came from Google Fonts: every opening sent the user's
+ * IP address to Google. Hosting them here makes the app self-contained
+ * (offline, image export) and better respects privacy.
  *
- * unicode-range : le navigateur ne télécharge une police que si la page
- * contient des caractères de sa plage (Noto Music ne sert qu'aux symboles musicaux).
+ * unicode-range: the browser downloads a font only if the page contains
+ * characters in its range (Noto Music is only used for music symbols).
  *
- * Ce fichier est aussi lu par js/export.js pour embarquer les polices dans
- * les images exportées.
+ * This file is also read by js/export.js to embed the fonts in exported
+ * images.
  */
 @font-face {
   font-family: 'Bricolage Grotesque';

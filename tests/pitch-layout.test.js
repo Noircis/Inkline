@@ -1,4 +1,4 @@
-// Tests des hauteurs, de la mise en page et du rendu SVG.
+// Tests for pitches, layout and SVG rendering.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { midiOf, resolveMidis, pitchName, keyAcc } from '../js/pitch.js';
@@ -17,71 +17,71 @@ const staff = (items, extra = {}) => ({
 });
 const q = (s, extra = {}) => ({ d: 'q', s, ...extra });
 
-test('midiOf : repères des clés', () => {
-  assert.equal(midiOf('treble', 0, 0), 64); // mi 4 sur la 1re ligne
-  assert.equal(midiOf('treble', -2, 0), 60); // do 4
-  assert.equal(midiOf('bass', 0, 0), 43); // sol 2
+test('midiOf: clef references', () => {
+  assert.equal(midiOf('treble', 0, 0), 64); // E4 on the 1st line
+  assert.equal(midiOf('treble', -2, 0), 60); // C4
+  assert.equal(midiOf('bass', 0, 0), 43); // G2
   assert.equal(pitchName('treble', 4, -1), 'Si♭ 4');
 });
 
-test("resolveMidis : l'altération vaut jusqu'à la barre", () => {
+test('resolveMidis: the accidental holds until the barline', () => {
   const m = resolveMidis(staff([q(4, { a: -1 }), q(4), q(0), q(0), q(4)]));
-  assert.deepEqual(m, [70, 70, 64, 64, 71]); // la 5e note est dans la mesure suivante : si bécarre
+  assert.deepEqual(m, [70, 70, 64, 64, 71]); // the 5th note is in the next measure: B natural
 });
 
-test('resolveMidis : une note liée garde la hauteur par-dessus la barre', () => {
+test('resolveMidis: a tied note keeps its pitch across the barline', () => {
   const m = resolveMidis(staff([q(0), q(0), q(0), q(4, { a: -1, tie: true }), q(4)]));
   assert.equal(m[4], 70);
 });
 
-test("layout : barre de fin, plus de zone d'ajout, dernière ligne justifiée au-delà de 50 %", () => {
+test('layout: final barline, no more add zone, last line justified beyond 50%', () => {
   const items = Array.from({ length: 16 }, (_, i) => q(i % 8));
   items[15].bar = 'final';
   const L = layout(staff(items), 360, true);
   assert.equal(L.appendX, null);
   assert.equal(L.ended, true);
   const last = L.systems[L.systems.length - 1];
-  assert.ok(Math.abs(last.end - (360 - 4)) < 1); // étirée jusqu'au bord
+  assert.ok(Math.abs(last.end - (360 - 4)) < 1); // stretched to the edge
 });
 
-test('layout : sans barre de fin, la dernière ligne garde sa largeur naturelle', () => {
+test('layout: without a final barline, the last line keeps its natural width', () => {
   const L = layout(staff([q(0), q(2)]), 360, true);
   assert.ok(L.appendX > 0 && L.appendX < 200);
 });
 
-test('render-staff : liaison et triolet dessinés', () => {
+test('render-staff: tie and triplet drawn', () => {
   const t = (s) => ({ d: '8', s, tup: 3 });
   const { svg } = staffSvg(staff([q(2, { tie: true }), q(2), t(4), t(5), t(6)]), 360);
-  assert.match(svg, /<path class="f" d="M[\d.]+ [\d.]+ Q/); // croissant de liaison
+  assert.match(svg, /<path class="f" d="M[\d.]+ [\d.]+ Q/); // tie crescent
   assert.match(svg, /class="tup"[^>]*>3</);
 });
 
-test('keyAcc : armures en dièses et en bémols, toutes octaves, clé de fa décalée', () => {
-  // Sol majeur (1♯) : fa dièse, sur toutes les octaves.
-  assert.equal(keyAcc('treble', 8, 1), 1); // fa 5
-  assert.equal(keyAcc('treble', 1, 1), 1); // fa 4
-  assert.equal(keyAcc('treble', 5, 1), 0); // do 5 : pas encore (2♯)
+test('keyAcc: sharp and flat key signatures, every octave, bass clef shifted', () => {
+  // G major (1♯): F sharp, in every octave.
+  assert.equal(keyAcc('treble', 8, 1), 1); // F5
+  assert.equal(keyAcc('treble', 1, 1), 1); // F4
+  assert.equal(keyAcc('treble', 5, 1), 0); // C5: not yet (2♯)
   assert.equal(keyAcc('treble', 5, 2), 1);
-  // Si♭ majeur (2♭) : si et mi bémols.
-  assert.equal(keyAcc('treble', 4, -2), -1); // si 4
-  assert.equal(keyAcc('treble', 7, -2), -1); // mi 5
-  assert.equal(keyAcc('treble', 3, -2), 0); // la 4
-  // Clé de fa : la 1re ligne est sol 2, fa est juste dessous.
+  // B♭ major (2♭): B and E flat.
+  assert.equal(keyAcc('treble', 4, -2), -1); // B4
+  assert.equal(keyAcc('treble', 7, -2), -1); // E5
+  assert.equal(keyAcc('treble', 3, -2), 0); // A4
+  // Bass clef: the 1st line is G2, F is just below.
   assert.equal(keyAcc('bass', -1, 1), 1);
   assert.equal(keyAcc('treble', 4, 0), 0);
 });
 
-test('resolveMidis : l’armure s’applique, une altération écrite la remplace jusqu’à la barre', () => {
+test('resolveMidis: the key signature applies, a written accidental replaces it until the barline', () => {
   const b = {
     clef: 'treble',
     time: '4/4',
-    ks: 1, // sol majeur
+    ks: 1, // G major
     items: [
-      { d: 'q', s: 1 }, // fa 4 → fa♯ (66)
-      { d: 'q', s: 1, a: 0 }, // fa♮ (65)
-      { d: 'q', s: 1 }, // encore fa♮ (même mesure)
-      { d: 'q', s: 8 }, // fa 5 : autre position, armure (78)
-      { d: 'q', s: 1 }, // mesure suivante : fa♯ de nouveau
+      { d: 'q', s: 1 }, // F4 → F♯ (66)
+      { d: 'q', s: 1, a: 0 }, // F♮ (65)
+      { d: 'q', s: 1 }, // still F♮ (same measure)
+      { d: 'q', s: 8 }, // F5: another position, key signature (78)
+      { d: 'q', s: 1 }, // next measure: F♯ again
     ],
   };
   assert.deepEqual(resolveMidis(b), [66, 65, 65, 78, 66]);
@@ -89,7 +89,7 @@ test('resolveMidis : l’armure s’applique, une altération écrite la remplac
   assert.equal(pitchName('treble', 1, 0, 1), 'Fa♮ 4');
 });
 
-test('layout : l’armure décale le début de chaque ligne', () => {
+test('layout: the key signature shifts the start of each line', () => {
   const items = Array.from({ length: 24 }, () => ({ d: 'q', s: 4 }));
   const plain = layout({ clef: 'treble', time: '4/4', items }, 358);
   const three = layout({ clef: 'treble', time: '4/4', ks: -3, items }, 358);
@@ -99,7 +99,7 @@ test('layout : l’armure décale le début de chaque ligne', () => {
   assert.equal(layout({ clef: 'rhythm', time: '4/4', ks: 2, items: [] }, 358).ksw, 0);
 });
 
-test('layout : le curseur d’insertion ouvre un trou devant la note visée', () => {
+test('layout: the insertion cursor opens a gap before the target note', () => {
   const items = [
     { d: 'q', s: 4 },
     { d: 'q', s: 4 },
@@ -110,57 +110,57 @@ test('layout : le curseur d’insertion ouvre un trou devant la note visée', ()
   const L1 = layout(b, 700, true, 1);
   assert.equal(L0.insertX, null);
   assert.equal(L1.insertSys, 0);
-  assert.ok(L1.insertX > L1.pos[0].x1 - 1 && L1.insertX < L1.pos[1].x0); // dans le trou
-  assert.ok(L1.pos[1].x0 - L0.pos[1].x0 >= 30); // la note visée est décalée
-  assert.equal(layout(b, 700, true, 3).insertX, null); // à la fin : zone d'ajout habituelle
+  assert.ok(L1.insertX > L1.pos[0].x1 - 1 && L1.insertX < L1.pos[1].x0); // in the gap
+  assert.ok(L1.pos[1].x0 - L0.pos[1].x0 >= 30); // the target note is shifted
+  assert.equal(layout(b, 700, true, 3).insertX, null); // at the end: usual add zone
 });
 
-test('staffSvg : l’armure est dessinée sur chaque ligne, le chiffrage décalé', () => {
+test('staffSvg: the key signature is drawn on each line, the time signature shifted', () => {
   const items = Array.from({ length: 24 }, () => ({ d: 'q', s: 4 }));
   const svg = (ks) => staffSvg({ id: 'k', type: 'staff', clef: 'treble', time: '4/4', ks, items }, 358).svg;
   const plain = svg(undefined);
   const flats = svg(-3);
   assert.ok(!flats.includes('NaN'));
-  // Un bémol = 2 tracés ; 3 bémols par ligne en plus.
+  // A flat = 2 paths; 3 more flats per line.
   const paths = (x) => (x.match(/<path/g) || []).length;
   const lines = layout({ clef: 'treble', time: '4/4', ks: -3, items }, 358).systems.length;
   assert.equal(paths(flats) - paths(plain), 3 * 2 * lines);
-  assert.ok(flats.includes('x="77"')); // chiffrage : 46 + 3×9 + 4
+  assert.ok(flats.includes('x="77"')); // time signature: 46 + 3×9 + 4
 });
 
-// --- 2.8.2 : notes plus aiguës --------------------------------------------
+// --- 2.8.2: higher notes --------------------------------------------------
 import { geom, stepFromY, yOfStep } from '../js/layout.js';
 import { sanitizeBlock } from '../js/sanitize.js';
 import { STEP_MIN, STEP_MAX } from '../js/model.js';
 
-test('plage de hauteurs : du fa 3 au ré 7 en clé de sol', () => {
-  assert.equal(midiOf('treble', STEP_MAX, 0), 98); // ré 7 (MIDI 98)
-  assert.equal(midiOf('treble', STEP_MIN, 0), 53); // fa 3
+test('pitch range: from F3 to D7 in treble clef', () => {
+  assert.equal(midiOf('treble', STEP_MAX, 0), 98); // D7 (MIDI 98)
+  assert.equal(midiOf('treble', STEP_MIN, 0), 53); // F3
   const b = { type: 'staff', clef: 'treble', time: '4/4', items: [{ d: 'q', s: 4 }] };
   const L = layout(b, 360);
   const g = geom(L, 0);
-  assert.equal(stepFromY(g, -500), STEP_MAX); // bornée
+  assert.equal(stepFromY(g, -500), STEP_MAX); // bounded
   assert.equal(stepFromY(g, 5000), STEP_MIN);
   assert.equal(stepFromY(g, yOfStep(L, g, 17)), 17);
 });
 
-test('la portée s’agrandit vers le haut seulement pour les notes au-dessus du mi 6', () => {
+test('the staff grows upward only for notes above E6', () => {
   const mk = (s) => layout({ type: 'staff', clef: 'treble', time: '4/4', items: [{ d: 'q', s }] }, 360);
   assert.equal(mk(14).padTop, 0);
   assert.equal(mk(14).SH, 124);
   assert.equal(mk(20).padTop, 30);
   assert.equal(mk(20).SH, 154);
   const L = mk(20);
-  // La note la plus haute reste au même endroit de la bande qu'un mi 6 avant.
+  // The highest note stays at the same place in the band as an E6 did before.
   assert.equal(yOfStep(L, geom(L, 0), 20), yOfStep(mk(14), geom(mk(14), 0), 14));
-  // Un silence ne compte pas ; une ligne rythmique non plus.
+  // A rest does not count; nor does a rhythm line.
   assert.equal(
     layout({ type: 'staff', clef: 'treble', time: '4/4', items: [{ d: 'q', r: true, s: 20 }] }, 360).padTop,
     0,
   );
 });
 
-test('import : hauteurs bornées à la nouvelle plage', () => {
+test('import: pitches bounded to the new range', () => {
   const b = sanitizeBlock({
     type: 'staff',
     clef: 'treble',

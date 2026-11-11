@@ -1,9 +1,9 @@
-/* Inkline · Blocs longs réduits (2.2). */
+/* Inkline · Collapsed long blocks (2.2). */
 
-/* 11. Blocs longs réduits (2.2) */
+/* 11. Collapsed long blocks (2.2) */
 .block.folded .staff-wrap,
 .block.folded .gridwrap {
-  /* Fondu en bas : on voit que la musique continue. */
+  /* Fade at the bottom: you can see the music goes on. */
   -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
   mask-image: linear-gradient(to bottom, #000 62%, transparent);
   cursor: pointer;
@@ -27,7 +27,7 @@
 .opt-gap {
   margin-top: 8px;
 }
-/* Interrupteur (case à cocher stylée) */
+/* Switch (styled checkbox) */
 .switch {
   -webkit-appearance: none;
   appearance: none;

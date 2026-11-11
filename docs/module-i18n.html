@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>i18n - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,26 +63,26 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Langue de l'interface</strong> (2.9) : anglais ou français.</p>
-<p>Tous les textes visibles passent par t avec une clé
-(<code>t('home.newNote')</code>), cherchée dans le dictionnaire de la langue courante
+                <div class="description usertext"><p><strong>Interface language</strong> (2.9): English or French.</p>
+<p>Every visible text goes through t with a key
+(<code>t('home.newNote')</code>), looked up in the dictionary of the current language
 (<a href="module-locales_en.html">locales/en</a>, <a href="module-locales_fr.html">locales/fr</a>).
-Un test vérifie que les deux dictionnaires ont exactement les mêmes clés.</p>
-<h2>Choix de la langue</h2>
-<p>Une appli web ne voit pas la langue du système, seulement celle du
-navigateur (<code>navigator.languages</code>) ; sur Android, elle suit celle du
-téléphone. Réglage « Langue » dans Options : <code>auto</code> (français si le
-navigateur est en français, anglais sinon), <code>en</code> ou <code>fr</code>.</p>
-<p>Tant que initLang n'a pas été appelé (tests unitaires du moteur),
-la langue est le français, celle des versions précédentes.</p>
-<h2>Paramètres et pluriels</h2>
-<p><code>t('home.count', { n: 3 })</code> remplace <code>{n}</code> dans le texte. Une entrée peut
-être un objet <code>{ one, other }</code> : <code>one</code> sert pour 0 et 1 en français, pour
-1 seulement en anglais (« 0 note », mais « 0 notes »), selon
+A test checks that both dictionaries have exactly the same keys.</p>
+<h2>Choosing the language</h2>
+<p>A web app cannot see the system language, only the browser's
+(<code>navigator.languages</code>); on Android, it follows the phone's language.
+&quot;Language&quot; setting in Settings: <code>auto</code> (French if the browser is in
+French, English otherwise), <code>en</code> or <code>fr</code>.</p>
+<p>Until initLang has been called (engine unit tests), the language
+is French, the language of earlier versions.</p>
+<h2>Parameters and plurals</h2>
+<p><code>t('home.count', { n: 3 })</code> replaces <code>{n}</code> in the text. An entry can be an
+object <code>{ one, other }</code>: <code>one</code> is used for 0 and 1 in French, for 1 only
+in English (&quot;0 note&quot; in French, but &quot;0 notes&quot;), following
 <code>Intl.PluralRules</code>.</p>
-<p>Les textes statiques de <code>index.html</code> portent <code>data-i18n=&quot;clé&quot;</code> (contenu)
-ou <code>data-i18n-attr=&quot;aria-label:clé;placeholder:clé&quot;</code> (attributs), traduits
-au démarrage par translateDom.</p></div>
+<p>The static texts of <code>index.html</code> carry <code>data-i18n=&quot;key&quot;</code> (content) or
+<code>data-i18n-attr=&quot;aria-label:key;placeholder:key&quot;</code> (attributes), translated
+at startup by translateDom.</p></div>
             
 
             
@@ -94,26 +94,26 @@ au démarrage par translateDom.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Langue de l'interface</strong> (2.9) : anglais ou français.</p>
-<p>Tous les textes visibles passent par t avec une clé
-(<code>t('home.newNote')</code>), cherchée dans le dictionnaire de la langue courante
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Interface language</strong> (2.9): English or French.</p>
+<p>Every visible text goes through t with a key
+(<code>t('home.newNote')</code>), looked up in the dictionary of the current language
 (<a href="module-locales_en.html">locales/en</a>, <a href="module-locales_fr.html">locales/fr</a>).
-Un test vérifie que les deux dictionnaires ont exactement les mêmes clés.</p>
-<h2>Choix de la langue</h2>
-<p>Une appli web ne voit pas la langue du système, seulement celle du
-navigateur (<code>navigator.languages</code>) ; sur Android, elle suit celle du
-téléphone. Réglage « Langue » dans Options : <code>auto</code> (français si le
-navigateur est en français, anglais sinon), <code>en</code> ou <code>fr</code>.</p>
-<p>Tant que initLang n'a pas été appelé (tests unitaires du moteur),
-la langue est le français, celle des versions précédentes.</p>
-<h2>Paramètres et pluriels</h2>
-<p><code>t('home.count', { n: 3 })</code> remplace <code>{n}</code> dans le texte. Une entrée peut
-être un objet <code>{ one, other }</code> : <code>one</code> sert pour 0 et 1 en français, pour
-1 seulement en anglais (« 0 note », mais « 0 notes »), selon
+A test checks that both dictionaries have exactly the same keys.</p>
+<h2>Choosing the language</h2>
+<p>A web app cannot see the system language, only the browser's
+(<code>navigator.languages</code>); on Android, it follows the phone's language.
+&quot;Language&quot; setting in Settings: <code>auto</code> (French if the browser is in
+French, English otherwise), <code>en</code> or <code>fr</code>.</p>
+<p>Until initLang has been called (engine unit tests), the language
+is French, the language of earlier versions.</p>
+<h2>Parameters and plurals</h2>
+<p><code>t('home.count', { n: 3 })</code> replaces <code>{n}</code> in the text. An entry can be an
+object <code>{ one, other }</code>: <code>one</code> is used for 0 and 1 in French, for 1 only
+in English (&quot;0 note&quot; in French, but &quot;0 notes&quot;), following
 <code>Intl.PluralRules</code>.</p>
-<p>Les textes statiques de <code>index.html</code> portent <code>data-i18n=&quot;clé&quot;</code> (contenu)
-ou <code>data-i18n-attr=&quot;aria-label:clé;placeholder:clé&quot;</code> (attributs), traduits
-au démarrage par translateDom.</p></li></ul></dd>
+<p>The static texts of <code>index.html</code> carry <code>data-i18n=&quot;key&quot;</code> (content) or
+<code>data-i18n-attr=&quot;aria-label:key;placeholder:key&quot;</code> (attributes), translated
+at startup by translateDom.</p></li></ul></dd>
     
 
     
@@ -214,13 +214,13 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dictionnaires (pour les tests).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Dictionaries (for tests).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="i18n.js.html">i18n.js</a>, <a href="i18n.js.html#line153">line 153</a>
+        <a href="i18n.js.html">i18n.js</a>, <a href="i18n.js.html#line152">line 152</a>
     </li></ul></dd>
     
 
@@ -260,7 +260,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Dictionnaires (pour les tests).</p>
+    <p>Dictionaries (for tests).</p>
 </div>
 
 
@@ -281,7 +281,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Langues disponibles.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Available languages.</p></li></ul></dd>
     
 
     
@@ -327,7 +327,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Langues disponibles.</p>
+    <p>Available languages.</p>
 </div>
 
 
@@ -348,7 +348,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Langue courante.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Current language.</p></li></ul></dd>
     
 
     
@@ -394,7 +394,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Langue courante.</p>
+    <p>Current language.</p>
 </div>
 
 
@@ -415,7 +415,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Locale complète pour les dates et les nombres (<code>Intl</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Full locale for dates and numbers (<code>Intl</code>).</p></li></ul></dd>
     
 
     
@@ -461,7 +461,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Locale complète pour les dates et les nombres (<code>Intl</code>).</p>
+    <p>Full locale for dates and numbers (<code>Intl</code>).</p>
 </div>
 
 
@@ -553,7 +553,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Langue courante.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Current language.</p></li></ul></dd>
     
 
     
@@ -599,7 +599,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Langue courante.</p>
+    <p>Current language.</p>
 </div>
 
 
@@ -620,7 +620,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Règles de pluriel de la langue courante.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plural rules of the current language.</p></li></ul></dd>
     
 
     
@@ -666,7 +666,7 @@ au démarrage par translateDom.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Règles de pluriel de la langue courante.</p>
+    <p>Plural rules of the current language.</p>
 </div>
 
 
@@ -697,8 +697,8 @@ au démarrage par translateDom.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Langue déduite des langues préférées du navigateur : français si la
-première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Language deduced from the browser's preferred languages: French if the
+first recognized language is French, English otherwise.</p></li></ul></dd>
     
 
     
@@ -867,7 +867,7 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Fixe la langue de l'interface.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sets the interface language.</p></li></ul></dd>
     
 
     
@@ -972,7 +972,7 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p><code>auto</code>, <code>en</code> ou <code>fr</code>.</p></td>
+            <td class="description last"><p><code>auto</code>, <code>en</code> or <code>fr</code>.</p></td>
         </tr>
 
     
@@ -1006,7 +1006,7 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Langues du navigateur (pour <code>auto</code>).</p></td>
+            <td class="description last"><p>Browser languages (for <code>auto</code>).</p></td>
         </tr>
 
     
@@ -1032,7 +1032,7 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Langue retenue.</p>
+    <p>Language chosen.</p>
 </div>
 
 
@@ -1072,13 +1072,13 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Toutes les clés d'un dictionnaire (pour les tests).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>All the keys of a dictionary (for tests).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="i18n.js.html">i18n.js</a>, <a href="i18n.js.html#line146">line 146</a>
+        <a href="i18n.js.html">i18n.js</a>, <a href="i18n.js.html#line145">line 145</a>
     </li></ul></dd>
     
 
@@ -1270,7 +1270,7 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Texte traduit.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Translated text.</p></li></ul></dd>
     
 
     
@@ -1375,7 +1375,7 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Clé, par exemple <code>'home.newNote'</code>.</p></td>
+            <td class="description last"><p>Key, for example <code>'home.newNote'</code>.</p></td>
         </tr>
 
     
@@ -1409,8 +1409,8 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Valeurs pour <code>{nom}</code> ;
-<code>n</code> choisit le pluriel.</p></td>
+            <td class="description last"><p>Values for <code>{name}</code>;
+<code>n</code> picks the plural.</p></td>
         </tr>
 
     
@@ -1436,8 +1436,8 @@ première langue reconnue est le français, anglais sinon.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Le texte, ou la clé elle-même si elle manque (visible en
-test, jamais vide à l'écran).</p>
+    <p>The text, or the key itself if it is missing (visible in
+tests, never empty on screen).</p>
 </div>
 
 
@@ -1474,15 +1474,14 @@ test, jamais vide à l'écran).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Traduit les textes statiques d'un morceau de page (<code>data-i18n</code>,
-<code>data-i18n-attr</code>). Le texte français reste dans le HTML comme valeur de
-secours.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Translates the static texts of a piece of the page (<code>data-i18n</code>,
+<code>data-i18n-attr</code>). The French text stays in the HTML as a fallback.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="i18n.js.html">i18n.js</a>, <a href="i18n.js.html#line128">line 128</a>
+        <a href="i18n.js.html">i18n.js</a>, <a href="i18n.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -1611,7 +1610,7 @@ secours.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Cherche une clé (<code>a.b.c</code>) dans un dictionnaire.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Looks up a key (<code>a.b.c</code>) in a dictionary.</p></li></ul></dd>
     
 
     

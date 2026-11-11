@@ -1,6 +1,6 @@
-/* Inkline · Modes de saisie des portées et armure (2.5). */
+/* Inkline · Staff input modes and key signature (2.5). */
 
-/* 13. Modes de saisie des portées et armure (2.5) */
+/* 13. Staff input modes and key signature (2.5) */
 .modesw {
   display: inline-flex;
   padding: 2px;
@@ -33,7 +33,7 @@
   text-overflow: ellipsis;
 }
 
-/* Nom de la note pendant un glisser (2.8.2), au-dessus du doigt. */
+/* Note name during a drag (2.8.2), above the finger. */
 .pitch-tip {
   position: fixed;
   z-index: 60;
@@ -52,13 +52,13 @@
   display: none;
 }
 
-/* Zones où le doigt place une note au lieu de faire défiler la page (2.8.2). */
+/* Zones where the finger places a note instead of scrolling the page (2.8.2). */
 .drag-zone {
   position: absolute;
   touch-action: none;
 }
 
-/* Instrument transpositeur (2.8.3) : question quand la portée a déjà des notes. */
+/* Transposing instrument (2.8.3): question when the staff already has notes. */
 .tr-ask {
   margin: 8px 0 4px;
   padding: 10px 12px;
@@ -86,7 +86,7 @@
   opacity: 0.8;
 }
 
-/* Sélection de mesures à l'appui long (2.8.4). */
+/* Measure selection by long press (2.8.4). */
 .msel-zone {
   position: relative;
   -webkit-touch-callout: none;

@@ -1,25 +1,25 @@
 /**
  * @module ui/list-view
  * @description
- * Les **trois affichages** de la liste des notes, au choix dans les Options :
+ * The **three displays** of the note list, chosen in Settings:
  *
- * | Mode      | Clé      | Contenu                                                  |
- * |-----------|----------|----------------------------------------------------------|
- * | Cartes    | `cards`  | grande carte : titre, date, résumé, début du texte, 1re ligne de portée |
- * | Mosaïque  | `mosaic` | carrés, 2 par ligne : titre + aperçu adapté au contenu   |
- * | Liste     | `list`   | une ligne par note : titre, dates, résumé                |
+ * | Mode      | Key      | Content                                                   |
+ * |-----------|----------|-----------------------------------------------------------|
+ * | Cards     | `cards`  | large card: title, date, summary, start of text, first staff line |
+ * | Mosaic    | `mosaic` | squares, 2 per row: title + preview suited to the content |
+ * | List      | `list`   | one line per note: title, dates, summary                  |
  *
- * ## Aperçu de la mosaïque
+ * ## Mosaic preview
  *
- * Une portée entière réduite à ~170 px serait illisible. L'aperçu dépend donc
- * du contenu de la note, par ordre de priorité :
- * 1. une **portée** : ses premières mesures, dessinées sur une largeur
- *    réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
- * 2. une **grille** : ses premiers accords, en texte ;
- * 3. sinon le **début du texte**.
+ * A whole staff shrunk to ~170 px would be unreadable. The preview therefore
+ * depends on the note's content, by priority:
+ * 1. a **staff**: its first measures, drawn at a reduced width (fewer
+ *    measures per line) then scaled: it is a zoom;
+ * 2. a **chart**: its first chords, as text;
+ * 3. otherwise the **start of the text**.
  *
- * Les vignettes SVG sont dessinées après la mise en page (dans un
- * `requestAnimationFrame`), quand la largeur réelle des cartes est connue.
+ * SVG thumbnails are drawn after layout (in a `requestAnimationFrame`), when
+ * the real width of the cards is known.
  */
 
 import { t, locale } from '../i18n.js';
@@ -30,21 +30,21 @@ import { folderOf, catsOf } from '../folders.js';
 import { PIN_ICON } from './icons.js';
 
 /**
- * Options d'affichage de la liste.
+ * List display options.
  * @typedef {Object} ListOptions
- * @property {Object.<string, module:folders~Folder>} [folders] Dossiers (pour les étiquettes).
- * @property {boolean} [showFolder] Afficher le dossier de chaque note (inutile
- *   quand la liste montre un seul dossier).
+ * @property {Object.<string, module:folders~Folder>} [folders] Folders (for the labels).
+ * @property {boolean} [showFolder] Show each note's folder (useless when the
+ *   list shows a single folder).
  */
 
-/** Modes d'affichage, dans l'ordre du sélecteur. */
+/** Display modes, in picker order. */
 export const LIST_VIEWS = [{ key: 'cards' }, { key: 'mosaic' }, { key: 'list' }];
 
-/** Largeur (px) à laquelle la portée est dessinée avant réduction, en mosaïque. */
+/** Width (px) at which the staff is drawn before shrinking, in mosaic. */
 const MOSAIC_STAFF_W = 260;
 
 /**
- * Date courte (« 4 nov. »).
+ * Short date ("Nov 4").
  * @param {number} ts
  * @returns {string}
  */
@@ -57,8 +57,8 @@ function shortDate(ts) {
 }
 
 /**
- * Date relative pour une modification récente (« aujourd'hui », « hier »),
- * date courte au-delà.
+ * Relative date for a recent change ("today", "yesterday"), short date
+ * beyond that.
  * @param {number} ts
  * @param {number} [now=Date.now()]
  * @returns {string}
@@ -75,7 +75,7 @@ export function relativeDate(ts, now = Date.now()) {
 }
 
 /**
- * Résumé du contenu d'une note (« 1 portée · 2 grilles »).
+ * Summary of a note's content ("1 staff · 2 charts").
  * @param {module:model~Note} n
  * @returns {string}
  */
@@ -91,18 +91,18 @@ export function noteSummary(n) {
   return parts.join(' · ');
 }
 
-/** Premier texte non vide d'une note (ou chaîne vide). */
+/** First non-empty text of a note (or empty string). */
 const firstText = (n) => ((n.blocks.find((b) => b.type === 'text' && b.text.trim()) || {}).text || '').trim();
 
-/** Première portée non vide d'une note. */
+/** First non-empty staff of a note. */
 const firstStaff = (n) => n.blocks.find((b) => b.type === 'staff' && b.items.length);
 
 /**
- * Premiers accords d'une note (grilles d'abord, sinon accords chiffrés des portées),
- * mis en forme comme dans la grille (qualité en exposant).
+ * First chords of a note (charts first, otherwise chord symbols of staves),
+ * formatted as in the chart (quality as superscript).
  * @param {module:model~Note} n
  * @param {number} max
- * @returns {string} Fragment HTML (échappé), vide s'il n'y a pas d'accord.
+ * @returns {string} HTML fragment (escaped), empty if there is no chord.
  */
 function chordsPreview(n, max) {
   const out = [];
@@ -125,7 +125,7 @@ function chordsPreview(n, max) {
 }
 
 /**
- * Étiquette de dossier (pastille + nom), ou chaîne vide.
+ * Folder label (dot + name), or empty string.
  * @param {module:model~Note} n
  * @param {ListOptions} opt
  * @returns {string}
@@ -138,7 +138,7 @@ function folderTag(n, opt) {
 }
 
 /**
- * HTML d'une note selon le mode.
+ * HTML of a note for the given mode.
  * @param {module:model~Note} n
  * @param {string} mode
  * @param {ListOptions} [opt={}]
@@ -159,7 +159,7 @@ function itemHtml(n, mode, opt = {}) {
     return `<span class="row-main"><span class="row-title">${title}</span><span class="row-sub">${tag}${esc(sub)}</span></span><span class="row-date">${esc(relativeDate(n.updated))}</span>`;
   }
   if (mode === 'mosaic') {
-    // Aperçu : portée (dessinée plus tard) > accords > texte.
+    // Preview: staff (drawn later) > chords > text.
     let preview = '';
     if (firstStaff(n)) preview = '<div class="mz-thumb"></div>';
     else {
@@ -176,7 +176,7 @@ function itemHtml(n, mode, opt = {}) {
 }
 
 /**
- * Catégories d'une note à la suite de son dossier (« › Technique, Son »), 2.8.6.
+ * A note's categories after its folder ("› Technique, Son"), 2.8.6.
  * @param {module:model~Note} n
  * @param {Object.<string, module:folders~Folder>} folders
  * @returns {string}
@@ -187,12 +187,12 @@ function catLabel(n, folders) {
 }
 
 /**
- * Construit la liste des notes dans `container`.
+ * Builds the note list in `container`.
  *
  * @param {HTMLElement} container
- * @param {module:model~Note[]} notes Notes déjà triées.
+ * @param {module:model~Note[]} notes Notes already sorted.
  * @param {'cards'|'mosaic'|'list'} mode
- * @param {function(string)} onOpen Appelé avec l'id de la note touchée.
+ * @param {function(string)} onOpen Called with the id of the tapped note.
  * @param {ListOptions} [opt={}]
  */
 export function renderNoteList(container, notes, mode, onOpen, opt = {}) {
@@ -209,13 +209,13 @@ export function renderNoteList(container, notes, mode, onOpen, opt = {}) {
   container.appendChild(wrap);
 
   if (mode === 'list') return;
-  // Vignettes SVG, une fois la largeur réelle connue.
+  // SVG thumbnails, once the real width is known.
   requestAnimationFrame(() => {
     [...wrap.children].forEach((el, k) => {
       const st = firstStaff(notes[k]);
       const th = el.querySelector(mode === 'mosaic' ? '.mz-thumb' : '.thumb');
       if (!st || !th) return;
-      // Mosaïque : dessin sur une largeur fixe réduite, puis mise à l'échelle par CSS (zoom sur le début).
+      // Mosaic: drawn at a fixed reduced width, then scaled by CSS (zoom on the start).
       th.innerHTML = staffSvg(st, mode === 'mosaic' ? MOSAIC_STAFF_W : th.clientWidth || 300, {
         maxSystems: 1,
       }).svg;

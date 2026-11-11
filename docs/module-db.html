@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>db - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,29 +63,29 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Petite couche au-dessus d'IndexedDB</strong> : ouvrir la base, lire tout un
-magasin, écrire un lot de modifications. Le reste de l'app ne parle jamais
-directement à IndexedDB : seul <a href="module-storage.html">storage</a> utilise ce module.</p>
-<h2>IndexedDB en deux minutes (pour un développeur C++)</h2>
-<p>IndexedDB est une base de données clé → valeur intégrée au navigateur, une
-par site. On y range des objets JavaScript (copiés, comme un <code>memcpy</code>
-profond : modifier l'objet après l'écriture ne change pas ce qui est stocké).</p>
+                <div class="description usertext"><p><strong>Thin layer over IndexedDB</strong>: open the database, read a whole store,
+write a batch of changes. The rest of the app never talks to IndexedDB
+directly: only <a href="module-storage.html">storage</a> uses this module.</p>
+<h2>IndexedDB in two minutes (for a C++ developer)</h2>
+<p>IndexedDB is a key → value database built into the browser, one per site.
+It stores JavaScript objects (copied, like a deep <code>memcpy</code>: changing the
+object after writing it does not change what is stored).</p>
 <ul>
-<li>Une <strong>base</strong> (<code>inkline</code>) contient des <strong>magasins</strong> (<em>object stores</em>),
-l'équivalent de tables : <code>notes</code> et <code>folders</code>. Chaque objet est rangé
-sous sa clé, ici son champ <code>id</code> (<code>keyPath: 'id'</code>).</li>
-<li>Toute lecture ou écriture se fait dans une <strong>transaction</strong> : soit toutes
-ses opérations réussissent, soit aucune (atomicité, comme en SQL). C'est
-ce qui rend la migration sûre : les notes sont toutes copiées, ou pas du tout.</li>
-<li>L'API est <strong>asynchrone</strong> : une opération ne renvoie pas son résultat,
-elle le livre plus tard via un événement (<code>onsuccess</code>, <code>oncomplete</code>). On
-l'enveloppe ici dans des <code>Promise</code> (proches d'un <code>std::future</code>), pour
-écrire <code>const notes = await getAll(db, 'notes')</code>, qui se lit comme du
-code séquentiel.</li>
-<li>La base a un <strong>numéro de version</strong>. Quand on l'ouvre avec un numéro plus
-grand que celui stocké, le navigateur appelle <code>onupgradeneeded</code> : c'est le
-seul endroit où l'on peut créer ou modifier des magasins (l'équivalent
-d'une migration de schéma).</li>
+<li>A <strong>database</strong> (<code>inkline</code>) contains <strong>object stores</strong>, the equivalent of
+tables: <code>notes</code> and <code>folders</code>. Each object is stored under its key, here
+its <code>id</code> field (<code>keyPath: 'id'</code>).</li>
+<li>Every read or write happens in a <strong>transaction</strong>: either all its
+operations succeed, or none do (atomicity, as in SQL). This is what makes
+migration safe: the notes are all copied, or none are.</li>
+<li>The API is <strong>asynchronous</strong>: an operation does not return its result, it
+delivers it later through an event (<code>onsuccess</code>, <code>oncomplete</code>). Here it
+is wrapped in <code>Promise</code>s (close to a <code>std::future</code>), so we can write
+<code>const notes = await getAll(db, 'notes')</code>, which reads like sequential
+code.</li>
+<li>The database has a <strong>version number</strong>. When it is opened with a higher
+number than the stored one, the browser calls <code>onupgradeneeded</code>: the only
+place where stores can be created or changed (the equivalent of a schema
+migration).</li>
 </ul></div>
             
 
@@ -98,29 +98,29 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Petite couche au-dessus d'IndexedDB</strong> : ouvrir la base, lire tout un
-magasin, écrire un lot de modifications. Le reste de l'app ne parle jamais
-directement à IndexedDB : seul <a href="module-storage.html">storage</a> utilise ce module.</p>
-<h2>IndexedDB en deux minutes (pour un développeur C++)</h2>
-<p>IndexedDB est une base de données clé → valeur intégrée au navigateur, une
-par site. On y range des objets JavaScript (copiés, comme un <code>memcpy</code>
-profond : modifier l'objet après l'écriture ne change pas ce qui est stocké).</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Thin layer over IndexedDB</strong>: open the database, read a whole store,
+write a batch of changes. The rest of the app never talks to IndexedDB
+directly: only <a href="module-storage.html">storage</a> uses this module.</p>
+<h2>IndexedDB in two minutes (for a C++ developer)</h2>
+<p>IndexedDB is a key → value database built into the browser, one per site.
+It stores JavaScript objects (copied, like a deep <code>memcpy</code>: changing the
+object after writing it does not change what is stored).</p>
 <ul>
-<li>Une <strong>base</strong> (<code>inkline</code>) contient des <strong>magasins</strong> (<em>object stores</em>),
-l'équivalent de tables : <code>notes</code> et <code>folders</code>. Chaque objet est rangé
-sous sa clé, ici son champ <code>id</code> (<code>keyPath: 'id'</code>).</li>
-<li>Toute lecture ou écriture se fait dans une <strong>transaction</strong> : soit toutes
-ses opérations réussissent, soit aucune (atomicité, comme en SQL). C'est
-ce qui rend la migration sûre : les notes sont toutes copiées, ou pas du tout.</li>
-<li>L'API est <strong>asynchrone</strong> : une opération ne renvoie pas son résultat,
-elle le livre plus tard via un événement (<code>onsuccess</code>, <code>oncomplete</code>). On
-l'enveloppe ici dans des <code>Promise</code> (proches d'un <code>std::future</code>), pour
-écrire <code>const notes = await getAll(db, 'notes')</code>, qui se lit comme du
-code séquentiel.</li>
-<li>La base a un <strong>numéro de version</strong>. Quand on l'ouvre avec un numéro plus
-grand que celui stocké, le navigateur appelle <code>onupgradeneeded</code> : c'est le
-seul endroit où l'on peut créer ou modifier des magasins (l'équivalent
-d'une migration de schéma).</li>
+<li>A <strong>database</strong> (<code>inkline</code>) contains <strong>object stores</strong>, the equivalent of
+tables: <code>notes</code> and <code>folders</code>. Each object is stored under its key, here
+its <code>id</code> field (<code>keyPath: 'id'</code>).</li>
+<li>Every read or write happens in a <strong>transaction</strong>: either all its
+operations succeed, or none do (atomicity, as in SQL). This is what makes
+migration safe: the notes are all copied, or none are.</li>
+<li>The API is <strong>asynchronous</strong>: an operation does not return its result, it
+delivers it later through an event (<code>onsuccess</code>, <code>oncomplete</code>). Here it
+is wrapped in <code>Promise</code>s (close to a <code>std::future</code>), so we can write
+<code>const notes = await getAll(db, 'notes')</code>, which reads like sequential
+code.</li>
+<li>The database has a <strong>version number</strong>. When it is opened with a higher
+number than the stored one, the browser calls <code>onupgradeneeded</code>: the only
+place where stores can be created or changed (the equivalent of a schema
+migration).</li>
 </ul></li></ul></dd>
     
 
@@ -222,7 +222,7 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Magasins de la base.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Stores of the database.</p></li></ul></dd>
     
 
     
@@ -268,7 +268,7 @@ d'une migration de schéma).</li>
 
 
 <div class="description usertext">
-    <p>Magasins de la base.</p>
+    <p>Stores of the database.</p>
 </div>
 
 
@@ -289,7 +289,7 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nom de la base.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Database name.</p></li></ul></dd>
     
 
     
@@ -335,7 +335,7 @@ d'une migration de schéma).</li>
 
 
 <div class="description usertext">
-    <p>Nom de la base.</p>
+    <p>Database name.</p>
 </div>
 
 
@@ -356,7 +356,7 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Version du schéma (magasins). À augmenter pour toute modification de structure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Schema (stores) version. Increase it for any structural change.</p></li></ul></dd>
     
 
     
@@ -402,7 +402,7 @@ d'une migration de schéma).</li>
 
 
 <div class="description usertext">
-    <p>Version du schéma (magasins). À augmenter pour toute modification de structure.</p>
+    <p>Schema (stores) version. Increase it for any structural change.</p>
 </div>
 
 
@@ -433,7 +433,7 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lit tous les objets d'un magasin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reads every object of a store.</p></li></ul></dd>
     
 
     
@@ -611,7 +611,7 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre (et crée au besoin) la base.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens (and creates if needed) the database.</p></li></ul></dd>
     
 
     
@@ -726,7 +726,7 @@ d'une migration de schéma).</li>
                 </td>
             
 
-            <td class="description last"><p>Nom de la base (les tests en utilisent d'autres).</p></td>
+            <td class="description last"><p>Database name (tests use others).</p></td>
         </tr>
 
     
@@ -753,7 +753,7 @@ d'une migration de schéma).</li>
 <dl>
     <dt>
         <div class="param-desc usertext">
-        <p>Si IndexedDB est indisponible ou refuse l'ouverture.</p>
+        <p>If IndexedDB is unavailable or refuses to open.</p>
         </div>
     </dt>
     <dd></dd>
@@ -815,8 +815,8 @@ d'une migration de schéma).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écrit des lots sur un ou plusieurs magasins, dans <strong>une seule transaction</strong>
-: tout est écrit, ou rien.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Writes batches to one or more stores, in <strong>a single transaction</strong>:
+everything is written, or nothing.</p></li></ul></dd>
     
 
     
@@ -963,7 +963,7 @@ d'une migration de schéma).</li>
                 </td>
             
 
-            <td class="description last"><p>Clé : nom du magasin.</p></td>
+            <td class="description last"><p>Key: store name.</p></td>
         </tr>
 
     
@@ -1003,9 +1003,9 @@ d'une migration de schéma).</li>
                 </td>
             
 
-            <td class="description last"><p>Demander au navigateur d'attendre que les
-données soient physiquement sur le disque avant de confirmer (plus lent ;
-utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
+            <td class="description last"><p>Ask the browser to wait until the data is
+physically on disk before confirming (slower; used when the app goes to
+the background and may be killed).</p></td>
         </tr>
 
     
@@ -1031,7 +1031,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 
         
 <div class="param-desc">
-    <p>Résolue quand la transaction est validée.</p>
+    <p>Resolved when the transaction is committed.</p>
 </div>
 
 
@@ -1068,7 +1068,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Enveloppe une requête IndexedDB dans une <code>Promise</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wraps an IndexedDB request in a <code>Promise</code>.</p></li></ul></dd>
     
 
     
@@ -1189,7 +1189,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 
         
 <div class="param-desc">
-    <p>Le résultat de la requête.</p>
+    <p>The result of the request.</p>
 </div>
 
 
@@ -1228,7 +1228,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lot d'écritures sur un magasin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Batch of writes on a store.</p></li></ul></dd>
     
 
     
@@ -1324,7 +1324,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 
             
 
-            <td class="description last"><p>Vider le magasin d'abord.</p></td>
+            <td class="description last"><p>Empty the store first.</p></td>
         </tr>
 
     
@@ -1356,7 +1356,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 
             
 
-            <td class="description last"><p>Objets à écrire (remplacent ceux de même id).</p></td>
+            <td class="description last"><p>Objects to write (replace those with the same id).</p></td>
         </tr>
 
     
@@ -1388,7 +1388,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 
             
 
-            <td class="description last"><p>Ids à supprimer.</p></td>
+            <td class="description last"><p>Ids to delete.</p></td>
         </tr>
 
     
@@ -1401,7 +1401,7 @@ utilisé quand l'app passe en arrière-plan et risque d'être tuée).</p></td>
 
 
 <div class="description usertext">
-    <p>Lot d'écritures sur un magasin.</p>
+    <p>Batch of writes on a store.</p>
 </div>
 
 

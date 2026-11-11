@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/training.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,20 +53,20 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/training
  * @description
- * **Entraînement** (depuis la 2.3) : un écran d'accueil des exercices
- * (`training`), puis un écran par exercice.
+ * **Practice** (since 2.3): a home screen listing the exercises
+ * (`training`), then one screen per exercise.
  *
- * - **Rythme › Placements** (`rhythm`) : toutes les façons de placer n
- *   croches dans une mesure (toutes les mesures depuis la 2.8), en sections
- *   repliables selon la position de la première note, écrites proprement et
- *   jouées avec un métronome réglable.
- * - **Rythme › Exercices aléatoires** (2.8) : voir {@link module:ui/exercises|ui/exercises}.
+ * - **Rhythm › Placements** (`rhythm`): every way to place n eighth notes in
+ *   a measure (every time signature since 2.8), in collapsible sections by
+ *   position of the first note, cleanly written and played with an
+ *   adjustable metronome.
+ * - **Rhythm › Random exercises** (2.8): see {@link module:ui/exercises|ui/exercises}.
  *
- * La logique (génération, règles d'écriture) est dans le module pur
- * {@link module:placements|placements} ; ce module ne fait que l'interface.
- * Les mesures sont de vrais blocs « ligne rythmique » : elles sont dessinées
- * par {@link module:render-staff.staffSvg|staffSvg} et jouées par
- * {@link module:audio.playStaff|playStaff}, comme dans une note.
+ * The logic (generation, writing rules) is in the pure module
+ * {@link module:placements|placements}; this module only does the interface.
+ * Measures are real "rhythm line" blocks: they are drawn by
+ * {@link module:render-staff.staffSvg|staffSvg} and played by
+ * {@link module:audio.playStaff|playStaff}, as in a note.
  */
 
 import { t } from '../i18n.js';
@@ -100,7 +100,7 @@ import {
 } from './drill-kit.js';
 
 /**
- * Écran d'accueil de l'entraînement : la liste des exercices.
+ * Practice home screen: the list of exercises.
  */
 function renderTraining() {
   audio.stop();
@@ -121,14 +121,14 @@ function renderTraining() {
 registerScreen('training', renderTraining);
 
 /**
- * Sections affichées : id → bloc ligne rythmique, et état déplié. Recréé à
- * chaque génération.
+ * Sections shown: id → rhythm line block, and expanded state. Recreated on
+ * each generation.
  * @type {Map&lt;string, {block: module:model~StaffBlock, open: boolean, drawn: boolean}>}
  */
 let sections = new Map();
 
 /**
- * Écran Rythme › Placements.
+ * Rhythm › Placements screen.
  */
 function renderPlacements() {
   audio.stop();
@@ -177,14 +177,14 @@ function renderPlacements() {
     sections.forEach((_, id) => setOpen(id, open));
     updateFoldAll();
   });
-  // Les SVG ont besoin de la largeur réelle : on les dessine après la mise en page.
+  // SVGs need the real width: they are drawn after layout.
   requestAnimationFrame(renderSections);
 }
 
 registerScreen('rhythm', renderPlacements);
 
 /**
- * Reporte tempo et swing sur les séries affichées.
+ * Carries tempo and swing over to the series shown.
  */
 function applyPlaySettings() {
   const { tempo, swing } = settings();
@@ -195,9 +195,9 @@ function applyPlaySettings() {
 }
 
 /**
- * Génère les sections pour le nombre de notes et la mesure choisis. Seule la
- * première est dépliée ; les portées ne sont dessinées qu'à l'ouverture (en
- * 12/8, six notes donnent 924 mesures).
+ * Generates the sections for the chosen number of notes and time signature.
+ * Only the first is expanded; staves are drawn only when opened (in 12/8,
+ * six notes give 924 measures).
  */
 function renderSections() {
   audio.stop();
@@ -229,7 +229,7 @@ function renderSections() {
       updateFoldAll();
     });
     list.querySelector(`[data-play="${id}"]`).addEventListener('click', () => play(id));
-    // Appui long : « Jouer d'ici » ou boucle sur des mesures de la série (2.8.4).
+    // Long press: "Play from here" or loop over measures of the series (2.8.4).
     const el = /** @type {HTMLElement} */ (list.querySelector(`[data-drill="${id}"]`));
     bindMeasureSelect(
       el,
@@ -244,7 +244,7 @@ function renderSections() {
 }
 
 /**
- * Déplie ou replie une section (et dessine sa portée la première fois).
+ * Expands or collapses a section (and draws its staff the first time).
  * @param {string} id
  * @param {boolean} open
  */
@@ -265,7 +265,7 @@ function setOpen(id, open) {
   }
 }
 
-/** Libellé du bouton « Tout déplier / Tout replier ». */
+/** Label of the "Expand all / Collapse all" button. */
 function updateFoldAll() {
   const btn = app.querySelector('#foldAll');
   if (!btn) return;
@@ -276,10 +276,10 @@ function updateFoldAll() {
 }
 
 /**
- * Joue une section (et la déplie si elle était repliée).
+ * Plays a section (and expands it if it was collapsed).
  * @param {string} id
- * @param {module:audio~PlayOptions} [extra] Partie à jouer (sélection de mesures, 2.8.4).
- * @param {function()} [done] À la fin de la lecture.
+ * @param {module:audio~PlayOptions} [extra] Part to play (measure selection, 2.8.4).
+ * @param {function()} [done] At the end of playback.
  */
 function play(id, extra = {}, done = () => {}) {
   const sec = sections.get(id);
@@ -305,7 +305,7 @@ function play(id, extra = {}, done = () => {}) {
 }
 
 /**
- * Dessine la portée d'une section.
+ * Draws a section's staff.
  * @param {string} id
  */
 function draw(id) {

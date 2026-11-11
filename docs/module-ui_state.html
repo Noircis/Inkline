@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/state - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,12 +63,12 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>État de l'interface</strong>, partagé par tous les modules <code>ui/*</code>.</p>
-<p>L'app suit un modèle <em>immediate mode</em> : il n'y a pas de framework réactif.
-Un module modifie <code>state</code> (ou une note), puis demande explicitement le
-re-rendu de ce qui a changé (<code>renderNote</code>, <code>redrawStaff</code>, <code>redrawGrid</code>).</p>
-<p>Toutes les variables d'état sont regroupées ici plutôt qu'éparpillées en
-variables globales : on sait ainsi ce qui existe et qui le modifie.</p></div>
+                <div class="description usertext"><p><strong>Interface state</strong>, shared by every <code>ui/*</code> module.</p>
+<p>The app follows an <em>immediate mode</em> model: there is no reactive framework.
+A module changes <code>state</code> (or a note), then explicitly asks for a re-render
+of what changed (<code>renderNote</code>, <code>redrawStaff</code>, <code>redrawGrid</code>).</p>
+<p>All state variables are gathered here rather than scattered as globals:
+that way we know what exists and who changes it.</p></div>
             
 
             
@@ -80,12 +80,12 @@ variables globales : on sait ainsi ce qui existe et qui le modifie.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>État de l'interface</strong>, partagé par tous les modules <code>ui/*</code>.</p>
-<p>L'app suit un modèle <em>immediate mode</em> : il n'y a pas de framework réactif.
-Un module modifie <code>state</code> (ou une note), puis demande explicitement le
-re-rendu de ce qui a changé (<code>renderNote</code>, <code>redrawStaff</code>, <code>redrawGrid</code>).</p>
-<p>Toutes les variables d'état sont regroupées ici plutôt qu'éparpillées en
-variables globales : on sait ainsi ce qui existe et qui le modifie.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Interface state</strong>, shared by every <code>ui/*</code> module.</p>
+<p>The app follows an <em>immediate mode</em> model: there is no reactive framework.
+A module changes <code>state</code> (or a note), then explicitly asks for a re-render
+of what changed (<code>renderNote</code>, <code>redrawStaff</code>, <code>redrawGrid</code>).</p>
+<p>All state variables are gathered here rather than scattered as globals:
+that way we know what exists and who changes it.</p></li></ul></dd>
     
 
     
@@ -186,7 +186,7 @@ variables globales : on sait ainsi ce qui existe et qui le modifie.</p></li></ul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Élément racine où sont rendues les vues.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Root element where views are rendered.</p></li></ul></dd>
     
 
     
@@ -232,7 +232,7 @@ variables globales : on sait ainsi ce qui existe et qui le modifie.</p></li></ul
 
 
 <div class="description usertext">
-    <p>Élément racine où sont rendues les vues.</p>
+    <p>Root element where views are rendered.</p>
 </div>
 
 
@@ -334,7 +334,7 @@ variables globales : on sait ainsi ce qui existe et qui le modifie.</p></li></ul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bloc de la note affichée, par id.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Block of the note shown, by id.</p></li></ul></dd>
     
 
     
@@ -494,7 +494,7 @@ variables globales : on sait ainsi ce qui existe et qui le modifie.</p></li></ul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Note affichée, ou <code>undefined</code> sur la liste.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Note shown, or <code>undefined</code> on the list.</p></li></ul></dd>
     
 
     
@@ -601,10 +601,10 @@ variables globales : on sait ainsi ce qui existe et qui le modifie.</p></li></ul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Enregistre un changement de <strong>rangement</strong> (dossier, épingle) : contrairement
-à <a href="module-ui_state.html#.touch">touch</a>, la date de modification ne change
-pas. Ranger une note n'est pas la modifier : elle ne doit pas remonter en
-tête du tri « Modifiées récemment ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Saves a <strong>filing</strong> change (folder, pin): unlike
+<a href="module-ui_state.html#.touch">touch</a>, the modification date does not
+change. Filing a note is not editing it: it must not jump to the top of
+the &quot;Recently modified&quot; sort.</p></li></ul></dd>
     
 
     
@@ -739,7 +739,7 @@ tête du tri « Modifiées récemment ».</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Marque une note comme modifiée et programme la sauvegarde.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Marks a note as changed and schedules the save.</p></li></ul></dd>
     
 
     
@@ -876,8 +876,8 @@ tête du tri « Modifiées récemment ».</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages de saisie de la palette de portée, utilisés pour la <strong>prochaine</strong>
-note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Input settings of the staff palette, used for the <strong>next</strong> note added
+(when no note is selected).</p></li></ul></dd>
     
 
     
@@ -971,7 +971,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Valeur.</p></td>
+            <td class="description last"><p>Duration.</p></td>
         </tr>
 
     
@@ -1001,7 +1001,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Pointée.</p></td>
+            <td class="description last"><p>Dotted.</p></td>
         </tr>
 
     
@@ -1031,7 +1031,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Mode silence (persistant).</p></td>
+            <td class="description last"><p>Rest mode (persistent).</p></td>
         </tr>
 
     
@@ -1063,7 +1063,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Altération (consommée par la prochaine note).</p></td>
+            <td class="description last"><p>Accidental (consumed by the next note).</p></td>
         </tr>
 
     
@@ -1093,7 +1093,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>La prochaine note ouvre une reprise (consommé).</p></td>
+            <td class="description last"><p>The next note opens a repeat (consumed).</p></td>
         </tr>
 
     
@@ -1123,7 +1123,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>La prochaine note est liée à la précédente (consommé).</p></td>
+            <td class="description last"><p>The next note is tied to the previous one (consumed).</p></td>
         </tr>
 
     
@@ -1153,7 +1153,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Mode triolet (persistant).</p></td>
+            <td class="description last"><p>Triplet mode (persistent).</p></td>
         </tr>
 
     
@@ -1166,8 +1166,8 @@ note ajoutée (quand aucune note n'est sélectionnée).</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Réglages de saisie de la palette de portée, utilisés pour la <strong>prochaine</strong>
-note ajoutée (quand aucune note n'est sélectionnée).</p>
+    <p>Input settings of the staff palette, used for the <strong>next</strong> note added
+(when no note is selected).</p>
 </div>
 
 
@@ -1282,7 +1282,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p>
 
             
 
-            <td class="description last"><p>Le carnet.</p></td>
+            <td class="description last"><p>The notebook.</p></td>
         </tr>
 
     
@@ -1306,7 +1306,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p>
 
             
 
-            <td class="description last"><p>Les dossiers.</p></td>
+            <td class="description last"><p>The folders.</p></td>
         </tr>
 
     
@@ -1330,7 +1330,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p>
 
             
 
-            <td class="description last"><p>Écran affiché.</p></td>
+            <td class="description last"><p>Screen shown.</p></td>
         </tr>
 
     
@@ -1354,7 +1354,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p>
 
             
 
-            <td class="description last"><p>Recherche en cours sur l'accueil (non mémorisée).</p></td>
+            <td class="description last"><p>Current search on the home screen (not remembered).</p></td>
         </tr>
 
     
@@ -1381,7 +1381,7 @@ note ajoutée (quand aucune note n'est sélectionnée).</p>
 
             
 
-            <td class="description last"><p>Bloc en cours d'édition (une palette est ouverte).</p></td>
+            <td class="description last"><p>Block being edited (a palette is open).</p></td>
         </tr>
 
     
@@ -1408,10 +1408,10 @@ note ajoutée (quand aucune note n'est sélectionnée).</p>
 
             
 
-            <td class="description last"><p>Sélection dans le bloc actif : index d'élément
-de portée <strong>ou</strong> index de mesure de grille, selon le type du bloc. Un seul
-bloc est actif à la fois, il n'y a donc pas d'ambiguïté ; <code>setActive</code>
-remet <code>sel</code> à <code>null</code> à chaque changement de bloc.</p></td>
+            <td class="description last"><p>Selection in the active block: staff item index
+<strong>or</strong> chart measure index, depending on the block type. Only one block
+is active at a time, so there is no ambiguity; <code>setActive</code> resets <code>sel</code>
+to <code>null</code> on every block change.</p></td>
         </tr>
 
     
@@ -1438,9 +1438,9 @@ remet <code>sel</code> à <code>null</code> à chaque changement de bloc.</p></t
 
             
 
-            <td class="description last"><p>Mode des portées (2.5) : Écrire (la palette
-règle la prochaine note, on insère au curseur) ou Modifier (la palette
-modifie la note sélectionnée).</p></td>
+            <td class="description last"><p>Staff mode (2.5): Write (the palette sets
+the next note, inserted at the cursor) or Edit (the palette changes the
+selected note).</p></td>
         </tr>
 
     
@@ -1467,8 +1467,8 @@ modifie la note sélectionnée).</p></td>
 
             
 
-            <td class="description last"><p>Mode Écrire : index de l'élément devant
-lequel la prochaine note sera insérée ; <code>null</code> = en fin de portée.</p></td>
+            <td class="description last"><p>Write mode: index of the item before which
+the next note will be inserted; <code>null</code> = at the end of the staff.</p></td>
         </tr>
 
     
@@ -1495,7 +1495,7 @@ lequel la prochaine note sera insérée ; <code>null</code> = en fin de portée.
 
             
 
-            <td class="description last"><p>Élément ou mesure en cours de lecture.</p></td>
+            <td class="description last"><p>Item or measure being played.</p></td>
         </tr>
 
     

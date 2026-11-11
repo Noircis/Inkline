@@ -1,4 +1,4 @@
-// Tests des catégories de dossier (2.8.6).
+// Tests for folder categories (2.8.6).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -41,7 +41,7 @@ const setup = () => {
   return { folders: { sax }, sax, tec, son, imp, notes };
 };
 
-test('ajouter : nom nettoyé, doublon (casse, accents) rendu tel quel, limite', () => {
+test('add: name cleaned, duplicate (case, accents) returned as is, limit', () => {
   const f = { id: 'f', name: 'F', color: 'blue', created: 1 };
   const a = addCategory(f, '  Technique  ');
   assert.equal(a.name, 'Technique');
@@ -52,7 +52,7 @@ test('ajouter : nom nettoyé, doublon (casse, accents) rendu tel quel, limite', 
   assert.equal(addCategory(f, 'une de trop'), null);
 });
 
-test('plusieurs catégories : filtres, compteurs, sections', () => {
+test('several categories: filters, counters, sections', () => {
   const { folders, sax, tec, son, imp, notes } = setup();
   const all = Object.values(notes);
   assert.deepEqual(
@@ -73,7 +73,7 @@ test('plusieurs catégories : filtres, compteurs, sections', () => {
     [counts[tec.id], counts[son.id], counts[imp.id], counts[NO_CAT], counts[ALL_CATS]],
     [2, 1, 1, 1, 4],
   );
-  // Sections dans l'ordre du dossier ; « b » apparaît deux fois.
+  // Sections in folder order; "b" appears twice.
   assert.deepEqual(
     groupByCategory(all, sax).map((g) => [g.cat ? g.cat.name : '—', g.notes.map((n) => n.id).join('')]),
     [
@@ -90,10 +90,10 @@ test('plusieurs catégories : filtres, compteurs, sections', () => {
   );
 });
 
-test('supprimer une catégorie ou un dossier : aucune note supprimée', () => {
+test('deleting a category or a folder: no note deleted', () => {
   const { folders, sax, tec, notes } = setup();
   assert.equal(deleteCategory(sax, tec.id, notes), 2);
-  assert.equal(notes.a.cats, undefined); // plus aucune catégorie : champ retiré
+  assert.equal(notes.a.cats, undefined); // no category left: field removed
   assert.deepEqual(
     catsOf(notes.b, folders).map((c) => c.name),
     ['Son'],
@@ -104,7 +104,7 @@ test('supprimer une catégorie ou un dossier : aucune note supprimée', () => {
   assert.equal(notes.b.cats, undefined);
 });
 
-test('changer de dossier efface les catégories', () => {
+test('changing folder clears the categories', () => {
   const { notes, son } = setup();
   fileNote(notes.c, 'sax', [son.id, son.id]);
   assert.deepEqual(notes.c.cats, [son.id]);
@@ -115,7 +115,7 @@ test('changer de dossier efface les catégories', () => {
   assert.equal(notes.c.cats, undefined);
 });
 
-test('stockage et import : catégories validées ; partage : rangement retiré', () => {
+test('storage and import: categories validated; sharing: filing removed', () => {
   const f = sanitizeFolders({
     sax: {
       id: 'sax',
@@ -132,7 +132,7 @@ test('stockage et import : catégories validées ; partage : rangement retiré',
   assert.deepEqual(f.sax.cats, [{ id: 'a1', name: 'Son' }]);
   const n = sanitizeNote({ id: 'n', title: 't', folder: 'sax', cats: ['a1', 'a1', 'BAD!', 3], blocks: [] });
   assert.deepEqual(n.cats, ['a1']);
-  assert.equal(sanitizeNote({ id: 'n', title: 't', cats: ['a1'], blocks: [] }).cats, undefined); // sans dossier
+  assert.equal(sanitizeNote({ id: 'n', title: 't', cats: ['a1'], blocks: [] }).cats, undefined); // no folder
   assert.equal(
     sanitizeNote({ id: 'n', title: 't', folder: 'sax', cats: ['a1'], blocks: [] }, { freshIds: true }).cats,
     undefined,
@@ -142,7 +142,7 @@ test('stockage et import : catégories validées ; partage : rangement retiré',
   assert.equal(shared.folder, undefined);
 });
 
-test('restaurer une sauvegarde : catégories manquantes ajoutées au dossier existant', async () => {
+test('restoring a backup: missing categories added to the existing folder', async () => {
   const { importFile, backupJson } = await import('../js/storage.js');
   const folders = {
     sax: { id: 'sax', name: 'Saxophone', color: 'red', created: 1, cats: [{ id: 'tec', name: 'Technique' }] },

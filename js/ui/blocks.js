@@ -1,19 +1,19 @@
 /**
  * @module ui/blocks
  * @description
- * **Bloc actif** et registre des types de blocs musicaux.
+ * **Active block** and registry of musical block types.
  *
- * Un seul bloc est « actif » à la fois ({@link module:ui/blocks.setActive|setActive}) :
- * il est encadré, affiche ses outils (monter/descendre/supprimer) et ouvre la
- * palette de son type.
+ * Only one block is "active" at a time ({@link module:ui/blocks.setActive|setActive}):
+ * it is framed, shows its tools (up/down/delete) and opens the palette of
+ * its type.
  *
- * ## Registre
+ * ## Registry
  *
- * Les blocs portée et grille s'enregistrent au chargement
- * ({@link module:ui/blocks.registerBlockKind|registerBlockKind}) avec trois
- * fonctions : construire l'élément, le redessiner, montrer/cacher la palette.
- * L'écran note et ce module les appellent par le type du bloc, sans importer
- * `ui/staff` ni `grid-ui` : pas d'import circulaire.
+ * Staff and chart blocks register at load time
+ * ({@link module:ui/blocks.registerBlockKind|registerBlockKind}) with three
+ * functions: build the element, redraw it, show/hide the palette. The note
+ * screen and this module call them by block type, without importing
+ * `ui/staff` or `grid-ui`: no circular import.
  */
 
 import { state, app, curNote, blockById, touch } from './state.js';
@@ -22,18 +22,18 @@ import { syncPaletteSpace } from './common.js';
 import { renderScreen } from './nav.js';
 
 /**
- * Un type de bloc musical.
+ * A musical block type.
  * @typedef {Object} BlockKind
- * @property {function(module:model~Note, module:model~Block, HTMLDivElement)} build Remplit l'élément du bloc.
- * @property {function(string)} redraw Redessine le bloc d'id donné (sans effet si ce n'est pas ce type).
- * @property {function(boolean)} showPalette Montre ou cache la palette du type.
+ * @property {function(module:model~Note, module:model~Block, HTMLDivElement)} build Fills the block's element.
+ * @property {function(string)} redraw Redraws the block with the given id (no effect if it is not this type).
+ * @property {function(boolean)} showPalette Shows or hides the type's palette.
  */
 
 /** @type {Object.<string, BlockKind>} */
 const kinds = {};
 
 /**
- * Enregistre un type de bloc.
+ * Registers a block type.
  * @param {'staff'|'grid'} type
  * @param {BlockKind} kind
  */
@@ -42,7 +42,7 @@ export function registerBlockKind(type, kind) {
 }
 
 /**
- * Type de bloc enregistré.
+ * Registered block type.
  * @param {string} type
  * @returns {BlockKind|undefined}
  */
@@ -51,22 +51,22 @@ export function blockKind(type) {
 }
 
 /**
- * Redessine un bloc musical (portée ou grille) par son id.
+ * Redraws a musical block (staff or chart) by its id.
  * @param {string} id
  */
 export function redrawBlock(id) {
   Object.values(kinds).forEach((k) => k.redraw(id));
 }
 
-/** Cache toutes les palettes. */
+/** Hides every palette. */
 export function hideAllPalettes() {
   Object.values(kinds).forEach((k) => k.showPalette(false));
   syncPaletteSpace();
 }
 
 /**
- * Change le bloc actif (ou aucun avec `null`). Remet la sélection à zéro et
- * redessine l'ancien et le nouveau bloc (curseur, surlignage).
+ * Changes the active block (or none with `null`). Resets the selection and
+ * redraws the old and new blocks (cursor, highlight).
  * @param {string|null} id
  */
 export function setActive(id) {
@@ -74,21 +74,21 @@ export function setActive(id) {
   const prev = state.activeId;
   state.activeId = id;
   state.sel = null;
-  state.cursor = null; // un bloc qu'on ouvre se complète par la fin
+  state.cursor = null; // a block being opened is continued at the end
   if (prev) redrawBlock(prev);
   if (id) redrawBlock(id);
   updateActive();
 }
 
 /**
- * Applique l'état « actif » au DOM : cadre du bloc et palette ouverte.
+ * Applies the "active" state to the DOM: block frame and open palette.
  */
 export function updateActive() {
   app
     .querySelectorAll('.block')
     .forEach((el) => el.classList.toggle('active', el.dataset.block === state.activeId));
   const b = blockById(state.activeId);
-  // Cacher d'abord, montrer ensuite : la palette visible fixe l'espace réservé.
+  // Hide first, then show: the visible palette sets the reserved space.
   Object.keys(kinds).forEach((t) => {
     if (!b || b.type !== t) kinds[t].showPalette(false);
   });
@@ -97,17 +97,17 @@ export function updateActive() {
 }
 
 /**
- * Annule la dernière modification de la note affichée.
+ * Undoes the last change to the note shown.
  */
 export function undo() {
   const n = curNote();
   if (!n) return;
-  // L'affichage réduit ne fait pas partie de l'historique d'annulation : on
-  // le mémorise avant de restaurer l'instantané, puis on le réapplique.
+  // The collapsed display is not part of the undo history: it is
+  // stored before restoring the snapshot, then applied again.
   const folds = new Map(n.blocks.map((b) => [b.id, b.fold]));
   if (!popSnapshot(n)) return;
   n.blocks.forEach((b) => {
-    if (!folds.has(b.id)) return; // bloc revenu par l'annulation : il garde son état
+    if (!folds.has(b.id)) return; // block brought back by undo: it keeps its state
     const f = folds.get(b.id);
     if (f) b.fold = f;
     else delete b.fold;

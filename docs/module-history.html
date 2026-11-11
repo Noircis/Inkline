@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>history - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,16 +63,16 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Annulation (« ↶ ») par <strong>instantanés</strong> : patron <em>Memento</em>.</p>
-<p>Avant chaque modification, l'interface appelle <a href="module-history.html#.pushSnapshot">pushSnapshot</a>
-qui empile une copie sérialisée (JSON) du titre et des blocs de la note.
-Annuler dépile le dernier instantané et le réapplique.</p>
-<h2>Pourquoi des instantanés plutôt que des commandes inverses ?</h2>
-<p>Un patron <em>Command</em> (chaque action sait s'annuler) consommerait moins de
-mémoire, mais chaque nouvelle fonctionnalité devrait écrire son inverse :
-source de bugs. Une note pèse quelques Ko ; 80 instantanés par note
-restent négligeables. La pile est limitée à 80 entrées (les plus anciennes
-sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lancement.</p></div>
+                <div class="description usertext"><p>Undo (&quot;↶&quot;) through <strong>snapshots</strong>: the <em>Memento</em> pattern.</p>
+<p>Before each change, the interface calls <a href="module-history.html#.pushSnapshot">pushSnapshot</a>,
+which pushes a serialized (JSON) copy of the note's title and blocks.
+Undo pops the last snapshot and applies it again.</p>
+<h2>Why snapshots rather than inverse commands?</h2>
+<p>A <em>Command</em> pattern (each action knows how to undo itself) would use less
+memory, but every new feature would have to write its own inverse: a
+source of bugs. A note weighs a few KB; 80 snapshots per note are
+negligible. The stack holds at most 80 entries (the oldest are dropped)
+and is not persisted: it starts empty at each launch.</p></div>
             
 
             
@@ -84,16 +84,16 @@ sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lanceme
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Annulation (« ↶ ») par <strong>instantanés</strong> : patron <em>Memento</em>.</p>
-<p>Avant chaque modification, l'interface appelle <a href="module-history.html#.pushSnapshot">pushSnapshot</a>
-qui empile une copie sérialisée (JSON) du titre et des blocs de la note.
-Annuler dépile le dernier instantané et le réapplique.</p>
-<h2>Pourquoi des instantanés plutôt que des commandes inverses ?</h2>
-<p>Un patron <em>Command</em> (chaque action sait s'annuler) consommerait moins de
-mémoire, mais chaque nouvelle fonctionnalité devrait écrire son inverse :
-source de bugs. Une note pèse quelques Ko ; 80 instantanés par note
-restent négligeables. La pile est limitée à 80 entrées (les plus anciennes
-sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lancement.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Undo (&quot;↶&quot;) through <strong>snapshots</strong>: the <em>Memento</em> pattern.</p>
+<p>Before each change, the interface calls <a href="module-history.html#.pushSnapshot">pushSnapshot</a>,
+which pushes a serialized (JSON) copy of the note's title and blocks.
+Undo pops the last snapshot and applies it again.</p>
+<h2>Why snapshots rather than inverse commands?</h2>
+<p>A <em>Command</em> pattern (each action knows how to undo itself) would use less
+memory, but every new feature would have to write its own inverse: a
+source of bugs. A note weighs a few KB; 80 snapshots per note are
+negligible. The stack holds at most 80 entries (the oldest are dropped)
+and is not persisted: it starts empty at each launch.</p></li></ul></dd>
     
 
     
@@ -194,7 +194,7 @@ sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lanceme
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Profondeur maximale de la pile, par note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum stack depth, per note.</p></li></ul></dd>
     
 
     
@@ -240,7 +240,7 @@ sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lanceme
 
 
 <div class="description usertext">
-    <p>Profondeur maximale de la pile, par note.</p>
+    <p>Maximum stack depth, per note.</p>
 </div>
 
 
@@ -342,9 +342,9 @@ sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lanceme
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Oublie le dernier instantané sans le restaurer : pour une action commencée
-puis refusée (par exemple un triolet qui traverserait une barre), annulée à
-la main par l'appelant.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Drops the last snapshot without restoring it: for an action that was
+started then refused (for example a triplet that would cross a barline)
+and undone by hand by the caller.</p></li></ul></dd>
     
 
     
@@ -479,7 +479,7 @@ la main par l'appelant.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Restaure le dernier instantané d'une note (modifie la note sur place).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Restores a note's last snapshot (modifies the note in place).</p></li></ul></dd>
     
 
     
@@ -600,7 +600,7 @@ la main par l'appelant.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>false</code> s'il n'y avait rien à annuler.</p>
+    <p><code>false</code> if there was nothing to undo.</p>
 </div>
 
 
@@ -637,7 +637,7 @@ la main par l'appelant.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Empile l'état actuel d'une note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Pushes the current state of a note.</p></li></ul></dd>
     
 
     

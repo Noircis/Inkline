@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>measure-fit - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,40 +63,41 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Mise en mesure automatique</strong> (depuis la 2.6). Fonctions pures.</p>
-<h2>Le problème</h2>
-<p>Inkline stocke une portée comme une <strong>suite d'éléments</strong> ; les barres de
-mesure se placent d'elles-mêmes (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>).
-Une note peut donc « déborder » de sa mesure : noire, noire, ronde en 4/4.
-La gravure correcte coupe la ronde à la barre et lie les deux morceaux :</p>
-<pre class="prettyprint source"><code>noire noire ronde   →   noire noire blanche⁀ | blanche
+                <div class="description usertext"><p><strong>Automatic fitting into measures</strong> (since 2.6). Pure functions.</p>
+<h2>The problem</h2>
+<p>Inkline stores a staff as a <strong>sequence of items</strong>; barlines place
+themselves (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>). A note
+can therefore &quot;overflow&quot; its measure: quarter, quarter, whole note in 4/4.
+Correct engraving splits the whole note at the barline and ties the two
+pieces:</p>
+<pre class="prettyprint source"><code>quarter quarter whole   →   quarter quarter half⁀ | half
 </code></pre>
-<h2>Notes logiques et liaisons automatiques</h2>
-<p>Les morceaux créés par ce découpage sont marqués <code>auto: true</code> (« ce morceau
-continue dans l'élément suivant ») ; pour une note, ils portent aussi
-<code>tie: true</code>, ce qui suffit au dessin et à l'audio. Une suite de morceaux
-<code>auto</code> forme une <strong>note logique</strong> (<a href="module-measure-fit.html#~eventsOf">eventsOf</a>).
-Les liaisons posées par l'utilisateur n'ont pas <code>auto</code> : on n'y touche jamais.</p>
-<p>Après chaque modification, <a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a>
-<strong>recolle</strong> les notes logiques puis les <strong>recoupe</strong> aux barres actuelles :
-insérer une note au début décale toutes les barres, et le découpage suit.
-Une note qui ne traverse aucune barre reste écrite comme l'utilisateur l'a
-voulu (syncopes comprises) : on ne coupe qu'aux barres.</p>
-<h2>Compensation par des silences (mode Modifier)</h2>
-<p><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a> change la durée d'une
-note en gardant la suite à sa place, comme MuseScore :</p>
+<h2>Logical notes and automatic ties</h2>
+<p>The pieces created by this split are marked <code>auto: true</code> (&quot;this piece
+continues into the next item&quot;); for a note, they also carry <code>tie: true</code>,
+which is enough for drawing and audio. A sequence of <code>auto</code> pieces forms a
+<strong>logical note</strong> (<a href="module-measure-fit.html#~eventsOf">eventsOf</a>). Ties placed
+by the user have no <code>auto</code>: they are never touched.</p>
+<p>After each change, <a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a>
+<strong>glues</strong> the logical notes back together then <strong>re-splits</strong> them at the
+current barlines: inserting a note at the start shifts every barline, and
+the split follows. A note that crosses no barline stays written as the
+user wanted (syncopations included): splitting only happens at barlines.</p>
+<h2>Compensating with rests (Edit mode)</h2>
+<p><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a> changes a note's
+duration while keeping what follows in place, as MuseScore does:</p>
 <ul>
-<li>raccourcir ajoute un silence de la différence (noire → croche + demi-soupir) ;</li>
-<li>allonger <strong>mange</strong> d'abord les silences qui suivent ; s'il n'y en a pas
-assez, la suite se décale (et les barres sont recoupées).</li>
+<li>shortening adds a rest for the difference (quarter → eighth + eighth rest);</li>
+<li>lengthening first <strong>eats</strong> the rests that follow; if there are not
+enough, what follows shifts (and the barlines are re-split).</li>
 </ul>
-<h2>Écriture des durées</h2>
-<p>Une durée quelconque est écrite avec les valeurs usuelles
-(<a href="module-measure-fit.html#.decompose">decompose</a>) : on prend à chaque fois
-la plus grande valeur qui tient et qui tombe « juste » (une blanche commence
-sur un temps pair, une noire sur un temps…). Points autorisés pour les
-notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
-<p>Les triolets ne sont jamais coupés ni recollés.</p></div>
+<h2>Writing durations</h2>
+<p>Any duration is written with the usual values
+(<a href="module-measure-fit.html#.decompose">decompose</a>): each time, the largest
+value that fits and lands &quot;right&quot; is taken (a half note starts on an even
+beat, a quarter note on a beat…). Dots are allowed for notes; for rests,
+only in compound time (6/8, 12/8).</p>
+<p>Triplets are never split or glued.</p></div>
             
 
             
@@ -108,40 +109,41 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Mise en mesure automatique</strong> (depuis la 2.6). Fonctions pures.</p>
-<h2>Le problème</h2>
-<p>Inkline stocke une portée comme une <strong>suite d'éléments</strong> ; les barres de
-mesure se placent d'elles-mêmes (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>).
-Une note peut donc « déborder » de sa mesure : noire, noire, ronde en 4/4.
-La gravure correcte coupe la ronde à la barre et lie les deux morceaux :</p>
-<pre class="prettyprint source"><code>noire noire ronde   →   noire noire blanche⁀ | blanche
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Automatic fitting into measures</strong> (since 2.6). Pure functions.</p>
+<h2>The problem</h2>
+<p>Inkline stores a staff as a <strong>sequence of items</strong>; barlines place
+themselves (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>). A note
+can therefore &quot;overflow&quot; its measure: quarter, quarter, whole note in 4/4.
+Correct engraving splits the whole note at the barline and ties the two
+pieces:</p>
+<pre class="prettyprint source"><code>quarter quarter whole   →   quarter quarter half⁀ | half
 </code></pre>
-<h2>Notes logiques et liaisons automatiques</h2>
-<p>Les morceaux créés par ce découpage sont marqués <code>auto: true</code> (« ce morceau
-continue dans l'élément suivant ») ; pour une note, ils portent aussi
-<code>tie: true</code>, ce qui suffit au dessin et à l'audio. Une suite de morceaux
-<code>auto</code> forme une <strong>note logique</strong> (<a href="module-measure-fit.html#~eventsOf">eventsOf</a>).
-Les liaisons posées par l'utilisateur n'ont pas <code>auto</code> : on n'y touche jamais.</p>
-<p>Après chaque modification, <a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a>
-<strong>recolle</strong> les notes logiques puis les <strong>recoupe</strong> aux barres actuelles :
-insérer une note au début décale toutes les barres, et le découpage suit.
-Une note qui ne traverse aucune barre reste écrite comme l'utilisateur l'a
-voulu (syncopes comprises) : on ne coupe qu'aux barres.</p>
-<h2>Compensation par des silences (mode Modifier)</h2>
-<p><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a> change la durée d'une
-note en gardant la suite à sa place, comme MuseScore :</p>
+<h2>Logical notes and automatic ties</h2>
+<p>The pieces created by this split are marked <code>auto: true</code> (&quot;this piece
+continues into the next item&quot;); for a note, they also carry <code>tie: true</code>,
+which is enough for drawing and audio. A sequence of <code>auto</code> pieces forms a
+<strong>logical note</strong> (<a href="module-measure-fit.html#~eventsOf">eventsOf</a>). Ties placed
+by the user have no <code>auto</code>: they are never touched.</p>
+<p>After each change, <a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a>
+<strong>glues</strong> the logical notes back together then <strong>re-splits</strong> them at the
+current barlines: inserting a note at the start shifts every barline, and
+the split follows. A note that crosses no barline stays written as the
+user wanted (syncopations included): splitting only happens at barlines.</p>
+<h2>Compensating with rests (Edit mode)</h2>
+<p><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a> changes a note's
+duration while keeping what follows in place, as MuseScore does:</p>
 <ul>
-<li>raccourcir ajoute un silence de la différence (noire → croche + demi-soupir) ;</li>
-<li>allonger <strong>mange</strong> d'abord les silences qui suivent ; s'il n'y en a pas
-assez, la suite se décale (et les barres sont recoupées).</li>
+<li>shortening adds a rest for the difference (quarter → eighth + eighth rest);</li>
+<li>lengthening first <strong>eats</strong> the rests that follow; if there are not
+enough, what follows shifts (and the barlines are re-split).</li>
 </ul>
-<h2>Écriture des durées</h2>
-<p>Une durée quelconque est écrite avec les valeurs usuelles
-(<a href="module-measure-fit.html#.decompose">decompose</a>) : on prend à chaque fois
-la plus grande valeur qui tient et qui tombe « juste » (une blanche commence
-sur un temps pair, une noire sur un temps…). Points autorisés pour les
-notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
-<p>Les triolets ne sont jamais coupés ni recollés.</p></li></ul></dd>
+<h2>Writing durations</h2>
+<p>Any duration is written with the usual values
+(<a href="module-measure-fit.html#.decompose">decompose</a>): each time, the largest
+value that fits and lands &quot;right&quot; is taken (a half note starts on an even
+beat, a quarter note on a beat…). Dots are allowed for notes; for rests,
+only in compound time (6/8, 12/8).</p>
+<p>Triplets are never split or glued.</p></li></ul></dd>
     
 
     
@@ -242,13 +244,13 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Plus petite valeur écrite (double croche), en noires.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Smallest written value (sixteenth note), in quarter notes.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line54">line 54</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -288,7 +290,7 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 
 
 <div class="description usertext">
-    <p>Plus petite valeur écrite (double croche), en noires.</p>
+    <p>Smallest written value (sixteenth note), in quarter notes.</p>
 </div>
 
 
@@ -309,13 +311,13 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valeurs simples, de la plus longue à la plus courte.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Simple values, from longest to shortest.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line57">line 57</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line58">line 58</a>
     </li></ul></dd>
     
 
@@ -355,7 +357,7 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 
 
 <div class="description usertext">
-    <p>Valeurs simples, de la plus longue à la plus courte.</p>
+    <p>Simple values, from longest to shortest.</p>
 </div>
 
 
@@ -386,13 +388,13 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dernier morceau de la note logique qui contient l'élément <code>i</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Last piece of the logical note containing item <code>i</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line193">line 193</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line194">line 194</a>
     </li></ul></dd>
     
 
@@ -564,13 +566,13 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Premier morceau de la note logique qui contient l'élément <code>i</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>First piece of the logical note containing item <code>i</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line182">line 182</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line183">line 183</a>
     </li></ul></dd>
     
 
@@ -742,25 +744,25 @@ notes ; pour les silences, seulement en mesure composée (6/8, 12/8).</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écrit une durée en valeurs usuelles, à partir d'une position dans la mesure.</p>
-<p>Algorithme glouton « aligné » : à chaque pas, la plus grande valeur qui
-tient dans ce qui reste et qui tombe juste :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Writes a duration with the usual values, from a position in the measure.</p>
+<p>&quot;Aligned&quot; greedy algorithm: at each step, the largest value that fits in
+what is left and lands right:</p>
 <ul>
-<li>une valeur d'un temps ou plus commence sur un temps (pour les silences,
-plus strictement, sur un multiple d'elle-même : une demi-pause en 4/4 sur
-le 1 ou le 3, jamais sur le 2, pour que le milieu de la mesure reste lisible) ;</li>
-<li>une valeur plus courte qu'un temps commence sur un multiple d'elle-même
-(du double de sa valeur simple si elle est pointée : croche pointée sur
-le temps, pas sur le contretemps) et ne déborde pas sur le temps suivant :
-on complète le temps en cours avant d'avancer.</li>
+<li>a value of one beat or more starts on a beat (for rests, more strictly,
+on a multiple of itself: a half rest in 4/4 on 1 or 3, never on 2, so
+that the middle of the measure stays readable);</li>
+<li>a value shorter than a beat starts on a multiple of itself (of twice its
+simple value if it is dotted: a dotted eighth on the beat, not on the
+offbeat) and does not spill into the next beat: the current beat is
+completed before moving on.</li>
 </ul>
-<p>À défaut, la plus grande valeur simple qui tient.</p></li></ul></dd>
+<p>Failing that, the largest simple value that fits.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line126">line 126</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -807,8 +809,8 @@ on complète le temps en cours avant d'avancer.</li>
 
     <h5 class="h5-examples">Example</h5>
     
-    <pre class="prettyprint"><code>decompose(0.5, 1.5, false) // croche puis noire : [{d:'8'}, {d:'q'}]
-decompose(1, 3, true)      // blanche pointée sur le 2e temps</code></pre>
+    <pre class="prettyprint"><code>decompose(0.5, 1.5, false) // eighth then quarter: [{d:'8'}, {d:'q'}]
+decompose(1, 3, true)      // dotted half on the 2nd beat</code></pre>
 
 
 
@@ -871,7 +873,7 @@ decompose(1, 3, true)      // blanche pointée sur le 2e temps</code></pre>
                 </td>
             
 
-            <td class="description last"><p>Position de départ dans la mesure (noires).</p></td>
+            <td class="description last"><p>Start position in the measure (quarter notes).</p></td>
         </tr>
 
     
@@ -907,7 +909,7 @@ decompose(1, 3, true)      // blanche pointée sur le 2e temps</code></pre>
                 </td>
             
 
-            <td class="description last"><p>Durée à écrire (noires).</p></td>
+            <td class="description last"><p>Duration to write (quarter notes).</p></td>
         </tr>
 
     
@@ -983,7 +985,7 @@ decompose(1, 3, true)      // blanche pointée sur le 2e temps</code></pre>
                 </td>
             
 
-            <td class="description last"><p>Durée d'un temps en noires (1,5 en 6/8).</p></td>
+            <td class="description last"><p>Duration of a beat in quarter notes (1.5 in 6/8).</p></td>
         </tr>
 
     
@@ -1023,7 +1025,7 @@ decompose(1, 3, true)      // blanche pointée sur le 2e temps</code></pre>
                 </td>
             
 
-            <td class="description last"><p>Écrire des silences (alignement strict).</p></td>
+            <td class="description last"><p>Write rests (strict alignment).</p></td>
         </tr>
 
     
@@ -1049,8 +1051,8 @@ decompose(1, 3, true)      // blanche pointée sur le 2e temps</code></pre>
 
         
 <div class="param-desc">
-    <p><code>null</code> si la durée n'est pas
-exprimable (reste plus petit qu'une double croche, par exemple après un triolet).</p>
+    <p><code>null</code> if the duration cannot
+be expressed (remainder smaller than a sixteenth, for example after a triplet).</p>
 </div>
 
 
@@ -1087,15 +1089,15 @@ exprimable (reste plus petit qu'une double croche, par exemple après un triolet
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Remet une portée en mesure : recolle les notes logiques et les recoupe aux
-barres actuelles. Sans débordement ni morceau automatique, la portée est
-rendue à l'identique.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Fits a staff back into measures: glues the logical notes back together and
+re-splits them at the current barlines. With no overflow and no automatic
+piece, the staff is returned unchanged.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line352">line 352</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line353">line 353</a>
     </li></ul></dd>
     
 
@@ -1234,8 +1236,8 @@ rendue à l'identique.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>startOf[i]</code> : nouvel index du premier morceau de la note logique qui
-contenait l'ancien élément <code>i</code> (et <code>startOf[items.length]</code> = nouvelle longueur).</p>
+    <p><code>startOf[i]</code>: new index of the first piece of the logical note that
+contained old item <code>i</code> (and <code>startOf[items.length]</code> = new length).</p>
 </div>
 
 
@@ -1272,14 +1274,14 @@ contenait l'ancien élément <code>i</code> (et <code>startOf[items.length]</cod
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Change la durée de la note logique qui contient l'élément <code>i</code>, en gardant
-la suite à sa place quand c'est possible (voir l'en-tête du module).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Changes the duration of the logical note containing item <code>i</code>, keeping
+what follows in place when possible (see the module header).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line374">line 374</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line375">line 375</a>
     </li></ul></dd>
     
 
@@ -1416,7 +1418,7 @@ la suite à sa place quand c'est possible (voir l'en-tête du module).</p></li><
 
             
 
-            <td class="description last"><p>Un morceau de la note à modifier.</p></td>
+            <td class="description last"><p>A piece of the note to change.</p></td>
         </tr>
 
     
@@ -1440,7 +1442,7 @@ la suite à sa place quand c'est possible (voir l'en-tête du module).</p></li><
 
             
 
-            <td class="description last"><p>Nouvelle valeur.</p></td>
+            <td class="description last"><p>New value.</p></td>
         </tr>
 
     
@@ -1466,7 +1468,7 @@ la suite à sa place quand c'est possible (voir l'en-tête du module).</p></li><
 
         
 <div class="param-desc">
-    <p><code>index</code> : nouvel index du premier morceau de la note modifiée.</p>
+    <p><code>index</code>: new index of the first piece of the changed note.</p>
 </div>
 
 
@@ -1503,13 +1505,13 @@ la suite à sa place quand c'est possible (voir l'en-tête du module).</p></li><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valeur unique (avec point éventuel) d'une durée, si elle existe.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Single value (with optional dot) for a duration, if one exists.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line92">line 92</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line93">line 93</a>
     </li></ul></dd>
     
 
@@ -1604,7 +1606,7 @@ singleValue(2.5, true) // null</code></pre>
 
             
 
-            <td class="description last"><p>Durée en noires.</p></td>
+            <td class="description last"><p>Duration in quarter notes.</p></td>
         </tr>
 
     
@@ -1687,13 +1689,13 @@ singleValue(2.5, true) // null</code></pre>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Propriétés d'un morceau, hors durée et liens.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Properties of a piece, apart from duration and links.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line204">line 204</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line205">line 205</a>
     </li></ul></dd>
     
 
@@ -1806,7 +1808,7 @@ singleValue(2.5, true) // null</code></pre>
 
             
 
-            <td class="description last"><p>Premier morceau (garde altération, accord, début de reprise).</p></td>
+            <td class="description last"><p>First piece (keeps accidental, chord, start repeat).</p></td>
         </tr>
 
     
@@ -1865,13 +1867,13 @@ singleValue(2.5, true) // null</code></pre>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Découpe une durée aux barres de mesure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Splits a duration at barlines.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line224">line 224</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line225">line 225</a>
     </li></ul></dd>
     
 
@@ -1960,7 +1962,7 @@ singleValue(2.5, true) // null</code></pre>
 
             
 
-            <td class="description last"><p>Position de départ dans la mesure.</p></td>
+            <td class="description last"><p>Start position in the measure.</p></td>
         </tr>
 
     
@@ -1984,7 +1986,7 @@ singleValue(2.5, true) // null</code></pre>
 
             
 
-            <td class="description last"><p>Durée.</p></td>
+            <td class="description last"><p>Duration.</p></td>
         </tr>
 
     
@@ -2008,7 +2010,7 @@ singleValue(2.5, true) // null</code></pre>
 
             
 
-            <td class="description last"><p>Capacité de la mesure.</p></td>
+            <td class="description last"><p>Capacity of the measure.</p></td>
         </tr>
 
     
@@ -2034,8 +2036,8 @@ singleValue(2.5, true) // null</code></pre>
 
         
 <div class="param-desc">
-    <p>Segments, et
-position dans la mesure après le dernier.</p>
+    <p>Segments, and
+position in the measure after the last one.</p>
 </div>
 
 
@@ -2072,13 +2074,13 @@ position dans la mesure après le dernier.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Regroupe les éléments en notes logiques.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Groups items into logical notes.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line158">line 158</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line159">line 159</a>
     </li></ul></dd>
     
 
@@ -2226,13 +2228,13 @@ position dans la mesure après le dernier.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><code>x</code> est-il un multiple de <code>a</code> (à l'arrondi près) ?</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Is <code>x</code> a multiple of <code>a</code> (up to rounding)?</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line78">line 78</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -2404,26 +2406,26 @@ position dans la mesure après le dernier.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réécrit une suite de notes logiques en éléments, coupés aux barres.</p>
-<p>Pour chaque note logique :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Rewrites a sequence of logical notes as items, split at barlines.</p>
+<p>For each logical note:</p>
 <ol>
-<li>un triolet, ou une note seule qui tient dans sa mesure, est <strong>gardé tel
-quel</strong> (l'écriture de l'utilisateur est respectée) ;</li>
-<li>sinon, elle est découpée aux barres (cutAtBars) et réécrite en
-valeurs usuelles (valuesFor, piecesFrom) ;</li>
-<li>si ce n'est pas possible (durée hors de la grille des doubles croches),
-une note d'origine est gardée telle quelle ; un silence calculé est
-écrit d'un bloc, sans coupure, plutôt que de perdre sa durée.</li>
+<li>a triplet, or a single note that fits in its measure, is <strong>kept as is</strong>
+(the user's writing is respected);</li>
+<li>otherwise, it is split at barlines (cutAtBars) and rewritten
+with usual values (valuesFor, piecesFrom);</li>
+<li>if that is not possible (duration off the sixteenth-note grid), an
+original note is kept as is; a computed rest is written in one block,
+without a split, rather than losing its duration.</li>
 </ol>
-<p>La position dans la mesure suit les règles de
-<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a> (début de reprise et
-barre manuelle remettent le compteur à zéro).</p></li></ul></dd>
+<p>The position in the measure follows the rules of
+<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a> (a start repeat and
+a manual barline reset the counter).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line304">line 304</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line305">line 305</a>
     </li></ul></dd>
     
 
@@ -2562,8 +2564,8 @@ barre manuelle remettent le compteur à zéro).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>starts[k]</code> : index du premier morceau de l'événement k ; <code>tupCross</code> :
-index des triolets qui traversent une barre.</p>
+    <p><code>starts[k]</code>: index of the first piece of event k; <code>tupCross</code>: indices of
+triplets crossing a barline.</p>
 </div>
 
 
@@ -2600,15 +2602,15 @@ index des triolets qui traversent une barre.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Morceaux d'une note logique à partir de ses valeurs : liés entre eux
-(<code>auto</code>, et <code>tie</code> pour une note) ; altération, accord et début de reprise
-sur le premier ; liaison de l'utilisateur et barre sur le dernier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Pieces of a logical note from its values: tied together (<code>auto</code>, and
+<code>tie</code> for a note); accidental, chord and start repeat on the first; the
+user's tie and barline on the last.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line265">line 265</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line266">line 266</a>
     </li></ul></dd>
     
 
@@ -2780,15 +2782,15 @@ sur le premier ; liaison de l'utilisateur et barre sur le dernier.</p></li></ul>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valeurs écrites d'une note logique découpée en segments : une valeur
-unique si elle tient dans un segment et s'écrit d'un seul signe, sinon les
-valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Written values of a logical note split into segments: a single value if
+it fits in one segment and is written with one sign, otherwise the usual
+values of each segment (decompose).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line247">line 247</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line248">line 248</a>
     </li></ul></dd>
     
 
@@ -2951,7 +2953,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>null</code> si un segment ne s'écrit pas.</p>
+    <p><code>null</code> if a segment cannot be written.</p>
 </div>
 
 
@@ -2990,13 +2992,13 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une note logique : un élément seul, ou une suite de morceaux <code>auto</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A logical note: a single item, or a sequence of <code>auto</code> pieces.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line61">line 61</a>
+        <a href="measure-fit.js.html">measure-fit.js</a>, <a href="measure-fit.js.html#line62">line 62</a>
     </li></ul></dd>
     
 
@@ -3084,7 +3086,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Morceaux d'origine (copies).</p></td>
+            <td class="description last"><p>Original pieces (copies).</p></td>
         </tr>
 
     
@@ -3114,7 +3116,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Durée totale en noires.</p></td>
+            <td class="description last"><p>Total duration in quarter notes.</p></td>
         </tr>
 
     
@@ -3144,7 +3146,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Silence.</p></td>
+            <td class="description last"><p>Rest.</p></td>
         </tr>
 
     
@@ -3174,7 +3176,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Contient un triolet (jamais coupé).</p></td>
+            <td class="description last"><p>Contains a triplet (never split).</p></td>
         </tr>
 
     
@@ -3206,7 +3208,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Durée calculée : à réécrire (pas de morceaux d'origine à garder).</p></td>
+            <td class="description last"><p>Computed duration: to be rewritten (no original pieces to keep).</p></td>
         </tr>
 
     
@@ -3236,7 +3238,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Index du premier morceau dans la suite d'origine (-1 si créé).</p></td>
+            <td class="description last"><p>Index of the first piece in the original sequence (-1 if created).</p></td>
         </tr>
 
     
@@ -3249,7 +3251,7 @@ valeurs usuelles de chaque segment (decompose).</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Une note logique : un élément seul, ou une suite de morceaux <code>auto</code>.</p>
+    <p>A logical note: a single item, or a sequence of <code>auto</code> pieces.</p>
 </div>
 
 

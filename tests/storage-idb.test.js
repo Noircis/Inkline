@@ -1,14 +1,14 @@
-// Tests du stockage IndexedDB (2.1) : migration, écritures ciblées, repli sur localStorage.
+// Tests for IndexedDB storage (2.1): migration, targeted writes, localStorage fallback.
 //
 /* global localStorage */
-// Node n'a ni IndexedDB ni localStorage : on utilise fake-indexeddb (une
-// implémentation complète, en mémoire) et une petite imitation de localStorage.
+// Node has neither IndexedDB nor localStorage: we use fake-indexeddb (a
+// complete in-memory implementation) and a small localStorage imitation.
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import 'fake-indexeddb/auto';
 import { IDBFactory } from 'fake-indexeddb';
 
-/** Imitation minimale de localStorage (un dictionnaire de chaînes). */
+/** Minimal imitation of localStorage (a dictionary of strings). */
 class MemoryStorage {
   constructor() {
     this.m = new Map();
@@ -26,9 +26,9 @@ class MemoryStorage {
 
 let fresh = 0;
 /**
- * Charge une instance NEUVE du module storage : son état interne (connexion,
- * dernières versions écrites) repart de zéro, comme au lancement de l'app.
- * Une URL différente (?n=…) = un module différent pour Node.
+ * Loads a FRESH instance of the storage module: its internal state
+ * (connection, last written versions) starts from scratch, as when the app
+ * launches. A different URL (?n=…) = a different module for Node.
  */
 const freshStorage = () => import(`../js/storage.js?n=${++fresh}`);
 
@@ -43,11 +43,11 @@ const note = (id, title, extra = {}) => ({
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 beforeEach(() => {
-  globalThis.indexedDB = new IDBFactory(); // base vide à chaque test
+  globalThis.indexedDB = new IDBFactory(); // empty database for each test
   globalThis.localStorage = new MemoryStorage();
 });
 
-test('migration : le carnet de localStorage est copié dans IndexedDB, l’original est conservé', async () => {
+test('migration: the localStorage notebook is copied into IndexedDB, the original is kept', async () => {
   const old = { a: note('a', 'Blues', { folder: 'f1' }), b: note('b', 'Samba') };
   localStorage.setItem('carnet-portees-v1', JSON.stringify(old));
   localStorage.setItem(
@@ -62,22 +62,22 @@ test('migration : le carnet de localStorage est copié dans IndexedDB, l’origi
   assert.deepEqual(Object.keys(r1.notes).sort(), ['a', 'b']);
   assert.equal(r1.folders.f1.name, 'Jazz');
   assert.equal(s1.getMeta().storage, 'idb');
-  assert.ok(localStorage.getItem('carnet-portees-v1')); // filet de sécurité intact
+  assert.ok(localStorage.getItem('carnet-portees-v1')); // safety net intact
 
-  // Lancement suivant : pas de nouvelle migration, mêmes données.
+  // Next launch: no new migration, same data.
   const r2 = await (await freshStorage()).loadAll();
   assert.equal(r2.migrated, false);
   assert.equal(r2.notes.a.title, 'Blues');
   assert.equal(r2.notes.a.folder, 'f1');
 });
 
-test('migration : une base déjà remplie n’est jamais écrasée par l’ancienne copie', async () => {
+test('migration: an already filled database is never overwritten by the old copy', async () => {
   const s1 = await freshStorage();
   await s1.loadAll();
   const notes = { recent: note('recent', 'Version récente') };
   await s1.flushSave(notes);
 
-  // Métadonnées perdues + vieille copie dans localStorage.
+  // Lost metadata + old copy in localStorage.
   localStorage.removeItem('inkline-meta');
   localStorage.setItem('carnet-portees-v1', JSON.stringify({ old: note('old', 'Vieille') }));
   const r = await (await freshStorage()).loadAll();
@@ -85,23 +85,23 @@ test('migration : une base déjà remplie n’est jamais écrasée par l’ancie
   assert.deepEqual(Object.keys(r.notes), ['recent']);
 });
 
-test('scheduleSave : seule la note signalée est écrite', async () => {
+test('scheduleSave: only the reported note is written', async () => {
   const s = await freshStorage();
   await s.loadAll();
   const notes = { a: note('a', 'A'), b: note('b', 'B') };
   await s.flushSave(notes);
 
   notes.a.title = 'A modifiée';
-  notes.b.title = 'B modifiée'; // modifiée en mémoire mais pas signalée
+  notes.b.title = 'B modifiée'; // changed in memory but not reported
   s.scheduleSave(notes, 'a');
-  await wait(250); // debounce de 150 ms + écriture
+  await wait(250); // 150 ms debounce + write
 
   const r = await (await freshStorage()).loadAll();
   assert.equal(r.notes.a.title, 'A modifiée');
-  assert.equal(r.notes.b.title, 'B'); // preuve que l'écriture est ciblée
+  assert.equal(r.notes.b.title, 'B'); // proof that the write is targeted
 });
 
-test('flushSave : compare tout, y compris les suppressions', async () => {
+test('flushSave: compares everything, deletions included', async () => {
   const s = await freshStorage();
   await s.loadAll();
   const notes = { a: note('a', 'A'), b: note('b', 'B'), c: note('c', 'C') };
@@ -117,7 +117,7 @@ test('flushSave : compare tout, y compris les suppressions', async () => {
   assert.equal(r.notes.c.pinned, true);
 });
 
-test('dossiers : enregistrés dans IndexedDB, suppression comprise', async () => {
+test('folders: saved in IndexedDB, deletion included', async () => {
   const s = await freshStorage();
   await s.loadAll();
   const folders = {
@@ -131,7 +131,7 @@ test('dossiers : enregistrés dans IndexedDB, suppression comprise', async () =>
   assert.deepEqual(Object.keys(r.folders), ['f2']);
 });
 
-test('repli : sans IndexedDB, le carnet reste dans localStorage', async () => {
+test('fallback: without IndexedDB, the notebook stays in localStorage', async () => {
   delete globalThis.indexedDB;
   localStorage.setItem('carnet-portees-v1', JSON.stringify({ a: note('a', 'A') }));
   const s = await freshStorage();
@@ -143,7 +143,7 @@ test('repli : sans IndexedDB, le carnet reste dans localStorage', async () => {
   assert.equal(JSON.parse(localStorage.getItem('carnet-portees-v1')).a.title, 'A2');
 });
 
-test('réglages de l’entraînement : ancien format (2.3) repris, valeurs invalides corrigées', async () => {
+test('practice settings: old format (2.3) carried over, invalid values fixed', async () => {
   localStorage.setItem(
     'inkline-meta',
     JSON.stringify({
@@ -158,9 +158,9 @@ test('réglages de l’entraînement : ancien format (2.3) repris, valeurs inval
   assert.equal(m.drill.notes, 3);
   assert.equal(m.drill.loop, false);
   assert.equal(m.gen.meter, '7/8:2+3+2');
-  assert.equal(m.gen.measures, 4); // 8 n'est plus proposé (2.8.1)
-  assert.equal(m.gen.min, 2); // 9 > 7 croches : valeur par défaut
+  assert.equal(m.gen.measures, 4); // 8 is no longer offered (2.8.1)
+  assert.equal(m.gen.min, 2); // 9 > 7 eighths: default value
   assert.equal(m.gen.max, 2);
-  assert.deepEqual(m.gen.starts, {}); // 9 hors du 6/8 : liste rejetée
+  assert.deepEqual(m.gen.starts, {}); // 9 outside 6/8: list rejected
   assert.equal(m.gen.seed, 12);
 });

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/view - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,8 +63,9 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>En-tête et dessin</strong> d'un bloc portée (ou ligne rythmique) : clé, armure,
-mesure, tempo, swing, lecture, puis la portée elle-même en SVG.</p></div>
+                <div class="description usertext"><p><strong>Header and drawing</strong> of a staff block (or rhythm line): clef, key
+signature, time signature, tempo, swing, playback, then the staff itself
+as SVG.</p></div>
             
 
             
@@ -76,8 +77,9 @@ mesure, tempo, swing, lecture, puis la portée elle-même en SVG.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>En-tête et dessin</strong> d'un bloc portée (ou ligne rythmique) : clé, armure,
-mesure, tempo, swing, lecture, puis la portée elle-même en SVG.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Header and drawing</strong> of a staff block (or rhythm line): clef, key
+signature, time signature, tempo, swing, playback, then the staff itself
+as SVG.</p></li></ul></dd>
     
 
     
@@ -178,14 +180,14 @@ mesure, tempo, swing, lecture, puis la portée elle-même en SVG.</p></li></ul><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Armures proposées : nombre de dièses (&gt; 0) ou de bémols (&lt; 0), avec les
-tonalités majeure et mineure correspondantes.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Key signatures offered: number of sharps (&gt; 0) or flats (&lt; 0), with the
+matching major and minor keys.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line31">line 31</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -225,8 +227,8 @@ tonalités majeure et mineure correspondantes.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Armures proposées : nombre de dièses (&gt; 0) ou de bémols (&lt; 0), avec les
-tonalités majeure et mineure correspondantes.</p>
+    <p>Key signatures offered: number of sharps (&gt; 0) or flats (&lt; 0), with the
+matching major and minor keys.</p>
 </div>
 
 
@@ -268,15 +270,15 @@ tonalités majeure et mineure correspondantes.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Redessine le SVG d'un bloc portée (sans effet si <code>id</code> n'est pas une portée affichée).
-La largeur utilisée est mémorisée sur l'élément (<code>_W</code>) pour que le
-hit-testing refasse exactement la même mise en page.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Redraws the SVG of a staff block (no effect if <code>id</code> is not a staff on screen).
+The width used is stored on the element (<code>_W</code>) so that hit testing redoes
+exactly the same layout.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line226">line 226</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -405,13 +407,13 @@ hit-testing refasse exactement la même mise en page.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Remplit l'élément d'un bloc portée : en-tête, zone SVG, outils.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Fills a staff block's element: header, SVG area, tools.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line154">line 154</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line156">line 156</a>
     </li></ul></dd>
     
 
@@ -588,16 +590,17 @@ hit-testing refasse exactement la même mise en page.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Menu Instrument (2.8.3). Sur une portée vide, on change simplement
-d'instrument (l'armure reste celle choisie). S'il y a déjà des notes, on
-demande quoi en faire (voir <a href="module-transpose.html">transpose</a>) :
-transposer (même son, l'écriture change) ou garder l'écriture (le son change).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Instrument menu (2.8.3). On an empty staff, the instrument simply changes
+(the key signature stays as chosen). If there are notes already, the user
+is asked what to do with them (see <a href="module-transpose.html">transpose</a>):
+transpose (same sound, the writing changes) or keep the writing (the sound
+changes).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line107">line 107</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line109">line 109</a>
     </li></ul></dd>
     
 
@@ -774,14 +777,14 @@ transposer (même son, l'écriture change) ou garder l'écriture (le son change)
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche un <code>&lt;select&gt;</code> de l'en-tête : <code>apply</code> reçoit la valeur choisie,
-avec annulation, sauvegarde et redessin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires a header <code>&lt;select&gt;</code>: <code>apply</code> receives the chosen value, with undo,
+save and redraw.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line87">line 87</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line88">line 88</a>
     </li></ul></dd>
     
 
@@ -978,7 +981,7 @@ avec annulation, sauvegarde et redessin.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Valeur initiale.</p></td>
+            <td class="description last"><p>Initial value.</p></td>
         </tr>
 
     
@@ -1050,13 +1053,13 @@ avec annulation, sauvegarde et redessin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML de l'en-tête du bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of the block header.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line65">line 65</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -1204,14 +1207,14 @@ avec annulation, sauvegarde et redessin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Mise en page telle que dessinée par redrawStaff (même largeur, même
-curseur), pour retrouver les mesures sous le doigt.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Layout as drawn by redrawStaff (same width, same cursor), to find
+the measures under the finger.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line266">line 266</a>
+        <a href="ui_staff_view.js.html">ui/staff/view.js</a>, <a href="ui_staff_view.js.html#line268">line 268</a>
     </li></ul></dd>
     
 

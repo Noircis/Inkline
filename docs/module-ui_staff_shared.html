@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/shared - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,26 +63,25 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Socle commun</strong> des modules du bloc portée : état propre à la portée
-(accord en cours de saisie, message ponctuel) et opérations partagées
-(remise en mesure, position d'insertion, note visée, modification de la
-sélection).</p>
-<h2>Découpage du bloc portée</h2>
-<pre class="prettyprint source"><code>staff/index     enregistre le type de bloc auprès de ui/blocks
- ├─ view        en-tête du bloc et dessin de la portée
- │   └─ input   toucher sur la portée, modes Écrire / Modifier
- └─ palette     palette du bas d'écran
-     ├─ bars    sous-menu des barres
-     └─ chord   saisie d'un accord chiffré
-tous ──▶ shared (ce module)
+                <div class="description usertext"><p><strong>Common base</strong> of the staff block modules: staff-specific state (chord
+being typed, one-off message) and shared operations (fitting into
+measures, insertion position, target note, changing the selection).</p>
+<h2>Split of the staff block</h2>
+<pre class="prettyprint source"><code>staff/index     registers the block type with ui/blocks
+ ├─ view        block header and staff drawing
+ │   └─ input   taps on the staff, Write / Edit modes
+ └─ palette     bottom-of-screen palette
+     ├─ bars    barline submenu
+     └─ chord   chord symbol input
+all ──▶ shared (this module)
 </code></pre>
-<h2>Crochets (hooks)</h2>
-<p>Presque tout doit pouvoir <strong>redessiner la portée</strong> et <strong>rafraîchir la
-palette</strong>, mais ces deux fonctions vivent dans <code>view</code> et <code>palette</code>, qui
-importent eux-mêmes ce module. Pour éviter un import circulaire, elles sont
-enregistrées dans <a href="module-ui_staff_shared.html#.hooks">hooks</a> au chargement
-de leur module, et appelées à travers lui : une inversion de dépendance,
-l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></div>
+<h2>Hooks</h2>
+<p>Almost everything must be able to <strong>redraw the staff</strong> and <strong>refresh the
+palette</strong>, but those two functions live in <code>view</code> and <code>palette</code>, which
+themselves import this module. To avoid a circular import, they are
+registered in <a href="module-ui_staff_shared.html#.hooks">hooks</a> when their module
+loads, and called through it: dependency inversion, the equivalent of a
+function pointer set at initialization in C++.</p></div>
             
 
             
@@ -94,26 +93,25 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></d
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Socle commun</strong> des modules du bloc portée : état propre à la portée
-(accord en cours de saisie, message ponctuel) et opérations partagées
-(remise en mesure, position d'insertion, note visée, modification de la
-sélection).</p>
-<h2>Découpage du bloc portée</h2>
-<pre class="prettyprint source"><code>staff/index     enregistre le type de bloc auprès de ui/blocks
- ├─ view        en-tête du bloc et dessin de la portée
- │   └─ input   toucher sur la portée, modes Écrire / Modifier
- └─ palette     palette du bas d'écran
-     ├─ bars    sous-menu des barres
-     └─ chord   saisie d'un accord chiffré
-tous ──▶ shared (ce module)
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Common base</strong> of the staff block modules: staff-specific state (chord
+being typed, one-off message) and shared operations (fitting into
+measures, insertion position, target note, changing the selection).</p>
+<h2>Split of the staff block</h2>
+<pre class="prettyprint source"><code>staff/index     registers the block type with ui/blocks
+ ├─ view        block header and staff drawing
+ │   └─ input   taps on the staff, Write / Edit modes
+ └─ palette     bottom-of-screen palette
+     ├─ bars    barline submenu
+     └─ chord   chord symbol input
+all ──▶ shared (this module)
 </code></pre>
-<h2>Crochets (hooks)</h2>
-<p>Presque tout doit pouvoir <strong>redessiner la portée</strong> et <strong>rafraîchir la
-palette</strong>, mais ces deux fonctions vivent dans <code>view</code> et <code>palette</code>, qui
-importent eux-mêmes ce module. Pour éviter un import circulaire, elles sont
-enregistrées dans <a href="module-ui_staff_shared.html#.hooks">hooks</a> au chargement
-de leur module, et appelées à travers lui : une inversion de dépendance,
-l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></li></ul></dd>
+<h2>Hooks</h2>
+<p>Almost everything must be able to <strong>redraw the staff</strong> and <strong>refresh the
+palette</strong>, but those two functions live in <code>view</code> and <code>palette</code>, which
+themselves import this module. To avoid a circular import, they are
+registered in <a href="module-ui_staff_shared.html#.hooks">hooks</a> when their module
+loads, and called through it: dependency inversion, the equivalent of a
+function pointer set at initialization in C++.</p></li></ul></dd>
     
 
     
@@ -214,14 +212,14 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></l
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Fonctions fournies par d'autres modules du bloc portée : <code>redraw</code> (par
-<code>view</code>) et <code>refreshPalette</code> (par <code>palette</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Functions provided by other modules of the staff block: <code>redraw</code> (by
+<code>view</code>) and <code>refreshPalette</code> (by <code>palette</code>).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line41">line 41</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -261,8 +259,8 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></l
 
 
 <div class="description usertext">
-    <p>Fonctions fournies par d'autres modules du bloc portée : <code>redraw</code> (par
-<code>view</code>) et <code>refreshPalette</code> (par <code>palette</code>).</p>
+    <p>Functions provided by other modules of the staff block: <code>redraw</code> (by
+<code>view</code>) and <code>refreshPalette</code> (by <code>palette</code>).</p>
 </div>
 
 
@@ -294,15 +292,15 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></l
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>État propre au bloc portée : <code>chordTarget</code>, la note dont on saisit l'accord
-(surlignée en mode Écrire) ; <code>notice</code>, message ponctuel de la ligne d'aide
-(refus d'une action).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>State specific to the staff block: <code>chordTarget</code>, the note whose chord is
+being typed (highlighted in Write mode); <code>notice</code>, one-off message of the
+help line (an action refused).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line52">line 52</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line51">line 51</a>
     </li></ul></dd>
     
 
@@ -342,9 +340,9 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></l
 
 
 <div class="description usertext">
-    <p>État propre au bloc portée : <code>chordTarget</code>, la note dont on saisit l'accord
-(surlignée en mode Écrire) ; <code>notice</code>, message ponctuel de la ligne d'aide
-(refus d'une action).</p>
+    <p>State specific to the staff block: <code>chordTarget</code>, the note whose chord is
+being typed (highlighted in Write mode); <code>notice</code>, one-off message of the
+help line (an action refused).</p>
 </div>
 
 
@@ -386,13 +384,13 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></l
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bloc portée actif et sa note (ou <code>null</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Active staff block and its note (or <code>null</code>).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line74">line 74</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -490,14 +488,14 @@ l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.</p></l
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Garde le curseur d'insertion et la sélection dans les bornes (après une
-suppression ou une annulation, par exemple). Curseur <code>null</code> = fin de portée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Keeps the insertion cursor and the selection within bounds (after a
+deletion or an undo, for example). <code>null</code> cursor = end of staff.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line85">line 85</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -626,13 +624,13 @@ suppression ou une annulation, par exemple). Curseur <code>null</code> = fin de 
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Affiche un message dans la ligne d'aide de la palette pendant quelques secondes.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Shows a message in the palette's help line for a few seconds.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line60">line 60</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -761,14 +759,14 @@ suppression ou une annulation, par exemple). Curseur <code>null</code> = fin de 
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Position d'insertion effective : index de l'élément devant lequel la
-prochaine note arrivera (<code>items.length</code> = à la fin).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Effective insertion position: index of the item before which the next
+note will land (<code>items.length</code> = at the end).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line114">line 114</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line113">line 113</a>
     </li></ul></dd>
     
 
@@ -916,16 +914,16 @@ prochaine note arrivera (<code>items.length</code> = à la fin).</p></li></ul></
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valeur (durée écrite) de la note logique qui contient <code>i</code> : celle de
-l'élément s'il est seul, sinon la valeur unique équivalente à la somme de
-ses morceaux (une ronde coupée en blanche⁀blanche vaut une ronde), à défaut
-celle du premier morceau.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Duration (written value) of the logical note containing <code>i</code>: the item's
+own if it is alone, otherwise the single value equal to the sum of its
+pieces (a whole note split into half⁀half is worth a whole note), failing
+that the first piece's.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line140">line 140</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line139">line 139</a>
     </li></ul></dd>
     
 
@@ -1097,15 +1095,15 @@ celle du premier morceau.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Remet la portée en mesure après une modification (liaisons automatiques aux
-barres, voir <a href="module-measure-fit.html">measure-fit</a>) et recale la sélection
-et le curseur sur les nouveaux index.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Fits the staff back into measures after a change (automatic ties at
+barlines, see <a href="module-measure-fit.html">measure-fit</a>) and moves the
+selection and cursor to the new indices.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line97">line 97</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line96">line 96</a>
     </li></ul></dd>
     
 
@@ -1253,15 +1251,15 @@ et le curseur sur les nouveaux index.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Note logique à laquelle s'appliquent les barres et l'accord chiffré : la
-note sélectionnée en mode Modifier, la note juste avant le curseur en mode
-Écrire (à défaut, la dernière ou la première). Renvoie son premier morceau.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Logical note that barlines and chord symbols apply to: the selected note
+in Edit mode, the note just before the cursor in Write mode (failing that,
+the last or the first). Returns its first piece.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line125">line 125</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line124">line 124</a>
     </li></ul></dd>
     
 
@@ -1376,7 +1374,7 @@ note sélectionnée en mode Modifier, la note juste avant le curseur en mode
 
         
 <div class="param-desc">
-    <p>-1 si la portée est vide.</p>
+    <p>-1 if the staff is empty.</p>
 </div>
 
 
@@ -1413,14 +1411,14 @@ note sélectionnée en mode Modifier, la note juste avant le curseur en mode
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Mode Modifier : applique <code>fn</code> à la note sélectionnée, puis remet en mesure,
-enregistre et redessine (avec annulation possible).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Edit mode: applies <code>fn</code> to the selected note, then refits into measures,
+saves and redraws (with undo available).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line158">line 158</a>
+        <a href="ui_staff_shared.js.html">ui/staff/shared.js</a>, <a href="ui_staff_shared.js.html#line157">line 157</a>
     </li></ul></dd>
     
 
@@ -1535,8 +1533,8 @@ enregistre et redessine (avec annulation possible).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>false</code> hors mode Modifier ou sans sélection (le bouton
-règle alors la saisie).</p>
+    <p><code>false</code> outside Edit mode or with no selection (the
+button then sets the input).</p>
 </div>
 
 

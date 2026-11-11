@@ -1,6 +1,6 @@
-/* Inkline · Grilles d'accords. */
+/* Inkline · Chord charts. */
 
-/* 6. Grilles d'accords */
+/* 6. Chord charts */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

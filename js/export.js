@@ -1,27 +1,27 @@
 /**
  * @module export
  * @description
- * **Partage d'une note** : fichier `.inkline`, image PNG ou PDF.
+ * **Sharing a note**: `.inkline` file, PNG image or PDF.
  *
- * ## Rendu d'une note en image
+ * ## Rendering a note as an image
  *
- * 1. {@link module:export~noteToSvg|noteToSvg} compose la note entière dans **un seul SVG** :
- *    titre, date, blocs texte (retour à la ligne calculé avec
- *    `CanvasRenderingContext2D.measureText`), portées ({@link module:render-staff}),
- *    grilles ({@link module:grid.gridSvg|gridSvg}). Toujours en thème clair, pour l'impression.
- * 2. Les **polices sont embarquées** dans le SVG en base64 (`data:` URI) :
- *    une image SVG affichée par `<img>` n'a pas le droit de charger des
- *    fichiers externes. On relit `css/fonts.css` pour savoir lesquelles.
- * 3. Le SVG est chargé dans un `Image`, dessiné sur un `<canvas>` à ×2
- *    (netteté sur écran haute densité), puis exporté en PNG ou en JPEG.
- * 4. Pour le PDF, l'image est découpée en pages A4, de préférence entre
- *    deux blocs, puis assemblée par {@link module:pdf.buildPdf|buildPdf}.
+ * 1. {@link module:export~noteToSvg|noteToSvg} lays out the whole note in **a single SVG**:
+ *    title, date, text blocks (line wrapping computed with
+ *    `CanvasRenderingContext2D.measureText`), staves ({@link module:render-staff}),
+ *    charts ({@link module:grid.gridSvg|gridSvg}). Always in the light theme, for printing.
+ * 2. **Fonts are embedded** in the SVG as base64 (`data:` URI): an SVG image
+ *    shown through `<img>` is not allowed to load external files.
+ *    `css/fonts.css` is read again to know which ones.
+ * 3. The SVG is loaded into an `Image`, drawn on a `<canvas>` at ×2
+ *    (sharpness on high-density screens), then exported as PNG or JPEG.
+ * 4. For PDF, the image is cut into A4 pages, preferably between two
+ *    blocks, then assembled by {@link module:pdf.buildPdf|buildPdf}.
  *
- * ## Envoi
+ * ## Sending
  *
- * {@link module:export.shareOrDownload|shareOrDownload} ouvre le menu de
- * partage d'Android (API *Web Share*) quand le navigateur l'accepte pour ce
- * type de fichier, et télécharge le fichier sinon.
+ * {@link module:export.shareOrDownload|shareOrDownload} opens Android's share
+ * menu (*Web Share* API) when the browser accepts it for this file type, and
+ * downloads the file otherwise.
  */
 
 import { t, locale } from './i18n.js';
@@ -31,17 +31,17 @@ import { gridSvg, keyLabel } from './grid.js';
 import { noteFileJson } from './storage.js';
 import { buildPdf, A4 } from './pdf.js';
 
-/** Largeur logique de l'image (px) ; l'image finale fait le double. */
+/** Logical width of the image (px); the final image is twice as wide. */
 const W = 720;
-/** Marge intérieure (px). */
+/** Inner margin (px). */
 const PAD = 40;
-/** Facteur de suréchantillonnage du canvas. */
+/** Canvas supersampling factor. */
 const SCALE = 2;
 
-/** Palette claire fixe de l'export (indépendante du thème du téléphone). */
+/** Fixed light palette of the export (independent of the phone's theme). */
 const C = { ink: '#151A25', muted: '#5B6477', line: '#8D96A9', paper: '#FFFFFF' };
 
-/** Styles des classes SVG produites par render-staff et gridSvg. */
+/** Styles of the SVG classes produced by render-staff and gridSvg. */
 const SVG_CSS = `
 .l{stroke:${C.line};stroke-width:1}.bar{stroke:${C.ink};stroke-width:1.2}.f{fill:${C.ink}}.s{stroke:${C.ink};fill:none}
 .h{fill:${C.paper};stroke:${C.ink};stroke-width:1.6}.t{fill:${C.ink};font-family:"Bricolage Grotesque",sans-serif;font-weight:700}
@@ -57,24 +57,24 @@ const SVG_CSS = `
 .cap{fill:${C.muted};font-family:"Instrument Sans",sans-serif;font-size:12px;font-weight:600;letter-spacing:.06em}
 .foot{fill:${C.muted};font-family:"Instrument Sans",sans-serif;font-size:11px}`;
 
-// Règles @font-face avec polices en base64 (calculées une seule fois).
+// @font-face rules with base64 fonts (computed only once).
 /** @type {Promise<string>|null} */
 let fontCssPromise = null;
 
 /**
- * Une règle `@font-face` trouvée dans une feuille de style.
+ * An `@font-face` rule found in a stylesheet.
  * @typedef {Object} FontFaceRule
- * @property {string} rule Texte complet de la règle, `unicode-range` retiré
- *   (inutile dans l'image, et la police doit couvrir tous les caractères).
- * @property {string} url Adresse du fichier de police, telle qu'écrite dans le CSS.
+ * @property {string} rule Full text of the rule, with `unicode-range` removed
+ *   (useless in the image, and the font must cover every character).
+ * @property {string} url Address of the font file, as written in the CSS.
  */
 
 /**
- * Extrait les règles `@font-face` d'une feuille de style.
+ * Extracts the `@font-face` rules of a stylesheet.
  *
- * Fonction pure, testée sur le vrai `css/fonts.css` : la syntaxe CSS
- * autorise espaces, retours à la ligne et guillemets, et un reformatage du
- * fichier (Prettier) ne doit pas casser l'export des images.
+ * Pure function, tested on the real `css/fonts.css`: CSS syntax allows
+ * spaces, line breaks and quotes, and reformatting the file (Prettier) must
+ * not break image export.
  *
  * @param {string} css
  * @returns {FontFaceRule[]}
@@ -90,9 +90,9 @@ export function parseFontFaces(css) {
 }
 
 /**
- * Lit `css/fonts.css` et remplace l'adresse de chaque police par le fichier encodé en base64.
- * Calculé une seule fois par session.
- * @returns {Promise<string>} Règles `@font-face` autonomes, à insérer dans le SVG.
+ * Reads `css/fonts.css` and replaces each font's address with the
+ * base64-encoded file. Computed only once per session.
+ * @returns {Promise<string>} Self-contained `@font-face` rules, to insert into the SVG.
  */
 function embeddedFontCss() {
   if (!fontCssPromise) {
@@ -102,7 +102,7 @@ function embeddedFontCss() {
       const out = await Promise.all(
         faces.map(async ({ rule, url }) => {
           const buf = new Uint8Array(await (await fetch(new URL(url, cssUrl))).arrayBuffer());
-          // Conversion octets → base64 par paquets (String.fromCharCode refuse les très longs tableaux).
+          // Bytes → base64 conversion in chunks (String.fromCharCode refuses very long arrays).
           let bin = '';
           for (let i = 0; i < buf.length; i += 0x8000)
             bin += String.fromCharCode(...buf.subarray(i, i + 0x8000));
@@ -116,9 +116,9 @@ function embeddedFontCss() {
 }
 
 /**
- * Coupe un paragraphe en lignes qui tiennent dans `maxW` pixels.
- * Algorithme glouton mot à mot ; un mot plus long que la ligne est laissé tel quel.
- * @param {CanvasRenderingContext2D} ctx Contexte avec la bonne police.
+ * Splits a paragraph into lines that fit in `maxW` pixels.
+ * Greedy word-by-word algorithm; a word longer than the line is left as is.
+ * @param {CanvasRenderingContext2D} ctx Context with the right font.
  * @param {string} text
  * @param {number} maxW
  * @returns {string[]}
@@ -143,7 +143,7 @@ function wrap(ctx, text, maxW) {
 }
 
 /**
- * Légende affichée au-dessus d'une portée ou d'une grille.
+ * Caption shown above a staff or a chart.
  * @param {module:model~Block} b
  * @returns {string}
  */
@@ -161,11 +161,11 @@ function caption(b) {
 }
 
 /**
- * Compose une note en un SVG autonome.
+ * Lays out a note as a self-contained SVG.
  *
  * @param {module:model~Note} note
  * @returns {Promise<{svg: string, width: number, height: number, breaks: number[]}>}
- *   `breaks` : ordonnées (px) des espaces entre blocs, où une coupure de page est élégante.
+ *   `breaks`: y positions (px) of the gaps between blocks, where a page break looks good.
  */
 async function noteToSvg(note) {
   if (document.fonts) {
@@ -181,7 +181,7 @@ async function noteToSvg(note) {
   let body = '';
   const breaks = [];
 
-  // Titre (sur plusieurs lignes si besoin) et date.
+  // Title (on several lines if needed) and date.
   ctx.font = '700 30px "Bricolage Grotesque", sans-serif';
   wrap(ctx, note.title || t('list.untitled'), CW).forEach((l) => {
     y += 34;
@@ -213,8 +213,8 @@ async function noteToSvg(note) {
       breaks.push(y);
       y += 30;
       body += `<text class="cap" x="${PAD}" y="${y}">${esc(caption(b))}</text>`;
-      // La bande de chaque ligne de portée réserve ~20 px en haut pour les
-      // accords chiffrés : on la place juste sous la légende sans chevauchement.
+      // The band of each staff line reserves ~20 px at the top for chord
+      // symbols: it is placed right under the caption without overlap.
       const { svg, L } = staffSvg(b, CW);
       body += `<g transform="translate(${PAD},${y + 4})">${svg}</g>`;
       y += L.height - 6;
@@ -222,7 +222,7 @@ async function noteToSvg(note) {
       breaks.push(y);
       y += 30;
       body += `<text class="cap" x="${PAD}" y="${y}">${esc(caption(b))}</text>`;
-      // Les mesures vides en fin de grille (créées pendant la saisie) ne sont pas exportées.
+      // Empty measures at the end of a chart (created while typing) are not exported.
       const measures = b.measures.slice();
       while (
         measures.length > 1 &&
@@ -248,10 +248,10 @@ async function noteToSvg(note) {
 }
 
 /**
- * Rasterise un SVG sur un canvas (×{@link SCALE}).
+ * Rasterizes an SVG onto a canvas (×{@link SCALE}).
  * @param {string} svg
- * @param {number} w Largeur logique.
- * @param {number} h Hauteur logique.
+ * @param {number} w Logical width.
+ * @param {number} h Logical height.
  * @returns {Promise<HTMLCanvasElement>}
  */
 async function rasterize(svg, w, h) {
@@ -260,8 +260,8 @@ async function rasterize(svg, w, h) {
     const img = new Image();
     img.src = url;
     await img.decode();
-    // Les polices embarquées sont parfois appliquées juste après le décodage :
-    // un court délai évite une première image avec des polices de secours.
+    // Embedded fonts are sometimes applied just after decoding:
+    // a short delay avoids a first image with fallback fonts.
     await new Promise((r) => setTimeout(r, 60));
     const canvas = document.createElement('canvas');
     canvas.width = w * SCALE;
@@ -288,7 +288,7 @@ const toBlob = (canvas, type, quality) =>
   );
 
 /**
- * Image PNG de la note.
+ * PNG image of the note.
  * @param {module:model~Note} note
  * @returns {Promise<Blob>}
  */
@@ -298,13 +298,13 @@ export async function noteToPng(note) {
 }
 
 /**
- * Choisit où couper les pages : on remplit chaque page au maximum en coupant
- * au dernier espace entre blocs qui tient ; si un bloc est plus haut qu'une
- * page, on coupe en plein milieu (rien de mieux possible).
+ * Chooses where to cut pages: each page is filled as much as possible by
+ * cutting at the last gap between blocks that fits; if a block is taller
+ * than a page, it is cut in the middle (nothing better is possible).
  *
- * @param {number[]} breaks Coupures possibles (croissantes, la dernière = hauteur totale).
- * @param {number} pageH Hauteur d'une page en px logiques.
- * @returns {number[]} Ordonnées de fin de chaque page.
+ * @param {number[]} breaks Possible cuts (increasing, the last = total height).
+ * @param {number} pageH Height of a page in logical px.
+ * @returns {number[]} End y of each page.
  */
 export function paginate(breaks, pageH) {
   const total = breaks[breaks.length - 1];
@@ -325,14 +325,14 @@ export function paginate(breaks, pageH) {
 }
 
 /**
- * PDF A4 de la note (une image JPEG par page).
+ * A4 PDF of the note (one JPEG image per page).
  * @param {module:model~Note} note
  * @returns {Promise<Blob>}
  */
 export async function noteToPdf(note) {
   const { svg, width, height, breaks } = await noteToSvg(note);
   const canvas = await rasterize(svg, width, height);
-  const pageH = Math.floor((A4.h / A4.w) * width); // hauteur d'une page A4 en px logiques
+  const pageH = Math.floor((A4.h / A4.w) * width); // height of an A4 page in logical px
   const pages = [];
   let start = 0;
   for (const end of paginate(breaks, pageH)) {
@@ -351,7 +351,7 @@ export async function noteToPdf(note) {
 }
 
 /**
- * Fichier `.inkline` de la note.
+ * `.inkline` file of the note.
  * @param {module:model~Note} note
  * @returns {Blob}
  */
@@ -360,7 +360,7 @@ export function noteToInkline(note) {
 }
 
 /**
- * Nom de fichier lisible à partir du titre (« Blues en F » → « blues-en-f »).
+ * Readable file name from the title ("Blues en F" → "blues-en-f").
  * @param {string} title
  * @returns {string}
  */
@@ -375,7 +375,7 @@ export function slug(title) {
 }
 
 /**
- * Télécharge un Blob via un lien temporaire.
+ * Downloads a Blob through a temporary link.
  * @param {Blob} blob
  * @param {string} name
  */
@@ -392,16 +392,16 @@ export function download(blob, name) {
 }
 
 /**
- * Ouvre le menu de partage du téléphone avec le fichier, ou le télécharge.
+ * Opens the phone's share menu with the file, or downloads it.
  *
- * Chrome Android n'accepte de partager que certains types (images, PDF,
- * texte…). Un `.inkline` (JSON) n'en fait pas partie : on tente donc
- * plusieurs variantes de nom/type, du plus propre au plus compatible,
- * puis on se replie sur le téléchargement.
+ * Chrome Android only shares certain types (images, PDF, text…). An
+ * `.inkline` (JSON) is not one of them: several name/type variants are
+ * therefore tried, from the cleanest to the most compatible, before falling
+ * back to a download.
  *
  * @param {Blob} blob
- * @param {Array.<{name: string, type: string}>} variants Noms et types à essayer, dans l'ordre.
- * @param {string} title Titre proposé à l'app destinataire.
+ * @param {Array.<{name: string, type: string}>} variants Names and types to try, in order.
+ * @param {string} title Title offered to the receiving app.
  * @returns {Promise<'shared'|'cancelled'|'downloaded'>}
  */
 export async function shareOrDownload(blob, variants, title) {
@@ -413,8 +413,8 @@ export async function shareOrDownload(blob, variants, title) {
         await navigator.share({ files: [file], title });
         return 'shared';
       } catch (e) {
-        if (e && e.name === 'AbortError') return 'cancelled'; // l'utilisateur a fermé le menu
-        break; // autre refus (activation expirée…) : on télécharge
+        if (e && e.name === 'AbortError') return 'cancelled'; // the user closed the menu
+        break; // other refusal (activation expired…): download
       }
     }
   }

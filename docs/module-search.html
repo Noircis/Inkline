@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>search - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,18 +63,17 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Recherche et tri</strong> des notes de l'accueil (depuis la 2.0). Fonctions pures.</p>
-<h2>Recherche</h2>
-<p>La requête est découpée en mots ; une note correspond si <strong>chaque mot</strong>
-apparaît quelque part dans son titre, ses blocs texte ou ses <strong>accords</strong>
-(grilles et accords chiffrés des portées). Taper « bb7alt » retrouve donc
-toutes les notes contenant cet accord, et « blues f » une note intitulée
-« Blues en F ».</p>
-<p>La comparaison ignore la casse et les accents, et confond <code>♭</code>/<code>b</code>,
-<code>♯</code>/<code>#</code> : « reponse » trouve « réponse », « B♭7 » trouve « Bb7 ».</p>
-<h2>Tri</h2>
-<p>Trois ordres (<a href="module-search.html#.SORT_MODES">SORT_MODES</a>) ; dans tous les
-cas, les notes <strong>épinglées</strong> passent en tête.</p></div>
+                <div class="description usertext"><p><strong>Search and sort</strong> for the notes on the home screen (since 2.0). Pure functions.</p>
+<h2>Search</h2>
+<p>The query is split into words; a note matches if <strong>every word</strong> appears
+somewhere in its title, its text blocks or its <strong>chords</strong> (charts and
+chord symbols on staves). Typing &quot;bb7alt&quot; therefore finds every note
+containing that chord, and &quot;blues f&quot; a note titled &quot;Blues en F&quot;.</p>
+<p>Comparison ignores case and accents, and treats <code>♭</code>/<code>b</code> and <code>♯</code>/<code>#</code> as
+equal: &quot;reponse&quot; finds &quot;réponse&quot;, &quot;B♭7&quot; finds &quot;Bb7&quot;.</p>
+<h2>Sort</h2>
+<p>Three orders (<a href="module-search.html#.SORT_MODES">SORT_MODES</a>); in every case,
+<strong>pinned</strong> notes come first.</p></div>
             
 
             
@@ -86,18 +85,17 @@ cas, les notes <strong>épinglées</strong> passent en tête.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Recherche et tri</strong> des notes de l'accueil (depuis la 2.0). Fonctions pures.</p>
-<h2>Recherche</h2>
-<p>La requête est découpée en mots ; une note correspond si <strong>chaque mot</strong>
-apparaît quelque part dans son titre, ses blocs texte ou ses <strong>accords</strong>
-(grilles et accords chiffrés des portées). Taper « bb7alt » retrouve donc
-toutes les notes contenant cet accord, et « blues f » une note intitulée
-« Blues en F ».</p>
-<p>La comparaison ignore la casse et les accents, et confond <code>♭</code>/<code>b</code>,
-<code>♯</code>/<code>#</code> : « reponse » trouve « réponse », « B♭7 » trouve « Bb7 ».</p>
-<h2>Tri</h2>
-<p>Trois ordres (<a href="module-search.html#.SORT_MODES">SORT_MODES</a>) ; dans tous les
-cas, les notes <strong>épinglées</strong> passent en tête.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Search and sort</strong> for the notes on the home screen (since 2.0). Pure functions.</p>
+<h2>Search</h2>
+<p>The query is split into words; a note matches if <strong>every word</strong> appears
+somewhere in its title, its text blocks or its <strong>chords</strong> (charts and
+chord symbols on staves). Typing &quot;bb7alt&quot; therefore finds every note
+containing that chord, and &quot;blues f&quot; a note titled &quot;Blues en F&quot;.</p>
+<p>Comparison ignores case and accents, and treats <code>♭</code>/<code>b</code> and <code>♯</code>/<code>#</code> as
+equal: &quot;reponse&quot; finds &quot;réponse&quot;, &quot;B♭7&quot; finds &quot;Bb7&quot;.</p>
+<h2>Sort</h2>
+<p>Three orders (<a href="module-search.html#.SORT_MODES">SORT_MODES</a>); in every case,
+<strong>pinned</strong> notes come first.</p></li></ul></dd>
     
 
     
@@ -198,13 +196,13 @@ cas, les notes <strong>épinglées</strong> passent en tête.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Clés de tri valides.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Valid sort keys.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="search.js.html">search.js</a>, <a href="search.js.html#line31">line 31</a>
+        <a href="search.js.html">search.js</a>, <a href="search.js.html#line30">line 30</a>
     </li></ul></dd>
     
 
@@ -244,7 +242,7 @@ cas, les notes <strong>épinglées</strong> passent en tête.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Clés de tri valides.</p>
+    <p>Valid sort keys.</p>
 </div>
 
 
@@ -265,14 +263,14 @@ cas, les notes <strong>épinglées</strong> passent en tête.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ordres de tri proposés sur l'accueil.
-Libellés : clés <code>sort.*</code> des dictionnaires (<a href="module-i18n.html">i18n</a>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sort orders offered on the home screen.
+Labels: <code>sort.*</code> keys in the dictionaries (<a href="module-i18n.html">i18n</a>).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="search.js.html">search.js</a>, <a href="search.js.html#line28">line 28</a>
+        <a href="search.js.html">search.js</a>, <a href="search.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -312,8 +310,8 @@ Libellés : clés <code>sort.*</code> des dictionnaires (<a href="module-i18n.ht
 
 
 <div class="description usertext">
-    <p>Ordres de tri proposés sur l'accueil.
-Libellés : clés <code>sort.*</code> des dictionnaires (<a href="module-i18n.html">i18n</a>).</p>
+    <p>Sort orders offered on the home screen.
+Labels: <code>sort.*</code> keys in the dictionaries (<a href="module-i18n.html">i18n</a>).</p>
 </div>
 
 
@@ -355,13 +353,13 @@ Libellés : clés <code>sort.*</code> des dictionnaires (<a href="module-i18n.ht
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>La note correspond-elle à la requête ? Une requête vide correspond à tout.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Does the note match the query? An empty query matches everything.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="search.js.html">search.js</a>, <a href="search.js.html#line69">line 69</a>
+        <a href="search.js.html">search.js</a>, <a href="search.js.html#line68">line 68</a>
     </li></ul></dd>
     
 
@@ -533,14 +531,14 @@ Libellés : clés <code>sort.*</code> des dictionnaires (<a href="module-i18n.ht
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Forme normalisée d'un texte pour la comparaison : minuscules, sans accents,
-signes ♭ ♯ remplacés par b et #.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Normalized form of a text for comparison: lowercase, no accents, ♭ and ♯
+replaced with b and #.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="search.js.html">search.js</a>, <a href="search.js.html#line39">line 39</a>
+        <a href="search.js.html">search.js</a>, <a href="search.js.html#line38">line 38</a>
     </li></ul></dd>
     
 
@@ -688,18 +686,18 @@ signes ♭ ♯ remplacés par b et #.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Trie des notes (nouveau tableau), épinglées d'abord.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sorts notes (new array), pinned first.</p>
 <ul>
-<li><code>updated</code> : dernière modification, la plus récente d'abord ;</li>
-<li><code>created</code> : création, la plus récente d'abord ;</li>
-<li><code>title</code> : ordre alphabétique français, notes sans titre à la fin.</li>
+<li><code>updated</code>: last change, most recent first;</li>
+<li><code>created</code>: creation, most recent first;</li>
+<li><code>title</code>: French alphabetical order, untitled notes last.</li>
 </ul></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="search.js.html">search.js</a>, <a href="search.js.html#line85">line 85</a>
+        <a href="search.js.html">search.js</a>, <a href="search.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -812,7 +810,7 @@ signes ♭ ♯ remplacés par b et #.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Une clé de SORT_MODES.</p></td>
+            <td class="description last"><p>A key of SORT_MODES.</p></td>
         </tr>
 
     
@@ -871,13 +869,13 @@ signes ♭ ♯ remplacés par b et #.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Tout le texte cherchable d'une note, normalisé : titre, textes, accords.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>All the searchable text of a note, normalized: title, texts, chords.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="search.js.html">search.js</a>, <a href="search.js.html#line53">line 53</a>
+        <a href="search.js.html">search.js</a>, <a href="search.js.html#line52">line 52</a>
     </li></ul></dd>
     
 

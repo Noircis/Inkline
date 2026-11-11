@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/note - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,13 +63,13 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Écran note</strong> : titre, rangement (dossier, épingle), blocs, barre d'ajout,
-partage, suppression.</p>
-<p>Le rendu est fait par template strings et <code>innerHTML</code>, puis les
-gestionnaires d'événements sont branchés sur les éléments créés. Les blocs
-texte sont gérés ici ; les blocs portée et grille sont délégués, via le
-registre de <a href="module-ui_blocks.html">ui/blocks</a>, à
-<a href="module-ui_staff_index.html">ui/staff</a> et <a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p></div>
+                <div class="description usertext"><p><strong>Note screen</strong>: title, filing (folder, pin), blocks, add bar, sharing,
+deletion.</p>
+<p>Rendering is done with template strings and <code>innerHTML</code>, then event
+handlers are wired to the created elements. Text blocks are handled here;
+staff and chart blocks are delegated, through the registry of
+<a href="module-ui_blocks.html">ui/blocks</a>, to <a href="module-ui_staff_index.html">ui/staff</a>
+and <a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p></div>
             
 
             
@@ -81,13 +81,13 @@ registre de <a href="module-ui_blocks.html">ui/blocks</a>, à
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Écran note</strong> : titre, rangement (dossier, épingle), blocs, barre d'ajout,
-partage, suppression.</p>
-<p>Le rendu est fait par template strings et <code>innerHTML</code>, puis les
-gestionnaires d'événements sont branchés sur les éléments créés. Les blocs
-texte sont gérés ici ; les blocs portée et grille sont délégués, via le
-registre de <a href="module-ui_blocks.html">ui/blocks</a>, à
-<a href="module-ui_staff_index.html">ui/staff</a> et <a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Note screen</strong>: title, filing (folder, pin), blocks, add bar, sharing,
+deletion.</p>
+<p>Rendering is done with template strings and <code>innerHTML</code>, then event
+handlers are wired to the created elements. Text blocks are handled here;
+staff and chart blocks are delegated, through the registry of
+<a href="module-ui_blocks.html">ui/blocks</a>, to <a href="module-ui_staff_index.html">ui/staff</a>
+and <a href="module-ui_grid-ui.html">ui/grid-ui</a>.</p></li></ul></dd>
     
 
     
@@ -194,7 +194,7 @@ registre de <a href="module-ui_blocks.html">ui/blocks</a>, à
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ajoute un bloc en fin de note et l'active.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Adds a block at the end of the note and activates it.</p></li></ul></dd>
     
 
     
@@ -362,8 +362,8 @@ registre de <a href="module-ui_blocks.html">ui/blocks</a>, à
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche le sélecteur de dossier et l'épingle. Ces changements ne modifient
-pas la date de la note (<a href="module-ui_state.html#.saveArrangement">saveArrangement</a>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires the folder picker and the pin. These changes do not touch the note's
+date (<a href="module-ui_state.html#.saveArrangement">saveArrangement</a>).</p></li></ul></dd>
     
 
     
@@ -498,11 +498,11 @@ pas la date de la note (<a href="module-ui_state.html#.saveArrangement">saveArra
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche le panneau « Partager » d'une note.</p>
-<p>Le fichier est généré au clic, puis <a href="module-export.html#.shareOrDownload">shareOrDownload</a>
-ouvre le menu de partage d'Android ou télécharge le fichier. L'appel à
-<code>navigator.share</code> doit suivre de près le geste de l'utilisateur (quelques
-secondes) : la génération d'image est assez rapide pour ça.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires a note's &quot;Share&quot; panel.</p>
+<p>The file is generated on tap, then <a href="module-export.html#.shareOrDownload">shareOrDownload</a>
+opens Android's share menu or downloads the file. The call to
+<code>navigator.share</code> must closely follow the user's gesture (a few seconds):
+image generation is fast enough for that.</p></li></ul></dd>
     
 
     
@@ -637,7 +637,7 @@ secondes) : la génération d'image est assez rapide pour ça.</p></li></ul></dd
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche le champ titre.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires the title field.</p></li></ul></dd>
     
 
     
@@ -772,7 +772,7 @@ secondes) : la génération d'image est assez rapide pour ça.</p></li></ul></dd
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Crée l'élément DOM d'un bloc et branche ses outils.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Creates a block's DOM element and wires its tools.</p></li></ul></dd>
     
 
     
@@ -915,7 +915,7 @@ secondes) : la génération d'image est assez rapide pour ça.</p></li></ul></dd
 
             
 
-            <td class="description last"><p>Position du bloc dans la note.</p></td>
+            <td class="description last"><p>Position of the block in the note.</p></td>
         </tr>
 
     
@@ -974,8 +974,8 @@ secondes) : la génération d'image est assez rapide pour ça.</p></li></ul></dd
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton de rangement d'une note (2.8.6) : « ● Saxophone › Technique, Son ».
-Il ouvre le panneau Ranger la note (<a href="module-ui_folder-sheet.html#.openArrangeSheet">openArrangeSheet</a>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Filing button of a note (2.8.6): &quot;● Saxophone › Technique, Son&quot;.
+It opens the File note panel (<a href="module-ui_folder-sheet.html#.openArrangeSheet">openArrangeSheet</a>).</p></li></ul></dd>
     
 
     
@@ -1129,7 +1129,7 @@ Il ouvre le panneau Ranger la note (<a href="module-ui_folder-sheet.html#.openAr
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écran note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Note screen.</p></li></ul></dd>
     
 
     
@@ -1270,7 +1270,7 @@ Il ouvre le panneau Ranger la note (<a href="module-ui_folder-sheet.html#.openAr
 
         
 <div class="param-desc">
-    <p><code>false</code> si la note n'existe plus.</p>
+    <p><code>false</code> if the note no longer exists.</p>
 </div>
 
 

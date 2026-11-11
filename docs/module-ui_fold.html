@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/fold - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,28 +63,28 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Blocs longs réduits</strong> (depuis la 2.2) : une portée, une ligne rythmique ou
-une grille de FOLD_MIN_LINES lignes ou
-plus peut n'afficher que ses
-FOLD_PREVIEW_LINES premières
-lignes, avec un bouton « Afficher tout ».</p>
-<h2>Qui décide si un bloc est réduit ?</h2>
-<p>La règle est la fonction pure <a href="module-folding.html#.shouldFold">shouldFold</a> :</p>
-<p>Dans l'ordre :</p>
+                <div class="description usertext"><p><strong>Collapsed long blocks</strong> (since 2.2): a staff, rhythm line or chart of
+FOLD_MIN_LINES lines or more can show
+only its first FOLD_PREVIEW_LINES
+lines, with a &quot;Show all&quot; button.</p>
+<h2>Who decides whether a block is collapsed?</h2>
+<p>The rule is the pure function <a href="module-folding.html#.shouldFold">shouldFold</a>.</p>
+<p>In order:</p>
 <ol>
-<li><strong>un bloc en cours d'édition est toujours affiché en entier</strong> : les
-notes s'ajoutent à la fin, qui serait cachée ;</li>
-<li>un bloc trop court n'est jamais réduit (il n'y aurait rien à cacher) ;</li>
-<li>le <strong>choix manuel</strong> mémorisé sur le bloc (<code>fold: 'open'</code> ou <code>'closed'</code>) ;</li>
-<li>sinon, l'option <strong>« Réduire automatiquement les blocs longs »</strong> des
-Options (<code>meta.autoFold</code>).</li>
+<li><strong>a block being edited is always shown in full</strong>: notes are added at
+the end, which would be hidden;</li>
+<li>a block that is too short is never collapsed (there would be nothing
+to hide);</li>
+<li>the <strong>manual choice</strong> stored on the block (<code>fold: 'open'</code> or <code>'closed'</code>);</li>
+<li>otherwise, the <strong>&quot;Collapse long blocks automatically&quot;</strong> option in
+Settings (<code>meta.autoFold</code>).</li>
 </ol>
-<p>Toucher un bloc réduit l'active (il s'affiche donc en entier le temps de
-l'édition) sans enregistrer de choix : avec l'option automatique, il se
-réduit de nouveau quand on passe à autre chose.</p>
-<p>Réduire n'est pas modifier : la date de la note ne change pas
-(<a href="module-ui_state.html#.saveArrangement">saveArrangement</a>), et un fichier
-<code>.inkline</code> partagé ne transporte pas cet état.</p></div>
+<p>Tapping a collapsed block activates it (so it is shown in full while it is
+edited) without storing a choice: with the automatic option, it collapses
+again when you move on.</p>
+<p>Collapsing is not editing: the note's date does not change
+(<a href="module-ui_state.html#.saveArrangement">saveArrangement</a>), and a shared
+<code>.inkline</code> file does not carry this state.</p></div>
             
 
             
@@ -96,28 +96,28 @@ réduit de nouveau quand on passe à autre chose.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Blocs longs réduits</strong> (depuis la 2.2) : une portée, une ligne rythmique ou
-une grille de FOLD_MIN_LINES lignes ou
-plus peut n'afficher que ses
-FOLD_PREVIEW_LINES premières
-lignes, avec un bouton « Afficher tout ».</p>
-<h2>Qui décide si un bloc est réduit ?</h2>
-<p>La règle est la fonction pure <a href="module-folding.html#.shouldFold">shouldFold</a> :</p>
-<p>Dans l'ordre :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Collapsed long blocks</strong> (since 2.2): a staff, rhythm line or chart of
+FOLD_MIN_LINES lines or more can show
+only its first FOLD_PREVIEW_LINES
+lines, with a &quot;Show all&quot; button.</p>
+<h2>Who decides whether a block is collapsed?</h2>
+<p>The rule is the pure function <a href="module-folding.html#.shouldFold">shouldFold</a>.</p>
+<p>In order:</p>
 <ol>
-<li><strong>un bloc en cours d'édition est toujours affiché en entier</strong> : les
-notes s'ajoutent à la fin, qui serait cachée ;</li>
-<li>un bloc trop court n'est jamais réduit (il n'y aurait rien à cacher) ;</li>
-<li>le <strong>choix manuel</strong> mémorisé sur le bloc (<code>fold: 'open'</code> ou <code>'closed'</code>) ;</li>
-<li>sinon, l'option <strong>« Réduire automatiquement les blocs longs »</strong> des
-Options (<code>meta.autoFold</code>).</li>
+<li><strong>a block being edited is always shown in full</strong>: notes are added at
+the end, which would be hidden;</li>
+<li>a block that is too short is never collapsed (there would be nothing
+to hide);</li>
+<li>the <strong>manual choice</strong> stored on the block (<code>fold: 'open'</code> or <code>'closed'</code>);</li>
+<li>otherwise, the <strong>&quot;Collapse long blocks automatically&quot;</strong> option in
+Settings (<code>meta.autoFold</code>).</li>
 </ol>
-<p>Toucher un bloc réduit l'active (il s'affiche donc en entier le temps de
-l'édition) sans enregistrer de choix : avec l'option automatique, il se
-réduit de nouveau quand on passe à autre chose.</p>
-<p>Réduire n'est pas modifier : la date de la note ne change pas
-(<a href="module-ui_state.html#.saveArrangement">saveArrangement</a>), et un fichier
-<code>.inkline</code> partagé ne transporte pas cet état.</p></li></ul></dd>
+<p>Tapping a collapsed block activates it (so it is shown in full while it is
+edited) without storing a choice: with the automatic option, it collapses
+again when you move on.</p>
+<p>Collapsing is not editing: the note's date does not change
+(<a href="module-ui_state.html#.saveArrangement">saveArrangement</a>), and a shared
+<code>.inkline</code> file does not carry this state.</p></li></ul></dd>
     
 
     
@@ -224,8 +224,8 @@ réduit de nouveau quand on passe à autre chose.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met à jour l'apparence « réduit » d'un bloc après son dessin : classe CSS
-(fondu en bas), bouton « Afficher tout » / « Réduire ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Updates the &quot;collapsed&quot; look of a block after drawing it: CSS class (fade
+at the bottom), &quot;Show all&quot; / &quot;Collapse&quot; button.</p></li></ul></dd>
     
 
     
@@ -320,7 +320,7 @@ réduit de nouveau quand on passe à autre chose.</p>
 
             
 
-            <td class="description last"><p>Zone de dessin du bloc (<code>.staff-wrap</code>, <code>.gridwrap</code>).</p></td>
+            <td class="description last"><p>Drawing area of the block (<code>.staff-wrap</code>, <code>.gridwrap</code>).</p></td>
         </tr>
 
     
@@ -371,7 +371,7 @@ réduit de nouveau quand on passe à autre chose.</p>
 
             
 
-            <td class="description last"><p>Nombre total de lignes.</p></td>
+            <td class="description last"><p>Total number of lines.</p></td>
         </tr>
 
     
@@ -395,7 +395,7 @@ réduit de nouveau quand on passe à autre chose.</p>
 
             
 
-            <td class="description last"><p>Résultat de isFolded.</p></td>
+            <td class="description last"><p>Result of isFolded.</p></td>
         </tr>
 
     
@@ -435,10 +435,10 @@ réduit de nouveau quand on passe à autre chose.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Intercepte les touchers sur un bloc réduit : au lieu d'agir sur la musique
-(poser une note, choisir une mesure), le toucher active le bloc, qui
-s'affiche alors en entier. Écouteur en phase de <strong>capture</strong> : il passe
-avant ceux de la portée ou de la grille et peut les court-circuiter.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Intercepts taps on a collapsed block: instead of acting on the music
+(placing a note, choosing a measure), the tap activates the block, which
+is then shown in full. <strong>Capture</strong>-phase listener: it runs before those of
+the staff or chart and can cut them short.</p></li></ul></dd>
     
 
     
@@ -600,7 +600,7 @@ avant ceux de la portée ou de la grille et peut les court-circuiter.</p></li></
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Le bloc affiché doit-il être réduit ? Voir <a href="module-folding.html#.shouldFold">shouldFold</a>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Should the block on screen be collapsed? See <a href="module-folding.html#.shouldFold">shouldFold</a>.</p></li></ul></dd>
     
 
     
@@ -722,7 +722,7 @@ avant ceux de la portée ou de la grille et peut les court-circuiter.</p></li></
 
             
 
-            <td class="description last"><p>Nombre total de lignes du bloc à la largeur actuelle.</p></td>
+            <td class="description last"><p>Total number of lines of the block at the current width.</p></td>
         </tr>
 
     
@@ -781,7 +781,7 @@ avant ceux de la portée ou de la grille et peut les court-circuiter.</p></li></
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton « Afficher tout » / « Réduire » : mémorise le choix sur le bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>&quot;Show all&quot; / &quot;Collapse&quot; button: stores the choice on the block.</p></li></ul></dd>
     
 
     

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>pdf.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,61 +53,61 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module pdf
  * @description
- * Générateur de **PDF minimal**, écrit à la main, sans bibliothèque.
+ * **Minimal PDF** generator, written by hand, with no library.
  *
- * Chaque page contient une seule image JPEG pleine largeur. C'est tout ce
- * dont l'export a besoin : la note est déjà dessinée en image par
- * {@link module:export|export}. Le texte n'est pas sélectionnable, mais le
- * fichier fait ~30 lignes de code au lieu d'une dépendance de 300 Ko.
+ * Each page holds a single full-width JPEG image. That is all the export
+ * needs: the note is already drawn as an image by {@link module:export|export}.
+ * The text cannot be selected, but the file takes ~30 lines of code instead
+ * of a 300 KB dependency.
  *
- * ## Structure d'un PDF
+ * ## Structure of a PDF
  *
- * Un PDF est un fichier texte (avec des blocs binaires) composé d'**objets**
- * numérotés qui se référencent (`3 0 R` = « l'objet n° 3 ») :
+ * A PDF is a text file (with binary blocks) made of numbered **objects** that
+ * reference each other (`3 0 R` = "object number 3"):
  *
  * ```
  * %PDF-1.4
- * 1 0 obj &lt;&lt; /Type /Catalog /Pages 2 0 R >> endobj      racine
- * 2 0 obj &lt;&lt; /Type /Pages /Kids [...] /Count n >> endobj liste des pages
- * pour chaque page :
+ * 1 0 obj &lt;&lt; /Type /Catalog /Pages 2 0 R >> endobj      root
+ * 2 0 obj &lt;&lt; /Type /Pages /Kids [...] /Count n >> endobj page list
+ * for each page:
  *   &lt;&lt; /Type /Page /MediaBox [...] /Resources &lt;&lt; /XObject &lt;&lt; /Im0 … >> >> /Contents … >>
- *   flux de contenu : « q a 0 0 d e f cm /Im0 Do Q »  (place et dessine l'image)
- *   image : &lt;&lt; /Subtype /Image /Filter /DCTDecode … >> stream &lt;octets JPEG> endstream
- * xref        table des positions (en octets) de chaque objet
- * trailer     &lt;&lt; /Size … /Root 1 0 R >>  puis startxref &lt;position de xref>
+ *   content stream: "q a 0 0 d e f cm /Im0 Do Q"  (places and draws the image)
+ *   image: &lt;&lt; /Subtype /Image /Filter /DCTDecode … >> stream &lt;JPEG bytes> endstream
+ * xref        table of the positions (in bytes) of each object
+ * trailer     &lt;&lt; /Size … /Root 1 0 R >>  then startxref &lt;position of xref>
  * ```
  *
- * Le filtre `DCTDecode` signifie « ce flux est un JPEG » : on recopie les
- * octets produits par le navigateur sans aucun décodage. C'est ce qui rend
- * ce générateur si court.
+ * The `DCTDecode` filter means "this stream is a JPEG": the bytes produced by
+ * the browser are copied without any decoding. That is what makes this
+ * generator so short.
  *
- * L'origine des coordonnées PDF est **en bas à gauche**, en points (1/72 de
- * pouce) ; une page A4 mesure 595.28 × 841.89 points.
+ * The origin of PDF coordinates is **at the bottom left**, in points (1/72
+ * inch); an A4 page measures 595.28 × 841.89 points.
  */
 
-/** Dimensions d'une page A4 en points. */
+/** Dimensions of an A4 page in points. */
 export const A4 = { w: 595.28, h: 841.89 };
 
 /**
- * Une page à produire.
+ * A page to produce.
  * @typedef {Object} PdfPage
- * @property {Uint8Array} jpeg Octets d'une image JPEG.
- * @property {number} width Largeur de l'image en pixels.
- * @property {number} height Hauteur de l'image en pixels.
+ * @property {Uint8Array} jpeg Bytes of a JPEG image.
+ * @property {number} width Image width in pixels.
+ * @property {number} height Image height in pixels.
  */
 
 /**
- * Construit un PDF A4 où chaque page affiche une image JPEG en pleine largeur,
- * alignée en haut.
+ * Builds an A4 PDF where each page shows a full-width JPEG image, aligned at
+ * the top.
  *
  * @param {PdfPage[]} pages
- * @returns {Uint8Array} Le fichier PDF.
+ * @returns {Uint8Array} The PDF file.
  */
 export function buildPdf(pages) {
   const enc = new TextEncoder();
   /** @type {Uint8Array[]} */
   const chunks = [];
-  const offsets = []; // position en octets du début de chaque objet (index = numéro - 1)
+  const offsets = []; // byte position of the start of each object (index = number - 1)
   let pos = 0;
   const put = (x) => {
     const b = typeof x === 'string' ? enc.encode(x) : x;
@@ -121,10 +121,10 @@ export function buildPdf(pages) {
     put('\nendobj\n');
   };
 
-  // En-tête ; la 2e ligne (octets > 127) signale aux outils que le fichier contient du binaire.
+  // Header; the 2nd line (bytes > 127) tells tools that the file contains binary data.
   put('%PDF-1.4\n%âãÏÓ\n');
 
-  // Numérotation : 1 catalogue, 2 arbre des pages, puis 3 objets par page.
+  // Numbering: 1 catalog, 2 page tree, then 3 objects per page.
   const pageNums = pages.map((_, k) => 3 + k * 3);
   obj(1, () => put('&lt;&lt; /Type /Catalog /Pages 2 0 R >>'));
   obj(2, () =>
@@ -135,7 +135,7 @@ export function buildPdf(pages) {
     const pageN = pageNums[k];
     const contentN = pageN + 1;
     const imageN = pageN + 2;
-    // Image mise à l'échelle sur la largeur de la page, collée en haut.
+    // Image scaled to the page width, stuck to the top.
     const dw = A4.w;
     const dh = (p.height * A4.w) / p.width;
     const content = `q ${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} 0 ${(A4.h - dh).toFixed(2)} cm /Im0 Do Q`;
@@ -154,7 +154,7 @@ export function buildPdf(pages) {
     });
   });
 
-  // Table des références croisées : chaque entrée fait exactement 20 octets.
+  // Cross-reference table: each entry is exactly 20 bytes.
   const xref = pos;
   const n = offsets.length + 1;
   put(`xref\n0 ${n}\n0000000000 65535 f \n`);

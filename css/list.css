@@ -1,6 +1,6 @@
-/* Inkline · Accueil : liste des notes. */
+/* Inkline · Home: note list. */
 
-/* 3. Structure : liste */
+/* 3. Structure: list */
 .list {
   display: flex;
   flex-direction: column;

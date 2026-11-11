@@ -1,9 +1,9 @@
 /**
  * @module ui/staff/bars
  * @description
- * **Sous-menu des barres** de la palette : barre simple, double, de fin, de
- * reprise, début de reprise, aucune. La barre se place après la note visée
- * (la fin de la note logique si elle est coupée) ; le début de reprise, avant.
+ * **Barline submenu** of the palette: single, double, final, end repeat,
+ * start repeat, none. The barline goes after the target note (the end of the
+ * logical note if it is split); a start repeat goes before it.
  */
 
 import { state, touch } from '../state.js';
@@ -11,11 +11,11 @@ import { chainEnd } from '../../measure-fit.js';
 import { pushSnapshot } from '../../history.js';
 import { hooks, activeStaff, refit, targetIndex } from './shared.js';
 
-/** Barre du sous-menu (dans index.html). */
+/** Submenu bar (in index.html). */
 export const barBar = /** @type {HTMLElement} */ (document.getElementById('barBar'));
 
 /**
- * Applique un choix du sous-menu des barres.
+ * Applies a choice from the barline submenu.
  * @param {string} type `'single'|'double'|'final'|'rep'|'rs'|'none'`
  */
 export function applyBar(type) {
@@ -23,7 +23,7 @@ export function applyBar(type) {
   if (!a) return;
   const { n, b } = a;
   if (type === 'rs') {
-    // Le début de reprise se place AVANT une note : sur la sélection, ou sur la prochaine note.
+    // A start repeat goes BEFORE a note: on the selection, or on the next note.
     if (state.mode === 'edit' && state.sel != null) {
       pushSnapshot(n);
       const it = b.items[state.sel];
@@ -51,9 +51,9 @@ export function applyBar(type) {
 }
 
 /**
- * État enfoncé des boutons du sous-menu.
+ * Pressed state of the submenu buttons.
  * @param {module:model~StaffBlock} b
- * @param {?module:model~StaffItem} sel Note sélectionnée (mode Modifier).
+ * @param {?module:model~StaffItem} sel Selected note (Edit mode).
  */
 export function syncBarMenu(b, sel) {
   const target = b.items[targetIndex(b)] ? b.items[chainEnd(b.items, targetIndex(b))] : null;

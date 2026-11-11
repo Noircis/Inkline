@@ -1,8 +1,8 @@
-// Sélection de mesures à l'appui long (2.8.4) : portées, grilles, entraînement.
+// Measure selection by long press (2.8.4): staves, charts, practice.
 import { test, expect } from '@playwright/test';
 import { openApp, newNoteWith, collectErrors } from './helpers.js';
 
-/** Remplit la portée active : 4 mesures de rondes, tempo rapide. */
+/** Fills the active staff: 4 measures of whole notes, fast tempo. */
 async function fillStaff(page) {
   await page.evaluate(async () => {
     const { state, blockById } = await import('/js/ui/state.js');
@@ -14,7 +14,7 @@ async function fillStaff(page) {
   });
 }
 
-/** Centre écran de la mesure `k` de la portée active (mise en page de l'appli). */
+/** Screen center of measure `k` of the active staff (app layout). */
 async function measurePoint(page, k) {
   return page.evaluate(async (k) => {
     const { state, blockById } = await import('/js/ui/state.js');
@@ -29,7 +29,7 @@ async function measurePoint(page, k) {
   }, k);
 }
 
-/** Appui long (souris) en `a`, puis glisser jusqu'à `b` éventuellement. */
+/** Long press (mouse) at `a`, then optionally drag to `b`. */
 async function longPress(page, a, b) {
   await page.mouse.move(a.x, a.y);
   await page.mouse.down();
@@ -38,11 +38,11 @@ async function longPress(page, a, b) {
   await page.mouse.up();
 }
 
-/** Lecture en cours pour cet identifiant ? */
+/** Playback running for this id? */
 const playing = (page, id) => page.evaluate(async (id) => (await import('/js/audio.js')).isPlaying(id), id);
 const activeId = (page) => page.evaluate(async () => (await import('/js/ui/state.js')).state.activeId);
 
-/** Enregistre les index joués (surlignage) pendant la lecture. */
+/** Records the indices played (highlight) during playback. */
 const spySteps = (page) =>
   page.evaluate(async () => {
     const { state } = await import('/js/ui/state.js');
@@ -58,7 +58,7 @@ test.beforeEach(async ({ page }) => {
   await openApp(page);
 });
 
-test('portée : appui long → cadre et « Jouer d’ici », sans écrire de note', async ({ page }) => {
+test('staff: long press → frame and "Play from here", without writing a note', async ({ page }) => {
   const errors = collectErrors(page);
   await newNoteWith(page, 'staff');
   await fillStaff(page);
@@ -70,53 +70,53 @@ test('portée : appui long → cadre et « Jouer d’ici », sans écrire de not
     const { state, blockById } = await import('/js/ui/state.js');
     return { n: blockById(state.activeId).items.length, cursor: state.cursor };
   });
-  expect(st).toEqual({ n: 4, cursor: null }); // l'appui long n'a rien écrit
+  expect(st).toEqual({ n: 4, cursor: null }); // the long press wrote nothing
   await spySteps(page);
   await page.click('.msel-bar [data-msel=go]');
   await expect(page.locator('.msel-bar [data-msel=go]')).toHaveText('■ Stop');
   expect(await playing(page, id)).toBe(true);
-  // Décompte (0,8 s) puis mesures 2 à 4 (2,4 s).
+  // Count-in (0.8 s) then measures 2 to 4 (2.4 s).
   await expect.poll(() => playing(page, id), { timeout: 8000 }).toBe(false);
   expect(await page.evaluate(() => window.__steps)).toEqual([1, 2, 3]);
   await expect(page.locator('.msel-bar [data-msel=go]')).toHaveText('▶ Jouer d’ici');
   expect(errors).toEqual([]);
 });
 
-test('portée : glisser étend la sélection, « Boucle » rejoue le passage', async ({ page }) => {
+test('staff: dragging extends the selection, "Loop" replays the passage', async ({ page }) => {
   await newNoteWith(page, 'staff');
   await fillStaff(page);
   const id = await activeId(page);
-  // De la mesure 3 vers la 2 (sens inverse) : sélection 2 à 3.
+  // From measure 3 to 2 (reverse direction): selection 2 to 3.
   await longPress(page, await measurePoint(page, 2), await measurePoint(page, 1));
   await expect(page.locator('.msel-bar [data-msel=go]')).toHaveText('🔁 Boucle');
   await spySteps(page);
   await page.click('.msel-bar [data-msel=go]');
-  // Décompte + 2 passages de 1,6 s : la boucle tourne toujours.
+  // Count-in + 2 passes of 1.6 s: the loop is still running.
   await page.waitForTimeout(4600);
   expect(await playing(page, id)).toBe(true);
   const steps = await page.evaluate(() => window.__steps);
   expect(steps.slice(0, 4)).toEqual([1, 2, 1, 2]);
-  // Toucher ailleurs : sélection effacée, lecture arrêtée.
+  // Tap elsewhere: selection cleared, playback stopped.
   await page.mouse.click(5, 5);
   await expect(page.locator('.msel-box')).toHaveCount(0);
   await expect(page.locator('.msel-bar')).toBeHidden();
   expect(await playing(page, id)).toBe(false);
 });
 
-test('portée : ✕ efface ; un toucher simple marche comme avant', async ({ page }) => {
+test('staff: ✕ clears; a simple tap works as before', async ({ page }) => {
   await newNoteWith(page, 'staff');
   await fillStaff(page);
   await longPress(page, await measurePoint(page, 0));
   await page.click('.msel-bar [data-msel=close]');
   await expect(page.locator('.msel-box')).toHaveCount(0);
-  // Toucher simple sur une note : le curseur s'y place (comportement 2.8).
+  // Simple tap on a note: the cursor goes there (2.8 behavior).
   const p = await measurePoint(page, 2);
   await page.mouse.click(p.x, p.y);
   expect(await page.evaluate(async () => (await import('/js/ui/state.js')).state.cursor)).toBe(2);
   await expect(page.locator('.msel-box')).toHaveCount(0);
 });
 
-test('grille : appui long sans ouvrir la saisie, boucle sur 3 mesures', async ({ page }) => {
+test('chart: long press without opening input, loop over 3 measures', async ({ page }) => {
   await newNoteWith(page, 'grid');
   const id = await page.evaluate(async () => {
     const { state, blockById } = await import('/js/ui/state.js');
@@ -134,18 +134,18 @@ test('grille : appui long sans ouvrir la saisie, boucle sur 3 mesures', async ({
   };
   await longPress(page, await center(1), await center(3));
   await expect(page.locator('.msel-bar [data-msel=go]')).toHaveText('🔁 Boucle');
-  // La case n'a pas été sélectionnée pour la saisie.
+  // The cell was not selected for input.
   expect(await page.evaluate(async () => (await import('/js/ui/state.js')).state.sel)).toBe(null);
   await spySteps(page);
   await page.click('.msel-bar [data-msel=go]');
-  await page.waitForTimeout(3800); // décompte 0,8 s + passage 2,4 s
+  await page.waitForTimeout(3800); // count-in 0.8 s + pass 2.4 s
   expect(await playing(page, id)).toBe(true);
   expect((await page.evaluate(() => window.__steps)).slice(0, 4)).toEqual([1, 2, 3, 1]);
   await page.click('.msel-bar [data-msel=go]'); // Stop
   expect(await playing(page, id)).toBe(false);
 });
 
-test('entraînement : appui long sur une mesure d’une série', async ({ page }) => {
+test('practice: long press on a measure of a series', async ({ page }) => {
   await page.click('#trainBtn');
   await page.click('#goPlacements');
   await page.locator('[data-drill=drill0] svg').waitFor();
@@ -167,7 +167,7 @@ test('entraînement : appui long sur une mesure d’une série', async ({ page }
   expect(await playing(page, 'drill0')).toBe(false);
 });
 
-test('au doigt : appui long puis glisser sélectionne sans faire défiler la page', async ({ page }) => {
+test('by finger: long press then drag selects without scrolling the page', async ({ page }) => {
   await newNoteWith(page, 'staff');
   await fillStaff(page);
   const cdp = await page.context().newCDPSession(page);
@@ -190,7 +190,7 @@ test('au doigt : appui long puis glisser sélectionne sans faire défiler la pag
     await page.evaluate(async () => (await import('/js/ui/measure-select.js')).measureSelection()),
   ).toEqual({ a: 0, b: 2 });
   await expect(page.locator('.msel-bar [data-msel=go]')).toHaveText('🔁 Boucle');
-  // Un glisser rapide (sans appui long) fait toujours défiler la page.
+  // A quick drag (no long press) still scrolls the page.
   const x = await page.locator('.msel-bar [data-msel=close]').boundingBox();
   await touch('touchStart', { x: x.x + 10, y: x.y + 10 });
   await touch('touchEnd');

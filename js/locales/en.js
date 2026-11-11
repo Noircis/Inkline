@@ -1,7 +1,7 @@
 /**
  * @module locales/en
- * @description Textes de l'interface en **anglais** (2.9), langue par défaut
- * hors navigateurs francophones. Mêmes clés que {@link module:locales/fr|locales/fr}.
+ * @description Interface texts in **English** (2.9), the default language
+ * outside French-speaking browsers. Same keys as {@link module:locales/fr|locales/fr}.
  */
 
 export default {

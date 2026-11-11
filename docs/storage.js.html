@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>storage.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,59 +53,59 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module storage
  * @description
- * Persistance du carnet (notes et dossiers), et sauvegarde/restauration en
- * fichier JSON.
+ * Persistence of the notebook (notes and folders), and backup/restore as a
+ * JSON file.
  *
- * ## Où sont les données ? (depuis la 2.1)
+ * ## Where is the data? (since 2.1)
  *
- * Dans **IndexedDB** (voir {@link module:db|db}) : un enregistrement par note
- * et par dossier. Jusqu'à la 2.0, tout le carnet était une seule chaîne JSON
- * dans `localStorage`, ce qui posait deux limites :
+ * In **IndexedDB** (see {@link module:db|db}): one record per note and per
+ * folder. Up to 2.0, the whole notebook was a single JSON string in
+ * `localStorage`, which had two limits:
  *
- * - **taille** : environ 5 Mo par site pour `localStorage`, contre des
- *   centaines de Mo pour IndexedDB ;
- * - **coût** : chaque frappe réécrivait le carnet entier. Désormais, seule la
- *   note modifiée est écrite.
+ * - **size**: about 5 MB per site for `localStorage`, versus hundreds of MB
+ *   for IndexedDB;
+ * - **cost**: every keystroke rewrote the whole notebook. Now only the
+ *   changed note is written.
  *
- * Les **métadonnées** (affichage choisi, dossier sélectionné, date de dernière
- * sauvegarde…) restent dans `localStorage` : elles sont minuscules, et les
- * lire de façon synchrone est pratique.
+ * The **metadata** (chosen display, selected folder, last backup date…) stay
+ * in `localStorage`: they are tiny, and reading them synchronously is handy.
  *
- * ## Migration depuis `localStorage`
+ * ## Migration from `localStorage`
  *
- * Au premier lancement de la 2.1, {@link module:storage.loadAll|loadAll}
- * copie les notes et dossiers de `localStorage` vers IndexedDB, **en une
- * seule transaction** (tout ou rien), puis note `storage: 'idb'` dans les
- * métadonnées. La copie n'a lieu que si la base IndexedDB est **vide** : des
- * données déjà présentes ne sont jamais écrasées par l'ancienne copie.
+ * On the first launch of 2.1, {@link module:storage.loadAll|loadAll} copies
+ * the notes and folders from `localStorage` to IndexedDB, **in a single
+ * transaction** (all or nothing), then records `storage: 'idb'` in the
+ * metadata. The copy only happens if the IndexedDB database is **empty**:
+ * data already there is never overwritten by the old copy.
  *
- * L'ancienne copie n'est **pas effacée** : elle reste en filet de sécurité
- * (figée à la date de la migration). Règle d'or : ne jamais déplacer et
- * supprimer des données dans la même opération.
+ * The old copy is **not erased**: it stays as a safety net (frozen at the
+ * migration date). Golden rule: never move and delete data in the same
+ * operation.
  *
- * Si IndexedDB est indisponible (navigateur très ancien, stockage bloqué),
- * l'app continue avec `localStorage`, comme avant la 2.1.
+ * If IndexedDB is unavailable (very old browser, storage blocked), the app
+ * keeps going with `localStorage`, as before 2.1.
  *
- * ## Stratégie d'écriture
+ * ## Write strategy
  *
- * - **Debounce** : chaque modification programme une écriture 150 ms plus
- *   tard ; les frappes rapprochées n'en déclenchent qu'une.
- * - **Notes « sales »** : {@link module:storage.scheduleSave|scheduleSave}
- *   reçoit l'id de la note modifiée ; seules ces notes sont écrites.
- * - **Comparaison** : {@link module:storage.flushSave|flushSave} compare
- *   chaque note à sa dernière version écrite (sa forme JSON) et n'écrit que
- *   les différences, suppressions comprises. C'est un filet de sécurité :
- *   après une opération groupée (import, suppression d'un dossier…), rien ne
- *   peut être oublié, même si l'appelant ne sait pas quelles notes ont changé.
- * - **Flush** sur `visibilitychange` (voir {@link module:main|main}) : Android
- *   peut tuer une app en arrière-plan sans prévenir ; on écrit donc tout de
- *   suite, en mode `strict` (le navigateur attend que ce soit sur le disque).
- * - `navigator.storage.persist()` demande au navigateur de ne pas évincer
- *   les données quand l'espace disque manque.
+ * - **Debounce**: each change schedules a write 150 ms later; close
+ *   keystrokes trigger only one.
+ * - **"Dirty" notes**: {@link module:storage.scheduleSave|scheduleSave}
+ *   receives the id of the changed note; only those notes are written.
+ * - **Comparison**: {@link module:storage.flushSave|flushSave} compares each
+ *   note to its last written version (its JSON form) and writes only the
+ *   differences, deletions included. It is a safety net: after a bulk
+ *   operation (import, folder deletion…), nothing can be forgotten, even if
+ *   the caller does not know which notes changed.
+ * - **Flush** on `visibilitychange` (see {@link module:main|main}): Android
+ *   may kill an app in the background without warning; so everything is
+ *   written right away, in `strict` mode (the browser waits until it is on
+ *   disk).
+ * - `navigator.storage.persist()` asks the browser not to evict the data
+ *   when disk space runs low.
  *
- * Les écritures sont asynchrones et leurs erreurs (quota dépassé…) ne
- * bloquent pas l'app : une note non écrite reste « différente » et sera
- * retentée à l'écriture suivante.
+ * Writes are asynchronous and their errors (quota exceeded…) do not block
+ * the app: a note that was not written stays "different" and will be retried
+ * on the next write.
  */
 
 import { sanitizeNote, sanitizeNotes, sanitizeFolders } from './sanitize.js';
@@ -113,29 +113,29 @@ import { SORT_KEYS } from './search.js';
 import { openDb, getAll, write, STORES } from './db.js';
 import { METERS, meterOf, slotsOf } from './placements.js';
 
-/** Clé `localStorage` du carnet jusqu'à la 2.0 (historique : ne pas changer). */
+/** `localStorage` key of the notebook up to 2.0 (historical: do not change). */
 const STORAGE_KEY = 'carnet-portees-v1';
 
-/** Identifiant écrit dans les fichiers de sauvegarde. */
+/** Id written in backup files. */
 const BACKUP_APP = 'carnet-portees';
 
-/** Clé `localStorage` des dossiers en 2.0. */
+/** `localStorage` key of the folders in 2.0. */
 const FOLDERS_KEY = 'inkline-folders';
 
-/** Version du format des sauvegardes : 2 depuis l'arrivée des dossiers. Les sauvegardes v1 restent lisibles. */
+/** Backup format version: 2 since folders arrived. v1 backups stay readable. */
 const BACKUP_VERSION = 2;
 
-/** Clé `localStorage` des métadonnées (date de première utilisation, de dernière sauvegarde). */
+/** `localStorage` key of the metadata (first use date, last backup date). */
 const META_KEY = 'inkline-meta';
 
-/** Identifiant écrit dans les fichiers de note partagée (`.inkline`). */
+/** Id written in shared note files (`.inkline`). */
 const NOTE_APP = 'inkline';
 
-/** Délai du debounce d'écriture (ms). */
+/** Write debounce delay (ms). */
 const SAVE_DELAY = 150;
 
 /**
- * Où le carnet est enregistré.
+ * Where the notebook is stored.
  * @type {'idb'|'local'}
  */
 let backend = 'local';
@@ -144,34 +144,34 @@ let backend = 'local';
 let db = null;
 
 /**
- * Dernière version écrite de chaque note, en JSON (id → chaîne). Sert à
- * savoir ce qui a changé depuis la dernière écriture.
+ * Last written version of each note, as JSON (id → string). Used to know
+ * what changed since the last write.
  * @type {Map.&lt;string, string>}
  */
 const saved = new Map();
 
-/** JSON du carnet entier lors de la dernière écriture (mode `localStorage`). */
+/** JSON of the whole notebook at the last write (`localStorage` mode). */
 let savedLocal = '';
 
-/** Notes modifiées depuis la dernière écriture (ids). */
+/** Notes changed since the last write (ids). */
 const dirty = new Set();
 
-/** Une écriture programmée doit-elle tout comparer (appel sans id) ? */
+/** Must a scheduled write compare everything (call without an id)? */
 let fullPending = false;
 
 let timer = null;
 
 /**
- * Contenu chargé au démarrage.
+ * Content loaded at startup.
  * @typedef {Object} LoadResult
  * @property {Object.&lt;string, module:model~Note>} notes
  * @property {Object.&lt;string, module:folders~Folder>} folders
- * @property {'idb'|'local'} backend Où le carnet est enregistré.
- * @property {boolean} migrated La migration depuis `localStorage` vient d'avoir lieu.
+ * @property {'idb'|'local'} backend Where the notebook is stored.
+ * @property {boolean} migrated The migration from `localStorage` just happened.
  */
 
 /**
- * Lit une valeur JSON de `localStorage` (objet vide si absente ou illisible).
+ * Reads a JSON value from `localStorage` (empty object if missing or unreadable).
  * @param {string} key
  * @returns {*}
  */
@@ -184,21 +184,21 @@ function readLocal(key) {
 }
 
 /**
- * Lit les deux magasins.
+ * Reads both stores.
  * @param {IDBDatabase} database
- * @returns {Promise&lt;Array.&lt;Array.&lt;Object>>>} `[notes, dossiers]` bruts.
+ * @returns {Promise&lt;Array.&lt;Array.&lt;Object>>>} Raw `[notes, folders]`.
  */
 function readDb(database) {
   return Promise.all([getAll(database, STORES.notes), getAll(database, STORES.folders)]);
 }
 
 /**
- * Charge le carnet (asynchrone : à attendre avec `await`).
+ * Loads the notebook (asynchronous: to be awaited).
  *
- * Toutes les données lues sont validées
- * ({@link module:sanitize.sanitizeNotes|sanitizeNotes}) : elles ont pu être
- * écrites par une ancienne version, ou corrompues. Une donnée invalide ne
- * doit jamais atteindre le rendu.
+ * All data read is validated
+ * ({@link module:sanitize.sanitizeNotes|sanitizeNotes}): it may have been
+ * written by an old version, or corrupted. Invalid data must never reach the
+ * renderer.
  *
  * @returns {Promise&lt;LoadResult>}
  */
@@ -210,9 +210,9 @@ export async function loadAll() {
     let [rawNotes, rawFolders] = await readDb(db);
     let migrated = false;
     if (getMeta().storage !== 'idb') {
-      // Ne migrer que vers une base VIDE : si elle contient déjà des données
-      // (métadonnées perdues, par exemple), elles sont plus récentes que la
-      // copie de localStorage et ne doivent surtout pas être écrasées.
+      // Only migrate to an EMPTY database: if it already holds data
+      // (lost metadata, for example), that data is newer than the
+      // localStorage copy and must certainly not be overwritten.
       if (!rawNotes.length &amp;&amp; !rawFolders.length) {
         await migrateFromLocal(db);
         migrated = true;
@@ -220,16 +220,16 @@ export async function loadAll() {
       }
       setMeta({ storage: 'idb' });
     }
-    // On mémorise ce qui est réellement sur le disque (avant validation) : si
-    // la validation corrige une note, la première écriture enregistrera la
-    // version corrigée.
+    // Remember what is really on disk (before validation): if
+    // validation fixes a note, the first write will save the fixed
+    // version.
     rawNotes.forEach((r) => {
       if (r &amp;&amp; typeof r.id === 'string') saved.set(r.id, JSON.stringify(r));
     });
     backend = 'idb';
     return { notes: sanitizeNotes(rawNotes), folders: sanitizeFolders(rawFolders), backend, migrated };
   } catch (e) {
-    // IndexedDB indisponible : on reste sur localStorage, comme avant la 2.1.
+    // IndexedDB unavailable: stay on localStorage, as before 2.1.
     db = null;
     backend = 'local';
     try {
@@ -247,9 +247,9 @@ export async function loadAll() {
 }
 
 /**
- * Copie le carnet de `localStorage` vers IndexedDB, en une transaction : si
- * l'app est tuée au milieu, rien n'est écrit et la migration recommencera au
- * lancement suivant. L'original est conservé.
+ * Copies the notebook from `localStorage` to IndexedDB, in one transaction:
+ * if the app is killed halfway, nothing is written and the migration starts
+ * over on the next launch. The original is kept.
  * @param {IDBDatabase} database
  * @returns {Promise&lt;void>}
  */
@@ -260,7 +260,7 @@ async function migrateFromLocal(database) {
 }
 
 /**
- * Où le carnet est enregistré (pour l'écran Options et les tests).
+ * Where the notebook is stored (for the Settings screen and tests).
  * @returns {'idb'|'local'}
  */
 export function storageBackend() {
@@ -268,9 +268,9 @@ export function storageBackend() {
 }
 
 /**
- * Programme une écriture (debounce de {@link SAVE_DELAY} ms).
- * @param {Object.&lt;string, module:model~Note>} notes Le carnet.
- * @param {string} [id] Note modifiée. Sans id, toutes les notes seront comparées.
+ * Schedules a write (debounce of {@link SAVE_DELAY} ms).
+ * @param {Object.&lt;string, module:model~Note>} notes The notebook.
+ * @param {string} [id] Changed note. Without an id, every note is compared.
  */
 export function scheduleSave(notes, id) {
   if (id) dirty.add(id);
@@ -285,10 +285,10 @@ export function scheduleSave(notes, id) {
 }
 
 /**
- * Écrit immédiatement tout ce qui a changé (comparaison de toutes les notes).
+ * Writes everything that changed right away (comparing every note).
  * @param {Object.&lt;string, module:model~Note>} notes
- * @param {boolean} [strict=false] Attendre l'écriture physique sur le disque.
- * @returns {Promise&lt;void>} Résolue quand l'écriture est terminée (ou a échoué).
+ * @param {boolean} [strict=false] Wait for the physical write to disk.
+ * @returns {Promise&lt;void>} Resolved when the write is done (or failed).
  */
 export function flushSave(notes, strict = false) {
   clearTimeout(timer);
@@ -298,16 +298,16 @@ export function flushSave(notes, strict = false) {
 }
 
 /**
- * Écrit les notes qui diffèrent de leur dernière version écrite.
+ * Writes the notes that differ from their last written version.
  *
- * Point subtil : IndexedDB copie chaque objet **au moment** de `put`, et
- * `write` émet les `put` immédiatement (avant le premier `await`). Le JSON
- * comparé et l'objet écrit correspondent donc exactement au même état de la
- * note, même si l'utilisateur continue de taper pendant l'écriture.
+ * Subtle point: IndexedDB copies each object **at the time** of `put`, and
+ * `write` issues the `put`s immediately (before the first `await`). The
+ * compared JSON and the written object therefore match exactly the same
+ * state of the note, even if the user keeps typing during the write.
  *
  * @param {Object.&lt;string, module:model~Note>} notes
- * @param {?Array.&lt;string>} ids Notes à examiner, ou `null` pour toutes
- *   (et pour détecter les suppressions).
+ * @param {?Array.&lt;string>} ids Notes to examine, or `null` for all (and to
+ *   detect deletions).
  * @param {boolean} strict
  * @returns {Promise&lt;void>}
  */
@@ -318,7 +318,7 @@ async function writeChanges(notes, ids, strict) {
       if (json !== savedLocal) localStorage.setItem(STORAGE_KEY, json);
       savedLocal = json;
     } catch (e) {
-      /* stockage indisponible : l'utilisateur peut exporter */
+      /* storage unavailable: the user can export */
     }
     return;
   }
@@ -333,7 +333,7 @@ async function writeChanges(notes, ids, strict) {
     changed.set(id, json);
     put.push(n);
   });
-  // Suppressions : notes écrites autrefois et absentes du carnet.
+  // Deletions: notes written before and missing from the notebook.
   const del = (ids || [...saved.keys()]).filter((id) => !notes[id] &amp;&amp; saved.has(id));
   if (!put.length &amp;&amp; !del.length) return;
   try {
@@ -341,24 +341,24 @@ async function writeChanges(notes, ids, strict) {
     changed.forEach((json, id) => saved.set(id, json));
     del.forEach((id) => saved.delete(id));
   } catch (e) {
-    /* quota dépassé, base fermée… : ces notes restent « différentes » et seront retentées */
+    /* quota exceeded, database closed…: these notes stay "different" and will be retried */
   }
 }
 
 /**
- * Demande un stockage persistant (sans effet si non supporté).
+ * Requests persistent storage (no effect if unsupported).
  */
 export function requestPersistence() {
   try {
     if (navigator.storage &amp;&amp; navigator.storage.persist) navigator.storage.persist();
   } catch (e) {
-    /* ignoré */
+    /* ignored */
   }
 }
 
 /**
- * Enregistre les dossiers (immédiatement : ils changent rarement et pèsent
- * peu, on réécrit donc le magasin entier).
+ * Saves the folders (right away: they change rarely and weigh little, so the
+ * whole store is rewritten).
  * @param {Object.&lt;string, module:folders~Folder>} folders
  * @returns {Promise&lt;void>}
  */
@@ -367,22 +367,22 @@ export async function saveFolders(folders) {
     try {
       localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
     } catch (e) {
-      /* stockage indisponible */
+      /* storage unavailable */
     }
     return;
   }
   try {
     await write(db, { [STORES.folders]: { clear: true, put: Object.values(folders) } });
   } catch (e) {
-    /* retenté au prochain changement de dossier */
+    /* retried on the next folder change */
   }
 }
 
 /**
- * Contenu d'un fichier de sauvegarde (format v2 : notes et dossiers).
+ * Content of a backup file (v2 format: notes and folders).
  * @param {Object.&lt;string, module:model~Note>} notes
  * @param {Object.&lt;string, module:folders~Folder>} [folders={}]
- * @returns {string} JSON indenté (lisible et diffable).
+ * @returns {string} Indented JSON (readable and diffable).
  */
 export function backupJson(notes, folders = {}) {
   return JSON.stringify(
@@ -393,13 +393,13 @@ export function backupJson(notes, folders = {}) {
 }
 
 /**
- * Contenu d'un fichier `.inkline` : une seule note, pour l'envoyer à quelqu'un.
+ * Content of an `.inkline` file: a single note, to send to someone.
  * @param {module:model~Note} note
  * @returns {string}
  */
 export function noteFileJson(note) {
-  // Le rangement (dossier, catégories, épingle, blocs réduits) reste chez soi : il n'a pas
-  // de sens chez le destinataire.
+  // Filing (folder, categories, pin, collapsed blocks) stays at home: it makes
+  // no sense for the recipient.
   // eslint-disable-next-line no-unused-vars
   const { folder, cats, pinned, ...shared } = note;
   shared.blocks = note.blocks.map((b) => {
@@ -411,40 +411,39 @@ export function noteFileJson(note) {
 }
 
 /**
- * Résultat d'un import.
+ * Result of an import.
  * @typedef {Object} ImportResult
- * @property {'note'|'backup'} kind Type de fichier reconnu.
- * @property {number} count Nombre de notes ajoutées ou mises à jour.
- * @property {string|null} firstId Id de la note importée (pour l'ouvrir directement).
+ * @property {'note'|'backup'} kind Type of file recognized.
+ * @property {number} count Number of notes added or updated.
+ * @property {string|null} firstId Id of the imported note (to open it directly).
  */
 
 /**
- * Importe un fichier dans le carnet : note partagée (`.inkline`) ou sauvegarde complète.
+ * Imports a file into the notebook: shared note (`.inkline`) or full backup.
  *
- * - **Note partagée** : elle est **ajoutée** avec de nouveaux identifiants,
- *   sans jamais écraser une note existante (recevoir deux fois la même note
- *   en crée deux copies, c'est voulu : on ne sait pas laquelle garder).
- * - **Sauvegarde** : fusion par id, la version la plus récente (`updated`)
- *   gagne. Importer deux fois la même sauvegarde est sans effet. Les dossiers
- *   d'une sauvegarde v2 absents du carnet sont ajoutés ; ceux qui existent déjà
- *   (même id) sont conservés tels quels. Une sauvegarde v1 (sans dossiers)
- *   reste lisible.
+ * - **Shared note**: it is **added** with new ids, never overwriting an
+ *   existing note (receiving the same note twice creates two copies, on
+ *   purpose: we cannot know which one to keep).
+ * - **Backup**: merged by id, the most recent version (`updated`) wins.
+ *   Importing the same backup twice has no effect. Folders of a v2 backup
+ *   missing from the notebook are added; those already there (same id) are
+ *   kept as they are. A v1 backup (no folders) stays readable.
  *
- * Dans les deux cas, tout passe par {@link module:sanitize|sanitize}.
+ * In both cases, everything goes through {@link module:sanitize|sanitize}.
  *
- * @param {Object.&lt;string, module:model~Note>} notes Carnet (modifié sur place).
- * @param {string} text Contenu du fichier.
- * @param {Object.&lt;string, module:folders~Folder>} [folders={}] Dossiers (modifiés sur place).
+ * @param {Object.&lt;string, module:model~Note>} notes Notebook (modified in place).
+ * @param {string} text File content.
+ * @param {Object.&lt;string, module:folders~Folder>} [folders={}] Folders (modified in place).
  * @returns {ImportResult}
- * @throws {Error} Si le fichier n'est ni du JSON ni un format Inkline.
+ * @throws {Error} If the file is neither JSON nor an Inkline format.
  */
 export function importFile(notes, text, folders = {}) {
   const d = JSON.parse(text);
   if (d &amp;&amp; d.kind === 'note' &amp;&amp; d.note) {
     const n = sanitizeNote(d.note, { freshIds: true });
     if (!n) throw new Error('note invalide');
-    // La note reçue garde sa date de création d'origine ; elle est « modifiée »
-    // maintenant (elle remonte en tête de liste).
+    // The received note keeps its original creation date; it is "modified"
+    // now (it moves to the top of the list).
     n.updated = Date.now();
     notes[n.id] = n;
     return { kind: 'note', count: 1, firstId: n.id };
@@ -452,8 +451,8 @@ export function importFile(notes, text, folders = {}) {
   const incoming = sanitizeNotes(d &amp;&amp; d.notes ? d.notes : d);
   if (d &amp;&amp; d.folders) {
     Object.values(sanitizeFolders(d.folders)).forEach((f) => {
-      // Dossier déjà là : on lui ajoute les catégories qui lui manquent (2.8.6),
-      // pour que les notes importées gardent les leurs.
+      // Folder already there: add the categories it is missing (2.8.6),
+      // so that imported notes keep theirs.
       const here = folders[f.id];
       if (here &amp;&amp; f.cats) {
         const ids = new Set((here.cats || []).map((c) => c.id));
@@ -478,41 +477,41 @@ export function importFile(notes, text, folders = {}) {
 }
 
 /**
- * Métadonnées du carnet, stockées à part des notes.
+ * Notebook metadata, stored apart from the notes.
  * @typedef {Object} Meta
- * @property {number} [firstUse] Horodatage de la première ouverture de l'app.
- * @property {number} [lastExport] Horodatage du dernier « Exporter le carnet ».
- * @property {'cards'|'mosaic'|'list'} [listView] Affichage de la liste choisi dans les Options.
- * @property {string} [folder] Sélection de la barre de dossiers (`'all'`, `'none'` ou id de dossier).
- * @property {Object.&lt;string, string>} [sorts] Tri choisi pour chaque sélection de la barre de dossiers.
- * @property {string} [lang] Langue de l'interface (2.9) : `auto`, `en` ou `fr`.
- * @property {Object.&lt;string, string>} [catSel] Catégorie choisie dans chaque dossier (2.8.6) : `'all'`, `'none'` ou id.
- * @property {Object.&lt;string, boolean>} [catFold] Sections repliées de l'accueil (2.8.6), clés `dossier:catégorie`.
- * @property {number} [dataVersion] Version du format des données locales (2 depuis la 2.0).
- * @property {'idb'} [storage] Présent une fois le carnet migré vers IndexedDB (2.1).
- * @property {boolean} [autoFold] Option « Réduire automatiquement les blocs longs » (2.2).
- * @property {module:storage~DrillSettings} [drill] Derniers réglages de l'entraînement Rythme (2.3).
- * @property {module:storage~GenSettings} [gen] Derniers réglages des exercices aléatoires (2.8).
+ * @property {number} [firstUse] Timestamp of the app's first opening.
+ * @property {number} [lastExport] Timestamp of the last "Export notebook".
+ * @property {'cards'|'mosaic'|'list'} [listView] List display chosen in Settings.
+ * @property {string} [folder] Folder bar selection (`'all'`, `'none'` or folder id).
+ * @property {Object.&lt;string, string>} [sorts] Sort chosen for each folder bar selection.
+ * @property {string} [lang] Interface language (2.9): `auto`, `en` or `fr`.
+ * @property {Object.&lt;string, string>} [catSel] Category chosen in each folder (2.8.6): `'all'`, `'none'` or id.
+ * @property {Object.&lt;string, boolean>} [catFold] Collapsed sections of home (2.8.6), keys `folder:category`.
+ * @property {number} [dataVersion] Version of the local data format (2 since 2.0).
+ * @property {'idb'} [storage] Present once the notebook has been migrated to IndexedDB (2.1).
+ * @property {boolean} [autoFold] "Collapse long blocks automatically" option (2.2).
+ * @property {module:storage~DrillSettings} [drill] Last settings of Rhythm practice (2.3).
+ * @property {module:storage~GenSettings} [gen] Last settings of random exercises (2.8).
  */
 
 /**
- * Réglages de l'entraînement Rythme, communs aux Placements et aux exercices
- * aléatoires (sauf `notes` et `meter`, propres aux Placements).
+ * Rhythm practice settings, shared by Placements and random exercises
+ * (except `notes` and `meter`, specific to Placements).
  * @typedef {Object} DrillSettings
- * @property {number} notes Notes par mesure (1 à 12).
- * @property {string} meter Mesure des Placements (clé de {@link module:placements.METERS|METERS}, 2.8).
- * @property {number} tempo Tempo à la noire.
+ * @property {number} notes Notes per measure (1 to 12).
+ * @property {string} meter Placements time signature (key of {@link module:placements.METERS|METERS}, 2.8).
+ * @property {number} tempo Tempo (quarter note).
  * @property {boolean} swing
- * @property {Object.&lt;string, Array.&lt;boolean>>} beats Temps où le métronome
- *   clique, par mesure (2.8 ; un tableau de 4 avant). Absent pour une mesure :
- *   tous les temps.
- * @property {boolean} accent Accent sur le 1.
- * @property {boolean} countIn Mesure de décompte.
- * @property {boolean} mute Couper le rythme (métronome seul).
- * @property {boolean} loop Lecture en boucle (exercices aléatoires, 2.8).
+ * @property {Object.&lt;string, Array.&lt;boolean>>} beats Beats where the metronome
+ *   clicks, per time signature (2.8; an array of 4 before). Missing for a
+ *   time signature: every beat.
+ * @property {boolean} accent Accent on 1.
+ * @property {boolean} countIn Count-in measure.
+ * @property {boolean} mute Mute the rhythm (metronome only).
+ * @property {boolean} loop Loop playback (random exercises, 2.8).
  */
 
-/** Réglages par défaut de l'entraînement Rythme. */
+/** Default Rhythm practice settings. */
 export const DRILL_DEFAULTS = Object.freeze({
   notes: 1,
   meter: '4/4',
@@ -530,8 +529,8 @@ const bool = (v, def) => (typeof v === 'boolean' ? v : def);
 const meterKey = (v) => (METERS.some((m) => m.key === v) ? v : '4/4');
 
 /**
- * Valide les temps du métronome par mesure. Accepte l'ancien format (2.3 à
- * 2.7 : un tableau de 4, pour le 4/4).
+ * Validates the metronome beats per time signature. Accepts the old format
+ * (2.3 to 2.7: an array of 4, for 4/4).
  * @param {*} r
  * @returns {Object.&lt;string, Array.&lt;boolean>>}
  */
@@ -548,7 +547,7 @@ function beatsOf(r) {
 }
 
 /**
- * Valide les réglages de l'entraînement Rythme (valeurs par défaut pour ce qui manque).
+ * Validates Rhythm practice settings (defaults for whatever is missing).
  * @param {*} r
  * @returns {DrillSettings|undefined}
  */
@@ -570,18 +569,18 @@ function drillOf(r) {
 }
 
 /**
- * Réglages des exercices aléatoires (2.8).
+ * Random exercise settings (2.8).
  * @typedef {Object} GenSettings
- * @property {string} meter Mesure (clé de {@link module:placements.METERS|METERS}).
- * @property {number} measures Longueur de l'exercice : 1, 2 ou 4 mesures (4, 8 ou 12 en 2.8.0).
- * @property {number} min Notes par mesure, au moins.
- * @property {number} max Notes par mesure, au plus.
- * @property {Object.&lt;string, Array.&lt;number>>} starts Positions permises pour
- *   la première note, par mesure. Absent pour une mesure : toutes.
- * @property {number} seed Numéro du dernier exercice.
+ * @property {string} meter Time signature (key of {@link module:placements.METERS|METERS}).
+ * @property {number} measures Exercise length: 1, 2 or 4 measures (4, 8 or 12 in 2.8.0).
+ * @property {number} min Notes per measure, at least.
+ * @property {number} max Notes per measure, at most.
+ * @property {Object.&lt;string, Array.&lt;number>>} starts Allowed positions for the
+ *   first note, per time signature. Missing for a time signature: all.
+ * @property {number} seed Number of the last exercise.
  */
 
-/** Réglages par défaut des exercices aléatoires. */
+/** Default random exercise settings. */
 export const GEN_DEFAULTS = Object.freeze({
   meter: '4/4',
   measures: 4,
@@ -592,7 +591,7 @@ export const GEN_DEFAULTS = Object.freeze({
 });
 
 /**
- * Valide les réglages des exercices aléatoires.
+ * Validates random exercise settings.
  * @param {*} r
  * @returns {GenSettings|undefined}
  */
@@ -621,7 +620,7 @@ function genOf(r) {
 }
 
 /**
- * Garde seulement les tris valides d'un objet `{ sélection: tri }`.
+ * Keeps only the valid sorts of a `{ selection: sort }` object.
  * @param {*} r
  * @returns {Object.&lt;string, string>|undefined}
  */
@@ -637,10 +636,10 @@ function sortsOf(r) {
 }
 
 /**
- * Valide un petit dictionnaire de métadonnées : clés et valeurs bornées.
+ * Validates a small metadata dictionary: bounded keys and values.
  * @param {*} r
  * @param {RegExp} keyRe
- * @param {function(*): boolean} ok Valeur acceptée.
+ * @param {function(*): boolean} ok Accepted value.
  * @returns {Object|undefined}
  */
 function dictOf(r, keyRe, ok) {
@@ -655,7 +654,7 @@ function dictOf(r, keyRe, ok) {
 }
 
 /**
- * Lit les métadonnées (objet vide si absentes ou illisibles).
+ * Reads the metadata (empty object if missing or unreadable).
  * @returns {Meta}
  */
 export function getMeta() {
@@ -688,14 +687,14 @@ export function getMeta() {
 }
 
 /**
- * Met à jour une partie des métadonnées.
+ * Updates part of the metadata.
  * @param {Meta} patch
  */
 export function setMeta(patch) {
   try {
     localStorage.setItem(META_KEY, JSON.stringify({ ...getMeta(), ...patch }));
   } catch (e) {
-    /* stockage indisponible */
+    /* storage unavailable */
   }
 }
 </code></pre>

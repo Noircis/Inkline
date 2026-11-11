@@ -1,70 +1,70 @@
 /**
  * @module ireal
  * @description
- * Import et export au format **iReal Pro** (`irealb://`).
+ * Import and export in **iReal Pro** format (`irealb://`).
  *
- * ## Structure d'un lien
+ * ## Structure of a link
  *
  * ```
- * irealb://<morceau>===<morceau>===…===<nom de playlist>
- * morceau = Titre=Compositeur=(vide)=Style=Tonalité=(transposition)=Musique=(comp)=Tempo=Répétitions
+ * irealb://<tune>===<tune>===…===<playlist name>
+ * tune = Title=Composer=(empty)=Style=Key=(transpose)=Music=(comp)=Tempo=Repeats
  * ```
  *
- * Le tout est encodé en URL (`%20`…). L'ancien format `irealbook://` est plus
- * simple : `Titre=Compositeur=Style=Tonalité=n=Musique`, musique non obfusquée.
+ * The whole thing is URL-encoded (`%20`…). The old `irealbook://` format is
+ * simpler: `Title=Composer=Style=Key=n=Music`, with unobfuscated music.
  *
- * ## Obfuscation du champ musique
+ * ## Obfuscation of the music field
  *
- * Le champ musique commence par la signature `1r34LbKcu7`, suivie de la
- * chaîne réelle brouillée :
+ * The music field starts with the signature `1r34LbKcu7`, followed by the
+ * scrambled real string:
  *
- * - découpage en blocs de 50 caractères (le dernier bloc, ou un bloc suivi
- *   de moins de 2 caractères, n'est pas brouillé) ;
- * - dans chaque bloc, les positions 0–4 et 10–23 sont échangées avec leurs
- *   symétriques `49 − i`.
+ * - split into 50-character blocks (the last block, or a block followed by
+ *   fewer than 2 characters, is not scrambled);
+ * - in each block, positions 0–4 and 10–23 are swapped with their mirror
+ *   `49 − i`.
  *
- * Cette permutation est une **involution** (appliquée deux fois, elle redonne
- * l'original) : la même fonction {@link module:ireal.scramble|scramble} sert à
- * encoder et à décoder. Au décodage s'ajoutent trois substitutions de jetons
- * de compression (`XyQ` → 3 espaces, `LZ` → ` |`, `Kcl` → `| x`).
+ * This permutation is an **involution** (applied twice, it gives back the
+ * original): the same function {@link module:ireal.scramble|scramble} encodes
+ * and decodes. Decoding adds three substitutions of compression tokens
+ * (`XyQ` → 3 spaces, `LZ` → ` |`, `Kcl` → `| x`).
  *
- * ## Langage de la musique (une fois décodée)
+ * ## Music language (once decoded)
  *
- * | Jeton            | Sens                                   |
+ * | Token            | Meaning                                |
  * |------------------|----------------------------------------|
- * | `T44`, `T34`…    | chiffrage de mesure                    |
+ * | `T44`, `T34`…    | time signature                         |
  * | `*A`, `*B`, `*i` | section (A, B, intro…)                 |
- * | `[` `]`          | double barre ouvrante / fermante       |
- * | `{` `}`          | reprise ouvrante / fermante            |
- * | `\|`             | barre simple                           |
- * | `Z`              | barre de fin                           |
- * | `N1`, `N2`       | 1re / 2e fin                           |
- * | `x`, `r`         | répéter 1 / 2 mesures                  |
+ * | `[` `]`          | opening / closing double barline       |
+ * | `{` `}`          | start / end repeat                     |
+ * | `\|`             | single barline                         |
+ * | `Z`              | final barline                          |
+ * | `N1`, `N2`       | 1st / 2nd ending                       |
+ * | `x`, `r`         | repeat 1 / 2 measures                  |
  * | `n`              | *no chord*                             |
- * | `p`              | barre oblique (prolonge l'accord)      |
- * | `<…>`, `(…)`     | commentaire, accord alternatif (ignorés) |
- * | espace           | une **case** vide (4 cases par mesure) |
- * | `,`              | séparateur sans case                   |
+ * | `p`              | slash (continues the chord)            |
+ * | `<…>`, `(…)`     | comment, alternate chord (ignored)     |
+ * | space            | an empty **slot** (4 slots per measure) |
+ * | `,`              | separator without a slot               |
  *
- * Qualités iReal : `^7` maj7, `-7` m7, `h7` m7♭5, `o7` dim7, `+` aug…
+ * iReal qualities: `^7` maj7, `-7` m7, `h7` m7♭5, `o7` dim7, `+` aug…
  *
- * ## Limites connues
+ * ## Known limits
  *
- * Les codas, segnos et D.C. sont ignorés à l'import. Le format a été codé
- * d'après les lecteurs open source de ce format et validé par aller-retour
- * (export puis import), pas contre l'application iReal Pro elle-même.
+ * Codas, segnos and D.C. are ignored on import. The format was coded from
+ * open-source readers of this format and validated by round trip (export
+ * then import), not against the iReal Pro app itself.
  */
 
 import { t } from './i18n.js';
 import { CHORD_RE } from './chords.js';
 import { newGridBlock } from './model.js';
 
-/** Signature qui précède le champ musique obfusqué. */
+/** Signature preceding the obfuscated music field. */
 const MUSIC_PREFIX = '1r34LbKcu7';
 
 /**
- * Permutation d'un bloc de 50 caractères (voir l'en-tête du module).
- * @param {string} s Bloc de 50 caractères exactement.
+ * Permutation of a 50-character block (see the module header).
+ * @param {string} s Block of exactly 50 characters.
  * @returns {string}
  */
 function obfuscate50(s) {
@@ -81,7 +81,7 @@ function obfuscate50(s) {
 }
 
 /**
- * Brouille ou débrouille une chaîne (involution).
+ * Scrambles or unscrambles a string (involution).
  * @param {string} s
  * @returns {string}
  */
@@ -97,7 +97,7 @@ export function scramble(s) {
 }
 
 /**
- * Décode un champ musique (sans la signature).
+ * Decodes a music field (without the signature).
  * @param {string} s
  * @returns {string}
  */
@@ -106,7 +106,7 @@ function unscramble(s) {
 }
 
 /**
- * Qualité Inkline/texte libre → qualité iReal.
+ * Inkline/free-text quality → iReal quality.
  * @example qualityToIReal('maj7') // '^7'
  * @param {string} q
  * @returns {string}
@@ -124,7 +124,7 @@ function qualityToIReal(q) {
 }
 
 /**
- * Qualité iReal → qualité lisible au clavier.
+ * iReal quality → quality readable on a keyboard.
  * @example qualityFromIReal('-^7') // 'mMaj7'
  * @param {string} q
  * @returns {string}
@@ -142,7 +142,7 @@ export function qualityFromIReal(q) {
 }
 
 /**
- * Case de grille → jeton iReal.
+ * Chart slot → iReal token.
  * @param {string} c
  * @returns {string}
  */
@@ -156,16 +156,16 @@ export function chordToIReal(c) {
   return m[1] + fix(m[2]) + qualityToIReal(m[3]) + (m[4] ? '/' + fix(m[4]) : '');
 }
 
-/** Chiffrages ↔ jetons iReal. */
+/** Time signatures ↔ iReal tokens. */
 const TIME_TO_TOKEN = { '4/4': 'T44', '3/4': 'T34', '2/4': 'T24', '5/4': 'T54', '6/8': 'T68', '12/8': 'T12' };
 const TOKEN_TO_TIME = { T44: '4/4', T34: '3/4', T24: '2/4', T54: '5/4', T68: '6/8', T12: '12/8', T64: '6/4' };
 
 /**
- * Sérialise les mesures d'une grille dans le langage iReal (non obfusqué).
+ * Serializes a chart's measures into the iReal language (not obfuscated).
  *
- * Chaque mesure est écrite sur 4 **cases** : 1 accord = accord + 3 espaces,
- * 2 accords = 1re et 3e cases, 3 accords = 2 + 1 + 1, 4 accords = 1 par case.
- * Les barres sont écrites entre deux mesures selon les drapeaux de chacune.
+ * Each measure is written over 4 **slots**: 1 chord = chord + 3 spaces,
+ * 2 chords = 1st and 3rd slots, 3 chords = 2 + 1 + 1, 4 chords = 1 per slot.
+ * Barlines are written between two measures according to each one's flags.
  *
  * @param {module:model~GridBlock} b
  * @returns {string}
@@ -175,7 +175,7 @@ export function toIRealMusic(b) {
   let s = TIME_TO_TOKEN[b.time] || 'T44';
   M.forEach((m, i) => {
     const p = M[i - 1];
-    // Barre entre la mesure précédente et celle-ci.
+    // Barline between the previous measure and this one.
     if (p) {
       if (p.re) s += '}';
       else if (p.fin) s += 'Z';
@@ -199,8 +199,8 @@ export function toIRealMusic(b) {
 }
 
 /**
- * Construit le lien `irealb://` d'une grille.
- * @param {string} title Titre du morceau.
+ * Builds the `irealb://` link of a chart.
+ * @param {string} title Title of the tune.
  * @param {module:model~GridBlock} b
  * @returns {string}
  */
@@ -221,12 +221,12 @@ export function toIRealLink(title, b) {
 }
 
 /**
- * Analyse le langage musical iReal (déjà décodé) en mesures de grille.
+ * Parses the iReal music language (already decoded) into chart measures.
  *
- * Scanner écrit à la main : à chaque position on essaie des motifs ancrés
- * par ordre de priorité. L'état se réduit à la mesure en cours `cur` et à des
- * drapeaux en attente `pend` (section, début de reprise) qui s'appliqueront
- * à la prochaine mesure ouverte.
+ * Hand-written scanner: at each position, anchored patterns are tried in
+ * priority order. The state boils down to the current measure `cur` and
+ * pending flags `pend` (section, start repeat) that will apply to the next
+ * measure opened.
  *
  * @param {string} raw
  * @returns {{time: string, measures: module:model~GridMeasure[]}}
@@ -241,20 +241,20 @@ export function parseIRealMusic(raw) {
 }
 
 /**
- * État du lecteur iReal : mesures déjà lues, mesure en cours, attributs en
- * attente (section, début de reprise, qui s'appliqueront à la prochaine
- * mesure), chiffrage.
+ * State of the iReal reader: measures already read, current measure, pending
+ * attributes (section, start repeat, which will apply to the next measure),
+ * time signature.
  * @typedef {Object} IRealParser
  * @property {module:model~GridMeasure[]} M
  * @property {?module:model~GridMeasure} cur
  * @property {Object} pend
  * @property {string} time
- * @property {function(): module:model~GridMeasure} open Mesure en cours (créée au besoin).
- * @property {function(string=)} close Ferme la mesure en cours, avec un drapeau éventuel.
+ * @property {function(): module:model~GridMeasure} open Current measure (created if needed).
+ * @property {function(string=)} close Closes the current measure, with an optional flag.
  */
 
 /**
- * Crée l'état du lecteur.
+ * Creates the reader state.
  * @returns {IRealParser}
  */
 function newParser() {
@@ -271,14 +271,14 @@ function newParser() {
       if (flag) p.cur[flag] = true;
       p.M.push(p.cur);
       p.cur = null;
-    } else if (flag && p.M.length) p.M[p.M.length - 1][flag] = true; // barre juste après une autre barre
+    } else if (flag && p.M.length) p.M[p.M.length - 1][flag] = true; // barline right after another barline
   };
   return p;
 }
 
 /**
- * Jetons d'un caractère : barres, reprises, mesures de répétition, accords
- * « pas de changement » (`n`) et cases vides (`p`).
+ * One-character tokens: barlines, repeats, repeat measures, "no change"
+ * chords (`n`) and empty slots (`p`).
  * @type {Object.<string, function(IRealParser)>}
  */
 const SINGLE = {
@@ -302,14 +302,14 @@ const SINGLE = {
   p: (p) => p.open().ch.push(''),
 };
 
-/** Accord iReal : fondamentale (W = invisible), altération, qualité, basse. */
+/** iReal chord: root (W = invisible), accidental, quality, bass. */
 const CHORD_TOKEN = /^([A-GW])([b#]?)([\^\-ho+0-9b#susaldt]*)(\/[A-G][b#]?)?/;
 
 /**
- * Lit un jeton en tête de `r` et met à jour le lecteur.
+ * Reads a token at the start of `r` and updates the reader.
  * @param {IRealParser} p
- * @param {string} r Reste du texte.
- * @returns {number} Nombre de caractères consommés (au moins 1).
+ * @param {string} r Rest of the text.
+ * @returns {number} Number of characters consumed (at least 1).
  */
 function readToken(p, r) {
   let mm;
@@ -333,16 +333,16 @@ function readToken(p, r) {
     return 1;
   }
   if ((mm = CHORD_TOKEN.exec(r)) && mm[0].length) {
-    // W = « fondamentale invisible » (accord prolongé avec nouvelle basse) : on garde une case vide.
+    // W = "invisible root" (chord continued with a new bass): keep an empty slot.
     p.open().ch.push(mm[1] === 'W' ? '' : mm[1] + mm[2] + qualityFromIReal(mm[3]) + (mm[4] || ''));
     return mm[0].length;
   }
-  return 1; // jeton ignoré : espace, virgule, Y, S, Q, f, l, s, U…
+  return 1; // ignored token: space, comma, Y, S, Q, f, l, s, U…
 }
 
 /**
- * Nettoyage final : mesures vides en fin de morceau retirées, barre de fin
- * implicite (sauf si le morceau finit par une reprise).
+ * Final cleanup: empty measures at the end of the tune removed, implicit
+ * final barline (unless the tune ends with a repeat).
  * @param {module:model~GridMeasure[]} M
  * @returns {module:model~GridMeasure[]}
  */
@@ -356,20 +356,20 @@ function tidy(M) {
 }
 
 /**
- * Un morceau importé.
+ * An imported tune.
  * @typedef {Object} IRealSong
  * @property {string} title
- * @property {string} composer Au format iReal « Nom Prénom ».
+ * @property {string} composer In iReal "Last First" format.
  * @property {string} style
  * @property {string} key
- * @property {number} tempo 0 si non précisé.
+ * @property {number} tempo 0 if not given.
  * @property {string} time
  * @property {module:model~GridMeasure[]} measures
  */
 
 /**
- * Extrait tous les morceaux d'un texte : lien seul, playlist, ou fichier
- * `.html` partagé par iReal Pro (les liens y sont dans des attributs `href`).
+ * Extracts every tune from a text: single link, playlist, or `.html` file
+ * shared by iReal Pro (the links are in `href` attributes).
  *
  * @param {string} text
  * @returns {IRealSong[]}
@@ -389,14 +389,14 @@ export function parseIRealAll(text) {
     d = d.replace(/^irealb(?:ook)?:\/\//, '');
     d.split('===').forEach((song) => {
       const p = song.split('=');
-      if (p.length < 6) return; // nom de playlist ou fragment
+      if (p.length < 6) return; // playlist name or fragment
       const mi = p.findIndex((x) => x.startsWith(MUSIC_PREFIX));
       let music;
       let style;
       let key;
       let tempo = 0;
       if (mi >= 0) {
-        // Les champs sont repérés par rapport au champ musique, plus robuste qu'un index fixe.
+        // Fields are located relative to the music field, sturdier than a fixed index.
         music = unscramble(p[mi].slice(MUSIC_PREFIX.length));
         style = p[mi - 3] || '';
         key = p[mi - 2] || 'C';
@@ -423,7 +423,7 @@ export function parseIRealAll(text) {
 }
 
 /**
- * Convertit un morceau importé en bloc grille.
+ * Converts an imported tune into a chart block.
  * @param {IRealSong} s
  * @returns {module:model~GridBlock}
  */

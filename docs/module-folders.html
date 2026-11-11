@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>folders - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,22 +63,22 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Dossiers</strong> du carnet (depuis la 2.0) : modèle et opérations pures.</p>
-<h2>Modèle</h2>
-<p>Un dossier est un objet <code>{ id, name, color, created }</code>. Les dossiers sont
-stockés <strong>à part</strong> des notes (voir <a href="module-storage.html">storage</a>) ; une note
-référence son dossier par son id dans le champ optionnel <code>folder</code>. Une note
-sans <code>folder</code> (ou dont le dossier n'existe plus) est « non classée ».</p>
-<p>Pas de sous-dossiers, mais des <strong>catégories</strong> (2.8.6) : chaque dossier a
-sa propre liste ordonnée de catégories (<code>cats</code>, par exemple Technique, Son,
-Impro dans « Saxophone »). Une note peut en avoir <strong>plusieurs</strong> (champ
-<code>cats</code> de la note, ids des catégories de son dossier) ; elle apparaît alors
-dans chacune des sections (groupByCategory). Changer une note de
-dossier efface ses catégories : elles n'ont de sens que dans leur dossier.</p>
-<h2>Vues spéciales</h2>
-<p>La barre de dossiers de l'accueil propose deux entrées qui ne sont pas des
-dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
-<a href="module-folders.html#.UNFILED">UNFILED</a> (notes non classées).</p></div>
+                <div class="description usertext"><p>Notebook <strong>folders</strong> (since 2.0): model and pure operations.</p>
+<h2>Model</h2>
+<p>A folder is an object <code>{ id, name, color, created }</code>. Folders are stored
+<strong>separately</strong> from notes (see <a href="module-storage.html">storage</a>); a note
+references its folder by id in the optional <code>folder</code> field. A note without
+<code>folder</code> (or whose folder no longer exists) is &quot;unfiled&quot;.</p>
+<p>No subfolders, but <strong>categories</strong> (2.8.6): each folder has its own ordered
+list of categories (<code>cats</code>, for example Technique, Sound, Improv in
+&quot;Saxophone&quot;). A note can have <strong>several</strong> (the note's <code>cats</code> field, ids of
+its folder's categories); it then appears in each section
+(groupByCategory). Moving a note to another folder clears its
+categories: they only make sense in their folder.</p>
+<h2>Special views</h2>
+<p>The home folder bar offers two entries that are not folders:
+<a href="module-folders.html#.ALL">ALL</a> (all notes) and
+<a href="module-folders.html#.UNFILED">UNFILED</a> (unfiled notes).</p></div>
             
 
             
@@ -90,22 +90,22 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Dossiers</strong> du carnet (depuis la 2.0) : modèle et opérations pures.</p>
-<h2>Modèle</h2>
-<p>Un dossier est un objet <code>{ id, name, color, created }</code>. Les dossiers sont
-stockés <strong>à part</strong> des notes (voir <a href="module-storage.html">storage</a>) ; une note
-référence son dossier par son id dans le champ optionnel <code>folder</code>. Une note
-sans <code>folder</code> (ou dont le dossier n'existe plus) est « non classée ».</p>
-<p>Pas de sous-dossiers, mais des <strong>catégories</strong> (2.8.6) : chaque dossier a
-sa propre liste ordonnée de catégories (<code>cats</code>, par exemple Technique, Son,
-Impro dans « Saxophone »). Une note peut en avoir <strong>plusieurs</strong> (champ
-<code>cats</code> de la note, ids des catégories de son dossier) ; elle apparaît alors
-dans chacune des sections (groupByCategory). Changer une note de
-dossier efface ses catégories : elles n'ont de sens que dans leur dossier.</p>
-<h2>Vues spéciales</h2>
-<p>La barre de dossiers de l'accueil propose deux entrées qui ne sont pas des
-dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
-<a href="module-folders.html#.UNFILED">UNFILED</a> (notes non classées).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Notebook <strong>folders</strong> (since 2.0): model and pure operations.</p>
+<h2>Model</h2>
+<p>A folder is an object <code>{ id, name, color, created }</code>. Folders are stored
+<strong>separately</strong> from notes (see <a href="module-storage.html">storage</a>); a note
+references its folder by id in the optional <code>folder</code> field. A note without
+<code>folder</code> (or whose folder no longer exists) is &quot;unfiled&quot;.</p>
+<p>No subfolders, but <strong>categories</strong> (2.8.6): each folder has its own ordered
+list of categories (<code>cats</code>, for example Technique, Sound, Improv in
+&quot;Saxophone&quot;). A note can have <strong>several</strong> (the note's <code>cats</code> field, ids of
+its folder's categories); it then appears in each section
+(groupByCategory). Moving a note to another folder clears its
+categories: they only make sense in their folder.</p>
+<h2>Special views</h2>
+<p>The home folder bar offers two entries that are not folders:
+<a href="module-folders.html#.ALL">ALL</a> (all notes) and
+<a href="module-folders.html#.UNFILED">UNFILED</a> (unfiled notes).</p></li></ul></dd>
     
 
     
@@ -206,7 +206,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection « toutes les notes » de la barre de dossiers.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>&quot;All notes&quot; selection of the folder bar.</p></li></ul></dd>
     
 
     
@@ -252,7 +252,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 
 
 <div class="description usertext">
-    <p>Sélection « toutes les notes » de la barre de dossiers.</p>
+    <p>&quot;All notes&quot; selection of the folder bar.</p>
 </div>
 
 
@@ -273,7 +273,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection « tout le dossier » de la barre de catégories.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>&quot;Whole folder&quot; selection of the category bar.</p></li></ul></dd>
     
 
     
@@ -319,7 +319,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 
 
 <div class="description usertext">
-    <p>Sélection « tout le dossier » de la barre de catégories.</p>
+    <p>&quot;Whole folder&quot; selection of the category bar.</p>
 </div>
 
 
@@ -340,7 +340,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Longueur maximale d'un nom de catégorie.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum length of a category name.</p></li></ul></dd>
     
 
     
@@ -386,7 +386,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 
 
 <div class="description usertext">
-    <p>Longueur maximale d'un nom de catégorie.</p>
+    <p>Maximum length of a category name.</p>
 </div>
 
 
@@ -407,7 +407,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Clés de couleur valides.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Valid color keys.</p></li></ul></dd>
     
 
     
@@ -453,7 +453,7 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 
 
 <div class="description usertext">
-    <p>Clés de couleur valides.</p>
+    <p>Valid color keys.</p>
 </div>
 
 
@@ -474,10 +474,10 @@ dossiers : <a href="module-folders.html#.ALL">ALL</a> (toutes les notes) et
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Couleurs proposées pour les dossiers. La couleur réelle vient du thème
-(variables CSS <code>--fc-&lt;clé&gt;</code>, une valeur pour le mode clair et une pour le
-mode sombre) : on ne stocke que la clé.
-Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="module-i18n.html">i18n</a>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Colors offered for folders. The actual color comes from the theme (CSS
+variables <code>--fc-&lt;key&gt;</code>, one value for light mode and one for dark mode):
+only the key is stored.
+Color names: <code>color.*</code> keys in the dictionaries (<a href="module-i18n.html">i18n</a>).</p></li></ul></dd>
     
 
     
@@ -523,10 +523,10 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 
 
 <div class="description usertext">
-    <p>Couleurs proposées pour les dossiers. La couleur réelle vient du thème
-(variables CSS <code>--fc-&lt;clé&gt;</code>, une valeur pour le mode clair et une pour le
-mode sombre) : on ne stocke que la clé.
-Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="module-i18n.html">i18n</a>).</p>
+    <p>Colors offered for folders. The actual color comes from the theme (CSS
+variables <code>--fc-&lt;key&gt;</code>, one value for light mode and one for dark mode):
+only the key is stored.
+Color names: <code>color.*</code> keys in the dictionaries (<a href="module-i18n.html">i18n</a>).</p>
 </div>
 
 
@@ -558,7 +558,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Longueur maximale d'un nom de dossier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum length of a folder name.</p></li></ul></dd>
     
 
     
@@ -604,7 +604,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 
 
 <div class="description usertext">
-    <p>Longueur maximale d'un nom de dossier.</p>
+    <p>Maximum length of a folder name.</p>
 </div>
 
 
@@ -625,7 +625,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nombre maximal de catégories par dossier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum number of categories per folder.</p></li></ul></dd>
     
 
     
@@ -671,7 +671,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 
 
 <div class="description usertext">
-    <p>Nombre maximal de catégories par dossier.</p>
+    <p>Maximum number of categories per folder.</p>
 </div>
 
 
@@ -692,7 +692,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection « sans catégorie » de la barre de catégories.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>&quot;No category&quot; selection of the category bar.</p></li></ul></dd>
     
 
     
@@ -738,7 +738,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 
 
 <div class="description usertext">
-    <p>Sélection « sans catégorie » de la barre de catégories.</p>
+    <p>&quot;No category&quot; selection of the category bar.</p>
 </div>
 
 
@@ -759,7 +759,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection « notes non classées » de la barre de dossiers.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>&quot;Unfiled notes&quot; selection of the folder bar.</p></li></ul></dd>
     
 
     
@@ -805,7 +805,7 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 
 
 <div class="description usertext">
-    <p>Sélection « notes non classées » de la barre de dossiers.</p>
+    <p>&quot;Unfiled notes&quot; selection of the folder bar.</p>
 </div>
 
 
@@ -836,15 +836,14 @@ Noms des couleurs : clés <code>color.*</code> des dictionnaires (<a href="modul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ajoute une catégorie à un dossier (modifie le dossier). Un nom déjà pris
-(sans tenir compte de la casse ni des accents) renvoie la catégorie
-existante.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Adds a category to a folder (modifies the folder). A name already taken
+(ignoring case and accents) returns the existing category.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line198">line 198</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line196">line 196</a>
     </li></ul></dd>
     
 
@@ -983,7 +982,7 @@ existante.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>null</code> si le nom est vide ou si le dossier est plein.</p>
+    <p><code>null</code> if the name is empty or the folder is full.</p>
 </div>
 
 
@@ -1020,14 +1019,14 @@ existante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Catégories d'une note, dans l'ordre du dossier (celles qui n'existent plus
-sont ignorées).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Categories of a note, in folder order (those that no longer exist are
+ignored).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line217">line 217</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line215">line 215</a>
     </li></ul></dd>
     
 
@@ -1199,7 +1198,7 @@ sont ignorées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nettoie un nom de dossier saisi : espaces superflus retirés, longueur bornée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Cleans a typed folder name: extra spaces removed, length bounded.</p></li></ul></dd>
     
 
     
@@ -1338,7 +1337,7 @@ sont ignorées).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Longueur maximale (FOLDER_NAME_MAX par défaut).</p></td>
+            <td class="description last"><p>Maximum length (FOLDER_NAME_MAX by default).</p></td>
         </tr>
 
     
@@ -1364,7 +1363,7 @@ sont ignorées).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Chaîne éventuellement vide.</p>
+    <p>Possibly empty string.</p>
 </div>
 
 
@@ -1401,13 +1400,13 @@ sont ignorées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nombre de notes par catégorie d'un dossier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Number of notes per category of a folder.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line243">line 243</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line241">line 241</a>
     </li></ul></dd>
     
 
@@ -1496,7 +1495,7 @@ sont ignorées).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Notes du dossier.</p></td>
+            <td class="description last"><p>Notes of the folder.</p></td>
         </tr>
 
     
@@ -1546,7 +1545,7 @@ sont ignorées).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Clés : ALL_CATS, NO_CAT et chaque id.</p>
+    <p>Keys: ALL_CATS, NO_CAT and each id.</p>
 </div>
 
 
@@ -1583,13 +1582,13 @@ sont ignorées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nombre de notes par sélection, pour les compteurs de la barre de dossiers.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Number of notes per selection, for the folder bar counters.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line154">line 154</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line153">line 153</a>
     </li></ul></dd>
     
 
@@ -1728,7 +1727,7 @@ sont ignorées).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Clés : ALL, UNFILED et chaque id de dossier.</p>
+    <p>Keys: ALL, UNFILED and each folder id.</p>
 </div>
 
 
@@ -1765,14 +1764,14 @@ sont ignorées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Supprime une catégorie : elle est retirée du dossier et des notes (aucune
-note n'est supprimée). Modifie sur place.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Deletes a category: it is removed from the folder and from the notes (no
+note is deleted). Modifies in place.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line280">line 280</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line278">line 278</a>
     </li></ul></dd>
     
 
@@ -1935,7 +1934,7 @@ note n'est supprimée). Modifie sur place.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Nombre de notes concernées.</p>
+    <p>Number of notes affected.</p>
 </div>
 
 
@@ -1972,14 +1971,14 @@ note n'est supprimée). Modifie sur place.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Supprime un dossier : ses notes redeviennent non classées (aucune note
-n'est supprimée). Modifie <code>notes</code> et <code>folders</code> sur place.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Deletes a folder: its notes become unfiled again (no note is deleted).
+Changes <code>notes</code> and <code>folders</code> in place.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line175">line 175</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line174">line 174</a>
     </li></ul></dd>
     
 
@@ -2142,7 +2141,7 @@ n'est supprimée). Modifie <code>notes</code> et <code>folders</code> sur place.
 
         
 <div class="param-desc">
-    <p>Nombre de notes déclassées.</p>
+    <p>Number of notes unfiled.</p>
 </div>
 
 
@@ -2179,14 +2178,14 @@ n'est supprimée). Modifie <code>notes</code> et <code>folders</code> sur place.
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Range une note : dossier, et catégories de ce dossier. Changer de dossier
-efface les catégories.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Files a note: folder, and categories of that folder. Changing the folder
+clears the categories.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line314">line 314</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line312">line 312</a>
     </li></ul></dd>
     
 
@@ -2329,7 +2328,7 @@ efface les catégories.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p><code>null</code> : non classée.</p></td>
+            <td class="description last"><p><code>null</code>: unfiled.</p></td>
         </tr>
 
     
@@ -2409,14 +2408,13 @@ efface les catégories.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dossier d'une note, ou <code>null</code> si elle n'est pas classée (ou si son dossier
-a disparu).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Folder of a note, or <code>null</code> if it is unfiled (or its folder disappeared).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line130">line 130</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -2591,16 +2589,16 @@ a disparu).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Range les notes d'un dossier en <strong>sections</strong>, une par catégorie dans
-l'ordre du dossier, puis « Sans catégorie ». Une note de plusieurs
-catégories apparaît dans chacune. Les sections vides sont omises. L'ordre
-des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Groups a folder's notes into <strong>sections</strong>, one per category in folder
+order, then &quot;No category&quot;. A note with several categories appears in
+each. Empty sections are left out. Note order is kept (they arrive already
+sorted).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line264">line 264</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line262">line 262</a>
     </li></ul></dd>
     
 
@@ -2739,8 +2737,8 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>cat</code> vaut
-<code>null</code> pour « Sans catégorie ».</p>
+    <p><code>cat</code> is
+<code>null</code> for &quot;No category&quot;.</p>
 </div>
 
 
@@ -2777,13 +2775,13 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>La note appartient-elle à la sélection de la barre de catégories ?</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Does the note belong to the category bar's selection?</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line230">line 230</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -2896,7 +2894,7 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>ALL_CATS, NO_CAT ou un id de catégorie.</p></td>
+            <td class="description last"><p>ALL_CATS, NO_CAT or a category id.</p></td>
         </tr>
 
     
@@ -2979,13 +2977,13 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>La note appartient-elle à la sélection de la barre de dossiers ?</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Does the note belong to the folder bar's selection?</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line141">line 141</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -3098,7 +3096,7 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>ALL, UNFILED ou un id de dossier.</p></td>
+            <td class="description last"><p>ALL, UNFILED or a folder id.</p></td>
         </tr>
 
     
@@ -3181,13 +3179,13 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Déplace une catégorie d'un cran (vers le haut <code>-1</code>, vers le bas <code>+1</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Moves a category by one step (up <code>-1</code>, down <code>+1</code>).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line299">line 299</a>
+        <a href="folders.js.html">folders.js</a>, <a href="folders.js.html#line297">line 297</a>
     </li></ul></dd>
     
 
@@ -3364,7 +3362,7 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Crée un dossier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Creates a folder.</p></li></ul></dd>
     
 
     
@@ -3574,8 +3572,8 @@ des notes est conservé (elles arrivent déjà triées).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dossiers triés par nom (ordre alphabétique français, sans tenir compte de
-la casse ni des accents).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Folders sorted by name (French alphabetical order, ignoring case and
+accents).</p></li></ul></dd>
     
 
     
@@ -3731,7 +3729,7 @@ la casse ni des accents).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une catégorie de dossier (2.8.6).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A folder category (2.8.6).</p></li></ul></dd>
     
 
     
@@ -3841,7 +3839,7 @@ la casse ni des accents).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Nom affiché (1 à CAT_NAME_MAX caractères).</p></td>
+            <td class="description last"><p>Displayed name (1 to CAT_NAME_MAX characters).</p></td>
         </tr>
 
     
@@ -3854,7 +3852,7 @@ la casse ni des accents).</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Une catégorie de dossier (2.8.6).</p>
+    <p>A folder category (2.8.6).</p>
 </div>
 
 
@@ -3886,7 +3884,7 @@ la casse ni des accents).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Un dossier.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A folder.</p></li></ul></dd>
     
 
     
@@ -4010,7 +4008,7 @@ la casse ni des accents).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Nom affiché (1 à FOLDER_NAME_MAX caractères).</p></td>
+            <td class="description last"><p>Displayed name (1 to FOLDER_NAME_MAX characters).</p></td>
         </tr>
 
     
@@ -4040,7 +4038,7 @@ la casse ni des accents).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Clé de couleur (voir FOLDER_COLORS).</p></td>
+            <td class="description last"><p>Color key (see FOLDER_COLORS).</p></td>
         </tr>
 
     
@@ -4070,7 +4068,7 @@ la casse ni des accents).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Horodatage de création.</p></td>
+            <td class="description last"><p>Creation timestamp.</p></td>
         </tr>
 
     
@@ -4102,7 +4100,7 @@ la casse ni des accents).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Catégories du dossier, dans l'ordre d'affichage (2.8.6).</p></td>
+            <td class="description last"><p>Categories of the folder, in display order (2.8.6).</p></td>
         </tr>
 
     
@@ -4115,7 +4113,7 @@ la casse ni des accents).</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Un dossier.</p>
+    <p>A folder.</p>
 </div>
 
 

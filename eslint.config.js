@@ -1,5 +1,5 @@
-// Configuration ESLint (format « flat config », ESLint 9).
-// Lancer : npm run lint
+// ESLint configuration ("flat config" format, ESLint 9).
+// Run: npm run lint
 import js from '@eslint/js';
 import globals from 'globals';
 
@@ -23,7 +23,7 @@ export default [
     languageOptions: { sourceType: 'module', globals: globals.node },
   },
   {
-    // Tests d'interface : du code Node qui fait exécuter du code dans la page.
+    // Interface tests: Node code that runs code inside the page.
     files: ['tests/e2e/**/*.js'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },

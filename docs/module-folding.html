@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>folding - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,8 +63,8 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Règle d'affichage réduit</strong> des blocs longs (2.2), sous forme de fonction
-pure testable sous Node. L'interface correspondante est dans
+                <div class="description usertext"><p><strong>Collapsed display rule</strong> for long blocks (2.2), as a pure function
+testable in Node. The matching interface lives in
 <a href="module-ui_fold.html">ui/fold</a>.</p></div>
             
 
@@ -77,8 +77,8 @@ pure testable sous Node. L'interface correspondante est dans
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Règle d'affichage réduit</strong> des blocs longs (2.2), sous forme de fonction
-pure testable sous Node. L'interface correspondante est dans
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Collapsed display rule</strong> for long blocks (2.2), as a pure function
+testable in Node. The matching interface lives in
 <a href="module-ui_fold.html">ui/fold</a>.</p></li></ul></dd>
     
 
@@ -180,7 +180,7 @@ pure testable sous Node. L'interface correspondante est dans
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nombre de lignes à partir duquel un bloc peut être réduit.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Number of lines from which a block can be collapsed.</p></li></ul></dd>
     
 
     
@@ -226,7 +226,7 @@ pure testable sous Node. L'interface correspondante est dans
 
 
 <div class="description usertext">
-    <p>Nombre de lignes à partir duquel un bloc peut être réduit.</p>
+    <p>Number of lines from which a block can be collapsed.</p>
 </div>
 
 
@@ -247,7 +247,7 @@ pure testable sous Node. L'interface correspondante est dans
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nombre de lignes affichées quand un bloc est réduit.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Number of lines shown when a block is collapsed.</p></li></ul></dd>
     
 
     
@@ -293,7 +293,7 @@ pure testable sous Node. L'interface correspondante est dans
 
 
 <div class="description usertext">
-    <p>Nombre de lignes affichées quand un bloc est réduit.</p>
+    <p>Number of lines shown when a block is collapsed.</p>
 </div>
 
 
@@ -324,12 +324,12 @@ pure testable sous Node. L'interface correspondante est dans
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Le bloc doit-il s'afficher réduit ? Dans l'ordre :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Should the block be shown collapsed? In order:</p>
 <ol>
-<li>un bloc en cours d'édition est toujours affiché en entier ;</li>
-<li>un bloc de moins de FOLD_MIN_LINES lignes n'est jamais réduit ;</li>
-<li>le choix manuel mémorisé sur le bloc (<code>fold</code>) ;</li>
-<li>sinon, l'option « Réduire automatiquement les blocs longs ».</li>
+<li>a block being edited is always shown in full;</li>
+<li>a block shorter than FOLD_MIN_LINES lines is never collapsed;</li>
+<li>the manual choice stored on the block (<code>fold</code>);</li>
+<li>otherwise, the &quot;Collapse long blocks automatically&quot; option.</li>
 </ol></li></ul></dd>
     
 
@@ -425,7 +425,7 @@ pure testable sous Node. L'interface correspondante est dans
 
             
 
-            <td class="description last"><p>Le bloc (seul son champ <code>fold</code> est lu).</p></td>
+            <td class="description last"><p>The block (only its <code>fold</code> field is read).</p></td>
         </tr>
 
     
@@ -449,7 +449,7 @@ pure testable sous Node. L'interface correspondante est dans
 
             
 
-            <td class="description last"><p>Nombre total de lignes du bloc.</p></td>
+            <td class="description last"><p>Total number of lines in the block.</p></td>
         </tr>
 
     
@@ -473,7 +473,7 @@ pure testable sous Node. L'interface correspondante est dans
 
             
 
-            <td class="description last"><p>Le bloc est en cours d'édition.</p></td>
+            <td class="description last"><p>The block is being edited.</p></td>
         </tr>
 
     
@@ -497,7 +497,7 @@ pure testable sous Node. L'interface correspondante est dans
 
             
 
-            <td class="description last"><p>Option de réduction automatique.</p></td>
+            <td class="description last"><p>Automatic collapse option.</p></td>
         </tr>
 
     

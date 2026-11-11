@@ -1,76 +1,77 @@
 /**
  * @module measure-fit
  * @description
- * **Mise en mesure automatique** (depuis la 2.6). Fonctions pures.
+ * **Automatic fitting into measures** (since 2.6). Pure functions.
  *
- * ## Le problème
+ * ## The problem
  *
- * Inkline stocke une portée comme une **suite d'éléments** ; les barres de
- * mesure se placent d'elles-mêmes ({@link module:rhythm.segmentMeasures|segmentMeasures}).
- * Une note peut donc « déborder » de sa mesure : noire, noire, ronde en 4/4.
- * La gravure correcte coupe la ronde à la barre et lie les deux morceaux :
+ * Inkline stores a staff as a **sequence of items**; barlines place
+ * themselves ({@link module:rhythm.segmentMeasures|segmentMeasures}). A note
+ * can therefore "overflow" its measure: quarter, quarter, whole note in 4/4.
+ * Correct engraving splits the whole note at the barline and ties the two
+ * pieces:
  *
  * ```
- * noire noire ronde   →   noire noire blanche⁀ | blanche
+ * quarter quarter whole   →   quarter quarter half⁀ | half
  * ```
  *
- * ## Notes logiques et liaisons automatiques
+ * ## Logical notes and automatic ties
  *
- * Les morceaux créés par ce découpage sont marqués `auto: true` (« ce morceau
- * continue dans l'élément suivant ») ; pour une note, ils portent aussi
- * `tie: true`, ce qui suffit au dessin et à l'audio. Une suite de morceaux
- * `auto` forme une **note logique** ({@link module:measure-fit~eventsOf|eventsOf}).
- * Les liaisons posées par l'utilisateur n'ont pas `auto` : on n'y touche jamais.
+ * The pieces created by this split are marked `auto: true` ("this piece
+ * continues into the next item"); for a note, they also carry `tie: true`,
+ * which is enough for drawing and audio. A sequence of `auto` pieces forms a
+ * **logical note** ({@link module:measure-fit~eventsOf|eventsOf}). Ties placed
+ * by the user have no `auto`: they are never touched.
  *
- * Après chaque modification, {@link module:measure-fit.normalizeStaff|normalizeStaff}
- * **recolle** les notes logiques puis les **recoupe** aux barres actuelles :
- * insérer une note au début décale toutes les barres, et le découpage suit.
- * Une note qui ne traverse aucune barre reste écrite comme l'utilisateur l'a
- * voulu (syncopes comprises) : on ne coupe qu'aux barres.
+ * After each change, {@link module:measure-fit.normalizeStaff|normalizeStaff}
+ * **glues** the logical notes back together then **re-splits** them at the
+ * current barlines: inserting a note at the start shifts every barline, and
+ * the split follows. A note that crosses no barline stays written as the
+ * user wanted (syncopations included): splitting only happens at barlines.
  *
- * ## Compensation par des silences (mode Modifier)
+ * ## Compensating with rests (Edit mode)
  *
- * {@link module:measure-fit.resizeEvent|resizeEvent} change la durée d'une
- * note en gardant la suite à sa place, comme MuseScore :
- * - raccourcir ajoute un silence de la différence (noire → croche + demi-soupir) ;
- * - allonger **mange** d'abord les silences qui suivent ; s'il n'y en a pas
- *   assez, la suite se décale (et les barres sont recoupées).
+ * {@link module:measure-fit.resizeEvent|resizeEvent} changes a note's
+ * duration while keeping what follows in place, as MuseScore does:
+ * - shortening adds a rest for the difference (quarter → eighth + eighth rest);
+ * - lengthening first **eats** the rests that follow; if there are not
+ *   enough, what follows shifts (and the barlines are re-split).
  *
- * ## Écriture des durées
+ * ## Writing durations
  *
- * Une durée quelconque est écrite avec les valeurs usuelles
- * ({@link module:measure-fit.decompose|decompose}) : on prend à chaque fois
- * la plus grande valeur qui tient et qui tombe « juste » (une blanche commence
- * sur un temps pair, une noire sur un temps…). Points autorisés pour les
- * notes ; pour les silences, seulement en mesure composée (6/8, 12/8).
+ * Any duration is written with the usual values
+ * ({@link module:measure-fit.decompose|decompose}): each time, the largest
+ * value that fits and lands "right" is taken (a half note starts on an even
+ * beat, a quarter note on a beat…). Dots are allowed for notes; for rests,
+ * only in compound time (6/8, 12/8).
  *
- * Les triolets ne sont jamais coupés ni recollés.
+ * Triplets are never split or glued.
  */
 
 import { EPS, snap } from './util.js';
 import { DUR, qlen, mlen, beatUnit } from './model.js';
 
-/** Plus petite valeur écrite (double croche), en noires. */
+/** Smallest written value (sixteenth note), in quarter notes. */
 const GRID = Math.min(...Object.values(DUR));
 
-/** Valeurs simples, de la plus longue à la plus courte. */
+/** Simple values, from longest to shortest. */
 const PLAIN = Object.entries(DUR)
   .map(([d, v]) => ({ d, v }))
   .sort((a, b) => b.v - a.v);
 
 /**
- * Une note logique : un élément seul, ou une suite de morceaux `auto`.
+ * A logical note: a single item, or a sequence of `auto` pieces.
  * @typedef {Object} FitEvent
- * @property {module:model~StaffItem[]} orig Morceaux d'origine (copies).
- * @property {number} len Durée totale en noires.
- * @property {boolean} rest Silence.
- * @property {boolean} tup Contient un triolet (jamais coupé).
- * @property {boolean} [gen] Durée calculée : à réécrire (pas de morceaux d'origine à garder).
- * @property {number} from Index du premier morceau dans la suite d'origine (-1 si créé).
+ * @property {module:model~StaffItem[]} orig Original pieces (copies).
+ * @property {number} len Total duration in quarter notes.
+ * @property {boolean} rest Rest.
+ * @property {boolean} tup Contains a triplet (never split).
+ * @property {boolean} [gen] Computed duration: to be rewritten (no original pieces to keep).
+ * @property {number} from Index of the first piece in the original sequence (-1 if created).
  */
 
 /**
- * `x` est-il un multiple de `a` (à l'arrondi près) ?
+ * Is `x` a multiple of `a` (up to rounding)?
  * @param {number} x
  * @param {number} a
  * @returns {boolean}
@@ -81,11 +82,11 @@ function isMult(x, a) {
 }
 
 /**
- * Valeur unique (avec point éventuel) d'une durée, si elle existe.
+ * Single value (with optional dot) for a duration, if one exists.
  * @example
  * singleValue(3, true)   // { d: 'h', dot: true }
  * singleValue(2.5, true) // null
- * @param {number} len Durée en noires.
+ * @param {number} len Duration in quarter notes.
  * @param {boolean} allowDot
  * @returns {?{d: string, dot: boolean}}
  */
@@ -98,30 +99,30 @@ export function singleValue(len, allowDot) {
 }
 
 /**
- * Écrit une durée en valeurs usuelles, à partir d'une position dans la mesure.
+ * Writes a duration with the usual values, from a position in the measure.
  *
- * Algorithme glouton « aligné » : à chaque pas, la plus grande valeur qui
- * tient dans ce qui reste et qui tombe juste :
- * - une valeur d'un temps ou plus commence sur un temps (pour les silences,
- *   plus strictement, sur un multiple d'elle-même : une demi-pause en 4/4 sur
- *   le 1 ou le 3, jamais sur le 2, pour que le milieu de la mesure reste lisible) ;
- * - une valeur plus courte qu'un temps commence sur un multiple d'elle-même
- *   (du double de sa valeur simple si elle est pointée : croche pointée sur
- *   le temps, pas sur le contretemps) et ne déborde pas sur le temps suivant :
- *   on complète le temps en cours avant d'avancer.
+ * "Aligned" greedy algorithm: at each step, the largest value that fits in
+ * what is left and lands right:
+ * - a value of one beat or more starts on a beat (for rests, more strictly,
+ *   on a multiple of itself: a half rest in 4/4 on 1 or 3, never on 2, so
+ *   that the middle of the measure stays readable);
+ * - a value shorter than a beat starts on a multiple of itself (of twice its
+ *   simple value if it is dotted: a dotted eighth on the beat, not on the
+ *   offbeat) and does not spill into the next beat: the current beat is
+ *   completed before moving on.
  *
- * À défaut, la plus grande valeur simple qui tient.
+ * Failing that, the largest simple value that fits.
  *
  * @example
- * decompose(0.5, 1.5, false) // croche puis noire : [{d:'8'}, {d:'q'}]
- * decompose(1, 3, true)      // blanche pointée sur le 2e temps
- * @param {number} start Position de départ dans la mesure (noires).
- * @param {number} len Durée à écrire (noires).
+ * decompose(0.5, 1.5, false) // eighth then quarter: [{d:'8'}, {d:'q'}]
+ * decompose(1, 3, true)      // dotted half on the 2nd beat
+ * @param {number} start Start position in the measure (quarter notes).
+ * @param {number} len Duration to write (quarter notes).
  * @param {boolean} allowDot
- * @param {number} [beat=1] Durée d'un temps en noires (1,5 en 6/8).
- * @param {boolean} [rest=false] Écrire des silences (alignement strict).
- * @returns {?Array.<{d: string, dot: boolean}>} `null` si la durée n'est pas
- *   exprimable (reste plus petit qu'une double croche, par exemple après un triolet).
+ * @param {number} [beat=1] Duration of a beat in quarter notes (1.5 in 6/8).
+ * @param {boolean} [rest=false] Write rests (strict alignment).
+ * @returns {?Array.<{d: string, dot: boolean}>} `null` if the duration cannot
+ *   be expressed (remainder smaller than a sixteenth, for example after a triplet).
  */
 export function decompose(start, len, allowDot, beat = 1, rest = false) {
   /** @type {Array.<{d: string, dot: boolean, v: number, b: number}>} */
@@ -151,7 +152,7 @@ export function decompose(start, len, allowDot, beat = 1, rest = false) {
 }
 
 /**
- * Regroupe les éléments en notes logiques.
+ * Groups items into logical notes.
  * @param {module:model~StaffItem[]} items
  * @returns {FitEvent[]}
  */
@@ -174,7 +175,7 @@ function eventsOf(items) {
 }
 
 /**
- * Premier morceau de la note logique qui contient l'élément `i`.
+ * First piece of the logical note containing item `i`.
  * @param {module:model~StaffItem[]} items
  * @param {number} i
  * @returns {number}
@@ -185,7 +186,7 @@ export function chainStart(items, i) {
 }
 
 /**
- * Dernier morceau de la note logique qui contient l'élément `i`.
+ * Last piece of the logical note containing item `i`.
  * @param {module:model~StaffItem[]} items
  * @param {number} i
  * @returns {number}
@@ -196,9 +197,9 @@ export function chainEnd(items, i) {
 }
 
 /**
- * Propriétés d'un morceau, hors durée et liens.
+ * Properties of a piece, apart from duration and links.
  * @param {module:model~StaffItem} it
- * @param {boolean} first Premier morceau (garde altération, accord, début de reprise).
+ * @param {boolean} first First piece (keeps accidental, chord, start repeat).
  * @returns {Object}
  */
 function baseProps(it, first) {
@@ -214,12 +215,12 @@ function baseProps(it, first) {
 }
 
 /**
- * Découpe une durée aux barres de mesure.
- * @param {number} pos Position de départ dans la mesure.
- * @param {number} len Durée.
- * @param {number} ML Capacité de la mesure.
- * @returns {{segs: Array.<{start: number, len: number}>, end: number}} Segments, et
- *   position dans la mesure après le dernier.
+ * Splits a duration at barlines.
+ * @param {number} pos Start position in the measure.
+ * @param {number} len Duration.
+ * @param {number} ML Capacity of the measure.
+ * @returns {{segs: Array.<{start: number, len: number}>, end: number}} Segments, and
+ *   position in the measure after the last one.
  */
 function cutAtBars(pos, len, ML) {
   const segs = [];
@@ -236,13 +237,13 @@ function cutAtBars(pos, len, ML) {
 }
 
 /**
- * Valeurs écrites d'une note logique découpée en segments : une valeur
- * unique si elle tient dans un segment et s'écrit d'un seul signe, sinon les
- * valeurs usuelles de chaque segment ({@link decompose}).
+ * Written values of a logical note split into segments: a single value if
+ * it fits in one segment and is written with one sign, otherwise the usual
+ * values of each segment ({@link decompose}).
  * @param {FitEvent} ev
  * @param {Array.<{start: number, len: number}>} segs
  * @param {{beat: number, compound: boolean}} ctx
- * @returns {?Array.<{d: string, dot: boolean}>} `null` si un segment ne s'écrit pas.
+ * @returns {?Array.<{d: string, dot: boolean}>} `null` if a segment cannot be written.
  */
 function valuesFor(ev, segs, ctx) {
   const allowDot = !ev.rest || ctx.compound;
@@ -255,9 +256,9 @@ function valuesFor(ev, segs, ctx) {
 }
 
 /**
- * Morceaux d'une note logique à partir de ses valeurs : liés entre eux
- * (`auto`, et `tie` pour une note) ; altération, accord et début de reprise
- * sur le premier ; liaison de l'utilisateur et barre sur le dernier.
+ * Pieces of a logical note from its values: tied together (`auto`, and
+ * `tie` for a note); accidental, chord and start repeat on the first; the
+ * user's tie and barline on the last.
  * @param {FitEvent} ev
  * @param {Array.<{d: string, dot: boolean}>} vals
  * @returns {module:model~StaffItem[]}
@@ -280,26 +281,26 @@ function piecesFrom(ev, vals) {
 }
 
 /**
- * Réécrit une suite de notes logiques en éléments, coupés aux barres.
+ * Rewrites a sequence of logical notes as items, split at barlines.
  *
- * Pour chaque note logique :
- * 1. un triolet, ou une note seule qui tient dans sa mesure, est **gardé tel
- *    quel** (l'écriture de l'utilisateur est respectée) ;
- * 2. sinon, elle est découpée aux barres ({@link cutAtBars}) et réécrite en
- *    valeurs usuelles ({@link valuesFor}, {@link piecesFrom}) ;
- * 3. si ce n'est pas possible (durée hors de la grille des doubles croches),
- *    une note d'origine est gardée telle quelle ; un silence calculé est
- *    écrit d'un bloc, sans coupure, plutôt que de perdre sa durée.
+ * For each logical note:
+ * 1. a triplet, or a single note that fits in its measure, is **kept as is**
+ *    (the user's writing is respected);
+ * 2. otherwise, it is split at barlines ({@link cutAtBars}) and rewritten
+ *    with usual values ({@link valuesFor}, {@link piecesFrom});
+ * 3. if that is not possible (duration off the sixteenth-note grid), an
+ *    original note is kept as is; a computed rest is written in one block,
+ *    without a split, rather than losing its duration.
  *
- * La position dans la mesure suit les règles de
- * {@link module:rhythm.segmentMeasures|segmentMeasures} (début de reprise et
- * barre manuelle remettent le compteur à zéro).
+ * The position in the measure follows the rules of
+ * {@link module:rhythm.segmentMeasures|segmentMeasures} (a start repeat and
+ * a manual barline reset the counter).
  *
  * @param {FitEvent[]} events
  * @param {string} time
  * @returns {{items: module:model~StaffItem[], starts: number[], tupCross: Set.<number>}}
- *   `starts[k]` : index du premier morceau de l'événement k ; `tupCross` :
- *   index des triolets qui traversent une barre.
+ *   `starts[k]`: index of the first piece of event k; `tupCross`: indices of
+ *   triplets crossing a barline.
  */
 function materialize(events, time) {
   const ML = mlen(time);
@@ -309,7 +310,7 @@ function materialize(events, time) {
   const tupCross = new Set();
   let pos = 0;
 
-  /** Ajoute des éléments tels quels, en suivant la position dans la mesure. */
+  /** Appends items as they are, tracking the position in the measure. */
   const keep = (list) => {
     list.forEach((it) => {
       const end = snap(pos + qlen(it));
@@ -339,15 +340,15 @@ function materialize(events, time) {
 }
 
 /**
- * Remet une portée en mesure : recolle les notes logiques et les recoupe aux
- * barres actuelles. Sans débordement ni morceau automatique, la portée est
- * rendue à l'identique.
+ * Fits a staff back into measures: glues the logical notes back together and
+ * re-splits them at the current barlines. With no overflow and no automatic
+ * piece, the staff is returned unchanged.
  *
  * @param {module:model~StaffItem[]} items
  * @param {string} time
  * @returns {{items: module:model~StaffItem[], startOf: number[], tupCross: Set.<number>}}
- *   `startOf[i]` : nouvel index du premier morceau de la note logique qui
- *   contenait l'ancien élément `i` (et `startOf[items.length]` = nouvelle longueur).
+ *   `startOf[i]`: new index of the first piece of the logical note that
+ *   contained old item `i` (and `startOf[items.length]` = new length).
  */
 export function normalizeStaff(items, time) {
   const events = eventsOf(items);
@@ -361,15 +362,15 @@ export function normalizeStaff(items, time) {
 }
 
 /**
- * Change la durée de la note logique qui contient l'élément `i`, en gardant
- * la suite à sa place quand c'est possible (voir l'en-tête du module).
+ * Changes the duration of the logical note containing item `i`, keeping
+ * what follows in place when possible (see the module header).
  *
  * @param {module:model~StaffItem[]} items
  * @param {string} time
- * @param {number} i Un morceau de la note à modifier.
- * @param {{d: string, dot: (boolean|undefined), tup: (boolean|undefined)}} value Nouvelle valeur.
+ * @param {number} i A piece of the note to change.
+ * @param {{d: string, dot: (boolean|undefined), tup: (boolean|undefined)}} value New value.
  * @returns {{items: module:model~StaffItem[], index: number, tupCross: Set.<number>}}
- *   `index` : nouvel index du premier morceau de la note modifiée.
+ *   `index`: new index of the first piece of the changed note.
  */
 export function resizeEvent(items, time, i, value) {
   const events = eventsOf(items);
@@ -386,16 +387,16 @@ export function resizeEvent(items, time, i, value) {
   const newLen = qlen(single);
   events[k] = { orig: [single], len: newLen, rest: !!single.r, tup: !!single.tup, from: ev.from };
 
-  // Pas de compensation quand la différence ne s'écrit pas en valeurs simples
-  // (triolet avant ou après, ou moins d'une double croche : double croche ⇄
-  // double croche pointée, 1/8 de temps). La suite se décale alors, et
-  // l'opération inverse la ramène : rien ne s'accumule.
+  // No compensation when the difference cannot be written with simple values
+  // (triplet before or after, or less than a sixteenth: sixteenth ⇄
+  // dotted sixteenth, 1/8 of a beat). What follows then shifts, and the
+  // inverse operation brings it back: nothing accumulates.
   if (!ev.tup && !value.tup) {
     const diff = snap(oldLen - newLen);
     if (diff > EPS && isMult(diff, GRID)) {
-      // Raccourcir : un silence comble la différence. La barre manuelle et la
-      // liaison éventuelles passent après lui (la liaison n'a plus de sens).
-      const restItem = { d: (singleValue(diff, false) || { d: 'q' }).d, r: true }; // modèle : réécrit (gen)
+      // Shortening: a rest fills the difference. The manual barline and any
+      // tie move after it (the tie no longer makes sense).
+      const restItem = { d: (singleValue(diff, false) || { d: 'q' }).d, r: true }; // template: rewritten (gen)
       if (single.bar) {
         restItem.bar = single.bar;
         delete single.bar;
@@ -403,7 +404,7 @@ export function resizeEvent(items, time, i, value) {
       delete single.tie;
       events.splice(k + 1, 0, { orig: [restItem], len: diff, rest: true, tup: false, gen: true, from: -1 });
     } else if (diff < -EPS && isMult(-diff, GRID)) {
-      // Allonger : on mange les silences qui suivent.
+      // Lengthening: eat the rests that follow.
       let extra = -diff;
       const j = k + 1;
       while (extra > EPS && events[j] && events[j].rest && !events[j].tup && !events[j].orig[0].rs) {
@@ -413,12 +414,12 @@ export function resizeEvent(items, time, i, value) {
           extra = snap(extra - r.len);
           events.splice(j, 1);
           if (rLast.bar) {
-            single.bar = rLast.bar; // la barre qui fermait le silence ferme maintenant la note
+            single.bar = rLast.bar; // the barline that closed the rest now closes the note
             break;
           }
         } else {
-          // On n'entame un silence que si son reste s'écrit (multiple de la
-          // double croche) ; sinon on s'arrête là et la suite se décale.
+          // A rest is only cut into if its remainder can be written (multiple of a
+          // sixteenth); otherwise stop there and what follows shifts.
           if (!isMult(snap(r.len - extra), GRID)) break;
           r.len = snap(r.len - extra);
           r.gen = true;

@@ -1,6 +1,6 @@
-/* Inkline · Entraînement (2.3 ; mesures, sections et exercices aléatoires 2.8). */
+/* Inkline · Practice (2.3; time signatures, sections and random exercises 2.8). */
 
-/* 12. Entraînement (2.3) */
+/* 12. Practice (2.3) */
 .nsel {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
@@ -124,7 +124,7 @@
   margin-top: 4px;
 }
 
-/* Sélecteur de mesure (2.8) */
+/* Time signature picker (2.8) */
 .meters {
   display: flex;
   flex-wrap: wrap;
@@ -162,7 +162,7 @@
   color: var(--accent);
 }
 
-/* Sections repliables des Placements (2.8) */
+/* Collapsible Placements sections (2.8) */
 .drill-bar {
   justify-content: space-between;
   gap: 8px;
@@ -213,7 +213,7 @@
   padding-bottom: 10px;
 }
 
-/* Exercices aléatoires : réglages (2.8) */
+/* Random exercises: settings (2.8) */
 .stepper {
   display: inline-flex;
   align-items: center;
@@ -268,7 +268,7 @@
   font-size: 16px;
 }
 
-/* Exercices aléatoires : lecture (2.8) */
+/* Random exercises: playback (2.8) */
 .gen-info {
   margin: 4px 16px 8px;
   font-size: 13px;

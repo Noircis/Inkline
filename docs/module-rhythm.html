@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>rhythm - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,19 +63,18 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Tout ce qui relève du <strong>temps</strong> sur une portée, indépendamment du dessin :</p>
+                <div class="description usertext"><p>Everything about <strong>time</strong> on a staff, independent of drawing:</p>
 <ul>
-<li>découpage en mesures (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>),</li>
-<li>regroupement des triolets (<a href="module-rhythm.html#.tupletGroups">tupletGroups</a>),</li>
-<li>regroupement des ligatures (<a href="module-rhythm.html#.beamGroups">beamGroups</a>),</li>
-<li>ordre de lecture avec reprises (<a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a>),</li>
+<li>splitting into measures (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>),</li>
+<li>grouping triplets (<a href="module-rhythm.html#.tupletGroups">tupletGroups</a>),</li>
+<li>grouping beams (<a href="module-rhythm.html#.beamGroups">beamGroups</a>),</li>
+<li>playback order with repeats (<a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a>),</li>
 <li>swing (<a href="module-rhythm.html#.swingWarp">swingWarp</a>),</li>
-<li>calcul de la liste d'événements sonores (<a href="module-rhythm.html#.staffEvents">staffEvents</a>).</li>
+<li>computing the list of sound events (<a href="module-rhythm.html#.staffEvents">staffEvents</a>).</li>
 </ul>
-<p>Ces fonctions sont <strong>pures</strong> (sans DOM, sans effet de bord) : le moteur de
-mise en page, le rendu SVG et le lecteur audio s'appuient tous dessus, ce
-qui garantit qu'ils sont d'accord entre eux. Elles sont couvertes par
-<code>tests/rhythm.test.js</code>.</p></div>
+<p>These functions are <strong>pure</strong> (no DOM, no side effects): the layout engine,
+the SVG renderer and the audio player all rely on them, which guarantees
+they agree with each other. They are covered by <code>tests/rhythm.test.js</code>.</p></div>
             
 
             
@@ -87,19 +86,18 @@ qui garantit qu'ils sont d'accord entre eux. Elles sont couvertes par
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Tout ce qui relève du <strong>temps</strong> sur une portée, indépendamment du dessin :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Everything about <strong>time</strong> on a staff, independent of drawing:</p>
 <ul>
-<li>découpage en mesures (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>),</li>
-<li>regroupement des triolets (<a href="module-rhythm.html#.tupletGroups">tupletGroups</a>),</li>
-<li>regroupement des ligatures (<a href="module-rhythm.html#.beamGroups">beamGroups</a>),</li>
-<li>ordre de lecture avec reprises (<a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a>),</li>
+<li>splitting into measures (<a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>),</li>
+<li>grouping triplets (<a href="module-rhythm.html#.tupletGroups">tupletGroups</a>),</li>
+<li>grouping beams (<a href="module-rhythm.html#.beamGroups">beamGroups</a>),</li>
+<li>playback order with repeats (<a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a>),</li>
 <li>swing (<a href="module-rhythm.html#.swingWarp">swingWarp</a>),</li>
-<li>calcul de la liste d'événements sonores (<a href="module-rhythm.html#.staffEvents">staffEvents</a>).</li>
+<li>computing the list of sound events (<a href="module-rhythm.html#.staffEvents">staffEvents</a>).</li>
 </ul>
-<p>Ces fonctions sont <strong>pures</strong> (sans DOM, sans effet de bord) : le moteur de
-mise en page, le rendu SVG et le lecteur audio s'appuient tous dessus, ce
-qui garantit qu'ils sont d'accord entre eux. Elles sont couvertes par
-<code>tests/rhythm.test.js</code>.</p></li></ul></dd>
+<p>These functions are <strong>pure</strong> (no DOM, no side effects): the layout engine,
+the SVG renderer and the audio player all rely on them, which guarantees
+they agree with each other. They are covered by <code>tests/rhythm.test.js</code>.</p></li></ul></dd>
     
 
     
@@ -206,17 +204,17 @@ qui garantit qu'ils sont d'accord entre eux. Elles sont couvertes par
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Regroupe les croches et doubles croches à relier par une ligature.</p>
-<p>Règles :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Groups the eighth and sixteenth notes to be joined by a beam.</p>
+<p>Rules:</p>
 <ul>
-<li>seules les notes (pas les silences) de valeur croche ou double croche sont ligaturées ;</li>
-<li>un groupe ne dépasse pas un <strong>temps</strong> (une noire en x/4, une noire pointée en x/8) ;</li>
-<li>un groupe ne traverse ni une barre de mesure ni la frontière d'un triolet
-(un triolet de croches forme sa propre ligature) ;</li>
-<li>un groupe d'un seul élément n'est pas une ligature (la note garde son crochet).</li>
+<li>only notes (not rests) of eighth or sixteenth value are beamed;</li>
+<li>a group does not exceed one <strong>beat</strong> (a quarter in x/4, a dotted quarter in x/8);</li>
+<li>a group crosses neither a barline nor a triplet boundary (a triplet of
+eighths forms its own beam);</li>
+<li>a single-item group is not a beam (the note keeps its flag).</li>
 </ul>
-<p>Le découpage par <strong>ligne</strong> (système) n'est pas fait ici : il dépend de la
-mise en page et est appliqué par le rendu.</p></li></ul></dd>
+<p>Splitting by <strong>line</strong> (system) is not done here: it depends on the layout
+and is applied by the renderer.</p></li></ul></dd>
     
 
     
@@ -387,7 +385,7 @@ mise en page et est appliqué par le rendu.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Groupement des croches (2.8, voir <a href="module-model.html#.meterGroups">meterGroups</a>).</p></td>
+            <td class="description last"><p>Eighth-note grouping (2.8, see <a href="module-model.html#.meterGroups">meterGroups</a>).</p></td>
         </tr>
 
     
@@ -413,7 +411,7 @@ mise en page et est appliqué par le rendu.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Groupes d'index (longueur ≥ 2).</p>
+    <p>Index groups (length ≥ 2).</p>
 </div>
 
 
@@ -450,17 +448,18 @@ mise en page et est appliqué par le rendu.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Découpe une suite d'éléments en mesures.</p>
-<p>Règles, dans l'ordre :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Splits a sequence of items into measures.</p>
+<p>Rules, in order:</p>
 <ol>
-<li>un élément marqué <code>rs</code> (début de reprise) ouvre toujours une nouvelle
-mesure ; la mesure en cours est fermée par une barre simple ;</li>
-<li>un élément portant une barre (<code>bar</code>) ferme la mesure <strong>même si elle est
-incomplète</strong> : c'est ce qui permet de terminer un motif n'importe où ;</li>
-<li>sinon la mesure se ferme quand la somme des durées atteint la capacité.</li>
+<li>an item marked <code>rs</code> (start repeat) always opens a new measure; the
+current measure is closed by a single barline;</li>
+<li>an item carrying a barline (<code>bar</code>) closes the measure <strong>even if it is
+incomplete</strong>: this is what allows ending a pattern anywhere;</li>
+<li>otherwise the measure closes when the sum of durations reaches its
+capacity.</li>
 </ol>
-<p>La dernière mesure peut rester ouverte (<code>full: false</code>) : c'est là que
-l'utilisateur ajoute les notes suivantes.</p></li></ul></dd>
+<p>The last measure may stay open (<code>full: false</code>): that is where the user
+adds the next notes.</p></li></ul></dd>
     
 
     
@@ -579,7 +578,7 @@ l'utilisateur ajoute les notes suivantes.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Chiffrage de mesure.</p></td>
+            <td class="description last"><p>Time signature.</p></td>
         </tr>
 
     
@@ -638,19 +637,20 @@ l'utilisateur ajoute les notes suivantes.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Construit la liste des événements sonores d'une portée.</p>
-<p>Étapes :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Builds the list of sound events of a staff.</p>
+<p>Steps:</p>
 <ol>
-<li>ordre de lecture avec reprises (staffPlayOrder) ;</li>
-<li>positions en noires par cumul des durées réelles (triolets compris) ;</li>
-<li>liaisons : si l'élément précédent dans l'ordre de lecture est la note
-juste avant dans la partition et qu'elle est liée, on prolonge sa fin au
-lieu de déclencher une nouvelle note ;</li>
-<li>swing : on applique swingWarp temps par temps, <strong>seulement aux
-temps écrits en croches</strong> (straightBeats) : un temps qui contient
-des doubles croches (ou un point qui tombe au quart de temps) est joué
-droit. Les notes de triolet ne sont jamais déformées (déjà ternaires).
-Le swing n'est pas appliqué en mesure composée (x/8).</li>
+<li>playback order with repeats (staffPlayOrder);</li>
+<li>positions in quarter notes by summing the actual durations (triplets
+included);</li>
+<li>ties: if the previous item in playback order is the note right before
+in the score and it is tied, its end is extended instead of triggering
+a new note;</li>
+<li>swing: swingWarp is applied beat by beat, <strong>only to beats
+written in eighths</strong> (straightBeats): a beat containing
+sixteenths (or a dot falling on a quarter of a beat) is played
+straight. Triplet notes are never warped (already ternary). Swing is
+not applied in compound time (x/8).</li>
 </ol></li></ul></dd>
     
 
@@ -772,7 +772,7 @@ Le swing n'est pas appliqué en mesure composée (x/8).</li>
 
         
 <div class="param-desc">
-    <p>Événements et durée totale en noires.</p>
+    <p>Events and total duration in quarter notes.</p>
 </div>
 
 
@@ -809,19 +809,18 @@ Le swing n'est pas appliqué en mesure composée (x/8).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ordre de lecture des éléments, reprises déroulées.</p>
-<p>On parcourt les éléments en mémorisant le dernier début de reprise <code>rs</code>.
-En arrivant sur une fin de reprise (<code>bar: 'rep'</code>) pour la première fois,
-on revient au début de reprise ; la deuxième fois on continue. L'ensemble
-<code>done</code> mémorise les fins de reprise déjà prises.</p>
-<p>Une garde de 4000 éléments empêche toute boucle infinie sur des données
-incohérentes.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playback order of items, repeats unrolled.</p>
+<p>Items are walked through while remembering the last start repeat <code>rs</code>.
+On reaching an end repeat (<code>bar: 'rep'</code>) for the first time, playback goes
+back to the start repeat; the second time it continues. The <code>done</code> set
+remembers the end repeats already taken.</p>
+<p>A guard of 4000 items prevents any infinite loop on inconsistent data.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line244">line 244</a>
+        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -936,7 +935,7 @@ incohérentes.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Suite d'index, éventuellement avec répétitions.</p>
+    <p>Sequence of indices, possibly with repetitions.</p>
 </div>
 
 
@@ -973,15 +972,15 @@ incohérentes.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une partie de la lecture d'une portée (2.8.4) : de la mesure <code>from</code> à la
-mesure <code>to</code> (index d'écriture, à partir de 0).</p>
-<p>La lecture déroulée (reprises comprises) passe par une suite de mesures,
-certaines plusieurs fois. Le segment commence au <strong>premier passage</strong> par
-<code>from</code> et s'arrête au premier passage par <code>to</code> qui suit (une reprise
-contenue dans le segment est donc jouée dépliée). Les instants sont
-ramenés au début du segment.</p>
-<p>Une note liée qui arrive d'avant le segment est attaquée (sinon le
-segment commencerait par un silence).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A part of a staff's playback (2.8.4): from measure <code>from</code> to measure <code>to</code>
+(written index, from 0).</p>
+<p>Unrolled playback (repeats included) goes through a sequence of measures,
+some of them several times. The segment starts at the <strong>first pass</strong>
+through <code>from</code> and stops at the first pass through <code>to</code> that follows (a
+repeat contained in the segment is therefore played unrolled). Times are
+shifted to the start of the segment.</p>
+<p>A tied note arriving from before the segment is attacked (otherwise the
+segment would start with silence).</p></li></ul></dd>
     
 
     
@@ -1151,7 +1150,7 @@ segment commencerait par un silence).</p></li></ul></dd>
         
 <div class="param-desc">
     <p><code>null</code>
-si <code>from</code> n'est jamais jouée. <code>measures</code> : nombre de mesures du segment.</p>
+if <code>from</code> is never played. <code>measures</code>: number of measures in the segment.</p>
 </div>
 
 
@@ -1188,20 +1187,20 @@ si <code>from</code> n'est jamais jouée. <code>measures</code> : nombre de mesu
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Déformation temporelle du swing (croches ternaires).</p>
-<p>À l'intérieur de chaque temps (partie fractionnaire <code>r</code> de la position en
-noires), la première moitié est étirée à 2/3 et la seconde comprimée à 1/3 :
-la croche du levé tombe aux 2/3 du temps, comme une croche de triolet.</p>
-<pre class="prettyprint source"><code>r :   0 ──── 0.5 ──── 1
-w :   0 ──── 0.667 ── 1
+    <dd class="tag-description"><ul class="dummy"><li><p>Swing time warp (triplet-feel eighths).</p>
+<p>Within each beat (fractional part <code>r</code> of the position in quarter notes),
+the first half is stretched to 2/3 and the second compressed to 1/3: the
+offbeat eighth falls at 2/3 of the beat, like a triplet eighth.</p>
+<pre class="prettyprint source"><code>r:   0 ──── 0.5 ──── 1
+w:   0 ──── 0.667 ── 1
 </code></pre>
-<p>La fonction est continue et monotone : l'ordre des événements est conservé.</p></li></ul></dd>
+<p>The function is continuous and monotonic: event order is preserved.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line280">line 280</a>
+        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line279">line 279</a>
     </li></ul></dd>
     
 
@@ -1290,7 +1289,7 @@ w :   0 ──── 0.667 ── 1
 
             
 
-            <td class="description last"><p>Position en noires.</p></td>
+            <td class="description last"><p>Position in quarter notes.</p></td>
         </tr>
 
     
@@ -1316,7 +1315,7 @@ w :   0 ──── 0.667 ── 1
 
         
 <div class="param-desc">
-    <p>Position déformée en noires.</p>
+    <p>Warped position in quarter notes.</p>
 </div>
 
 
@@ -1353,19 +1352,19 @@ w :   0 ──── 0.667 ── 1
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Regroupe les éléments de triolet consécutifs en triolets.</p>
-<h2>Règle de fermeture d'un groupe</h2>
-<p>Un triolet, c'est <strong>3 fois la plus petite valeur du groupe, jouées dans le
-temps de 2</strong>. On suit donc la plus petite durée écrite <code>min</code> rencontrée et la
-somme écrite <code>written</code> ; le groupe est complet quand <code>written ≥ 3 × min</code>.</p>
-<p>Ça couvre les cas usuels :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Groups consecutive triplet items into triplets.</p>
+<h2>Rule for closing a group</h2>
+<p>A triplet is <strong>3 times the smallest value of the group, played in the time
+of 2</strong>. So the smallest written duration <code>min</code> met so far and the written
+sum <code>written</code> are tracked; the group is complete when <code>written ≥ 3 × min</code>.</p>
+<p>This covers the usual cases:</p>
 <ul>
-<li>croche-croche-croche : min = ½, 3 × ½ = 1.5 = somme → complet (dure 1 noire)</li>
-<li>noire-croche : min = ½, 1 + ½ = 1.5 → complet (dure 1 noire)</li>
-<li>noire-noire-noire : min = 1 → complet sur 3 (dure 2 noires)</li>
+<li>eighth-eighth-eighth: min = ½, 3 × ½ = 1.5 = sum → complete (lasts 1 quarter)</li>
+<li>quarter-eighth: min = ½, 1 + ½ = 1.5 → complete (lasts 1 quarter)</li>
+<li>quarter-quarter-quarter: min = 1 → complete on 3 (lasts 2 quarters)</li>
 </ul>
-<p>Un groupe est aussi coupé, même incomplet, par un élément sans <code>tup</code> ou
-par une barre de mesure.</p></li></ul></dd>
+<p>A group is also cut, even incomplete, by an item without <code>tup</code> or by a
+barline.</p></li></ul></dd>
     
 
     
@@ -1543,7 +1542,7 @@ par une barre de mesure.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Index de mesure de chaque élément (table inverse de segmentMeasures).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Measure index of each item (inverse table of segmentMeasures).</p></li></ul></dd>
     
 
     
@@ -1662,7 +1661,7 @@ par une barre de mesure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Nombre d'éléments.</p></td>
+            <td class="description last"><p>Number of items.</p></td>
         </tr>
 
     
@@ -1721,19 +1720,19 @@ par une barre de mesure.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Temps à jouer <strong>droits</strong> malgré le swing : ceux où une note (hors triolet)
-commence ou finit ailleurs que sur le temps ou sur la croche du levé.</p>
-<p>Pourquoi : swingWarp est pensé pour des croches. Appliqué à des
-doubles croches, il les rendait inégales (1/3, 1/3, 1/6, 1/6 du temps au
-lieu de quatre quarts égaux). En jazz, un passage en doubles croches dans
-un morceau swing se joue droit (comme en « double time ») : seuls les
-temps écrits en croches sont swingués.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Beats to play <strong>straight</strong> despite swing: those where a note (outside a
+triplet) starts or ends somewhere other than on the beat or on the
+offbeat eighth.</p>
+<p>Why: swingWarp is meant for eighth notes. Applied to sixteenths,
+it made them uneven (1/3, 1/3, 1/6, 1/6 of the beat instead of four equal
+quarters). In jazz, a sixteenth-note passage in a swing tune is played
+straight (as in &quot;double time&quot;): only beats written in eighths are swung.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line300">line 300</a>
+        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line299">line 299</a>
     </li></ul></dd>
     
 
@@ -1846,7 +1845,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ordre de lecture (staffPlayOrder).</p></td>
+            <td class="description last"><p>Playback order (staffPlayOrder).</p></td>
         </tr>
 
     
@@ -1872,7 +1871,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Index des temps (en noires depuis le début de la lecture).</p>
+    <p>Indices of the beats (in quarter notes from the start of playback).</p>
 </div>
 
 
@@ -1909,7 +1908,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Pour chaque élément, l'index de son groupe de triolet, ou -1.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>For each item, the index of its triplet group, or -1.</p></li></ul></dd>
     
 
     
@@ -2089,13 +2088,13 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une mesure issue du découpage.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A measure produced by the split.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line23">line 23</a>
+        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -2183,7 +2182,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Index des éléments de la mesure, dans l'ordre.</p></td>
+            <td class="description last"><p>Indices of the measure's items, in order.</p></td>
         </tr>
 
     
@@ -2213,7 +2212,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p><code>true</code> si la mesure est fermée (pleine, ou fermée par une barre).</p></td>
+            <td class="description last"><p><code>true</code> if the measure is closed (full, or closed by a barline).</p></td>
         </tr>
 
     
@@ -2245,7 +2244,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Barre qui ferme la mesure (<code>'single'</code> par défaut).</p></td>
+            <td class="description last"><p>Barline closing the measure (<code>'single'</code> by default).</p></td>
         </tr>
 
     
@@ -2275,7 +2274,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>La mesure commence par un début de reprise.</p></td>
+            <td class="description last"><p>The measure starts with a start repeat.</p></td>
         </tr>
 
     
@@ -2288,7 +2287,7 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Une mesure issue du découpage.</p>
+    <p>A measure produced by the split.</p>
 </div>
 
 
@@ -2320,15 +2319,15 @@ temps écrits en croches sont swingués.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Un événement sonore d'une portée, prêt à être programmé par l'audio.
-Les temps sont en <strong>noires</strong> depuis le début ; l'audio les convertit en
-secondes avec le tempo.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A sound event of a staff, ready to be scheduled by audio.
+Times are in <strong>quarter notes</strong> from the start; audio converts them to
+seconds with the tempo.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line318">line 318</a>
+        <a href="rhythm.js.html">rhythm.js</a>, <a href="rhythm.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -2408,7 +2407,7 @@ secondes avec le tempo.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Index de l'élément (pour le surlignage pendant la lecture).</p></td>
+            <td class="description last"><p>Item index (for highlighting during playback).</p></td>
         </tr>
 
     
@@ -2432,7 +2431,7 @@ secondes avec le tempo.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Début en noires (swing appliqué).</p></td>
+            <td class="description last"><p>Start in quarter notes (swing applied).</p></td>
         </tr>
 
     
@@ -2456,7 +2455,7 @@ secondes avec le tempo.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Fin en noires (swing appliqué ; prolongée par les liaisons).</p></td>
+            <td class="description last"><p>End in quarter notes (swing applied; extended by ties).</p></td>
         </tr>
 
     
@@ -2483,7 +2482,7 @@ secondes avec le tempo.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Hauteur, <code>null</code> pour un silence ou une ligne rythmique.</p></td>
+            <td class="description last"><p>Pitch, <code>null</code> for a rest or a rhythm line.</p></td>
         </tr>
 
     
@@ -2507,7 +2506,7 @@ secondes avec le tempo.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Silence.</p></td>
+            <td class="description last"><p>Rest.</p></td>
         </tr>
 
     
@@ -2531,8 +2530,8 @@ secondes avec le tempo.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Note liée à la précédente : elle n'est <strong>pas</strong>
-rejouée (la précédente est prolongée), mais l'événement sert au surlignage.</p></td>
+            <td class="description last"><p>Note tied to the previous one: it is <strong>not</strong>
+replayed (the previous one is extended), but the event is used for highlighting.</p></td>
         </tr>
 
     
@@ -2556,7 +2555,7 @@ rejouée (la précédente est prolongée), mais l'événement sert au surlignage
 
             
 
-            <td class="description last"><p>Premier temps de la mesure (accent sur la ligne rythmique).</p></td>
+            <td class="description last"><p>First beat of the measure (accent on the rhythm line).</p></td>
         </tr>
 
     
@@ -2569,9 +2568,9 @@ rejouée (la précédente est prolongée), mais l'événement sert au surlignage
 
 
 <div class="description usertext">
-    <p>Un événement sonore d'une portée, prêt à être programmé par l'audio.
-Les temps sont en <strong>noires</strong> depuis le début ; l'audio les convertit en
-secondes avec le tempo.</p>
+    <p>A sound event of a staff, ready to be scheduled by audio.
+Times are in <strong>quarter notes</strong> from the start; audio converts them to
+seconds with the tempo.</p>
 </div>
 
 
@@ -2603,7 +2602,7 @@ secondes avec le tempo.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Un groupe de triolet.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A triplet group.</p></li></ul></dd>
     
 
     
@@ -2689,7 +2688,7 @@ secondes avec le tempo.</p>
 
             
 
-            <td class="description last"><p>Index des éléments du groupe.</p></td>
+            <td class="description last"><p>Indices of the group's items.</p></td>
         </tr>
 
     
@@ -2713,9 +2712,9 @@ secondes avec le tempo.</p>
 
             
 
-            <td class="description last"><p><code>true</code> si le groupe remplit exactement ses
-« 3 pour 2 » ; un groupe incomplet est quand même dessiné, pour que
-l'utilisateur voie qu'il manque une note.</p></td>
+            <td class="description last"><p><code>true</code> if the group exactly fills its &quot;3 in
+the time of 2&quot;; an incomplete group is still drawn, so the user sees a
+note is missing.</p></td>
         </tr>
 
     
@@ -2728,7 +2727,7 @@ l'utilisateur voie qu'il manque une note.</p></td>
 
 
 <div class="description usertext">
-    <p>Un groupe de triolet.</p>
+    <p>A triplet group.</p>
 </div>
 
 

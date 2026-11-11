@@ -1,21 +1,21 @@
-// Serveur de développement : sert l'appli et la recharge à chaque enregistrement.
+// Development server: serves the app and reloads it on every save.
 //
-//   npm run dev        puis ouvrir http://localhost:5500/
+//   npm run dev        then open http://localhost:5500/
 //
-// Avec --static, il sert l'appli telle qu'en production (service worker
-// compris, sans rechargement automatique) : c'est le mode utilisé par les
-// tests d'interface (npm run test:e2e). --port=NNNN change le port.
+// With --static, it serves the app as in production (service worker
+// included, no automatic reload): this is the mode used by the
+// interface tests (npm run test:e2e). --port=NNNN changes the port.
 //
-// Pourquoi pas l'extension « Live Server » ? Elle injecte un script *dans* la
-// page (script « inline »), que la Content Security Policy d'Inkline bloque à
-// juste titre (script-src 'self'). Ici, on injecte un script *externe*
-// (/__dev/reload.js) servi par ce serveur : même origine, donc autorisé.
+// Why not the "Live Server" extension? It injects a script *into* the
+// page (an "inline" script), which Inkline's Content Security Policy rightly
+// blocks (script-src 'self'). Here, an *external* script is injected
+// (/__dev/reload.js) served by this server: same origin, so allowed.
 //
-// Le service worker est neutralisé en développement : /sw.js est remplacé par
-// un petit script qui se désinscrit et vide les caches. Sinon il servirait
-// l'ancienne version depuis son cache après chaque modification.
+// The service worker is disabled in development: /sw.js is replaced by
+// a small script that unregisters itself and clears the caches. Otherwise it
+// would serve the old version from its cache after each change.
 //
-// Aucune dépendance : modules natifs de Node uniquement.
+// No dependencies: Node built-in modules only.
 
 import http from 'node:http';
 import fs from 'node:fs';
@@ -42,17 +42,17 @@ const TYPES = {
   '.wav': 'audio/wav',
 };
 
-// Script injecté dans les pages : écoute le serveur et recharge la page.
+// Script injected into pages: listens to the server and reloads the page.
 const RELOAD_JS = `new EventSource('/__dev/events').onmessage = () => location.reload();`;
 
-// Remplace le service worker en développement : se désinscrit et vide les caches.
+// Replaces the service worker in development: unregisters and clears the caches.
 const NO_SW = `self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', async () => {
   for (const k of await caches.keys()) await caches.delete(k);
   await self.registration.unregister();
 });`;
 
-/** Navigateurs connectés (flux Server-Sent Events). */
+/** Connected browsers (Server-Sent Events streams). */
 const clients = new Set();
 
 const server = http.createServer((req, res) => {
@@ -83,7 +83,7 @@ function send(res, status, type, body) {
   res.end(body);
 }
 
-// Surveille les fichiers ; plusieurs événements rapprochés = un seul rechargement.
+// Watches the files; several close events = a single reload.
 let timer = null;
 if (!STATIC)
   fs.watch(ROOT, { recursive: true }, (event, name) => {

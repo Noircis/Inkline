@@ -1,19 +1,19 @@
 /**
  * @module ui/grid-ui
  * @description
- * Interaction avec un bloc **grille d'accords** :
+ * Interaction with a **chord chart** block:
  *
- * - en-tête (tonalité, mesure, style, tempo, iReal, lecture) ;
- * - panneau **iReal Pro** : ouvrir/copier le lien, importer un lien ou un fichier ;
- * - sélection d'une mesure par toucher ;
- * - **palette** : champ de saisie des accords, repères de structure, navigation.
+ * - header (key, time signature, style, tempo, iReal, playback);
+ * - **iReal Pro** panel: open/copy the link, import a link or a file;
+ * - selecting a measure by tapping;
+ * - **palette**: chord input field, structure marks, navigation.
  *
- * ## Saisie rapide
+ * ## Fast input
  *
- * Le champ met à jour la mesure **à chaque frappe** (aperçu en direct). Entrée
- * (ou ↵) valide et passe à la mesure suivante, en en créant une au besoin.
- * Le caractère `|` permet de remplir plusieurs mesures d'un coup ; il n'est
- * interprété qu'à la validation, pour ne pas créer de mesures pendant la frappe.
+ * The field updates the measure **on every keystroke** (live preview). Enter
+ * (or ↵) confirms and moves to the next measure, creating one if needed. The
+ * `|` character fills several measures at once; it is interpreted only on
+ * confirmation, so that no measures are created while typing.
  */
 
 import { t } from '../i18n.js';
@@ -34,7 +34,7 @@ import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from './fold
 import { renderScreen } from './nav.js';
 import { bindMeasureSelect, refreshMeasureSelect } from './measure-select.js';
 
-/** Mesures par ligne de grille. */
+/** Measures per chart line. */
 const GRID_COLS = 4;
 
 const gpal = /** @type {HTMLElement} */ (document.getElementById('gpal'));
@@ -43,21 +43,21 @@ const gText = /** @type {HTMLElement} */ (document.getElementById('gText'));
 const gKeys = /** @type {HTMLElement} */ (document.getElementById('gKeys'));
 
 /**
- * Saisie au champ texte (clavier du téléphone) plutôt qu'au clavier
- * d'accords (2.8.5). Gardé le temps de la session.
+ * Typing in the text field (phone keyboard) rather than on the chord
+ * keyboard (2.8.5). Kept for the session.
  */
 let textMode = false;
-/** Mesure pour laquelle un instantané d'annulation a déjà été pris. */
+/** Measure for which an undo snapshot has already been taken. */
 let snapFor = null;
 
 /**
- * Une case de la mesure n'est pas un accord reconnu.
+ * A slot of the measure is not a recognized chord.
  * @param {module:model~GridMeasure} m
  * @returns {boolean}
  */
 const badMeasure = (m) => m.ch.some((c) => !chordOk(c));
 
-/** Clavier d'accords de la grille. */
+/** Chord keyboard of the chart. */
 const kb = mountChordKeyboard(gKeys, {
   mode: 'grid',
   onKey: (k) => {
@@ -65,7 +65,7 @@ const kb = mountChordKeyboard(gKeys, {
     const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
     if (!n || !b || state.sel == null) return;
     const m = b.measures[state.sel];
-    // Un seul instantané par mesure saisie : « Annuler » efface toute la mesure tapée.
+    // A single snapshot per measure typed: "Undo" erases the whole typed measure.
     const key = b.id + ':' + state.sel;
     if (snapFor !== key) {
       pushSnapshot(n);
@@ -86,7 +86,7 @@ const kb = mountChordKeyboard(gKeys, {
 });
 
 /**
- * Passe du clavier d'accords au champ texte, ou l'inverse.
+ * Switches from the chord keyboard to the text field, or back.
  * @param {boolean} on
  */
 function setTextMode(on) {
@@ -101,7 +101,7 @@ function setTextMode(on) {
 }
 
 /**
- * Onglet de la palette : accords ou structure (barres, sections, mesures).
+ * Palette tab: chords or structure (barlines, sections, measures).
  * @param {'chords'|'struct'} tab
  */
 function setTab(tab) {
@@ -115,7 +115,7 @@ function setTab(tab) {
 }
 
 /**
- * HTML d'un bloc grille : en-tête de réglages, panneau iReal (replié), zone de la grille, outils.
+ * HTML of a chart block: settings header, iReal panel (collapsed), chart area, tools.
  * @param {module:model~GridBlock} b
  * @returns {string}
  */
@@ -124,7 +124,7 @@ function gridBlockHtml(b) {
   const keyOptions =
     KEYS.map((k) => `<option value="${k}">${keyLabel(k)}</option>`).join('') +
     KEYS.map((k) => `<option value="${k}-">${keyLabel(k + '-')}</option>`).join('');
-  // Un style importé absent de la liste y est ajouté, pour ne pas le perdre.
+  // An imported style missing from the list is added to it, so it is not lost.
   const styles = STYLES.includes(b.style) ? STYLES : [b.style, ...STYLES];
   return (
     `<div class="shead"><span class="kind">${esc(t('grid.kind'))}</span>
@@ -146,7 +146,7 @@ function gridBlockHtml(b) {
 }
 
 /**
- * Branche les réglages de l'en-tête (tonalité, mesure, style, tempo) et le bouton Écouter.
+ * Wires the header settings (key, time signature, style, tempo) and the Listen button.
  * @param {module:model~Note} n
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} el
@@ -154,7 +154,7 @@ function gridBlockHtml(b) {
 function bindGridSettings(n, b, el) {
   /** @param {string} k */
   const field = (k) => /** @type {HTMLInputElement} */ (el.querySelector(`[data-f=${k}]`));
-  // Tonalité, mesure, style : même traitement (annulable, sauvegardé).
+  // Key, time signature, style: same handling (undoable, saved).
   ['key', 'time', 'style'].forEach((k) => {
     field(k).value = b[k];
     field(k).onchange = () => {
@@ -172,7 +172,7 @@ function bindGridSettings(n, b, el) {
     touch(n);
   };
   el.querySelector('[data-play]').onclick = () => {
-    // Un bloc réduit s'écoute sans se déplier : on ne l'active pas.
+    // A collapsed block can be played without expanding it: it is not activated.
     if (!el.classList.contains('folded')) setActive(b.id);
     audio.playGrid(b, playCallbacks(b.id, redrawGrid));
     updatePlayBtn(b.id);
@@ -180,12 +180,12 @@ function bindGridSettings(n, b, el) {
 }
 
 /**
- * Remplace le contenu d'une grille par le premier morceau iReal trouvé dans `txt`.
- * Le morceau passe par la validation, comme toute donnée importée.
+ * Replaces a chart's content with the first iReal tune found in `txt`.
+ * The tune goes through validation, like any imported data.
  * @param {module:model~Note} n
  * @param {module:model~GridBlock} b
- * @param {string} txt Lien ou contenu de fichier.
- * @param {Element} msg Zone de message du panneau.
+ * @param {string} txt Link or file content.
+ * @param {Element} msg Message area of the panel.
  */
 function importIntoGrid(n, b, txt, msg) {
   const songs = parseIRealAll(txt);
@@ -215,7 +215,7 @@ function importIntoGrid(n, b, txt, msg) {
   touch(n);
   state.sel = null;
   renderScreen({ keepScroll: true });
-  // Le bloc a été recréé par le re-rendu : on écrit dans sa nouvelle zone de message.
+  // The block was recreated by the re-render: write into its new message area.
   const newMsg = app.querySelector(`[data-block="${CSS.escape(b.id)}"] .ir-msg`);
   if (newMsg) {
     newMsg.textContent =
@@ -225,9 +225,9 @@ function importIntoGrid(n, b, txt, msg) {
 }
 
 /**
- * Branche le panneau iReal : ouvrir dans iReal Pro, copier le lien, importer.
- * Le lien est recalculé au moment du clic : la grille a pu changer depuis
- * l'ouverture du panneau.
+ * Wires the iReal panel: open in iReal Pro, copy the link, import.
+ * The link is recomputed on tap: the chart may have changed since the panel
+ * was opened.
  * @param {module:model~Note} n
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} el
@@ -250,7 +250,7 @@ function bindIRealPanel(n, b, el) {
   });
   el.querySelector('[data-ir=copy]').onclick = () => {
     const l = link();
-    // Presse-papiers refusé (vieux navigateur, permission) : on sélectionne le lien pour une copie manuelle.
+    // Clipboard refused (old browser, permission): select the link for a manual copy.
     const fallback = () => {
       textarea.value = l;
       textarea.select();
@@ -270,7 +270,7 @@ function bindIRealPanel(n, b, el) {
 }
 
 /**
- * Branche la sélection d'une mesure (ou l'ajout via la cellule « + »).
+ * Wires measure selection (or adding through the "+" cell).
  * @param {module:model~Note} n
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} el
@@ -298,9 +298,9 @@ function bindMeasureSelection(n, b, el) {
 }
 
 /**
- * Appui long sur une case : sélection de mesures (2.8.4), voir
- * {@link module:ui/measure-select|ui/measure-select}. Les cases sont des
- * boutons : on les retrouve sous le doigt et on mesure leur place à l'écran.
+ * Long press on a cell: measure selection (2.8.4), see
+ * {@link module:ui/measure-select|ui/measure-select}. Cells are buttons: they
+ * are found under the finger and their place on screen is measured.
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} wrap
  */
@@ -347,7 +347,7 @@ function bindGridSelect(b, wrap) {
 }
 
 /**
- * Remplit l'élément d'un bloc grille et branche ses interactions.
+ * Fills a chart block's element and wires its interactions.
  * @param {module:model~Note} n
  * @param {module:model~GridBlock} b
  * @param {HTMLElement} el
@@ -360,7 +360,7 @@ function gridBlockEl(n, b, el) {
 }
 
 /**
- * Redessine une grille (sans effet si `id` n'est pas une grille affichée).
+ * Redraws a chart (no effect if `id` is not a chart on screen).
  * @param {string} id
  */
 export function redrawGrid(id) {
@@ -382,7 +382,7 @@ export function redrawGrid(id) {
 }
 
 /**
- * Remplit le champ de saisie avec la mesure sélectionnée.
+ * Fills the input field with the selected measure.
  * @param {module:model~GridBlock} b
  */
 function loadInput(b) {
@@ -394,8 +394,8 @@ function loadInput(b) {
 }
 
 /**
- * Affiche ou cache la palette de grille. À l'ouverture sans sélection, on se
- * place sur la première mesure vide (là où l'on veut écrire).
+ * Shows or hides the chart palette. When opened with no selection, it goes to
+ * the first empty measure (where you want to write).
  * @param {boolean} on
  */
 function showGridPalette(on) {
@@ -413,7 +413,7 @@ function showGridPalette(on) {
 }
 
 /**
- * Met à jour le message et l'état des boutons de la palette de grille.
+ * Updates the message and the button states of the chart palette.
  */
 function updateGridPalette() {
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
@@ -439,9 +439,9 @@ function updateGridPalette() {
 }
 
 /**
- * Applique le contenu du champ à la mesure sélectionnée.
- * @param {boolean} commit `true` à la validation : interprète aussi les `|`
- *   (mesures suivantes), en réutilisant les mesures vides déjà présentes.
+ * Applies the field's content to the selected measure.
+ * @param {boolean} commit `true` on confirmation: also interprets the `|`
+ *   (following measures), reusing the empty measures already there.
  */
 function applyInput(commit) {
   const n = curNote();
@@ -468,7 +468,7 @@ function applyInput(commit) {
   redrawGrid(b.id);
 }
 
-/** Valide la saisie et passe à la mesure suivante (sauf après une barre de fin). */
+/** Confirms the input and moves to the next measure (except after a final barline). */
 function nextMeasure() {
   const n = curNote();
   const b = /** @type {module:model~GridBlock} */ (blockById(state.activeId));
@@ -489,7 +489,7 @@ function nextMeasure() {
   if (c) c.scrollIntoView({ block: 'nearest' });
 }
 
-// ---------- Câblage (une seule fois) ----------
+// ---------- Wiring (only once) ----------
 gin.addEventListener('focus', () => {
   const n = curNote();
   if (n) pushSnapshot(n);
@@ -540,11 +540,11 @@ gpal.addEventListener('click', (e) => {
   const m = b.measures[state.sel];
   pushSnapshot(n);
   switch (k) {
-    case 'sec': // A → B → C → D → Intro → (rien)
+    case 'sec': // A → B → C → D → Intro → (none)
       m.sec = SECTIONS[(SECTIONS.indexOf(m.sec || '') + 1) % SECTIONS.length];
       if (!m.sec) delete m.sec;
       break;
-    case 'end': // 1re fin → 2e fin → (rien)
+    case 'end': // 1st ending → 2nd ending → (none)
       m.ending = /** @type {any} */ (((m.ending || 0) + 1) % 3);
       if (!m.ending) delete m.ending;
       break;
@@ -565,7 +565,7 @@ gpal.addEventListener('click', (e) => {
       }
       break;
     default: {
-      // Barres : rs, re, dbl, fin (une barre de droite exclut les autres).
+      // Barlines: rs, re, dbl, fin (a right barline excludes the others).
       const flag = { rs: 'rs', re: 're', dbl: 'dbl', fin: 'fin' }[k];
       if (!flag) break;
       if (m[flag]) {

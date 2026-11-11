@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>storage - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,52 +63,52 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Persistance du carnet (notes et dossiers), et sauvegarde/restauration en
-fichier JSON.</p>
-<h2>Où sont les données ? (depuis la 2.1)</h2>
-<p>Dans <strong>IndexedDB</strong> (voir <a href="module-db.html">db</a>) : un enregistrement par note
-et par dossier. Jusqu'à la 2.0, tout le carnet était une seule chaîne JSON
-dans <code>localStorage</code>, ce qui posait deux limites :</p>
+                <div class="description usertext"><p>Persistence of the notebook (notes and folders), and backup/restore as a
+JSON file.</p>
+<h2>Where is the data? (since 2.1)</h2>
+<p>In <strong>IndexedDB</strong> (see <a href="module-db.html">db</a>): one record per note and per
+folder. Up to 2.0, the whole notebook was a single JSON string in
+<code>localStorage</code>, which had two limits:</p>
 <ul>
-<li><strong>taille</strong> : environ 5 Mo par site pour <code>localStorage</code>, contre des
-centaines de Mo pour IndexedDB ;</li>
-<li><strong>coût</strong> : chaque frappe réécrivait le carnet entier. Désormais, seule la
-note modifiée est écrite.</li>
+<li><strong>size</strong>: about 5 MB per site for <code>localStorage</code>, versus hundreds of MB
+for IndexedDB;</li>
+<li><strong>cost</strong>: every keystroke rewrote the whole notebook. Now only the
+changed note is written.</li>
 </ul>
-<p>Les <strong>métadonnées</strong> (affichage choisi, dossier sélectionné, date de dernière
-sauvegarde…) restent dans <code>localStorage</code> : elles sont minuscules, et les
-lire de façon synchrone est pratique.</p>
-<h2>Migration depuis <code>localStorage</code></h2>
-<p>Au premier lancement de la 2.1, <a href="module-storage.html#.loadAll">loadAll</a>
-copie les notes et dossiers de <code>localStorage</code> vers IndexedDB, <strong>en une
-seule transaction</strong> (tout ou rien), puis note <code>storage: 'idb'</code> dans les
-métadonnées. La copie n'a lieu que si la base IndexedDB est <strong>vide</strong> : des
-données déjà présentes ne sont jamais écrasées par l'ancienne copie.</p>
-<p>L'ancienne copie n'est <strong>pas effacée</strong> : elle reste en filet de sécurité
-(figée à la date de la migration). Règle d'or : ne jamais déplacer et
-supprimer des données dans la même opération.</p>
-<p>Si IndexedDB est indisponible (navigateur très ancien, stockage bloqué),
-l'app continue avec <code>localStorage</code>, comme avant la 2.1.</p>
-<h2>Stratégie d'écriture</h2>
+<p>The <strong>metadata</strong> (chosen display, selected folder, last backup date…) stay
+in <code>localStorage</code>: they are tiny, and reading them synchronously is handy.</p>
+<h2>Migration from <code>localStorage</code></h2>
+<p>On the first launch of 2.1, <a href="module-storage.html#.loadAll">loadAll</a> copies
+the notes and folders from <code>localStorage</code> to IndexedDB, <strong>in a single
+transaction</strong> (all or nothing), then records <code>storage: 'idb'</code> in the
+metadata. The copy only happens if the IndexedDB database is <strong>empty</strong>:
+data already there is never overwritten by the old copy.</p>
+<p>The old copy is <strong>not erased</strong>: it stays as a safety net (frozen at the
+migration date). Golden rule: never move and delete data in the same
+operation.</p>
+<p>If IndexedDB is unavailable (very old browser, storage blocked), the app
+keeps going with <code>localStorage</code>, as before 2.1.</p>
+<h2>Write strategy</h2>
 <ul>
-<li><strong>Debounce</strong> : chaque modification programme une écriture 150 ms plus
-tard ; les frappes rapprochées n'en déclenchent qu'une.</li>
-<li><strong>Notes « sales »</strong> : <a href="module-storage.html#.scheduleSave">scheduleSave</a>
-reçoit l'id de la note modifiée ; seules ces notes sont écrites.</li>
-<li><strong>Comparaison</strong> : <a href="module-storage.html#.flushSave">flushSave</a> compare
-chaque note à sa dernière version écrite (sa forme JSON) et n'écrit que
-les différences, suppressions comprises. C'est un filet de sécurité :
-après une opération groupée (import, suppression d'un dossier…), rien ne
-peut être oublié, même si l'appelant ne sait pas quelles notes ont changé.</li>
-<li><strong>Flush</strong> sur <code>visibilitychange</code> (voir <a href="module-main.html">main</a>) : Android
-peut tuer une app en arrière-plan sans prévenir ; on écrit donc tout de
-suite, en mode <code>strict</code> (le navigateur attend que ce soit sur le disque).</li>
-<li><code>navigator.storage.persist()</code> demande au navigateur de ne pas évincer
-les données quand l'espace disque manque.</li>
+<li><strong>Debounce</strong>: each change schedules a write 150 ms later; close
+keystrokes trigger only one.</li>
+<li><strong>&quot;Dirty&quot; notes</strong>: <a href="module-storage.html#.scheduleSave">scheduleSave</a>
+receives the id of the changed note; only those notes are written.</li>
+<li><strong>Comparison</strong>: <a href="module-storage.html#.flushSave">flushSave</a> compares each
+note to its last written version (its JSON form) and writes only the
+differences, deletions included. It is a safety net: after a bulk
+operation (import, folder deletion…), nothing can be forgotten, even if
+the caller does not know which notes changed.</li>
+<li><strong>Flush</strong> on <code>visibilitychange</code> (see <a href="module-main.html">main</a>): Android
+may kill an app in the background without warning; so everything is
+written right away, in <code>strict</code> mode (the browser waits until it is on
+disk).</li>
+<li><code>navigator.storage.persist()</code> asks the browser not to evict the data
+when disk space runs low.</li>
 </ul>
-<p>Les écritures sont asynchrones et leurs erreurs (quota dépassé…) ne
-bloquent pas l'app : une note non écrite reste « différente » et sera
-retentée à l'écriture suivante.</p></div>
+<p>Writes are asynchronous and their errors (quota exceeded…) do not block
+the app: a note that was not written stays &quot;different&quot; and will be retried
+on the next write.</p></div>
             
 
             
@@ -120,52 +120,52 @@ retentée à l'écriture suivante.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Persistance du carnet (notes et dossiers), et sauvegarde/restauration en
-fichier JSON.</p>
-<h2>Où sont les données ? (depuis la 2.1)</h2>
-<p>Dans <strong>IndexedDB</strong> (voir <a href="module-db.html">db</a>) : un enregistrement par note
-et par dossier. Jusqu'à la 2.0, tout le carnet était une seule chaîne JSON
-dans <code>localStorage</code>, ce qui posait deux limites :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Persistence of the notebook (notes and folders), and backup/restore as a
+JSON file.</p>
+<h2>Where is the data? (since 2.1)</h2>
+<p>In <strong>IndexedDB</strong> (see <a href="module-db.html">db</a>): one record per note and per
+folder. Up to 2.0, the whole notebook was a single JSON string in
+<code>localStorage</code>, which had two limits:</p>
 <ul>
-<li><strong>taille</strong> : environ 5 Mo par site pour <code>localStorage</code>, contre des
-centaines de Mo pour IndexedDB ;</li>
-<li><strong>coût</strong> : chaque frappe réécrivait le carnet entier. Désormais, seule la
-note modifiée est écrite.</li>
+<li><strong>size</strong>: about 5 MB per site for <code>localStorage</code>, versus hundreds of MB
+for IndexedDB;</li>
+<li><strong>cost</strong>: every keystroke rewrote the whole notebook. Now only the
+changed note is written.</li>
 </ul>
-<p>Les <strong>métadonnées</strong> (affichage choisi, dossier sélectionné, date de dernière
-sauvegarde…) restent dans <code>localStorage</code> : elles sont minuscules, et les
-lire de façon synchrone est pratique.</p>
-<h2>Migration depuis <code>localStorage</code></h2>
-<p>Au premier lancement de la 2.1, <a href="module-storage.html#.loadAll">loadAll</a>
-copie les notes et dossiers de <code>localStorage</code> vers IndexedDB, <strong>en une
-seule transaction</strong> (tout ou rien), puis note <code>storage: 'idb'</code> dans les
-métadonnées. La copie n'a lieu que si la base IndexedDB est <strong>vide</strong> : des
-données déjà présentes ne sont jamais écrasées par l'ancienne copie.</p>
-<p>L'ancienne copie n'est <strong>pas effacée</strong> : elle reste en filet de sécurité
-(figée à la date de la migration). Règle d'or : ne jamais déplacer et
-supprimer des données dans la même opération.</p>
-<p>Si IndexedDB est indisponible (navigateur très ancien, stockage bloqué),
-l'app continue avec <code>localStorage</code>, comme avant la 2.1.</p>
-<h2>Stratégie d'écriture</h2>
+<p>The <strong>metadata</strong> (chosen display, selected folder, last backup date…) stay
+in <code>localStorage</code>: they are tiny, and reading them synchronously is handy.</p>
+<h2>Migration from <code>localStorage</code></h2>
+<p>On the first launch of 2.1, <a href="module-storage.html#.loadAll">loadAll</a> copies
+the notes and folders from <code>localStorage</code> to IndexedDB, <strong>in a single
+transaction</strong> (all or nothing), then records <code>storage: 'idb'</code> in the
+metadata. The copy only happens if the IndexedDB database is <strong>empty</strong>:
+data already there is never overwritten by the old copy.</p>
+<p>The old copy is <strong>not erased</strong>: it stays as a safety net (frozen at the
+migration date). Golden rule: never move and delete data in the same
+operation.</p>
+<p>If IndexedDB is unavailable (very old browser, storage blocked), the app
+keeps going with <code>localStorage</code>, as before 2.1.</p>
+<h2>Write strategy</h2>
 <ul>
-<li><strong>Debounce</strong> : chaque modification programme une écriture 150 ms plus
-tard ; les frappes rapprochées n'en déclenchent qu'une.</li>
-<li><strong>Notes « sales »</strong> : <a href="module-storage.html#.scheduleSave">scheduleSave</a>
-reçoit l'id de la note modifiée ; seules ces notes sont écrites.</li>
-<li><strong>Comparaison</strong> : <a href="module-storage.html#.flushSave">flushSave</a> compare
-chaque note à sa dernière version écrite (sa forme JSON) et n'écrit que
-les différences, suppressions comprises. C'est un filet de sécurité :
-après une opération groupée (import, suppression d'un dossier…), rien ne
-peut être oublié, même si l'appelant ne sait pas quelles notes ont changé.</li>
-<li><strong>Flush</strong> sur <code>visibilitychange</code> (voir <a href="module-main.html">main</a>) : Android
-peut tuer une app en arrière-plan sans prévenir ; on écrit donc tout de
-suite, en mode <code>strict</code> (le navigateur attend que ce soit sur le disque).</li>
-<li><code>navigator.storage.persist()</code> demande au navigateur de ne pas évincer
-les données quand l'espace disque manque.</li>
+<li><strong>Debounce</strong>: each change schedules a write 150 ms later; close
+keystrokes trigger only one.</li>
+<li><strong>&quot;Dirty&quot; notes</strong>: <a href="module-storage.html#.scheduleSave">scheduleSave</a>
+receives the id of the changed note; only those notes are written.</li>
+<li><strong>Comparison</strong>: <a href="module-storage.html#.flushSave">flushSave</a> compares each
+note to its last written version (its JSON form) and writes only the
+differences, deletions included. It is a safety net: after a bulk
+operation (import, folder deletion…), nothing can be forgotten, even if
+the caller does not know which notes changed.</li>
+<li><strong>Flush</strong> on <code>visibilitychange</code> (see <a href="module-main.html">main</a>): Android
+may kill an app in the background without warning; so everything is
+written right away, in <code>strict</code> mode (the browser waits until it is on
+disk).</li>
+<li><code>navigator.storage.persist()</code> asks the browser not to evict the data
+when disk space runs low.</li>
 </ul>
-<p>Les écritures sont asynchrones et leurs erreurs (quota dépassé…) ne
-bloquent pas l'app : une note non écrite reste « différente » et sera
-retentée à l'écriture suivante.</p></li></ul></dd>
+<p>Writes are asynchronous and their errors (quota exceeded…) do not block
+the app: a note that was not written stays &quot;different&quot; and will be retried
+on the next write.</p></li></ul></dd>
     
 
     
@@ -266,13 +266,13 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages par défaut de l'entraînement Rythme.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Default Rhythm practice settings.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line464">line 464</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line463">line 463</a>
     </li></ul></dd>
     
 
@@ -312,7 +312,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Réglages par défaut de l'entraînement Rythme.</p>
+    <p>Default Rhythm practice settings.</p>
 </div>
 
 
@@ -333,13 +333,13 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages par défaut des exercices aléatoires.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Default random exercise settings.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line533">line 533</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line532">line 532</a>
     </li></ul></dd>
     
 
@@ -379,7 +379,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Réglages par défaut des exercices aléatoires.</p>
+    <p>Default random exercise settings.</p>
 </div>
 
 
@@ -400,7 +400,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Identifiant écrit dans les fichiers de sauvegarde.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Id written in backup files.</p></li></ul></dd>
     
 
     
@@ -446,7 +446,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Identifiant écrit dans les fichiers de sauvegarde.</p>
+    <p>Id written in backup files.</p>
 </div>
 
 
@@ -467,7 +467,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Version du format des sauvegardes : 2 depuis l'arrivée des dossiers. Les sauvegardes v1 restent lisibles.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Backup format version: 2 since folders arrived. v1 backups stay readable.</p></li></ul></dd>
     
 
     
@@ -513,7 +513,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Version du format des sauvegardes : 2 depuis l'arrivée des dossiers. Les sauvegardes v1 restent lisibles.</p>
+    <p>Backup format version: 2 since folders arrived. v1 backups stay readable.</p>
 </div>
 
 
@@ -534,7 +534,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Clé <code>localStorage</code> des dossiers en 2.0.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><code>localStorage</code> key of the folders in 2.0.</p></li></ul></dd>
     
 
     
@@ -580,7 +580,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Clé <code>localStorage</code> des dossiers en 2.0.</p>
+    <p><code>localStorage</code> key of the folders in 2.0.</p>
 </div>
 
 
@@ -601,7 +601,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Clé <code>localStorage</code> des métadonnées (date de première utilisation, de dernière sauvegarde).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><code>localStorage</code> key of the metadata (first use date, last backup date).</p></li></ul></dd>
     
 
     
@@ -647,7 +647,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Clé <code>localStorage</code> des métadonnées (date de première utilisation, de dernière sauvegarde).</p>
+    <p><code>localStorage</code> key of the metadata (first use date, last backup date).</p>
 </div>
 
 
@@ -668,7 +668,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Identifiant écrit dans les fichiers de note partagée (<code>.inkline</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Id written in shared note files (<code>.inkline</code>).</p></li></ul></dd>
     
 
     
@@ -714,7 +714,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Identifiant écrit dans les fichiers de note partagée (<code>.inkline</code>).</p>
+    <p>Id written in shared note files (<code>.inkline</code>).</p>
 </div>
 
 
@@ -735,7 +735,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Délai du debounce d'écriture (ms).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Write debounce delay (ms).</p></li></ul></dd>
     
 
     
@@ -781,7 +781,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Délai du debounce d'écriture (ms).</p>
+    <p>Write debounce delay (ms).</p>
 </div>
 
 
@@ -802,7 +802,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Clé <code>localStorage</code> du carnet jusqu'à la 2.0 (historique : ne pas changer).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><code>localStorage</code> key of the notebook up to 2.0 (historical: do not change).</p></li></ul></dd>
     
 
     
@@ -848,7 +848,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Clé <code>localStorage</code> du carnet jusqu'à la 2.0 (historique : ne pas changer).</p>
+    <p><code>localStorage</code> key of the notebook up to 2.0 (historical: do not change).</p>
 </div>
 
 
@@ -869,7 +869,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Où le carnet est enregistré.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Where the notebook is stored.</p></li></ul></dd>
     
 
     
@@ -915,7 +915,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Où le carnet est enregistré.</p>
+    <p>Where the notebook is stored.</p>
 </div>
 
 
@@ -1024,7 +1024,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Notes modifiées depuis la dernière écriture (ids).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Notes changed since the last write (ids).</p></li></ul></dd>
     
 
     
@@ -1070,7 +1070,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Notes modifiées depuis la dernière écriture (ids).</p>
+    <p>Notes changed since the last write (ids).</p>
 </div>
 
 
@@ -1091,7 +1091,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une écriture programmée doit-elle tout comparer (appel sans id) ?</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Must a scheduled write compare everything (call without an id)?</p></li></ul></dd>
     
 
     
@@ -1137,7 +1137,7 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Une écriture programmée doit-elle tout comparer (appel sans id) ?</p>
+    <p>Must a scheduled write compare everything (call without an id)?</p>
 </div>
 
 
@@ -1158,8 +1158,8 @@ retentée à l'écriture suivante.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dernière version écrite de chaque note, en JSON (id → chaîne). Sert à
-savoir ce qui a changé depuis la dernière écriture.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Last written version of each note, as JSON (id → string). Used to know
+what changed since the last write.</p></li></ul></dd>
     
 
     
@@ -1205,8 +1205,8 @@ savoir ce qui a changé depuis la dernière écriture.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Dernière version écrite de chaque note, en JSON (id → chaîne). Sert à
-savoir ce qui a changé depuis la dernière écriture.</p>
+    <p>Last written version of each note, as JSON (id → string). Used to know
+what changed since the last write.</p>
 </div>
 
 
@@ -1238,7 +1238,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>JSON du carnet entier lors de la dernière écriture (mode <code>localStorage</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>JSON of the whole notebook at the last write (<code>localStorage</code> mode).</p></li></ul></dd>
     
 
     
@@ -1284,7 +1284,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 
 
 <div class="description usertext">
-    <p>JSON du carnet entier lors de la dernière écriture (mode <code>localStorage</code>).</p>
+    <p>JSON of the whole notebook at the last write (<code>localStorage</code> mode).</p>
 </div>
 
 
@@ -1315,7 +1315,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Contenu d'un fichier de sauvegarde (format v2 : notes et dossiers).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Content of a backup file (v2 format: notes and folders).</p></li></ul></dd>
     
 
     
@@ -1492,7 +1492,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 
         
 <div class="param-desc">
-    <p>JSON indenté (lisible et diffable).</p>
+    <p>Indented JSON (readable and diffable).</p>
 </div>
 
 
@@ -1529,7 +1529,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écrit immédiatement tout ce qui a changé (comparaison de toutes les notes).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Writes everything that changed right away (comparing every note).</p></li></ul></dd>
     
 
     
@@ -1680,7 +1680,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
                 </td>
             
 
-            <td class="description last"><p>Attendre l'écriture physique sur le disque.</p></td>
+            <td class="description last"><p>Wait for the physical write to disk.</p></td>
         </tr>
 
     
@@ -1706,7 +1706,7 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 
         
 <div class="param-desc">
-    <p>Résolue quand l'écriture est terminée (ou a échoué).</p>
+    <p>Resolved when the write is done (or failed).</p>
 </div>
 
 
@@ -1743,13 +1743,13 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lit les métadonnées (objet vide si absentes ou illisibles).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reads the metadata (empty object if missing or unreadable).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line609">line 609</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line608">line 608</a>
     </li></ul></dd>
     
 
@@ -1847,24 +1847,23 @@ savoir ce qui a changé depuis la dernière écriture.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Importe un fichier dans le carnet : note partagée (<code>.inkline</code>) ou sauvegarde complète.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Imports a file into the notebook: shared note (<code>.inkline</code>) or full backup.</p>
 <ul>
-<li><strong>Note partagée</strong> : elle est <strong>ajoutée</strong> avec de nouveaux identifiants,
-sans jamais écraser une note existante (recevoir deux fois la même note
-en crée deux copies, c'est voulu : on ne sait pas laquelle garder).</li>
-<li><strong>Sauvegarde</strong> : fusion par id, la version la plus récente (<code>updated</code>)
-gagne. Importer deux fois la même sauvegarde est sans effet. Les dossiers
-d'une sauvegarde v2 absents du carnet sont ajoutés ; ceux qui existent déjà
-(même id) sont conservés tels quels. Une sauvegarde v1 (sans dossiers)
-reste lisible.</li>
+<li><strong>Shared note</strong>: it is <strong>added</strong> with new ids, never overwriting an
+existing note (receiving the same note twice creates two copies, on
+purpose: we cannot know which one to keep).</li>
+<li><strong>Backup</strong>: merged by id, the most recent version (<code>updated</code>) wins.
+Importing the same backup twice has no effect. Folders of a v2 backup
+missing from the notebook are added; those already there (same id) are
+kept as they are. A v1 backup (no folders) stays readable.</li>
 </ul>
-<p>Dans les deux cas, tout passe par <a href="module-sanitize.html">sanitize</a>.</p></li></ul></dd>
+<p>In both cases, everything goes through <a href="module-sanitize.html">sanitize</a>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line389">line 389</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line388">line 388</a>
     </li></ul></dd>
     
 
@@ -1969,7 +1968,7 @@ reste lisible.</li>
                 </td>
             
 
-            <td class="description last"><p>Carnet (modifié sur place).</p></td>
+            <td class="description last"><p>Notebook (modified in place).</p></td>
         </tr>
 
     
@@ -2005,7 +2004,7 @@ reste lisible.</li>
                 </td>
             
 
-            <td class="description last"><p>Contenu du fichier.</p></td>
+            <td class="description last"><p>File content.</p></td>
         </tr>
 
     
@@ -2045,7 +2044,7 @@ reste lisible.</li>
                 </td>
             
 
-            <td class="description last"><p>Dossiers (modifiés sur place).</p></td>
+            <td class="description last"><p>Folders (modified in place).</p></td>
         </tr>
 
     
@@ -2072,7 +2071,7 @@ reste lisible.</li>
 <dl>
     <dt>
         <div class="param-desc usertext">
-        <p>Si le fichier n'est ni du JSON ni un format Inkline.</p>
+        <p>If the file is neither JSON nor an Inkline format.</p>
         </div>
     </dt>
     <dd></dd>
@@ -2134,11 +2133,11 @@ reste lisible.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Charge le carnet (asynchrone : à attendre avec <code>await</code>).</p>
-<p>Toutes les données lues sont validées
-(<a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a>) : elles ont pu être
-écrites par une ancienne version, ou corrompues. Une donnée invalide ne
-doit jamais atteindre le rendu.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Loads the notebook (asynchronous: to be awaited).</p>
+<p>All data read is validated
+(<a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a>): it may have been
+written by an old version, or corrupted. Invalid data must never reach the
+renderer.</p></li></ul></dd>
     
 
     
@@ -2242,7 +2241,7 @@ doit jamais atteindre le rendu.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Contenu d'un fichier <code>.inkline</code> : une seule note, pour l'envoyer à quelqu'un.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Content of an <code>.inkline</code> file: a single note, to send to someone.</p></li></ul></dd>
     
 
     
@@ -2396,7 +2395,7 @@ doit jamais atteindre le rendu.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Demande un stockage persistant (sans effet si non supporté).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Requests persistent storage (no effect if unsupported).</p></li></ul></dd>
     
 
     
@@ -2481,8 +2480,8 @@ doit jamais atteindre le rendu.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Enregistre les dossiers (immédiatement : ils changent rarement et pèsent
-peu, on réécrit donc le magasin entier).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Saves the folders (right away: they change rarely and weigh little, so the
+whole store is rewritten).</p></li></ul></dd>
     
 
     
@@ -2636,7 +2635,7 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Programme une écriture (debounce de SAVE_DELAY ms).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Schedules a write (debounce of SAVE_DELAY ms).</p></li></ul></dd>
     
 
     
@@ -2741,7 +2740,7 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Le carnet.</p></td>
+            <td class="description last"><p>The notebook.</p></td>
         </tr>
 
     
@@ -2775,7 +2774,7 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Note modifiée. Sans id, toutes les notes seront comparées.</p></td>
+            <td class="description last"><p>Changed note. Without an id, every note is compared.</p></td>
         </tr>
 
     
@@ -2815,13 +2814,13 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met à jour une partie des métadonnées.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Updates part of the metadata.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line642">line 642</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line641">line 641</a>
     </li></ul></dd>
     
 
@@ -2950,7 +2949,7 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Où le carnet est enregistré (pour l'écran Options et les tests).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Where the notebook is stored (for the Settings screen and tests).</p></li></ul></dd>
     
 
     
@@ -3057,14 +3056,14 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide les temps du métronome par mesure. Accepte l'ancien format (2.3 à
-2.7 : un tableau de 4, pour le 4/4).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates the metronome beats per time signature. Accepts the old format
+(2.3 to 2.7: an array of 4, for 4/4).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line486">line 486</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line485">line 485</a>
     </li></ul></dd>
     
 
@@ -3212,13 +3211,13 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide un petit dictionnaire de métadonnées : clés et valeurs bornées.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates a small metadata dictionary: bounded keys and values.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line594">line 594</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line593">line 593</a>
     </li></ul></dd>
     
 
@@ -3355,7 +3354,7 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Valeur acceptée.</p></td>
+            <td class="description last"><p>Accepted value.</p></td>
         </tr>
 
     
@@ -3417,13 +3416,13 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide les réglages de l'entraînement Rythme (valeurs par défaut pour ce qui manque).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates Rhythm practice settings (defaults for whatever is missing).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line503">line 503</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line502">line 502</a>
     </li></ul></dd>
     
 
@@ -3574,13 +3573,13 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Valide les réglages des exercices aléatoires.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates random exercise settings.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line547">line 547</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line546">line 546</a>
     </li></ul></dd>
     
 
@@ -3731,9 +3730,9 @@ peu, on réécrit donc le magasin entier).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Copie le carnet de <code>localStorage</code> vers IndexedDB, en une transaction : si
-l'app est tuée au milieu, rien n'est écrit et la migration recommencera au
-lancement suivant. L'original est conservé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Copies the notebook from <code>localStorage</code> to IndexedDB, in one transaction:
+if the app is killed halfway, nothing is written and the migration starts
+over on the next launch. The original is kept.</p></li></ul></dd>
     
 
     
@@ -3887,7 +3886,7 @@ lancement suivant. L'original est conservé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lit les deux magasins.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reads both stores.</p></li></ul></dd>
     
 
     
@@ -4008,7 +4007,7 @@ lancement suivant. L'original est conservé.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>[notes, dossiers]</code> bruts.</p>
+    <p>Raw <code>[notes, folders]</code>.</p>
 </div>
 
 
@@ -4045,7 +4044,7 @@ lancement suivant. L'original est conservé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lit une valeur JSON de <code>localStorage</code> (objet vide si absente ou illisible).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reads a JSON value from <code>localStorage</code> (empty object if missing or unreadable).</p></li></ul></dd>
     
 
     
@@ -4199,13 +4198,13 @@ lancement suivant. L'original est conservé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Garde seulement les tris valides d'un objet <code>{ sélection: tri }</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Keeps only the valid sorts of a <code>{ selection: sort }</code> object.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line576">line 576</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line575">line 575</a>
     </li></ul></dd>
     
 
@@ -4356,11 +4355,11 @@ lancement suivant. L'original est conservé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écrit les notes qui diffèrent de leur dernière version écrite.</p>
-<p>Point subtil : IndexedDB copie chaque objet <strong>au moment</strong> de <code>put</code>, et
-<code>write</code> émet les <code>put</code> immédiatement (avant le premier <code>await</code>). Le JSON
-comparé et l'objet écrit correspondent donc exactement au même état de la
-note, même si l'utilisateur continue de taper pendant l'écriture.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Writes the notes that differ from their last written version.</p>
+<p>Subtle point: IndexedDB copies each object <strong>at the time</strong> of <code>put</code>, and
+<code>write</code> issues the <code>put</code>s immediately (before the first <code>await</code>). The
+compared JSON and the written object therefore match exactly the same
+state of the note, even if the user keeps typing during the write.</p></li></ul></dd>
     
 
     
@@ -4499,8 +4498,8 @@ note, même si l'utilisateur continue de taper pendant l'écriture.</p></li></ul
 
             
 
-            <td class="description last"><p>Notes à examiner, ou <code>null</code> pour toutes
-(et pour détecter les suppressions).</p></td>
+            <td class="description last"><p>Notes to examine, or <code>null</code> for all (and to
+detect deletions).</p></td>
         </tr>
 
     
@@ -4593,14 +4592,14 @@ note, même si l'utilisateur continue de taper pendant l'écriture.</p></li></ul
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages de l'entraînement Rythme, communs aux Placements et aux exercices
-aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placements).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Rhythm practice settings, shared by Placements and random exercises
+(except <code>notes</code> and <code>meter</code>, specific to Placements).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line446">line 446</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line445">line 445</a>
     </li></ul></dd>
     
 
@@ -4680,7 +4679,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Notes par mesure (1 à 12).</p></td>
+            <td class="description last"><p>Notes per measure (1 to 12).</p></td>
         </tr>
 
     
@@ -4704,7 +4703,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Mesure des Placements (clé de <a href="module-placements.html#.METERS">METERS</a>, 2.8).</p></td>
+            <td class="description last"><p>Placements time signature (key of <a href="module-placements.html#.METERS">METERS</a>, 2.8).</p></td>
         </tr>
 
     
@@ -4728,7 +4727,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Tempo à la noire.</p></td>
+            <td class="description last"><p>Tempo (quarter note).</p></td>
         </tr>
 
     
@@ -4776,9 +4775,9 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Temps où le métronome
-clique, par mesure (2.8 ; un tableau de 4 avant). Absent pour une mesure :
-tous les temps.</p></td>
+            <td class="description last"><p>Beats where the metronome
+clicks, per time signature (2.8; an array of 4 before). Missing for a
+time signature: every beat.</p></td>
         </tr>
 
     
@@ -4802,7 +4801,7 @@ tous les temps.</p></td>
 
             
 
-            <td class="description last"><p>Accent sur le 1.</p></td>
+            <td class="description last"><p>Accent on 1.</p></td>
         </tr>
 
     
@@ -4826,7 +4825,7 @@ tous les temps.</p></td>
 
             
 
-            <td class="description last"><p>Mesure de décompte.</p></td>
+            <td class="description last"><p>Count-in measure.</p></td>
         </tr>
 
     
@@ -4850,7 +4849,7 @@ tous les temps.</p></td>
 
             
 
-            <td class="description last"><p>Couper le rythme (métronome seul).</p></td>
+            <td class="description last"><p>Mute the rhythm (metronome only).</p></td>
         </tr>
 
     
@@ -4874,7 +4873,7 @@ tous les temps.</p></td>
 
             
 
-            <td class="description last"><p>Lecture en boucle (exercices aléatoires, 2.8).</p></td>
+            <td class="description last"><p>Loop playback (random exercises, 2.8).</p></td>
         </tr>
 
     
@@ -4887,8 +4886,8 @@ tous les temps.</p></td>
 
 
 <div class="description usertext">
-    <p>Réglages de l'entraînement Rythme, communs aux Placements et aux exercices
-aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placements).</p>
+    <p>Rhythm practice settings, shared by Placements and random exercises
+(except <code>notes</code> and <code>meter</code>, specific to Placements).</p>
 </div>
 
 
@@ -4920,13 +4919,13 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages des exercices aléatoires (2.8).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Random exercise settings (2.8).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line520">line 520</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line519">line 519</a>
     </li></ul></dd>
     
 
@@ -5006,7 +5005,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Mesure (clé de <a href="module-placements.html#.METERS">METERS</a>).</p></td>
+            <td class="description last"><p>Time signature (key of <a href="module-placements.html#.METERS">METERS</a>).</p></td>
         </tr>
 
     
@@ -5030,7 +5029,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Longueur de l'exercice : 1, 2 ou 4 mesures (4, 8 ou 12 en 2.8.0).</p></td>
+            <td class="description last"><p>Exercise length: 1, 2 or 4 measures (4, 8 or 12 in 2.8.0).</p></td>
         </tr>
 
     
@@ -5054,7 +5053,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Notes par mesure, au moins.</p></td>
+            <td class="description last"><p>Notes per measure, at least.</p></td>
         </tr>
 
     
@@ -5078,7 +5077,7 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Notes par mesure, au plus.</p></td>
+            <td class="description last"><p>Notes per measure, at most.</p></td>
         </tr>
 
     
@@ -5102,8 +5101,8 @@ aléatoires (sauf <code>notes</code> et <code>meter</code>, propres aux Placemen
 
             
 
-            <td class="description last"><p>Positions permises pour
-la première note, par mesure. Absent pour une mesure : toutes.</p></td>
+            <td class="description last"><p>Allowed positions for the
+first note, per time signature. Missing for a time signature: all.</p></td>
         </tr>
 
     
@@ -5127,7 +5126,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Numéro du dernier exercice.</p></td>
+            <td class="description last"><p>Number of the last exercise.</p></td>
         </tr>
 
     
@@ -5140,7 +5139,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
 
 <div class="description usertext">
-    <p>Réglages des exercices aléatoires (2.8).</p>
+    <p>Random exercise settings (2.8).</p>
 </div>
 
 
@@ -5172,7 +5171,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Résultat d'un import.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Result of an import.</p></li></ul></dd>
     
 
     
@@ -5261,7 +5260,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Type de fichier reconnu.</p></td>
+            <td class="description last"><p>Type of file recognized.</p></td>
         </tr>
 
     
@@ -5285,7 +5284,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Nombre de notes ajoutées ou mises à jour.</p></td>
+            <td class="description last"><p>Number of notes added or updated.</p></td>
         </tr>
 
     
@@ -5312,7 +5311,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Id de la note importée (pour l'ouvrir directement).</p></td>
+            <td class="description last"><p>Id of the imported note (to open it directly).</p></td>
         </tr>
 
     
@@ -5325,7 +5324,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
 
 <div class="description usertext">
-    <p>Résultat d'un import.</p>
+    <p>Result of an import.</p>
 </div>
 
 
@@ -5357,7 +5356,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Contenu chargé au démarrage.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Content loaded at startup.</p></li></ul></dd>
     
 
     
@@ -5494,7 +5493,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Où le carnet est enregistré.</p></td>
+            <td class="description last"><p>Where the notebook is stored.</p></td>
         </tr>
 
     
@@ -5518,7 +5517,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>La migration depuis <code>localStorage</code> vient d'avoir lieu.</p></td>
+            <td class="description last"><p>The migration from <code>localStorage</code> just happened.</p></td>
         </tr>
 
     
@@ -5531,7 +5530,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
 
 <div class="description usertext">
-    <p>Contenu chargé au démarrage.</p>
+    <p>Content loaded at startup.</p>
 </div>
 
 
@@ -5563,13 +5562,13 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Métadonnées du carnet, stockées à part des notes.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Notebook metadata, stored apart from the notes.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line428">line 428</a>
+        <a href="storage.js.html">storage.js</a>, <a href="storage.js.html#line427">line 427</a>
     </li></ul></dd>
     
 
@@ -5659,7 +5658,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Horodatage de la première ouverture de l'app.</p></td>
+            <td class="description last"><p>Timestamp of the app's first opening.</p></td>
         </tr>
 
     
@@ -5691,7 +5690,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Horodatage du dernier « Exporter le carnet ».</p></td>
+            <td class="description last"><p>Timestamp of the last &quot;Export notebook&quot;.</p></td>
         </tr>
 
     
@@ -5729,7 +5728,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Affichage de la liste choisi dans les Options.</p></td>
+            <td class="description last"><p>List display chosen in Settings.</p></td>
         </tr>
 
     
@@ -5761,7 +5760,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Sélection de la barre de dossiers (<code>'all'</code>, <code>'none'</code> ou id de dossier).</p></td>
+            <td class="description last"><p>Folder bar selection (<code>'all'</code>, <code>'none'</code> or folder id).</p></td>
         </tr>
 
     
@@ -5793,7 +5792,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Tri choisi pour chaque sélection de la barre de dossiers.</p></td>
+            <td class="description last"><p>Sort chosen for each folder bar selection.</p></td>
         </tr>
 
     
@@ -5825,7 +5824,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Langue de l'interface (2.9) : <code>auto</code>, <code>en</code> ou <code>fr</code>.</p></td>
+            <td class="description last"><p>Interface language (2.9): <code>auto</code>, <code>en</code> or <code>fr</code>.</p></td>
         </tr>
 
     
@@ -5857,7 +5856,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Catégorie choisie dans chaque dossier (2.8.6) : <code>'all'</code>, <code>'none'</code> ou id.</p></td>
+            <td class="description last"><p>Category chosen in each folder (2.8.6): <code>'all'</code>, <code>'none'</code> or id.</p></td>
         </tr>
 
     
@@ -5889,7 +5888,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Sections repliées de l'accueil (2.8.6), clés <code>dossier:catégorie</code>.</p></td>
+            <td class="description last"><p>Collapsed sections of home (2.8.6), keys <code>folder:category</code>.</p></td>
         </tr>
 
     
@@ -5921,7 +5920,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Version du format des données locales (2 depuis la 2.0).</p></td>
+            <td class="description last"><p>Version of the local data format (2 since 2.0).</p></td>
         </tr>
 
     
@@ -5953,7 +5952,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Présent une fois le carnet migré vers IndexedDB (2.1).</p></td>
+            <td class="description last"><p>Present once the notebook has been migrated to IndexedDB (2.1).</p></td>
         </tr>
 
     
@@ -5985,7 +5984,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Option « Réduire automatiquement les blocs longs » (2.2).</p></td>
+            <td class="description last"><p>&quot;Collapse long blocks automatically&quot; option (2.2).</p></td>
         </tr>
 
     
@@ -6017,7 +6016,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Derniers réglages de l'entraînement Rythme (2.3).</p></td>
+            <td class="description last"><p>Last settings of Rhythm practice (2.3).</p></td>
         </tr>
 
     
@@ -6049,7 +6048,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
             
 
-            <td class="description last"><p>Derniers réglages des exercices aléatoires (2.8).</p></td>
+            <td class="description last"><p>Last settings of random exercises (2.8).</p></td>
         </tr>
 
     
@@ -6062,7 +6061,7 @@ la première note, par mesure. Absent pour une mesure : toutes.</p></td>
 
 
 <div class="description usertext">
-    <p>Métadonnées du carnet, stockées à part des notes.</p>
+    <p>Notebook metadata, stored apart from the notes.</p>
 </div>
 
 

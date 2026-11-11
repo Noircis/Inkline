@@ -1,8 +1,9 @@
 /**
  * @module ui/staff/view
  * @description
- * **En-tête et dessin** d'un bloc portée (ou ligne rythmique) : clé, armure,
- * mesure, tempo, swing, lecture, puis la portée elle-même en SVG.
+ * **Header and drawing** of a staff block (or rhythm line): clef, key
+ * signature, time signature, tempo, swing, playback, then the staff itself
+ * as SVG.
  */
 
 import { noteName } from '../../pitch.js';
@@ -24,12 +25,12 @@ import { bindStaffInput, dragZonesHtml } from './input.js';
 import { bindMeasureSelect, staffTarget, refreshMeasureSelect } from '../measure-select.js';
 
 /**
- * Armures proposées : nombre de dièses (> 0) ou de bémols (< 0), avec les
- * tonalités majeure et mineure correspondantes.
+ * Key signatures offered: number of sharps (> 0) or flats (< 0), with the
+ * matching major and minor keys.
  * @type {Array.<{v: number, label: string}>}
  */
 const KEY_SIGS = (() => {
-  // Tonalités : [degré, altération] de la majeure puis de la relative mineure.
+  // Keys: [degree, accidental] of the major, then of the relative minor.
   const SHARPS = [
     [4, '', 2, ''],
     [1, '', 6, ''],
@@ -58,7 +59,7 @@ const KEY_SIGS = (() => {
 })();
 
 /**
- * HTML de l'en-tête du bloc.
+ * HTML of the block header.
  * @param {module:model~StaffBlock} b
  * @returns {string}
  */
@@ -76,12 +77,12 @@ function headerHtml(b) {
 }
 
 /**
- * Branche un `<select>` de l'en-tête : `apply` reçoit la valeur choisie,
- * avec annulation, sauvegarde et redessin.
+ * Wires a header `<select>`: `apply` receives the chosen value, with undo,
+ * save and redraw.
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
  * @param {?HTMLSelectElement} sel
- * @param {string} value Valeur initiale.
+ * @param {string} value Initial value.
  * @param {function(string)} apply
  */
 function bindSelect(n, b, sel, value, apply) {
@@ -96,10 +97,11 @@ function bindSelect(n, b, sel, value, apply) {
 }
 
 /**
- * Menu Instrument (2.8.3). Sur une portée vide, on change simplement
- * d'instrument (l'armure reste celle choisie). S'il y a déjà des notes, on
- * demande quoi en faire (voir {@link module:transpose|transpose}) :
- * transposer (même son, l'écriture change) ou garder l'écriture (le son change).
+ * Instrument menu (2.8.3). On an empty staff, the instrument simply changes
+ * (the key signature stays as chosen). If there are notes already, the user
+ * is asked what to do with them (see {@link module:transpose|transpose}):
+ * transpose (same sound, the writing changes) or keep the writing (the sound
+ * changes).
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
  * @param {HTMLElement} el
@@ -146,7 +148,7 @@ function bindInstrument(n, b, el) {
 }
 
 /**
- * Remplit l'élément d'un bloc portée : en-tête, zone SVG, outils.
+ * Fills a staff block's element: header, SVG area, tools.
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
  * @param {HTMLElement} el
@@ -164,7 +166,7 @@ export function staffBlockEl(n, b, el) {
   });
   bindSelect(n, b, q('[data-f=time]'), b.time, (v) => {
     b.time = v;
-    refit(b); // tout est recoupé selon la nouvelle mesure
+    refit(b); // everything is re-split for the new time signature
   });
 
   bindInstrument(n, b, el);
@@ -184,7 +186,7 @@ export function staffBlockEl(n, b, el) {
     touch(n);
   };
   el.querySelector('[data-play]').onclick = () => {
-    // Un bloc réduit s'écoute sans se déplier : on ne l'active pas.
+    // A collapsed block can be played without expanding it: it is not activated.
     if (!el.classList.contains('folded')) setActive(b.id);
     audio.playStaff(b, playCallbacks(b.id, redrawStaff));
     updatePlayBtn(b.id);
@@ -192,7 +194,7 @@ export function staffBlockEl(n, b, el) {
   const wrap = /** @type {HTMLElement} */ (el.querySelector('.staff-wrap'));
   guardFoldedTaps(wrap, b);
   bindStaffInput(n, b, wrap);
-  // Appui long : sélection de mesures, « Jouer d'ici » ou boucle (2.8.4).
+  // Long press: measure selection, "Play from here" or loop (2.8.4).
   bindMeasureSelect(
     wrap,
     staffTarget(wrap, () => renderedLayout(b, wrap), {
@@ -218,9 +220,9 @@ export function staffBlockEl(n, b, el) {
 }
 
 /**
- * Redessine le SVG d'un bloc portée (sans effet si `id` n'est pas une portée affichée).
- * La largeur utilisée est mémorisée sur l'élément (`_W`) pour que le
- * hit-testing refasse exactement la même mise en page.
+ * Redraws the SVG of a staff block (no effect if `id` is not a staff on screen).
+ * The width used is stored on the element (`_W`) so that hit testing redoes
+ * exactly the same layout.
  * @param {string} id
  */
 export function redrawStaff(id) {
@@ -232,14 +234,14 @@ export function redrawStaff(id) {
   const isAct = state.activeId === id;
   const write = isAct && state.mode === 'write';
   if (isAct) clampCursor(b);
-  // Nombre de lignes à cette largeur, pour décider de l'affichage réduit.
+  // Number of lines at this width, to decide on the collapsed display.
   const lines = layout(b, W, isAct).systems.length;
   const folded = isFolded(b, lines);
   const chord = staffUi.chordTarget;
   wrap.innerHTML =
     staffSvg(b, W, {
-      // En mode Écrire, rien n'est sélectionné ; on surligne seulement la note
-      // dont on saisit l'accord chiffré.
+      // In Write mode, nothing is selected; only the note whose chord symbol
+      // is being typed is highlighted.
       sel: isAct ? (write ? (chord ? chord.i : null) : state.sel) : null,
       selEnd:
         isAct && !write && state.sel != null && b.items[state.sel] ? chainEnd(b.items, state.sel) : null,
@@ -257,8 +259,8 @@ export function redrawStaff(id) {
 hooks.redraw = redrawStaff;
 
 /**
- * Mise en page telle que dessinée par {@link redrawStaff} (même largeur, même
- * curseur), pour retrouver les mesures sous le doigt.
+ * Layout as drawn by {@link redrawStaff} (same width, same cursor), to find
+ * the measures under the finger.
  * @param {module:model~StaffBlock} b
  * @param {HTMLElement} wrap
  * @returns {?module:layout~Layout}

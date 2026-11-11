@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/palette.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,19 +53,19 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/staff/palette
  * @description
- * **Palette** des portées, fixée en bas d'écran : mode (Écrire / Modifier),
- * valeurs, point, triolet, silence, liaison, altérations, barres, accord
- * chiffré, navigation, annuler, effacer.
+ * Staff **palette**, fixed at the bottom of the screen: mode (Write / Edit),
+ * durations, dot, triplet, rest, tie, accidentals, barlines, chord symbol,
+ * navigation, undo, erase.
  *
- * Chaque bouton agit selon le mode :
- * - **Écrire** : il règle la **prochaine** note
- *   (voir {@link module:ui/state~InputSettings|InputSettings}) ;
- * - **Modifier** : il modifie la **note sélectionnée**. Changer sa durée
- *   garde la suite en place (compensation par des silences, voir
+ * Each button acts according to the mode:
+ * - **Write**: it sets the **next** note
+ *   (see {@link module:ui/state~InputSettings|InputSettings});
+ * - **Edit**: it changes the **selected note**. Changing its duration keeps
+ *   what follows in place (compensated by rests, see
  *   {@link module:measure-fit.resizeEvent|resizeEvent}).
  *
- * Toute modification est précédée de `pushSnapshot` (annulation) et suivie de
- * `touch` (sauvegarde), d'une remise en mesure et d'un redessin.
+ * Every change is preceded by `pushSnapshot` (undo) and followed by `touch`
+ * (save), a refit into measures and a redraw.
  */
 
 import { t } from '../../i18n.js';
@@ -83,20 +83,20 @@ import { openChord, closeChord } from './chord.js';
 
 const pal = /** @type {HTMLElement} */ (document.getElementById('palette'));
 
-/** Glyphes Unicode des boutons de valeur, en mode note et en mode silence. */
+/** Unicode glyphs of the duration buttons, in note mode and in rest mode. */
 const GLYPHS = {
   note: { w: '\u{1D15D}', h: '\u{1D15E}', q: '\u{1D15F}', 8: '\u{1D160}', 16: '\u{1D161}' },
   rest: { w: '\u{1D13B}', h: '\u{1D13C}', q: '\u{1D13D}', 8: '\u{1D13E}', 16: '\u{1D13F}' },
 };
 
-/** Noms accessibles des boutons de valeur. */
+/** Accessible names of the duration buttons. */
 const LABELS = {
   note: (d) => t('dur.' + d),
   rest: (d) => t('rest.' + d),
 };
 
 /**
- * Affiche ou cache la palette de portée.
+ * Shows or hides the staff palette.
  * @param {boolean} on
  */
 export function showStaffPalette(on) {
@@ -109,9 +109,9 @@ export function showStaffPalette(on) {
 }
 
 /**
- * Valeurs que la palette doit montrer : celles de la note sélectionnée (mode
- * Modifier ; une note coupée par une barre montre sa valeur entière), sinon
- * les réglages de saisie.
+ * Values the palette must show: those of the selected note (Edit mode; a
+ * note split by a barline shows its whole value), otherwise the input
+ * settings.
  * @param {module:model~StaffBlock} b
  * @returns {{sel: ?Object, d: string, dot: boolean, rest: boolean, acc: ?number, tup: boolean, tie: boolean}}
  */
@@ -134,7 +134,7 @@ function shownValues(b) {
 }
 
 /**
- * Message d'aide, du plus spécifique au plus général.
+ * Help message, from the most specific to the most general.
  * @param {module:model~StaffBlock} b
  * @param {ReturnType&lt;shownValues>} v
  * @returns {string}
@@ -160,8 +160,8 @@ function helpText(b, v) {
 }
 
 /**
- * Met la palette en accord avec le mode, la sélection ou les réglages de
- * saisie : boutons enfoncés, glyphes (note ou silence), message d'aide.
+ * Brings the palette in line with the mode, the selection or the input
+ * settings: pressed buttons, glyphs (note or rest), help message.
  */
 function updateStaffPalette() {
   const a = activeStaff();
@@ -204,10 +204,10 @@ hooks.refreshPalette = updateStaffPalette;
 // ---------- Actions ----------
 
 /**
- * Mode Modifier : change la durée de la note sélectionnée, en gardant la
- * suite à sa place ({@link module:measure-fit.resizeEvent|resizeEvent}).
+ * Edit mode: changes the duration of the selected note, keeping what follows
+ * in place ({@link module:measure-fit.resizeEvent|resizeEvent}).
  * @param {function({d: string, dot: boolean, tup: boolean}): {d: string, dot: boolean, tup: boolean}} change
- * @returns {boolean} `false` hors mode Modifier ou sans sélection.
+ * @returns {boolean} `false` outside Edit mode or with no selection.
  */
 function resizeSel(change) {
   if (state.mode !== 'edit') return false;
@@ -230,7 +230,7 @@ function resizeSel(change) {
 }
 
 /**
- * Bascule un réglage de saisie (mode Écrire) puis rafraîchit la palette.
+ * Toggles an input setting (Write mode) then refreshes the palette.
  * @param {function(module:ui/state~InputSettings)} fn
  */
 function setInput(fn) {
@@ -239,14 +239,14 @@ function setInput(fn) {
 }
 
 /**
- * Liaison : en mode Modifier, sur la note sélectionnée (la note suivante
- * prend sa hauteur et perd son altération) ; en mode Écrire, la prochaine
- * note sera liée à celle qui précède le curseur.
+ * Tie: in Edit mode, on the selected note (the next note takes its pitch and
+ * loses its accidental); in Write mode, the next note will be tied to the one
+ * before the cursor.
  * @param {module:model~StaffBlock} b
  */
 function toggleTie(b) {
   const done = withSel((first, blk) => {
-    // La liaison de l'utilisateur part de la fin de la note logique.
+    // The user's tie starts from the end of the logical note.
     const it = blk.items[chainEnd(blk.items, state.sel)];
     if (it.r || it.auto) return;
     if (it.tie) {
@@ -268,8 +268,8 @@ function toggleTie(b) {
 }
 
 /**
- * Note ⇄ silence (toute la note logique, tous ses morceaux).
- * @param {module:model~StaffItem} it Premier morceau.
+ * Note ⇄ rest (the whole logical note, all its pieces).
+ * @param {module:model~StaffItem} it First piece.
  * @param {module:model~StaffBlock} blk
  */
 function toggleRestOf(it, blk) {
@@ -289,8 +289,8 @@ function toggleRestOf(it, blk) {
 }
 
 /**
- * ◀ ▶ : déplace le curseur (Écrire) ou la sélection (Modifier), d'une note
- * logique à l'autre (jamais au milieu d'une note coupée).
+ * ◀ ▶: moves the cursor (Write) or the selection (Edit), from one logical
+ * note to the next (never into the middle of a split note).
  * @param {module:model~StaffBlock} b
  * @param {boolean} back
  */
@@ -320,9 +320,9 @@ function step(b, back) {
 }
 
 /**
- * ⌫ : en mode Écrire, efface la note juste avant le curseur ; en mode
- * Modifier, la note sélectionnée (à défaut, la dernière). Une note coupée
- * s'efface en entier.
+ * ⌫: in Write mode, erases the note just before the cursor; in Edit mode,
+ * the selected note (failing that, the last one). A split note is erased
+ * entirely.
  * @param {module:model~Note} n
  * @param {module:model~StaffBlock} b
  */
@@ -339,7 +339,7 @@ function erase(n, b) {
   pushSnapshot(n);
   b.items.splice(i, last - i + 1);
   if (write &amp;&amp; state.cursor != null) state.cursor = i;
-  // Une liaison qui menait à la note supprimée n'a plus de sens.
+  // A tie that led to the deleted note no longer makes sense.
   if (b.items[i - 1] &amp;&amp; b.items[i - 1].tie &amp;&amp; (!b.items[i] || b.items[i].r)) delete b.items[i - 1].tie;
   if (state.sel != null)
     state.sel = b.items.length ? chainStart(b.items, Math.min(i, b.items.length - 1)) : null;
@@ -350,7 +350,7 @@ function erase(n, b) {
 }
 
 /**
- * Boutons `data-act` de la palette.
+ * The palette's `data-act` buttons.
  * @type {Object.&lt;string, function(module:model~Note, module:model~StaffBlock)>}
  */
 const ACTIONS = {
@@ -371,7 +371,7 @@ const ACTIONS = {
 };
 
 /**
- * Bouton de valeur (ronde… double croche).
+ * Duration button (whole… sixteenth).
  * @param {string} d
  */
 function onDuration(d) {
@@ -379,7 +379,7 @@ function onDuration(d) {
 }
 
 /**
- * Bouton d'altération (♭ ♮ ♯).
+ * Accidental button (♭ ♮ ♯).
  * @param {module:model~StaffBlock} b
  * @param {number} a
  */
@@ -393,7 +393,7 @@ function onAccidental(b, a) {
   else setInput((inp) => (inp.acc = inp.acc === a ? null : a));
 }
 
-// Câblage, une seule fois au chargement du module.
+// Wiring, only once when the module loads.
 pal.addEventListener('click', (e) => {
   const btn = /** @type {HTMLElement} */ (e.target).closest('button');
   const a = activeStaff();

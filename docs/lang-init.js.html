@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>lang-init.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,16 +53,16 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module lang-init
  * @description
- * Fixe la **langue de l'interface** au démarrage (2.9), avant tout le reste.
+ * Sets the **interface language** at startup (2.9), before anything else.
  *
- * Ce module est le premier importé par {@link module:main|main} : en
- * JavaScript, les modules importés s'exécutent dans l'ordre des `import`, et
- * certains écrans fabriquent leurs libellés dès leur chargement (claviers
- * d'accords, palettes). La langue doit donc être connue avant eux.
+ * This module is the first one imported by {@link module:main|main}: in
+ * JavaScript, imported modules run in `import` order, and some screens build
+ * their labels as soon as they load (chord keyboards, palettes). The
+ * language must therefore be known before them.
  *
- * Réglage enregistré (`meta.lang`, Options) : `auto`, `en` ou `fr`. En `auto`,
- * la langue du navigateur décide ({@link module:i18n.detectLang|detectLang}).
- * Les textes fixes de `index.html` sont traduits ici aussi.
+ * Stored setting (`meta.lang`, Settings): `auto`, `en` or `fr`. With `auto`,
+ * the browser language decides ({@link module:i18n.detectLang|detectLang}).
+ * The fixed texts of `index.html` are translated here too.
  */
 
 import { initLang, translateDom } from './i18n.js';

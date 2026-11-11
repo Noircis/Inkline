@@ -1,6 +1,6 @@
-// Configuration des tests d'interface (Playwright).
+// Interface test configuration (Playwright).
 //   npm run test:e2e
-// La première fois sur un ordinateur : npx playwright install chromium
+// First time on a computer: npx playwright install chromium
 import { defineConfig } from '@playwright/test';
 
 const PORT = 5610;
@@ -12,7 +12,7 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: `http://localhost:${PORT}/`,
-    // Format téléphone : c'est l'usage principal de l'appli.
+    // Phone format: that is the app's main use.
     viewport: { width: 390, height: 844 },
     hasTouch: false,
     locale: 'fr-FR',

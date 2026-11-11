@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/training - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,20 +63,20 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Entraînement</strong> (depuis la 2.3) : un écran d'accueil des exercices
-(<code>training</code>), puis un écran par exercice.</p>
+                <div class="description usertext"><p><strong>Practice</strong> (since 2.3): a home screen listing the exercises
+(<code>training</code>), then one screen per exercise.</p>
 <ul>
-<li><strong>Rythme › Placements</strong> (<code>rhythm</code>) : toutes les façons de placer n
-croches dans une mesure (toutes les mesures depuis la 2.8), en sections
-repliables selon la position de la première note, écrites proprement et
-jouées avec un métronome réglable.</li>
-<li><strong>Rythme › Exercices aléatoires</strong> (2.8) : voir <a href="module-ui_exercises.html">ui/exercises</a>.</li>
+<li><strong>Rhythm › Placements</strong> (<code>rhythm</code>): every way to place n eighth notes in
+a measure (every time signature since 2.8), in collapsible sections by
+position of the first note, cleanly written and played with an
+adjustable metronome.</li>
+<li><strong>Rhythm › Random exercises</strong> (2.8): see <a href="module-ui_exercises.html">ui/exercises</a>.</li>
 </ul>
-<p>La logique (génération, règles d'écriture) est dans le module pur
-<a href="module-placements.html">placements</a> ; ce module ne fait que l'interface.
-Les mesures sont de vrais blocs « ligne rythmique » : elles sont dessinées
-par <a href="module-render-staff.html#.staffSvg">staffSvg</a> et jouées par
-<a href="module-audio.html#.playStaff">playStaff</a>, comme dans une note.</p></div>
+<p>The logic (generation, writing rules) is in the pure module
+<a href="module-placements.html">placements</a>; this module only does the interface.
+Measures are real &quot;rhythm line&quot; blocks: they are drawn by
+<a href="module-render-staff.html#.staffSvg">staffSvg</a> and played by
+<a href="module-audio.html#.playStaff">playStaff</a>, as in a note.</p></div>
             
 
             
@@ -88,20 +88,20 @@ par <a href="module-render-staff.html#.staffSvg">staffSvg</a> et jouées par
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Entraînement</strong> (depuis la 2.3) : un écran d'accueil des exercices
-(<code>training</code>), puis un écran par exercice.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Practice</strong> (since 2.3): a home screen listing the exercises
+(<code>training</code>), then one screen per exercise.</p>
 <ul>
-<li><strong>Rythme › Placements</strong> (<code>rhythm</code>) : toutes les façons de placer n
-croches dans une mesure (toutes les mesures depuis la 2.8), en sections
-repliables selon la position de la première note, écrites proprement et
-jouées avec un métronome réglable.</li>
-<li><strong>Rythme › Exercices aléatoires</strong> (2.8) : voir <a href="module-ui_exercises.html">ui/exercises</a>.</li>
+<li><strong>Rhythm › Placements</strong> (<code>rhythm</code>): every way to place n eighth notes in
+a measure (every time signature since 2.8), in collapsible sections by
+position of the first note, cleanly written and played with an
+adjustable metronome.</li>
+<li><strong>Rhythm › Random exercises</strong> (2.8): see <a href="module-ui_exercises.html">ui/exercises</a>.</li>
 </ul>
-<p>La logique (génération, règles d'écriture) est dans le module pur
-<a href="module-placements.html">placements</a> ; ce module ne fait que l'interface.
-Les mesures sont de vrais blocs « ligne rythmique » : elles sont dessinées
-par <a href="module-render-staff.html#.staffSvg">staffSvg</a> et jouées par
-<a href="module-audio.html#.playStaff">playStaff</a>, comme dans une note.</p></li></ul></dd>
+<p>The logic (generation, writing rules) is in the pure module
+<a href="module-placements.html">placements</a>; this module only does the interface.
+Measures are real &quot;rhythm line&quot; blocks: they are drawn by
+<a href="module-render-staff.html#.staffSvg">staffSvg</a> and played by
+<a href="module-audio.html#.playStaff">playStaff</a>, as in a note.</p></li></ul></dd>
     
 
     
@@ -202,8 +202,8 @@ par <a href="module-render-staff.html#.staffSvg">staffSvg</a> et jouées par
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sections affichées : id → bloc ligne rythmique, et état déplié. Recréé à
-chaque génération.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Sections shown: id → rhythm line block, and expanded state. Recreated on
+each generation.</p></li></ul></dd>
     
 
     
@@ -249,8 +249,8 @@ chaque génération.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Sections affichées : id → bloc ligne rythmique, et état déplié. Recréé à
-chaque génération.</p>
+    <p>Sections shown: id → rhythm line block, and expanded state. Recreated on
+each generation.</p>
 </div>
 
 
@@ -292,7 +292,7 @@ chaque génération.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Reporte tempo et swing sur les séries affichées.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Carries tempo and swing over to the series shown.</p></li></ul></dd>
     
 
     
@@ -377,7 +377,7 @@ chaque génération.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine la portée d'une section.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws a section's staff.</p></li></ul></dd>
     
 
     
@@ -512,7 +512,7 @@ chaque génération.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Joue une section (et la déplie si elle était repliée).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Plays a section (and expands it if it was collapsed).</p></li></ul></dd>
     
 
     
@@ -651,7 +651,7 @@ chaque génération.</p>
 
             
 
-            <td class="description last"><p>Partie à jouer (sélection de mesures, 2.8.4).</p></td>
+            <td class="description last"><p>Part to play (measure selection, 2.8.4).</p></td>
         </tr>
 
     
@@ -685,7 +685,7 @@ chaque génération.</p>
 
             
 
-            <td class="description last"><p>À la fin de la lecture.</p></td>
+            <td class="description last"><p>At the end of playback.</p></td>
         </tr>
 
     
@@ -725,7 +725,7 @@ chaque génération.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écran Rythme › Placements.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Rhythm › Placements screen.</p></li></ul></dd>
     
 
     
@@ -810,9 +810,9 @@ chaque génération.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Génère les sections pour le nombre de notes et la mesure choisis. Seule la
-première est dépliée ; les portées ne sont dessinées qu'à l'ouverture (en
-12/8, six notes donnent 924 mesures).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Generates the sections for the chosen number of notes and time signature.
+Only the first is expanded; staves are drawn only when opened (in 12/8,
+six notes give 924 measures).</p></li></ul></dd>
     
 
     
@@ -897,7 +897,7 @@ première est dépliée ; les portées ne sont dessinées qu'à l'ouverture (en
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Écran d'accueil de l'entraînement : la liste des exercices.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Practice home screen: the list of exercises.</p></li></ul></dd>
     
 
     
@@ -982,7 +982,7 @@ première est dépliée ; les portées ne sont dessinées qu'à l'ouverture (en
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Déplie ou replie une section (et dessine sa portée la première fois).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Expands or collapses a section (and draws its staff the first time).</p></li></ul></dd>
     
 
     
@@ -1141,7 +1141,7 @@ première est dépliée ; les portées ne sont dessinées qu'à l'ouverture (en
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Libellé du bouton « Tout déplier / Tout replier ».</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Label of the &quot;Expand all / Collapse all&quot; button.</p></li></ul></dd>
     
 
     

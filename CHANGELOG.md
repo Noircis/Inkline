@@ -1,7 +1,21 @@
 # Changelog
 
-Toutes les évolutions notables d'Inkline sont listées ici.
-Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions selon [SemVer](https://semver.org/lang/fr/).
+All notable changes to Inkline are listed here.
+Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
+Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
+
+## [2.9.1] - 2026-11-11
+
+### Changed
+
+- **Code documentation in English.** Every comment and JSDoc block (JavaScript, CSS, HTML), the README, the test names, the CI workflow and the generated documentation are now in English. The code itself is unchanged: an automated check compared the token stream of every file before and after.
+- Interface texts are not affected: the app still follows the phone's language (English or French).
+
+### Technical
+
+- Fixed outdated module names in `index.html` comments (`ui/nav`, `ui/staff/palette`).
+- `css/base.css` lists the `chord-keys` stylesheet.
+- From now on, changelog entries and commit messages are in English.
 
 ## [2.9.0] - 2026-11-11
 

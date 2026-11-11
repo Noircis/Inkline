@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/measure-select - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,35 +63,34 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Sélection de mesures à l'appui long</strong> (2.8.4), commune aux portées, aux
-lignes rythmiques, aux grilles et aux écrans d'entraînement.</p>
+                <div class="description usertext"><p><strong>Measure selection by long press</strong> (2.8.4), shared by staves, rhythm
+lines, charts and practice screens.</p>
 <ol>
-<li><strong>Appui long</strong> (450 ms sans bouger de plus de 10 px) sur une mesure : un
-cadre apparaît autour d'elle, le téléphone vibre brièvement.</li>
-<li>Sans lever le doigt, <strong>glisser</strong> étend la sélection jusqu'à la mesure
-sous le doigt (dans les deux sens, sur plusieurs lignes). La page ne
-défile pas pendant ce glisser.</li>
-<li>En levant le doigt, une <strong>barre contextuelle</strong> apparaît au-dessus de la
-sélection : « Jouer d'ici » pour une seule mesure (jusqu'à la fin),
-« Boucle » pour plusieurs (le passage en boucle). Les deux commencent par
-une mesure de décompte.</li>
+<li><strong>Long press</strong> (450 ms without moving more than 10 px) on a measure: a
+frame appears around it, the phone vibrates briefly.</li>
+<li>Without lifting the finger, <strong>dragging</strong> extends the selection to the
+measure under the finger (both ways, across several lines). The page
+does not scroll during this drag.</li>
+<li>When the finger lifts, a <strong>context bar</strong> appears above the selection:
+&quot;Play from here&quot; for a single measure (to the end), &quot;Loop&quot; for several
+(the passage, looped). Both start with a count-in measure.</li>
 </ol>
-<p>Un toucher ailleurs efface la sélection (et arrête la lecture qu'elle a
-lancée), comme ✕. Il n'y a qu'une sélection à la fois dans l'appli.</p>
-<p>Chaque zone (portée, grille…) se branche avec bindMeasureSelect en
-fournissant un petit objet SelectTarget : comment trouver la mesure
-sous le doigt, où dessiner le cadre, comment jouer. Après chaque
-redessin de la zone, elle appelle refreshMeasureSelect (le cadre
-vit dans la zone, un redessin l'efface).</p>
-<h2>Pourquoi tant de précautions sur le geste</h2>
+<p>A tap elsewhere clears the selection (and stops the playback it started),
+as does ✕. There is only one selection at a time in the app.</p>
+<p>Each area (staff, chart…) plugs in with bindMeasureSelect, giving a
+small SelectTarget object: how to find the measure under the
+finger, where to draw the frame, how to play. After each redraw of the
+area, it calls refreshMeasureSelect (the frame lives in the area;
+a redraw erases it).</p>
+<h2>Why so much care with the gesture</h2>
 <ul>
-<li>Le navigateur envoie un <code>click</code> en levant le doigt, même après un appui
-long : on l'avale, sinon une grille ouvrirait le clavier.</li>
-<li>Android ouvre un menu (ou sélectionne du texte) sur un appui long : on
-l'empêche (<code>contextmenu</code>, CSS <code>-webkit-touch-callout</code>).</li>
-<li>Pour glisser sans faire défiler la page, on annule les <code>touchmove</code> une
-fois la sélection armée (seulement à ce moment-là : avant, le doigt peut
-encore servir à faire défiler).</li>
+<li>The browser sends a <code>click</code> when the finger lifts, even after a long
+press: it is swallowed, otherwise a chart would open the keyboard.</li>
+<li>Android opens a menu (or selects text) on a long press: this is
+prevented (<code>contextmenu</code>, CSS <code>-webkit-touch-callout</code>).</li>
+<li>To drag without scrolling the page, <code>touchmove</code> events are cancelled
+once the selection is armed (only then: before that, the finger may
+still be scrolling).</li>
 </ul></div>
             
 
@@ -104,35 +103,34 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Sélection de mesures à l'appui long</strong> (2.8.4), commune aux portées, aux
-lignes rythmiques, aux grilles et aux écrans d'entraînement.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Measure selection by long press</strong> (2.8.4), shared by staves, rhythm
+lines, charts and practice screens.</p>
 <ol>
-<li><strong>Appui long</strong> (450 ms sans bouger de plus de 10 px) sur une mesure : un
-cadre apparaît autour d'elle, le téléphone vibre brièvement.</li>
-<li>Sans lever le doigt, <strong>glisser</strong> étend la sélection jusqu'à la mesure
-sous le doigt (dans les deux sens, sur plusieurs lignes). La page ne
-défile pas pendant ce glisser.</li>
-<li>En levant le doigt, une <strong>barre contextuelle</strong> apparaît au-dessus de la
-sélection : « Jouer d'ici » pour une seule mesure (jusqu'à la fin),
-« Boucle » pour plusieurs (le passage en boucle). Les deux commencent par
-une mesure de décompte.</li>
+<li><strong>Long press</strong> (450 ms without moving more than 10 px) on a measure: a
+frame appears around it, the phone vibrates briefly.</li>
+<li>Without lifting the finger, <strong>dragging</strong> extends the selection to the
+measure under the finger (both ways, across several lines). The page
+does not scroll during this drag.</li>
+<li>When the finger lifts, a <strong>context bar</strong> appears above the selection:
+&quot;Play from here&quot; for a single measure (to the end), &quot;Loop&quot; for several
+(the passage, looped). Both start with a count-in measure.</li>
 </ol>
-<p>Un toucher ailleurs efface la sélection (et arrête la lecture qu'elle a
-lancée), comme ✕. Il n'y a qu'une sélection à la fois dans l'appli.</p>
-<p>Chaque zone (portée, grille…) se branche avec bindMeasureSelect en
-fournissant un petit objet SelectTarget : comment trouver la mesure
-sous le doigt, où dessiner le cadre, comment jouer. Après chaque
-redessin de la zone, elle appelle refreshMeasureSelect (le cadre
-vit dans la zone, un redessin l'efface).</p>
-<h2>Pourquoi tant de précautions sur le geste</h2>
+<p>A tap elsewhere clears the selection (and stops the playback it started),
+as does ✕. There is only one selection at a time in the app.</p>
+<p>Each area (staff, chart…) plugs in with bindMeasureSelect, giving a
+small SelectTarget object: how to find the measure under the
+finger, where to draw the frame, how to play. After each redraw of the
+area, it calls refreshMeasureSelect (the frame lives in the area;
+a redraw erases it).</p>
+<h2>Why so much care with the gesture</h2>
 <ul>
-<li>Le navigateur envoie un <code>click</code> en levant le doigt, même après un appui
-long : on l'avale, sinon une grille ouvrirait le clavier.</li>
-<li>Android ouvre un menu (ou sélectionne du texte) sur un appui long : on
-l'empêche (<code>contextmenu</code>, CSS <code>-webkit-touch-callout</code>).</li>
-<li>Pour glisser sans faire défiler la page, on annule les <code>touchmove</code> une
-fois la sélection armée (seulement à ce moment-là : avant, le doigt peut
-encore servir à faire défiler).</li>
+<li>The browser sends a <code>click</code> when the finger lifts, even after a long
+press: it is swallowed, otherwise a chart would open the keyboard.</li>
+<li>Android opens a menu (or selects text) on a long press: this is
+prevented (<code>contextmenu</code>, CSS <code>-webkit-touch-callout</code>).</li>
+<li>To drag without scrolling the page, <code>touchmove</code> events are cancelled
+once the selection is armed (only then: before that, the finger may
+still be scrolling).</li>
 </ul></li></ul></dd>
     
 
@@ -234,13 +232,13 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Durée de l'appui long (ms).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Long press duration (ms).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line42">line 42</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line41">line 41</a>
     </li></ul></dd>
     
 
@@ -280,7 +278,7 @@ encore servir à faire défiler).</li>
 
 
 <div class="description usertext">
-    <p>Durée de l'appui long (ms).</p>
+    <p>Long press duration (ms).</p>
 </div>
 
 
@@ -301,13 +299,13 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Déplacement toléré pendant l'appui long (px).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Movement tolerated during the long press (px).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line44">line 44</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -347,7 +345,7 @@ encore servir à faire défiler).</li>
 
 
 <div class="description usertext">
-    <p>Déplacement toléré pendant l'appui long (px).</p>
+    <p>Movement tolerated during the long press (px).</p>
 </div>
 
 
@@ -368,13 +366,13 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Barre contextuelle (créée au premier usage).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Context bar (created on first use).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line69">line 69</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line68">line 68</a>
     </li></ul></dd>
     
 
@@ -414,7 +412,7 @@ encore servir à faire défiler).</li>
 
 
 <div class="description usertext">
-    <p>Barre contextuelle (créée au premier usage).</p>
+    <p>Context bar (created on first use).</p>
 </div>
 
 
@@ -435,13 +433,13 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection courante.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Current selection.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line65">line 65</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line64">line 64</a>
     </li></ul></dd>
     
 
@@ -481,7 +479,7 @@ encore servir à faire défiler).</li>
 
 
 <div class="description usertext">
-    <p>Sélection courante.</p>
+    <p>Current selection.</p>
 </div>
 
 
@@ -513,13 +511,13 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Avaler le prochain <code>click</code> (celui qui suit l'appui long).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Swallow the next <code>click</code> (the one following the long press).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line67">line 67</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -559,7 +557,7 @@ encore servir à faire défiler).</li>
 
 
 <div class="description usertext">
-    <p>Avaler le prochain <code>click</code> (celui qui suit l'appui long).</p>
+    <p>Swallow the next <code>click</code> (the one following the long press).</p>
 </div>
 
 
@@ -590,13 +588,13 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Rend une zone sélectionnable à l'appui long.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Makes an area selectable by long press.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line181">line 181</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line180">line 180</a>
     </li></ul></dd>
     
 
@@ -685,7 +683,7 @@ encore servir à faire défiler).</li>
 
             
 
-            <td class="description last"><p>Élément de la zone (doit être en <code>position: relative</code>).</p></td>
+            <td class="description last"><p>Element of the area (must be <code>position: relative</code>).</p></td>
         </tr>
 
     
@@ -749,14 +747,14 @@ encore servir à faire défiler).</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Efface la sélection (cadre et barre) ; arrête la lecture si c'est elle
-qui l'a lancée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Clears the selection (frame and bar); stops playback if the selection
+started it.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line75">line 75</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line74">line 74</a>
     </li></ul></dd>
     
 
@@ -835,13 +833,13 @@ qui l'a lancée.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Sélection courante (pour les tests et les écrans).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Current selection (for tests and screens).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line88">line 88</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line87">line 87</a>
     </li></ul></dd>
     
 
@@ -939,13 +937,13 @@ qui l'a lancée.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Redessine le cadre et replace la barre, après un redessin de la zone.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Redraws the frame and repositions the bar, after a redraw of the area.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line96">line 96</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line95">line 95</a>
     </li></ul></dd>
     
 
@@ -1074,15 +1072,15 @@ qui l'a lancée.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>SelectTarget pour une portée dessinée par
-<a href="module-render-staff.html#.staffSvg">staffSvg</a> : les mesures sont retrouvées
-dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mrects</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>SelectTarget for a staff drawn by
+<a href="module-render-staff.html#.staffSvg">staffSvg</a>: measures are found in the
+layout (<a href="module-layout.html#~Layout">Layout</a>, <code>mrects</code>).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line304">line 304</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line303">line 303</a>
     </li></ul></dd>
     
 
@@ -1171,7 +1169,7 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 
             
 
-            <td class="description last"><p>Conteneur du SVG.</p></td>
+            <td class="description last"><p>SVG container.</p></td>
         </tr>
 
     
@@ -1195,7 +1193,7 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 
             
 
-            <td class="description last"><p>Mise en page telle que dessinée.</p></td>
+            <td class="description last"><p>Layout as drawn.</p></td>
         </tr>
 
     
@@ -1278,13 +1276,13 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Dessine le cadre autour des mesures sélectionnées.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws the frame around the selected measures.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line103">line 103</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line102">line 102</a>
     </li></ul></dd>
     
 
@@ -1363,13 +1361,13 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Crée la barre contextuelle.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Creates the context bar.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line120">line 120</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line119">line 119</a>
     </li></ul></dd>
     
 
@@ -1448,13 +1446,13 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Place la barre au-dessus de la sélection (en dessous s'il n'y a pas la place).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Places the bar above the selection (below if there is no room).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line158">line 158</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line157">line 157</a>
     </li></ul></dd>
     
 
@@ -1533,13 +1531,13 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Libellé du bouton de la barre.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Label of the bar's button.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line145">line 145</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line144">line 144</a>
     </li></ul></dd>
     
 
@@ -1620,13 +1618,13 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ce qu'une zone fournit pour être sélectionnable.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>What an area provides to be selectable.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line46">line 46</a>
+        <a href="ui_measure-select.js.html">ui/measure-select.js</a>, <a href="ui_measure-select.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -1714,8 +1712,8 @@ dans la mise en page (<a href="module-layout.html#~Layout">Layout</a>, <code>mre
 
             
 
-            <td class="description last"><p>Mesure (index
-d'écriture) sous un point de la fenêtre, <code>null</code> si aucune.</p></td>
+            <td class="description last"><p>Measure (written
+index) under a window point, <code>null</code> if none.</p></td>
         </tr>
 
     
@@ -1745,7 +1743,7 @@ d'écriture) sous un point de la fenêtre, <code>null</code> si aucune.</p></td>
 
             
 
-            <td class="description last"><p>Rectangles (dans la zone) qui couvrent les mesures <code>a</code> à <code>b</code>, un par ligne.</p></td>
+            <td class="description last"><p>Rectangles (in the area) covering measures <code>a</code> to <code>b</code>, one per line.</p></td>
         </tr>
 
     
@@ -1775,8 +1773,8 @@ d'écriture) sous un point de la fenêtre, <code>null</code> si aucune.</p></td>
 
             
 
-            <td class="description last"><p>Lance la lecture de <code>a</code> à <code>b</code> (boucle ou non), avec décompte ; le dernier
-argument est à appeler à la fin de la lecture.</p></td>
+            <td class="description last"><p>Starts playback from <code>a</code> to <code>b</code> (looped or not), with a count-in; the
+last argument must be called when playback ends.</p></td>
         </tr>
 
     
@@ -1806,7 +1804,7 @@ argument est à appeler à la fin de la lecture.</p></td>
 
             
 
-            <td class="description last"><p>Identifiant de lecture (pour savoir si elle tourne).</p></td>
+            <td class="description last"><p>Playback id (to know whether it is running).</p></td>
         </tr>
 
     
@@ -1838,8 +1836,8 @@ argument est à appeler à la fin de la lecture.</p></td>
 
             
 
-            <td class="description last"><p>Vrai si le geste ne doit
-pas servir à sélectionner (zone de glisser de note, par exemple).</p></td>
+            <td class="description last"><p>True if the gesture must
+not be used for selection (a note drag zone, for example).</p></td>
         </tr>
 
     
@@ -1852,7 +1850,7 @@ pas servir à sélectionner (zone de glisser de note, par exemple).</p></td>
 
 
 <div class="description usertext">
-    <p>Ce qu'une zone fournit pour être sélectionnable.</p>
+    <p>What an area provides to be selectable.</p>
 </div>
 
 

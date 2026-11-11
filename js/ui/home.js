@@ -1,28 +1,28 @@
 /**
  * @module ui/home
  * @description
- * **Accueil** : recherche, barre de dossiers, tri et liste des notes.
+ * **Home**: search, folder bar, sort and note list.
  *
  * ```
  * ┌ Inkline ─────────────── ⚙  + Note ┐
- * │ 🔍 Rechercher…                     │
- * │ [Toutes 12] [● Jazz 5] [● Cours 4] [Non classées 3] [+] │  ← défile horizontalement
- * │ Jazz · 5 notes   Modifier   [Tri ▾]│
- * │ ┌ carte ┐ ┌ carte ┐ …              │
+ * │ 🔍 Search…                         │
+ * │ [All 12] [● Jazz 5] [● Lessons 4] [Unfiled 3] [+] │  ← scrolls horizontally
+ * │ Jazz · 5 notes       Edit  [Sort ▾]│
+ * │ ┌ card ┐ ┌ card ┐ …                │
  * ```
  *
- * ## Règles
+ * ## Rules
  *
- * - La **sélection** de la barre (`Toutes`, un dossier, `Non classées`) est
- *   mémorisée ({@link module:storage~Meta|meta.folder}), comme le **tri**,
- *   mémorisé pour chaque sélection (`meta.sorts`).
- * - Toucher de nouveau le dossier sélectionné ouvre son éditeur.
- * - Une **recherche** non vide porte sur **toutes** les notes, quel que soit
- *   le dossier sélectionné : on cherche une note dont on a oublié le
- *   rangement. Les résultats indiquent alors le dossier de chaque note.
- * - Une note créée depuis un dossier est rangée dans ce dossier.
- * - Taper dans la recherche ne redessine que la liste (le champ garde le
- *   focus et le clavier reste ouvert).
+ * - The bar's **selection** (`All`, a folder, `Unfiled`) is remembered
+ *   ({@link module:storage~Meta|meta.folder}), as is the **sort**, remembered
+ *   for each selection (`meta.sorts`).
+ * - Tapping the selected folder again opens its editor.
+ * - A non-empty **search** covers **all** notes, whatever folder is
+ *   selected: you are looking for a note whose filing you forgot. The results
+ *   then show each note's folder.
+ * - A note created from a folder is filed in that folder.
+ * - Typing in the search only redraws the list (the field keeps the focus
+ *   and the keyboard stays open).
  */
 
 import { t } from '../i18n.js';
@@ -54,8 +54,8 @@ import { GEAR, LOUPE, METRONOME } from './icons.js';
 import { openFolderSheet, openCategoriesSheet } from './folder-sheet.js';
 
 /**
- * Sélection courante de la barre de dossiers. Un dossier supprimé entre-temps
- * ramène sur « Toutes ».
+ * Current selection of the folder bar. A folder deleted in the meantime
+ * brings back "All".
  * @returns {string}
  */
 function currentSelection() {
@@ -65,8 +65,8 @@ function currentSelection() {
 }
 
 /**
- * Catégorie choisie dans un dossier (2.8.6) : {@link module:folders.ALL_CATS|ALL_CATS},
- * {@link module:folders.NO_CAT|NO_CAT} ou un id de catégorie existante.
+ * Category chosen in a folder (2.8.6): {@link module:folders.ALL_CATS|ALL_CATS},
+ * {@link module:folders.NO_CAT|NO_CAT} or the id of an existing category.
  * @param {?module:folders~Folder} folder
  * @returns {string}
  */
@@ -78,9 +78,9 @@ function currentCategory(folder) {
 }
 
 /**
- * HTML de la barre de catégories d'un dossier (2e rangée de puces).
+ * HTML of a folder's category bar (second row of chips).
  * @param {module:folders~Folder} folder
- * @param {string} cat Catégorie choisie.
+ * @param {string} cat Chosen category.
  * @returns {string}
  */
 function catChipsHtml(folder, cat) {
@@ -100,7 +100,7 @@ function catChipsHtml(folder, cat) {
 }
 
 /**
- * Tri mémorisé pour une sélection.
+ * Sort remembered for a selection.
  * @param {string} selection
  * @returns {string}
  */
@@ -109,14 +109,14 @@ function sortFor(selection) {
   return (s && s[selection]) || 'updated';
 }
 
-/** Change la sélection de la barre et redessine l'accueil. */
+/** Changes the bar's selection and redraws home. */
 function select(selection) {
   setMeta({ folder: selection });
   renderHome();
 }
 
 /**
- * Crée une note (dans le dossier sélectionné, s'il y en a un) et l'ouvre.
+ * Creates a note (in the selected folder, if there is one) and opens it.
  */
 function newNote() {
   const n = makeNote();
@@ -131,8 +131,8 @@ function newNote() {
 }
 
 /**
- * HTML de la barre de dossiers.
- * @param {string} sel Sélection courante.
+ * HTML of the folder bar.
+ * @param {string} sel Current selection.
  * @returns {string}
  */
 function chipsHtml(sel) {
@@ -156,7 +156,7 @@ function chipsHtml(sel) {
 }
 
 /**
- * Écran d'accueil.
+ * Home screen.
  * @returns {void}
  */
 function renderHome() {
@@ -192,7 +192,7 @@ function renderHome() {
     refreshResults();
   });
   q.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') q.blur(); // ferme le clavier, les résultats sont déjà là
+    if (e.key === 'Enter') q.blur(); // closes the keyboard, the results are already there
   });
   clear.onclick = () => {
     state.query = '';
@@ -221,7 +221,7 @@ function renderHome() {
     refreshResults();
   };
 
-  // Barre de dossiers : amener le dossier sélectionné à l'écran.
+  // Folder bar: bring the selected folder on screen.
   const bar = /** @type {HTMLElement} */ (body.querySelector('#chips'));
   const on = /** @type {HTMLElement} */ (bar.querySelector('[aria-pressed="true"]'));
   if (on && on.offsetLeft + on.offsetWidth > bar.clientWidth) bar.scrollLeft = on.offsetLeft - 16;
@@ -232,9 +232,9 @@ function renderHome() {
 registerScreen('list', renderHome);
 
 /**
- * Branche la barre de catégories : toucher une catégorie la choisit ;
- * toucher celle déjà choisie (ou « + ») ouvre le panneau des catégories.
- * @param {string} sel Dossier choisi.
+ * Wires the category bar: tapping a category chooses it; tapping the one
+ * already chosen (or "+") opens the categories panel.
+ * @param {string} sel Chosen folder.
  */
 function bindCatChips(sel) {
   const folder = state.folders[sel];
@@ -253,7 +253,7 @@ function bindCatChips(sel) {
 }
 
 /**
- * Ouvre l'éditeur d'un dossier depuis l'accueil.
+ * Opens a folder's editor from home.
  * @param {string} id
  */
 function editFolder(id) {
@@ -261,8 +261,8 @@ function editFolder(id) {
 }
 
 /**
- * Recalcule et redessine la liste (recherche, sélection, tri), sans toucher
- * au reste de l'accueil.
+ * Recomputes and redraws the list (search, selection, sort), without
+ * touching the rest of home.
  */
 function refreshResults() {
   const sel = currentSelection();
@@ -302,7 +302,7 @@ function refreshResults() {
     return;
   }
   const listOpt = { folders: state.folders, showFolder: searching || sel === ALL };
-  // Dossier à catégories, sur « Tout » : une section repliable par catégorie (2.8.6).
+  // Folder with categories, on "All": one collapsible section per category (2.8.6).
   if (!searching && folder && folder.cats && folder.cats.length && cat === ALL_CATS) {
     renderSections(body, notes, folder, listOpt);
     return;
@@ -311,13 +311,13 @@ function refreshResults() {
 }
 
 /**
- * Liste d'un dossier en sections, une par catégorie (puis « Sans
- * catégorie »). Une note de plusieurs catégories apparaît dans chacune.
- * L'état replié de chaque section est mémorisé.
+ * A folder's list in sections, one per category (then "No category"). A note
+ * with several categories appears in each. The collapsed state of each
+ * section is remembered.
  * @param {HTMLElement} body
- * @param {module:model~Note[]} notes Notes du dossier, triées.
+ * @param {module:model~Note[]} notes Notes of the folder, sorted.
  * @param {module:folders~Folder} folder
- * @param {Object} listOpt Options de {@link module:ui/list-view.renderNoteList|renderNoteList}.
+ * @param {Object} listOpt Options of {@link module:ui/list-view.renderNoteList|renderNoteList}.
  */
 function renderSections(body, notes, folder, listOpt) {
   const mode = getMeta().listView || 'cards';
@@ -351,7 +351,7 @@ function renderSections(body, notes, folder, listOpt) {
 }
 
 /**
- * Message affiché quand la liste est vide.
+ * Message shown when the list is empty.
  * @param {boolean} searching
  * @param {string} sel
  * @param {string} query
@@ -365,7 +365,7 @@ function emptyHtml(searching, sel, query) {
 }
 
 /**
- * Premier lancement : on montre ce que fait l'app avec une vraie portée d'exemple.
+ * First launch: show what the app does with a real example staff.
  * @param {Element} body
  */
 function renderOnboarding(body) {

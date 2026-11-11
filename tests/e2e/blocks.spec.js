@@ -1,4 +1,4 @@
-// Blocs longs réduits, partage PNG / PDF / .inkline.
+// Collapsed long blocks, PNG / PDF / .inkline sharing.
 import { test, expect } from '@playwright/test';
 import { seedStorage, openApp, storedNotes } from './helpers.js';
 
@@ -25,8 +25,8 @@ test.beforeEach(async ({ context, page }) => {
   await page.locator('.card').first().click();
 });
 
-test('réduire un bloc long, l’ouvrir en le touchant, sans poser de note', async ({ page }) => {
-  await expect(page.locator('[data-block=r] .foldbtn')).toHaveCount(0); // trop court
+test('collapse a long block, open it by tapping, without placing a note', async ({ page }) => {
+  await expect(page.locator('[data-block=r] .foldbtn')).toHaveCount(0); // too short
   await page.locator('[data-block=s] .foldbtn').click();
   await expect(page.locator('[data-block=s].folded')).toHaveCount(1);
   await page.waitForTimeout(300);
@@ -42,7 +42,7 @@ test('réduire un bloc long, l’ouvrir en le touchant, sans poser de note', asy
   await expect(page.locator('[data-block=s].folded')).toHaveCount(1);
 });
 
-test('partager : fichiers Inkline, PNG et PDF non vides', async ({ page }) => {
+test('share: non-empty Inkline, PNG and PDF files', async ({ page }) => {
   await page.click('#shareBtn');
   for (const [kind, ext] of [
     ['inkline', '.inkline'],

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/blocks - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,16 +63,16 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Bloc actif</strong> et registre des types de blocs musicaux.</p>
-<p>Un seul bloc est « actif » à la fois (<a href="module-ui_blocks.html#.setActive">setActive</a>) :
-il est encadré, affiche ses outils (monter/descendre/supprimer) et ouvre la
-palette de son type.</p>
-<h2>Registre</h2>
-<p>Les blocs portée et grille s'enregistrent au chargement
-(<a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a>) avec trois
-fonctions : construire l'élément, le redessiner, montrer/cacher la palette.
-L'écran note et ce module les appellent par le type du bloc, sans importer
-<code>ui/staff</code> ni <code>grid-ui</code> : pas d'import circulaire.</p></div>
+                <div class="description usertext"><p><strong>Active block</strong> and registry of musical block types.</p>
+<p>Only one block is &quot;active&quot; at a time (<a href="module-ui_blocks.html#.setActive">setActive</a>):
+it is framed, shows its tools (up/down/delete) and opens the palette of
+its type.</p>
+<h2>Registry</h2>
+<p>Staff and chart blocks register at load time
+(<a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a>) with three
+functions: build the element, redraw it, show/hide the palette. The note
+screen and this module call them by block type, without importing
+<code>ui/staff</code> or <code>grid-ui</code>: no circular import.</p></div>
             
 
             
@@ -84,16 +84,16 @@ L'écran note et ce module les appellent par le type du bloc, sans importer
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Bloc actif</strong> et registre des types de blocs musicaux.</p>
-<p>Un seul bloc est « actif » à la fois (<a href="module-ui_blocks.html#.setActive">setActive</a>) :
-il est encadré, affiche ses outils (monter/descendre/supprimer) et ouvre la
-palette de son type.</p>
-<h2>Registre</h2>
-<p>Les blocs portée et grille s'enregistrent au chargement
-(<a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a>) avec trois
-fonctions : construire l'élément, le redessiner, montrer/cacher la palette.
-L'écran note et ce module les appellent par le type du bloc, sans importer
-<code>ui/staff</code> ni <code>grid-ui</code> : pas d'import circulaire.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Active block</strong> and registry of musical block types.</p>
+<p>Only one block is &quot;active&quot; at a time (<a href="module-ui_blocks.html#.setActive">setActive</a>):
+it is framed, shows its tools (up/down/delete) and opens the palette of
+its type.</p>
+<h2>Registry</h2>
+<p>Staff and chart blocks register at load time
+(<a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a>) with three
+functions: build the element, redraw it, show/hide the palette. The note
+screen and this module call them by block type, without importing
+<code>ui/staff</code> or <code>grid-ui</code>: no circular import.</p></li></ul></dd>
     
 
     
@@ -275,7 +275,7 @@ L'écran note et ce module les appellent par le type du bloc, sans importer
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Type de bloc enregistré.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Registered block type.</p></li></ul></dd>
     
 
     
@@ -432,7 +432,7 @@ L'écran note et ce module les appellent par le type du bloc, sans importer
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Cache toutes les palettes.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Hides every palette.</p></li></ul></dd>
     
 
     
@@ -517,7 +517,7 @@ L'écran note et ce module les appellent par le type du bloc, sans importer
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Redessine un bloc musical (portée ou grille) par son id.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Redraws a musical block (staff or chart) by its id.</p></li></ul></dd>
     
 
     
@@ -652,7 +652,7 @@ L'écran note et ce module les appellent par le type du bloc, sans importer
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Enregistre un type de bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Registers a block type.</p></li></ul></dd>
     
 
     
@@ -814,8 +814,8 @@ L'écran note et ce module les appellent par le type du bloc, sans importer
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Change le bloc actif (ou aucun avec <code>null</code>). Remet la sélection à zéro et
-redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Changes the active block (or none with <code>null</code>). Resets the selection and
+redraws the old and new blocks (cursor, highlight).</p></li></ul></dd>
     
 
     
@@ -953,7 +953,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Annule la dernière modification de la note affichée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Undoes the last change to the note shown.</p></li></ul></dd>
     
 
     
@@ -1038,7 +1038,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Applique l'état « actif » au DOM : cadre du bloc et palette ouverte.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Applies the &quot;active&quot; state to the DOM: block frame and open palette.</p></li></ul></dd>
     
 
     
@@ -1125,7 +1125,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Un type de bloc musical.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A musical block type.</p></li></ul></dd>
     
 
     
@@ -1211,7 +1211,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Remplit l'élément du bloc.</p></td>
+            <td class="description last"><p>Fills the block's element.</p></td>
         </tr>
 
     
@@ -1235,7 +1235,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Redessine le bloc d'id donné (sans effet si ce n'est pas ce type).</p></td>
+            <td class="description last"><p>Redraws the block with the given id (no effect if it is not this type).</p></td>
         </tr>
 
     
@@ -1259,7 +1259,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Montre ou cache la palette du type.</p></td>
+            <td class="description last"><p>Shows or hides the type's palette.</p></td>
         </tr>
 
     
@@ -1272,7 +1272,7 @@ redessine l'ancien et le nouveau bloc (curseur, surlignage).</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Un type de bloc musical.</p>
+    <p>A musical block type.</p>
 </div>
 
 

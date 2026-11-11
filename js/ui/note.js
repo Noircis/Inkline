@@ -1,14 +1,14 @@
 /**
  * @module ui/note
  * @description
- * **Écran note** : titre, rangement (dossier, épingle), blocs, barre d'ajout,
- * partage, suppression.
+ * **Note screen**: title, filing (folder, pin), blocks, add bar, sharing,
+ * deletion.
  *
- * Le rendu est fait par template strings et `innerHTML`, puis les
- * gestionnaires d'événements sont branchés sur les éléments créés. Les blocs
- * texte sont gérés ici ; les blocs portée et grille sont délégués, via le
- * registre de {@link module:ui/blocks|ui/blocks}, à
- * {@link module:ui/staff/index|ui/staff} et {@link module:ui/grid-ui|ui/grid-ui}.
+ * Rendering is done with template strings and `innerHTML`, then event
+ * handlers are wired to the created elements. Text blocks are handled here;
+ * staff and chart blocks are delegated, through the registry of
+ * {@link module:ui/blocks|ui/blocks}, to {@link module:ui/staff/index|ui/staff}
+ * and {@link module:ui/grid-ui|ui/grid-ui}.
  */
 
 import { t } from '../i18n.js';
@@ -27,8 +27,8 @@ import { blockKind, redrawBlock, setActive, updateActive } from './blocks.js';
 import { openArrangeSheet } from './folder-sheet.js';
 
 /**
- * Bouton de rangement d'une note (2.8.6) : « ● Saxophone › Technique, Son ».
- * Il ouvre le panneau Ranger la note ({@link module:ui/folder-sheet.openArrangeSheet|openArrangeSheet}).
+ * Filing button of a note (2.8.6): "● Saxophone › Technique, Son".
+ * It opens the File note panel ({@link module:ui/folder-sheet.openArrangeSheet|openArrangeSheet}).
  * @param {module:model~Note} n
  * @returns {string}
  */
@@ -43,9 +43,9 @@ function folderButtonHtml(n) {
 }
 
 /**
- * Écran note.
+ * Note screen.
  * @param {module:ui/nav~RenderOptions} [opts={}]
- * @returns {boolean|void} `false` si la note n'existe plus.
+ * @returns {boolean|void} `false` if the note no longer exists.
  */
 function renderNote(opts = {}) {
   const n = curNote();
@@ -82,7 +82,7 @@ function renderNote(opts = {}) {
 
   const bl = app.querySelector('#blocks');
   n.blocks.forEach((b, bi) => bl.appendChild(blockEl(n, b, bi)));
-  // Les SVG ont besoin de la largeur réelle : on les dessine après le layout.
+  // SVGs need the real width: they are drawn after layout.
   requestAnimationFrame(() => {
     n.blocks.forEach((b) => redrawBlock(b.id));
     app.querySelectorAll('.block textarea').forEach(autosize);
@@ -95,7 +95,7 @@ function renderNote(opts = {}) {
 registerScreen('note', renderNote);
 
 /**
- * Branche le champ titre.
+ * Wires the title field.
  * @param {module:model~Note} n
  */
 function bindTitle(n) {
@@ -120,8 +120,8 @@ function bindTitle(n) {
 }
 
 /**
- * Branche le sélecteur de dossier et l'épingle. Ces changements ne modifient
- * pas la date de la note ({@link module:ui/state.saveArrangement|saveArrangement}).
+ * Wires the folder picker and the pin. These changes do not touch the note's
+ * date ({@link module:ui/state.saveArrangement|saveArrangement}).
  * @param {module:model~Note} n
  */
 function bindArrangement(n) {
@@ -148,12 +148,12 @@ function bindArrangement(n) {
 }
 
 /**
- * Branche le panneau « Partager » d'une note.
+ * Wires a note's "Share" panel.
  *
- * Le fichier est généré au clic, puis {@link module:export.shareOrDownload|shareOrDownload}
- * ouvre le menu de partage d'Android ou télécharge le fichier. L'appel à
- * `navigator.share` doit suivre de près le geste de l'utilisateur (quelques
- * secondes) : la génération d'image est assez rapide pour ça.
+ * The file is generated on tap, then {@link module:export.shareOrDownload|shareOrDownload}
+ * opens Android's share menu or downloads the file. The call to
+ * `navigator.share` must closely follow the user's gesture (a few seconds):
+ * image generation is fast enough for that.
  *
  * @param {module:model~Note} n
  */
@@ -179,7 +179,7 @@ function bindShare(n) {
       try {
         let res;
         if (kind === 'inkline') {
-          // .inkline d'abord ; si Android refuse ce type, variante .txt (même contenu).
+          // .inkline first; if Android refuses that type, a .txt variant (same content).
           res = await shareOrDownload(
             noteToInkline(n),
             [
@@ -215,7 +215,7 @@ function bindShare(n) {
 }
 
 /**
- * Ajoute un bloc en fin de note et l'active.
+ * Adds a block at the end of the note and activates it.
  * @param {module:model~Note} n
  * @param {'text'|'staff'|'rhythm'|'grid'} kind
  */
@@ -226,7 +226,7 @@ function addBlock(n, kind) {
   n.blocks.push(b);
   touch(n);
   state.activeId = b.id;
-  state.sel = kind === 'grid' ? 0 : null; // une grille s'ouvre sur sa 1re mesure
+  state.sel = kind === 'grid' ? 0 : null; // a chart opens on its first measure
   renderScreen({ keepScroll: true });
   const el = app.querySelector(`[data-block="${CSS.escape(b.id)}"]`);
   if (el) {
@@ -239,10 +239,10 @@ function addBlock(n, kind) {
 }
 
 /**
- * Crée l'élément DOM d'un bloc et branche ses outils.
+ * Creates a block's DOM element and wires its tools.
  * @param {module:model~Note} n
  * @param {module:model~Block} b
- * @param {number} bi Position du bloc dans la note.
+ * @param {number} bi Position of the block in the note.
  * @returns {HTMLDivElement}
  */
 function blockEl(n, b, bi) {

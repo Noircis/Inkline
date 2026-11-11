@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/list-view - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,44 +63,44 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Les <strong>trois affichages</strong> de la liste des notes, au choix dans les Options :</p>
+                <div class="description usertext"><p>The <strong>three displays</strong> of the note list, chosen in Settings:</p>
 <table>
 <thead>
 <tr>
 <th>Mode</th>
-<th>Clé</th>
-<th>Contenu</th>
+<th>Key</th>
+<th>Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Cartes</td>
+<td>Cards</td>
 <td><code>cards</code></td>
-<td>grande carte : titre, date, résumé, début du texte, 1re ligne de portée</td>
+<td>large card: title, date, summary, start of text, first staff line</td>
 </tr>
 <tr>
-<td>Mosaïque</td>
+<td>Mosaic</td>
 <td><code>mosaic</code></td>
-<td>carrés, 2 par ligne : titre + aperçu adapté au contenu</td>
+<td>squares, 2 per row: title + preview suited to the content</td>
 </tr>
 <tr>
-<td>Liste</td>
+<td>List</td>
 <td><code>list</code></td>
-<td>une ligne par note : titre, dates, résumé</td>
+<td>one line per note: title, dates, summary</td>
 </tr>
 </tbody>
 </table>
-<h2>Aperçu de la mosaïque</h2>
-<p>Une portée entière réduite à ~170 px serait illisible. L'aperçu dépend donc
-du contenu de la note, par ordre de priorité :</p>
+<h2>Mosaic preview</h2>
+<p>A whole staff shrunk to ~170 px would be unreadable. The preview therefore
+depends on the note's content, by priority:</p>
 <ol>
-<li>une <strong>portée</strong> : ses premières mesures, dessinées sur une largeur
-réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;</li>
-<li>une <strong>grille</strong> : ses premiers accords, en texte ;</li>
-<li>sinon le <strong>début du texte</strong>.</li>
+<li>a <strong>staff</strong>: its first measures, drawn at a reduced width (fewer
+measures per line) then scaled: it is a zoom;</li>
+<li>a <strong>chart</strong>: its first chords, as text;</li>
+<li>otherwise the <strong>start of the text</strong>.</li>
 </ol>
-<p>Les vignettes SVG sont dessinées après la mise en page (dans un
-<code>requestAnimationFrame</code>), quand la largeur réelle des cartes est connue.</p></div>
+<p>SVG thumbnails are drawn after layout (in a <code>requestAnimationFrame</code>), when
+the real width of the cards is known.</p></div>
             
 
             
@@ -112,44 +112,44 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Les <strong>trois affichages</strong> de la liste des notes, au choix dans les Options :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>The <strong>three displays</strong> of the note list, chosen in Settings:</p>
 <table>
 <thead>
 <tr>
 <th>Mode</th>
-<th>Clé</th>
-<th>Contenu</th>
+<th>Key</th>
+<th>Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Cartes</td>
+<td>Cards</td>
 <td><code>cards</code></td>
-<td>grande carte : titre, date, résumé, début du texte, 1re ligne de portée</td>
+<td>large card: title, date, summary, start of text, first staff line</td>
 </tr>
 <tr>
-<td>Mosaïque</td>
+<td>Mosaic</td>
 <td><code>mosaic</code></td>
-<td>carrés, 2 par ligne : titre + aperçu adapté au contenu</td>
+<td>squares, 2 per row: title + preview suited to the content</td>
 </tr>
 <tr>
-<td>Liste</td>
+<td>List</td>
 <td><code>list</code></td>
-<td>une ligne par note : titre, dates, résumé</td>
+<td>one line per note: title, dates, summary</td>
 </tr>
 </tbody>
 </table>
-<h2>Aperçu de la mosaïque</h2>
-<p>Une portée entière réduite à ~170 px serait illisible. L'aperçu dépend donc
-du contenu de la note, par ordre de priorité :</p>
+<h2>Mosaic preview</h2>
+<p>A whole staff shrunk to ~170 px would be unreadable. The preview therefore
+depends on the note's content, by priority:</p>
 <ol>
-<li>une <strong>portée</strong> : ses premières mesures, dessinées sur une largeur
-réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;</li>
-<li>une <strong>grille</strong> : ses premiers accords, en texte ;</li>
-<li>sinon le <strong>début du texte</strong>.</li>
+<li>a <strong>staff</strong>: its first measures, drawn at a reduced width (fewer
+measures per line) then scaled: it is a zoom;</li>
+<li>a <strong>chart</strong>: its first chords, as text;</li>
+<li>otherwise the <strong>start of the text</strong>.</li>
 </ol>
-<p>Les vignettes SVG sont dessinées après la mise en page (dans un
-<code>requestAnimationFrame</code>), quand la largeur réelle des cartes est connue.</p></li></ul></dd>
+<p>SVG thumbnails are drawn after layout (in a <code>requestAnimationFrame</code>), when
+the real width of the cards is known.</p></li></ul></dd>
     
 
     
@@ -250,7 +250,7 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Modes d'affichage, dans l'ordre du sélecteur.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Display modes, in picker order.</p></li></ul></dd>
     
 
     
@@ -296,7 +296,7 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 
 
 <div class="description usertext">
-    <p>Modes d'affichage, dans l'ordre du sélecteur.</p>
+    <p>Display modes, in picker order.</p>
 </div>
 
 
@@ -317,7 +317,7 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur (px) à laquelle la portée est dessinée avant réduction, en mosaïque.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Width (px) at which the staff is drawn before shrinking, in mosaic.</p></li></ul></dd>
     
 
     
@@ -363,7 +363,7 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 
 
 <div class="description usertext">
-    <p>Largeur (px) à laquelle la portée est dessinée avant réduction, en mosaïque.</p>
+    <p>Width (px) at which the staff is drawn before shrinking, in mosaic.</p>
 </div>
 
 
@@ -394,7 +394,7 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Résumé du contenu d'une note (« 1 portée · 2 grilles »).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Summary of a note's content (&quot;1 staff · 2 charts&quot;).</p></li></ul></dd>
     
 
     
@@ -548,8 +548,8 @@ réduite (moins de mesures par ligne) puis mises à l'échelle : c'est un zoom ;
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Date relative pour une modification récente (« aujourd'hui », « hier »),
-date courte au-delà.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Relative date for a recent change (&quot;today&quot;, &quot;yesterday&quot;), short date
+beyond that.</p></li></ul></dd>
     
 
     
@@ -759,7 +759,7 @@ date courte au-delà.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Construit la liste des notes dans <code>container</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Builds the note list in <code>container</code>.</p></li></ul></dd>
     
 
     
@@ -906,7 +906,7 @@ date courte au-delà.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Notes déjà triées.</p></td>
+            <td class="description last"><p>Notes already sorted.</p></td>
         </tr>
 
     
@@ -984,7 +984,7 @@ date courte au-delà.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Appelé avec l'id de la note touchée.</p></td>
+            <td class="description last"><p>Called with the id of the tapped note.</p></td>
         </tr>
 
     
@@ -1064,7 +1064,7 @@ date courte au-delà.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Catégories d'une note à la suite de son dossier (« › Technique, Son »), 2.8.6.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A note's categories after its folder (&quot;› Technique, Son&quot;), 2.8.6.</p></li></ul></dd>
     
 
     
@@ -1242,8 +1242,8 @@ date courte au-delà.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Premiers accords d'une note (grilles d'abord, sinon accords chiffrés des portées),
-mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>First chords of a note (charts first, otherwise chord symbols of staves),
+formatted as in the chart (quality as superscript).</p></li></ul></dd>
     
 
     
@@ -1388,7 +1388,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Fragment HTML (échappé), vide s'il n'y a pas d'accord.</p>
+    <p>HTML fragment (escaped), empty if there is no chord.</p>
 </div>
 
 
@@ -1425,7 +1425,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Première portée non vide d'une note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>First non-empty staff of a note.</p></li></ul></dd>
     
 
     
@@ -1510,7 +1510,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Premier texte non vide d'une note (ou chaîne vide).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>First non-empty text of a note (or empty string).</p></li></ul></dd>
     
 
     
@@ -1595,7 +1595,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Étiquette de dossier (pastille + nom), ou chaîne vide.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Folder label (dot + name), or empty string.</p></li></ul></dd>
     
 
     
@@ -1773,7 +1773,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML d'une note selon le mode.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of a note for the given mode.</p></li></ul></dd>
     
 
     
@@ -2019,7 +2019,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Date courte (« 4 nov. »).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Short date (&quot;Nov 4&quot;).</p></li></ul></dd>
     
 
     
@@ -2175,7 +2175,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Options d'affichage de la liste.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>List display options.</p></li></ul></dd>
     
 
     
@@ -2271,7 +2271,7 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Dossiers (pour les étiquettes).</p></td>
+            <td class="description last"><p>Folders (for the labels).</p></td>
         </tr>
 
     
@@ -2303,8 +2303,8 @@ mis en forme comme dans la grille (qualité en exposant).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Afficher le dossier de chaque note (inutile
-quand la liste montre un seul dossier).</p></td>
+            <td class="description last"><p>Show each note's folder (useless when the
+list shows a single folder).</p></td>
         </tr>
 
     
@@ -2317,7 +2317,7 @@ quand la liste montre un seul dossier).</p></td>
 
 
 <div class="description usertext">
-    <p>Options d'affichage de la liste.</p>
+    <p>List display options.</p>
 </div>
 
 

@@ -1,6 +1,6 @@
-/* Inkline · Partage d'une note. */
+/* Inkline · Sharing a note. */
 
-/* 7. Partage d'une note */
+/* 7. Sharing a note */
 .sharebox {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -8,7 +8,7 @@
   margin: 0 0 12px;
   padding-bottom: 10px;
   background: var(--bg);
-  /* collé sous l'en-tête : visible même si la note a défilé */
+  /* stuck under the header: visible even if the note has scrolled */
   position: sticky;
   top: calc(env(safe-area-inset-top, 0px) + 52px);
   z-index: 5;

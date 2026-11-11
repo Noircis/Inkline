@@ -1,4 +1,4 @@
-// Tests de la 2.2 : blocs longs réduits.
+// Tests for 2.2: collapsed long blocks.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { shouldFold, FOLD_MIN_LINES } from '../js/folding.js';
@@ -6,18 +6,18 @@ import { gridHtml } from '../js/grid.js';
 import { sanitizeNote } from '../js/sanitize.js';
 import { noteFileJson } from '../js/storage.js';
 
-test('shouldFold : édition > longueur > choix manuel > option', () => {
+test('shouldFold: editing > length > manual choice > option', () => {
   const long = FOLD_MIN_LINES;
-  assert.equal(shouldFold({}, long, false, true), true); // option automatique
+  assert.equal(shouldFold({}, long, false, true), true); // automatic option
   assert.equal(shouldFold({}, long, false, false), false);
-  assert.equal(shouldFold({}, long - 1, false, true), false); // trop court
-  assert.equal(shouldFold({ fold: 'closed' }, long - 1, false, false), false); // trop court, même réduit à la main
-  assert.equal(shouldFold({ fold: 'closed' }, long, false, false), true); // choix manuel > option
+  assert.equal(shouldFold({}, long - 1, false, true), false); // too short
+  assert.equal(shouldFold({ fold: 'closed' }, long - 1, false, false), false); // too short, even collapsed by hand
+  assert.equal(shouldFold({ fold: 'closed' }, long, false, false), true); // manual choice > option
   assert.equal(shouldFold({ fold: 'open' }, long, false, true), false);
-  assert.equal(shouldFold({ fold: 'closed' }, long, true, true), false); // en édition : toujours en entier
+  assert.equal(shouldFold({ fold: 'closed' }, long, true, true), false); // being edited: always in full
 });
 
-test('gridHtml : une grille réduite montre ses premières mesures, sans cellule +', () => {
+test('gridHtml: a collapsed chart shows its first measures, with no + cell', () => {
   const b = { measures: Array.from({ length: 20 }, () => ({ ch: ['C7'] })) };
   const full = gridHtml(b, null, null);
   const cut = gridHtml(b, null, null, 12);
@@ -27,7 +27,7 @@ test('gridHtml : une grille réduite montre ses premières mesures, sans cellule
   assert.ok(!cut.includes('data-gm="add"'));
 });
 
-test('fold : conservé dans le carnet, retiré d’une note partagée', () => {
+test('fold: kept in the notebook, removed from a shared note', () => {
   const raw = {
     id: 'a',
     title: 'X',
@@ -47,5 +47,5 @@ test('fold : conservé dans le carnet, retiré d’une note partagée', () => {
   assert.ok(sanitizeNote(raw, { freshIds: true }).blocks.every((b) => !('fold' in b)));
   const shared = JSON.parse(noteFileJson(n)).note;
   assert.ok(shared.blocks.every((b) => !('fold' in b)));
-  assert.equal(n.blocks[0].fold, 'closed'); // l'original n'est pas modifié
+  assert.equal(n.blocks[0].fold, 'closed'); // the original is not modified
 });

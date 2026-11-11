@@ -1,50 +1,50 @@
 /**
  * @module exercise
  * @description
- * **Exercices rythmiques aléatoires** (2.8). Fonctions pures.
+ * **Random rhythm exercises** (2.8). Pure functions.
  *
- * Un exercice est une suite de mesures tirées au hasard selon des réglages
- * ({@link ExerciseSettings}) : nombre de mesures, nombre de notes par mesure
- * (une fourchette), positions permises pour la première note. Chaque mesure
- * est ensuite écrite avec les mêmes règles que les Placements
+ * An exercise is a series of measures drawn at random from settings
+ * ({@link ExerciseSettings}): number of measures, number of notes per measure
+ * (a range), allowed positions for the first note. Each measure is then
+ * written with the same rules as Placements
  * ({@link module:placements.placementItems|placementItems}).
  *
- * Le hasard est **reproductible** : un exercice est entièrement décidé par ses
- * réglages et un numéro (la graine, *seed*). Le même numéro redonne le même
- * exercice, ce qui permet de le retrouver ou de le partager (« fais le n° 4821 »).
+ * The randomness is **reproducible**: an exercise is entirely determined by
+ * its settings and a number (the *seed*). The same number gives the same
+ * exercise back, so it can be found again or shared ("do number 4821").
  *
- * ## Tirage d'une mesure
+ * ## Drawing a measure
  *
- * 1. nombre de notes `n` au hasard entre min et max ;
- * 2. première note `p` parmi les positions permises, en gardant assez de place
- *    derrière elle pour les `n − 1` autres (`p ≤ positions − n`). Si aucune
- *    position permise ne laisse assez de place, on réduit `n` ;
- * 3. les `n − 1` autres notes au hasard après `p` ;
- * 4. jamais deux fois la même mesure dans un exercice (2.8.1) : le tirage se
- *    fait parmi les mesures pas encore sorties.
+ * 1. number of notes `n` at random between min and max;
+ * 2. first note `p` among the allowed positions, keeping enough room after it
+ *    for the `n − 1` others (`p ≤ positions − n`). If no allowed position
+ *    leaves enough room, `n` is reduced;
+ * 3. the `n − 1` other notes at random after `p`;
+ * 4. never the same measure twice in an exercise (2.8.1): the draw is made
+ *    among the measures not drawn yet.
  */
 
 import { slotsOf, combinations } from './placements.js';
 
 /**
- * Réglages d'un exercice.
+ * Exercise settings.
  * @typedef {Object} ExerciseSettings
  * @property {module:placements~Meter} meter
- * @property {number} measures Nombre de mesures (1, 2 ou 4).
- * @property {number} min Notes par mesure, au moins.
- * @property {number} max Notes par mesure, au plus.
- * @property {Array.<number>} starts Positions permises pour la première note
- *   de chaque mesure (vide : toutes).
- * @property {number} seed Numéro de l'exercice.
+ * @property {number} measures Number of measures (1, 2 or 4).
+ * @property {number} min Notes per measure, at least.
+ * @property {number} max Notes per measure, at most.
+ * @property {Array.<number>} starts Allowed positions for the first note of
+ *   each measure (empty: all).
+ * @property {number} seed Exercise number.
  */
 
 /**
- * Générateur pseudo-aléatoire *mulberry32* : rapide, 32 bits, et surtout
- * déterministe (même graine, même suite). `Math.random` ne permet pas de
- * choisir sa graine, d'où ce petit algorithme classique.
+ * *mulberry32* pseudo-random generator: fast, 32-bit, and above all
+ * deterministic (same seed, same sequence). `Math.random` does not let you
+ * choose the seed, hence this small classic algorithm.
  *
  * @param {number} seed
- * @returns {function(): number} Tirage dans [0, 1).
+ * @returns {function(): number} Draw in [0, 1).
  */
 export function mulberry32(seed) {
   let a = seed >>> 0;
@@ -58,7 +58,7 @@ export function mulberry32(seed) {
 }
 
 /**
- * Nouveau numéro d'exercice (1 à 9999).
+ * New exercise number (1 to 9999).
  * @param {function(): number} [rnd=Math.random]
  * @returns {number}
  */
@@ -67,13 +67,12 @@ export function newSeed(rnd = Math.random) {
 }
 
 /**
- * Toutes les mesures différentes que permettent les réglages, rangées par
- * nombre de notes puis par première note. Quand aucune position permise ne
- * laisse la place pour `n` notes, la mesure se réduit (de la première
- * position permise jusqu'à la fin).
+ * Every distinct measure the settings allow, ordered by number of notes then
+ * by first note. When no allowed position leaves room for `n` notes, the
+ * measure shrinks (from the first allowed position to the end).
  *
- * Au plus quelques milliers de mesures (12/8 : 2^12), énumérées une fois par
- * exercice : c'est instantané.
+ * At most a few thousand measures (12/8: 2^12), enumerated once per
+ * exercise: it is instantaneous.
  *
  * @param {ExerciseSettings} s
  * @returns {Array.<Array.<number>>}
@@ -107,23 +106,22 @@ export function candidates(s) {
 }
 
 /**
- * Tire les placements d'un exercice. **Aucune mesure n'apparaît deux fois**
- * dans un même exercice, tant que les réglages le permettent (voir
- * {@link candidates} : avec une seule note et une seule position permise,
- * il n'existe qu'une mesure possible).
+ * Draws the placements of an exercise. **No measure appears twice** in one
+ * exercise, as long as the settings allow it (see {@link candidates}: with a
+ * single note and a single allowed position, only one measure exists).
  *
- * Plutôt que de tirer au hasard puis de recommencer si la mesure est déjà
- * sortie (ce qui peut tourner longtemps quand il reste peu de choix), on
- * tire directement parmi les mesures **pas encore sorties** : même résultat,
- * mais le nombre d'opérations est garanti.
+ * Rather than drawing at random and starting over when the measure was
+ * already drawn (which can run for a long time when few choices remain), the
+ * draw is made directly among the measures **not drawn yet**: same result,
+ * but the number of operations is bounded.
  *
- * Pour chaque mesure : un nombre de notes au hasard, puis une première note
- * au hasard (chaque départ a la même chance, sinon les départs tôt dans la
- * mesure, qui offrent plus de combinaisons, sortiraient bien plus souvent),
- * puis une mesure au hasard parmi celles qui restent.
+ * For each measure: a number of notes at random, then a first note at random
+ * (every start has the same chance; otherwise early starts, which offer more
+ * combinations, would come up much more often), then a measure at random
+ * among those left.
  *
  * @param {ExerciseSettings} s
- * @returns {Array.<Array.<number>>} Une liste de positions par mesure.
+ * @returns {Array.<Array.<number>>} One list of positions per measure.
  */
 export function generateExercise(s) {
   const rnd = mulberry32(s.seed);
@@ -133,7 +131,7 @@ export function generateExercise(s) {
   const out = [];
   for (let m = 0; m < s.measures; m++) {
     let pool = all.filter((pos) => !used.has(pos.join()));
-    if (!pool.length) pool = all; // plus rien de neuf : répétition inévitable
+    if (!pool.length) pool = all; // nothing new left: repetition is unavoidable
     const n = pick([...new Set(pool.map((pos) => pos.length))].sort((a, b) => a - b));
     pool = pool.filter((pos) => pos.length === n);
     const p = pick([...new Set(pool.map((pos) => pos[0]))].sort((a, b) => a - b));

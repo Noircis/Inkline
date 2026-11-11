@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>pitch.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,72 +53,71 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module pitch
  * @description
- * Conversion entre la **position sur la portée** (ce que l'utilisateur touche)
- * et la **hauteur réelle** (numéro MIDI, utilisé par l'audio).
+ * Conversion between the **position on the staff** (what the user taps) and
+ * the **actual pitch** (MIDI number, used by audio).
  *
- * ## Repère
+ * ## Reference
  *
- * La position `s` compte les demi-interlignes depuis la première ligne du bas :
- * `s = 0` est la 1re ligne, `s = 1` le 1er interligne, `s = 8` la 5e ligne,
- * les valeurs négatives ou supérieures à 8 sont sur des lignes supplémentaires.
+ * Position `s` counts half staff-spaces from the bottom line: `s = 0` is the
+ * 1st line, `s = 1` the 1st space, `s = 8` the 5th line; negative values or
+ * values above 8 are on ledger lines.
  *
- * Chaque clé est décrite par le degré de la gamme diatonique (0 = do … 6 = si)
- * et l'octave de la note posée sur la 1re ligne :
- * - clé de sol : 1re ligne = mi 4 (degré 2, octave 4)
- * - clé de fa  : 1re ligne = sol 2 (degré 4, octave 2)
+ * Each clef is described by the diatonic scale degree (0 = C … 6 = B) and
+ * the octave of the note on the 1st line:
+ * - treble clef: 1st line = E4 (degree 2, octave 4)
+ * - bass clef:   1st line = G2 (degree 4, octave 2)
  *
- * ## Armure (2.5)
+ * ## Key signature (2.5)
  *
- * Le champ `ks` d'une portée compte les dièses (positif) ou les bémols
- * (négatif) de l'armure, de -7 à 7. Les altérations de l'armure s'ajoutent
- * dans l'ordre du cycle des quintes : fa do sol ré la mi si pour les dièses,
- * si mi la ré sol do fa pour les bémols. Elles valent pour toutes les
- * octaves ({@link module:pitch.keyAcc|keyAcc}).
+ * A staff's `ks` field counts the sharps (positive) or flats (negative) of
+ * the key signature, from -7 to 7. Key signature accidentals are added in
+ * circle-of-fifths order: F C G D A E B for sharps, B E A D G C F for flats.
+ * They apply to every octave ({@link module:pitch.keyAcc|keyAcc}).
  *
- * ## Altérations
+ * ## Accidentals
  *
- * Comme en gravure classique, une altération écrite vaut **jusqu'à la fin de
- * la mesure** pour la même position ; elle remplace celle de l'armure (un
- * bécarre annule le dièse de l'armure). La table `carry` est remise à zéro à
- * chaque barre de mesure. Une note **liée** à la précédente garde la hauteur
- * de celle-ci, même par-dessus une barre (règle d'écriture standard).
+ * As in classical engraving, a written accidental holds **until the end of
+ * the measure** for the same position; it replaces the key signature's (a
+ * natural cancels the key signature's sharp). The `carry` table is reset at
+ * every barline. A note **tied** to the previous one keeps its pitch, even
+ * across a barline (standard notation rule).
  */
 
 import { lang } from './i18n.js';
 import { mod, EPS, snap } from './util.js';
 import { qlen, mlen, instrumentOf } from './model.js';
 
-/** Noms de notes en solfège français, indexés par degré (0 = do). */
+/** Note names in French solfège, indexed by degree (0 = do). */
 const NOTE_NAMES = {
   fr: ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'],
   en: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
 };
 
 /**
- * Nom d'un degré dans la langue de l'interface (2.9) : `Do`… en français,
- * `C`… en anglais.
- * @param {number} degree 0 = do.
+ * Name of a degree in the interface language (2.9): `C`… in English,
+ * `Do`… in French.
+ * @param {number} degree 0 = C.
  * @returns {string}
  */
 export const noteName = (degree) => NOTE_NAMES[lang()][mod(degree, 7)];
 
-/** Demi-tons depuis do pour chaque degré de la gamme majeure. */
+/** Semitones from C for each degree of the major scale. */
 const SEMITONES = [0, 2, 4, 5, 7, 9, 11];
 
 /**
- * Note posée sur la 1re ligne pour chaque clé : `L` = degré, `O` = octave.
+ * Note on the 1st line for each clef: `L` = degree, `O` = octave.
  * @type {Object.&lt;string, {L:number, O:number}>}
  */
 const CLEF_BASE = { treble: { L: 2, O: 4 }, bass: { L: 4, O: 2 } };
 
-/** Degrés recevant un dièse, dans l'ordre de l'armure : fa do sol ré la mi si. */
+/** Degrees receiving a sharp, in key signature order: F C G D A E B. */
 const SHARP_ORDER = [3, 0, 4, 1, 5, 2, 6];
 
-/** Degrés recevant un bémol, dans l'ordre de l'armure : si mi la ré sol do fa. */
+/** Degrees receiving a flat, in key signature order: B E A D G C F. */
 const FLAT_ORDER = [6, 2, 5, 1, 4, 0, 3];
 
 /**
- * Degré de la gamme (0 = do … 6 = si) d'une position de portée.
+ * Scale degree (0 = C … 6 = B) of a staff position.
  * @param {string} clef
  * @param {number} s
  * @returns {number}
@@ -129,14 +128,14 @@ function degreeOf(clef, s) {
 }
 
 /**
- * Altération imposée par l'armure à une position (toutes octaves).
+ * Accidental imposed by the key signature on a position (every octave).
  * @example
- * keyAcc('treble', 8, 1)   // 1 : fa 5 est dièse en sol majeur
- * keyAcc('treble', 4, -2)  // -1 : si est bémol en si♭ majeur
+ * keyAcc('treble', 8, 1)   // 1: F5 is sharp in G major
+ * keyAcc('treble', 4, -2)  // -1: B is flat in B♭ major
  * @param {string} clef
  * @param {number} s
- * @param {number} [ks=0] Armure : nombre de dièses (> 0) ou de bémols (&lt; 0).
- * @returns {number} -1, 0 ou 1.
+ * @param {number} [ks=0] Key signature: number of sharps (> 0) or flats (&lt; 0).
+ * @returns {number} -1, 0 or 1.
  */
 export function keyAcc(clef, s, ks = 0) {
   if (!ks) return 0;
@@ -146,20 +145,21 @@ export function keyAcc(clef, s, ks = 0) {
 }
 
 /**
- * Numéro MIDI d'une position de portée.
+ * MIDI number of a staff position.
  *
- * Calcul : on décale la position du degré de la 1re ligne (`t = L + s`),
- * `t mod 7` donne le degré, `floor(t / 7)` le nombre d'octaves à ajouter.
- * MIDI 60 = do 4, d'où le `+1` sur l'octave (convention MIDI : do -1 = 0).
+ * Computation: the position is shifted by the degree of the 1st line
+ * (`t = L + s`), `t mod 7` gives the degree, `floor(t / 7)` the number of
+ * octaves to add. MIDI 60 = C4, hence the `+1` on the octave (MIDI
+ * convention: C-1 = 0).
  *
  * @example
- * midiOf('treble', 0, 0)   // 64 (mi 4)
- * midiOf('treble', 4, -1)  // 70 (si♭ 4)
+ * midiOf('treble', 0, 0)   // 64 (E4)
+ * midiOf('treble', 4, -1)  // 70 (B♭4)
  *
- * @param {string} clef `'treble'` ou `'bass'`.
- * @param {number} s Position sur la portée.
- * @param {number} acc Altération effective en demi-tons (-1, 0, +1).
- * @returns {number} Numéro de note MIDI.
+ * @param {string} clef `'treble'` or `'bass'`.
+ * @param {number} s Position on the staff.
+ * @param {number} acc Effective accidental in semitones (-1, 0, +1).
+ * @returns {number} MIDI note number.
  */
 export function midiOf(clef, s, acc) {
   const b = CLEF_BASE[clef] || CLEF_BASE.treble;
@@ -168,49 +168,49 @@ export function midiOf(clef, s, acc) {
 }
 
 /**
- * Nom lisible d'une position (affiché dans la palette quand une note est sélectionnée).
- * Sans altération écrite, c'est l'armure qui décide.
+ * Readable name of a position (shown in the palette when a note is selected).
+ * With no written accidental, the key signature decides.
  *
  * @param {string} clef
  * @param {number} s
- * @param {number} [a] Altération écrite.
- * @param {number} [ks=0] Armure.
- * @returns {string} Par exemple `"Si♭ 4"`.
+ * @param {number} [a] Written accidental.
+ * @param {number} [ks=0] Key signature.
+ * @returns {string} For example `"B♭4"`.
  */
 export function pitchName(clef, s, a, ks = 0) {
   const b = CLEF_BASE[clef] || CLEF_BASE.treble;
   const deg = b.L + s;
   const eff = a == null ? keyAcc(clef, s, ks) : a;
   const acc = eff === -1 ? '♭' : eff === 1 ? '♯' : a === 0 ? '♮' : '';
-  // « Si♭ 4 » en français, « B♭4 » en anglais.
+  // "B♭4" in English, "Si♭ 4" in French.
   return noteName(deg) + acc + (lang() === 'fr' ? ' ' : '') + (b.O + Math.floor(deg / 7));
 }
 
 /**
- * Calcule la hauteur MIDI de chaque élément d'une portée, en appliquant
- * les règles d'altérations et de liaisons.
+ * Computes the MIDI pitch of each item of a staff, applying the rules for
+ * accidentals and ties.
  *
- * Parcourt les éléments dans l'ordre d'écriture (pas l'ordre de lecture avec
- * reprises : les altérations sont une propriété de la partition écrite).
+ * Walks the items in written order (not playback order with repeats:
+ * accidentals are a property of the written score).
  *
  * @param {module:model~StaffBlock} b
- * Pour un instrument transpositeur (2.8.3), c'est le **son réel** : la note
- * écrite, moins l'écart de l'instrument.
+ * For a transposing instrument (2.8.3), this is the **concert pitch**: the
+ * written note, minus the instrument's interval.
  *
- * @returns {Array.&lt;?number>} Un numéro MIDI par élément, `null` pour les
- *   silences et pour toute la ligne rythmique.
+ * @returns {Array.&lt;?number>} One MIDI number per item, `null` for rests and
+ *   for the whole rhythm line.
  */
 export function resolveMidis(b) {
   const ML = mlen(b.time);
   const shift = instrumentOf(b.tr).semis;
   let pos = 0;
-  // altération en cours par position, pour la mesure courante
+  // current accidental by position, for the current measure
   /** @type {Object.&lt;number, number>} */
   let carry = {};
   /** @type {Array.&lt;?number>} */
   const out = [];
   b.items.forEach((it, i) => {
-    // Un début de reprise ouvre une nouvelle mesure : on remet tout à zéro.
+    // A start repeat opens a new measure: reset everything.
     if (it.rs &amp;&amp; pos > 0) {
       pos = 0;
       carry = {};
@@ -219,7 +219,7 @@ export function resolveMidis(b) {
     if (!it.r &amp;&amp; b.clef !== 'rhythm') {
       const prev = b.items[i - 1];
       if (prev &amp;&amp; prev.tie &amp;&amp; !prev.r &amp;&amp; out[i - 1] != null) {
-        // Note liée : même hauteur que la précédente, quelle que soit la mesure.
+        // Tied note: same pitch as the previous one, whatever the measure.
         m = out[i - 1];
       } else {
         if (it.a != null) carry[it.s] = it.a;
@@ -228,7 +228,7 @@ export function resolveMidis(b) {
     }
     out.push(m);
     pos = snap(pos + qlen(it));
-    // Fin de mesure (barre explicite ou mesure pleine) : les altérations tombent.
+    // End of measure (explicit barline or full measure): accidentals are dropped.
     if (it.bar || pos >= ML - EPS) {
       pos = 0;
       carry = {};

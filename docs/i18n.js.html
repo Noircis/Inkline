@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>i18n.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,52 +53,52 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module i18n
  * @description
- * **Langue de l'interface** (2.9) : anglais ou français.
+ * **Interface language** (2.9): English or French.
  *
- * Tous les textes visibles passent par {@link t} avec une clé
- * (`t('home.newNote')`), cherchée dans le dictionnaire de la langue courante
+ * Every visible text goes through {@link t} with a key
+ * (`t('home.newNote')`), looked up in the dictionary of the current language
  * ({@link module:locales/en|locales/en}, {@link module:locales/fr|locales/fr}).
- * Un test vérifie que les deux dictionnaires ont exactement les mêmes clés.
+ * A test checks that both dictionaries have exactly the same keys.
  *
- * ## Choix de la langue
+ * ## Choosing the language
  *
- * Une appli web ne voit pas la langue du système, seulement celle du
- * navigateur (`navigator.languages`) ; sur Android, elle suit celle du
- * téléphone. Réglage « Langue » dans Options : `auto` (français si le
- * navigateur est en français, anglais sinon), `en` ou `fr`.
+ * A web app cannot see the system language, only the browser's
+ * (`navigator.languages`); on Android, it follows the phone's language.
+ * "Language" setting in Settings: `auto` (French if the browser is in
+ * French, English otherwise), `en` or `fr`.
  *
- * Tant que {@link initLang} n'a pas été appelé (tests unitaires du moteur),
- * la langue est le français, celle des versions précédentes.
+ * Until {@link initLang} has been called (engine unit tests), the language
+ * is French, the language of earlier versions.
  *
- * ## Paramètres et pluriels
+ * ## Parameters and plurals
  *
- * `t('home.count', { n: 3 })` remplace `{n}` dans le texte. Une entrée peut
- * être un objet `{ one, other }` : `one` sert pour 0 et 1 en français, pour
- * 1 seulement en anglais (« 0 note », mais « 0 notes »), selon
+ * `t('home.count', { n: 3 })` replaces `{n}` in the text. An entry can be an
+ * object `{ one, other }`: `one` is used for 0 and 1 in French, for 1 only
+ * in English ("0 note" in French, but "0 notes"), following
  * `Intl.PluralRules`.
  *
- * Les textes statiques de `index.html` portent `data-i18n="clé"` (contenu)
- * ou `data-i18n-attr="aria-label:clé;placeholder:clé"` (attributs), traduits
- * au démarrage par {@link translateDom}.
+ * The static texts of `index.html` carry `data-i18n="key"` (content) or
+ * `data-i18n-attr="aria-label:key;placeholder:key"` (attributes), translated
+ * at startup by {@link translateDom}.
  */
 
 import en from './locales/en.js';
 import fr from './locales/fr.js';
 
-/** Langues disponibles. */
+/** Available languages. */
 export const LANGS = Object.freeze(['en', 'fr']);
 
 /** @type {Object.&lt;string, Object>} */
 const DICTS = { en, fr };
 
-/** Langue courante. */
+/** Current language. */
 let cur = 'fr';
-/** Règles de pluriel de la langue courante. */
+/** Plural rules of the current language. */
 let plural = new Intl.PluralRules('fr');
 
 /**
- * Langue déduite des langues préférées du navigateur : français si la
- * première langue reconnue est le français, anglais sinon.
+ * Language deduced from the browser's preferred languages: French if the
+ * first recognized language is French, English otherwise.
  * @param {ReadonlyArray.&lt;string>} [langs]
  * @returns {'en'|'fr'}
  */
@@ -112,10 +112,10 @@ export function detectLang(langs = []) {
 }
 
 /**
- * Fixe la langue de l'interface.
- * @param {string} pref `auto`, `en` ou `fr`.
- * @param {ReadonlyArray.&lt;string>} [langs] Langues du navigateur (pour `auto`).
- * @returns {'en'|'fr'} Langue retenue.
+ * Sets the interface language.
+ * @param {string} pref `auto`, `en` or `fr`.
+ * @param {ReadonlyArray.&lt;string>} [langs] Browser languages (for `auto`).
+ * @returns {'en'|'fr'} Language chosen.
  */
 export function initLang(pref, langs = []) {
   cur = LANGS.includes(pref) ? /** @type {'en'|'fr'} */ (pref) : detectLang(langs);
@@ -125,19 +125,19 @@ export function initLang(pref, langs = []) {
 }
 
 /**
- * Langue courante.
+ * Current language.
  * @returns {'en'|'fr'}
  */
 export const lang = () => /** @type {'en'|'fr'} */ (cur);
 
 /**
- * Locale complète pour les dates et les nombres (`Intl`).
+ * Full locale for dates and numbers (`Intl`).
  * @returns {string}
  */
 export const locale = () => (cur === 'fr' ? 'fr-FR' : 'en-US');
 
 /**
- * Cherche une clé (`a.b.c`) dans un dictionnaire.
+ * Looks up a key (`a.b.c`) in a dictionary.
  * @param {Object} dict
  * @param {string} key
  * @returns {*}
@@ -152,12 +152,12 @@ function lookup(dict, key) {
 }
 
 /**
- * Texte traduit.
- * @param {string} key Clé, par exemple `'home.newNote'`.
- * @param {Object.&lt;string, (string|number)>} [params] Valeurs pour `{nom}` ;
- *   `n` choisit le pluriel.
- * @returns {string} Le texte, ou la clé elle-même si elle manque (visible en
- *   test, jamais vide à l'écran).
+ * Translated text.
+ * @param {string} key Key, for example `'home.newNote'`.
+ * @param {Object.&lt;string, (string|number)>} [params] Values for `{name}`;
+ *   `n` picks the plural.
+ * @returns {string} The text, or the key itself if it is missing (visible in
+ *   tests, never empty on screen).
  */
 export function t(key, params) {
   let v = lookup(DICTS[cur], key);
@@ -172,9 +172,8 @@ export function t(key, params) {
 }
 
 /**
- * Traduit les textes statiques d'un morceau de page (`data-i18n`,
- * `data-i18n-attr`). Le texte français reste dans le HTML comme valeur de
- * secours.
+ * Translates the static texts of a piece of the page (`data-i18n`,
+ * `data-i18n-attr`). The French text stays in the HTML as a fallback.
  * @param {ParentNode} root
  */
 export function translateDom(root) {
@@ -190,7 +189,7 @@ export function translateDom(root) {
 }
 
 /**
- * Toutes les clés d'un dictionnaire (pour les tests).
+ * All the keys of a dictionary (for tests).
  * @param {Object} dict
  * @param {string} [prefix]
  * @returns {Array.&lt;string>}
@@ -201,7 +200,7 @@ export function keysOf(dict, prefix = '') {
   );
 }
 
-/** Dictionnaires (pour les tests). */
+/** Dictionaries (for tests). */
 export const DICTIONARIES = DICTS;
 </code></pre>
         </article>

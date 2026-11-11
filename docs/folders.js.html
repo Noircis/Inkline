@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>folders.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,45 +53,45 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module folders
  * @description
- * **Dossiers** du carnet (depuis la 2.0) : modèle et opérations pures.
+ * Notebook **folders** (since 2.0): model and pure operations.
  *
- * ## Modèle
+ * ## Model
  *
- * Un dossier est un objet `{ id, name, color, created }`. Les dossiers sont
- * stockés **à part** des notes (voir {@link module:storage|storage}) ; une note
- * référence son dossier par son id dans le champ optionnel `folder`. Une note
- * sans `folder` (ou dont le dossier n'existe plus) est « non classée ».
+ * A folder is an object `{ id, name, color, created }`. Folders are stored
+ * **separately** from notes (see {@link module:storage|storage}); a note
+ * references its folder by id in the optional `folder` field. A note without
+ * `folder` (or whose folder no longer exists) is "unfiled".
  *
- * Pas de sous-dossiers, mais des **catégories** (2.8.6) : chaque dossier a
- * sa propre liste ordonnée de catégories (`cats`, par exemple Technique, Son,
- * Impro dans « Saxophone »). Une note peut en avoir **plusieurs** (champ
- * `cats` de la note, ids des catégories de son dossier) ; elle apparaît alors
- * dans chacune des sections ({@link groupByCategory}). Changer une note de
- * dossier efface ses catégories : elles n'ont de sens que dans leur dossier.
+ * No subfolders, but **categories** (2.8.6): each folder has its own ordered
+ * list of categories (`cats`, for example Technique, Sound, Improv in
+ * "Saxophone"). A note can have **several** (the note's `cats` field, ids of
+ * its folder's categories); it then appears in each section
+ * ({@link groupByCategory}). Moving a note to another folder clears its
+ * categories: they only make sense in their folder.
  *
- * ## Vues spéciales
+ * ## Special views
  *
- * La barre de dossiers de l'accueil propose deux entrées qui ne sont pas des
- * dossiers : {@link module:folders.ALL|ALL} (toutes les notes) et
- * {@link module:folders.UNFILED|UNFILED} (notes non classées).
+ * The home folder bar offers two entries that are not folders:
+ * {@link module:folders.ALL|ALL} (all notes) and
+ * {@link module:folders.UNFILED|UNFILED} (unfiled notes).
  */
 
 import { uid } from './util.js';
 
-/** Sélection « toutes les notes » de la barre de dossiers. */
+/** "All notes" selection of the folder bar. */
 export const ALL = 'all';
 
-/** Sélection « notes non classées » de la barre de dossiers. */
+/** "Unfiled notes" selection of the folder bar. */
 export const UNFILED = 'none';
 
-/** Longueur maximale d'un nom de dossier. */
+/** Maximum length of a folder name. */
 export const FOLDER_NAME_MAX = 40;
 
 /**
- * Couleurs proposées pour les dossiers. La couleur réelle vient du thème
- * (variables CSS `--fc-&lt;clé>`, une valeur pour le mode clair et une pour le
- * mode sombre) : on ne stocke que la clé.
- * Noms des couleurs : clés `color.*` des dictionnaires ({@link module:i18n|i18n}).
+ * Colors offered for folders. The actual color comes from the theme (CSS
+ * variables `--fc-&lt;key>`, one value for light mode and one for dark mode):
+ * only the key is stored.
+ * Color names: `color.*` keys in the dictionaries ({@link module:i18n|i18n}).
  * @type {Array.&lt;{key: string}>}
  */
 export const FOLDER_COLORS = [
@@ -105,37 +105,37 @@ export const FOLDER_COLORS = [
   { key: 'gray' },
 ];
 
-/** Clés de couleur valides. */
+/** Valid color keys. */
 export const COLOR_KEYS = FOLDER_COLORS.map((c) => c.key);
 
 /**
- * Un dossier.
+ * A folder.
  * @typedef {Object} Folder
  * @property {string} id
- * @property {string} name Nom affiché (1 à {@link FOLDER_NAME_MAX} caractères).
- * @property {string} color Clé de couleur (voir {@link FOLDER_COLORS}).
- * @property {number} created Horodatage de création.
- * @property {Category[]} [cats] Catégories du dossier, dans l'ordre d'affichage (2.8.6).
+ * @property {string} name Displayed name (1 to {@link FOLDER_NAME_MAX} characters).
+ * @property {string} color Color key (see {@link FOLDER_COLORS}).
+ * @property {number} created Creation timestamp.
+ * @property {Category[]} [cats] Categories of the folder, in display order (2.8.6).
  */
 
 /**
- * Une catégorie de dossier (2.8.6).
+ * A folder category (2.8.6).
  * @typedef {Object} Category
  * @property {string} id
- * @property {string} name Nom affiché (1 à {@link CAT_NAME_MAX} caractères).
+ * @property {string} name Displayed name (1 to {@link CAT_NAME_MAX} characters).
  */
 
-/** Longueur maximale d'un nom de catégorie. */
+/** Maximum length of a category name. */
 export const CAT_NAME_MAX = 30;
-/** Nombre maximal de catégories par dossier. */
+/** Maximum number of categories per folder. */
 export const MAX_CATS = 30;
-/** Sélection « tout le dossier » de la barre de catégories. */
+/** "Whole folder" selection of the category bar. */
 export const ALL_CATS = 'all';
-/** Sélection « sans catégorie » de la barre de catégories. */
+/** "No category" selection of the category bar. */
 export const NO_CAT = 'none';
 
 /**
- * Crée un dossier.
+ * Creates a folder.
  * @param {string} name
  * @param {string} [color='blue']
  * @returns {Folder}
@@ -150,10 +150,10 @@ export function newFolder(name, color = 'blue') {
 }
 
 /**
- * Nettoie un nom de dossier saisi : espaces superflus retirés, longueur bornée.
+ * Cleans a typed folder name: extra spaces removed, length bounded.
  * @param {string} name
- * @param {number} [max] Longueur maximale ({@link FOLDER_NAME_MAX} par défaut).
- * @returns {string} Chaîne éventuellement vide.
+ * @param {number} [max] Maximum length ({@link FOLDER_NAME_MAX} by default).
+ * @returns {string} Possibly empty string.
  */
 export function cleanFolderName(name, max = FOLDER_NAME_MAX) {
   return String(name || '')
@@ -163,8 +163,8 @@ export function cleanFolderName(name, max = FOLDER_NAME_MAX) {
 }
 
 /**
- * Dossiers triés par nom (ordre alphabétique français, sans tenir compte de
- * la casse ni des accents).
+ * Folders sorted by name (French alphabetical order, ignoring case and
+ * accents).
  * @param {Object.&lt;string, Folder>} folders
  * @returns {Folder[]}
  */
@@ -173,8 +173,7 @@ export function sortedFolders(folders) {
 }
 
 /**
- * Dossier d'une note, ou `null` si elle n'est pas classée (ou si son dossier
- * a disparu).
+ * Folder of a note, or `null` if it is unfiled (or its folder disappeared).
  * @param {module:model~Note} note
  * @param {Object.&lt;string, Folder>} folders
  * @returns {Folder|null}
@@ -184,9 +183,9 @@ export function folderOf(note, folders) {
 }
 
 /**
- * La note appartient-elle à la sélection de la barre de dossiers ?
+ * Does the note belong to the folder bar's selection?
  * @param {module:model~Note} note
- * @param {string} selection {@link ALL}, {@link UNFILED} ou un id de dossier.
+ * @param {string} selection {@link ALL}, {@link UNFILED} or a folder id.
  * @param {Object.&lt;string, Folder>} folders
  * @returns {boolean}
  */
@@ -198,10 +197,10 @@ export function inSelection(note, selection, folders) {
 }
 
 /**
- * Nombre de notes par sélection, pour les compteurs de la barre de dossiers.
+ * Number of notes per selection, for the folder bar counters.
  * @param {module:model~Note[]} notes
  * @param {Object.&lt;string, Folder>} folders
- * @returns {Object.&lt;string, number>} Clés : {@link ALL}, {@link UNFILED} et chaque id de dossier.
+ * @returns {Object.&lt;string, number>} Keys: {@link ALL}, {@link UNFILED} and each folder id.
  */
 export function countByFolder(notes, folders) {
   const counts = { [ALL]: notes.length, [UNFILED]: 0 };
@@ -217,12 +216,12 @@ export function countByFolder(notes, folders) {
 }
 
 /**
- * Supprime un dossier : ses notes redeviennent non classées (aucune note
- * n'est supprimée). Modifie `notes` et `folders` sur place.
+ * Deletes a folder: its notes become unfiled again (no note is deleted).
+ * Changes `notes` and `folders` in place.
  * @param {string} id
  * @param {Object.&lt;string, module:model~Note>} notes
  * @param {Object.&lt;string, Folder>} folders
- * @returns {number} Nombre de notes déclassées.
+ * @returns {number} Number of notes unfiled.
  */
 export function deleteFolder(id, notes, folders) {
   let moved = 0;
@@ -237,15 +236,14 @@ export function deleteFolder(id, notes, folders) {
   return moved;
 }
 
-// ---------- Catégories (2.8.6) ----------
+// ---------- Categories (2.8.6) ----------
 
 /**
- * Ajoute une catégorie à un dossier (modifie le dossier). Un nom déjà pris
- * (sans tenir compte de la casse ni des accents) renvoie la catégorie
- * existante.
+ * Adds a category to a folder (modifies the folder). A name already taken
+ * (ignoring case and accents) returns the existing category.
  * @param {Folder} folder
  * @param {string} name
- * @returns {?Category} `null` si le nom est vide ou si le dossier est plein.
+ * @returns {?Category} `null` if the name is empty or the folder is full.
  */
 export function addCategory(folder, name) {
   const clean = cleanFolderName(name, CAT_NAME_MAX);
@@ -260,8 +258,8 @@ export function addCategory(folder, name) {
 }
 
 /**
- * Catégories d'une note, dans l'ordre du dossier (celles qui n'existent plus
- * sont ignorées).
+ * Categories of a note, in folder order (those that no longer exist are
+ * ignored).
  * @param {module:model~Note} note
  * @param {Object.&lt;string, Folder>} folders
  * @returns {Category[]}
@@ -273,9 +271,9 @@ export function catsOf(note, folders) {
 }
 
 /**
- * La note appartient-elle à la sélection de la barre de catégories ?
+ * Does the note belong to the category bar's selection?
  * @param {module:model~Note} note
- * @param {string} sel {@link ALL_CATS}, {@link NO_CAT} ou un id de catégorie.
+ * @param {string} sel {@link ALL_CATS}, {@link NO_CAT} or a category id.
  * @param {Object.&lt;string, Folder>} folders
  * @returns {boolean}
  */
@@ -287,10 +285,10 @@ export function inCategory(note, sel, folders) {
 }
 
 /**
- * Nombre de notes par catégorie d'un dossier.
- * @param {module:model~Note[]} notes Notes du dossier.
+ * Number of notes per category of a folder.
+ * @param {module:model~Note[]} notes Notes of the folder.
  * @param {Folder} folder
- * @returns {Object.&lt;string, number>} Clés : {@link ALL_CATS}, {@link NO_CAT} et chaque id.
+ * @returns {Object.&lt;string, number>} Keys: {@link ALL_CATS}, {@link NO_CAT} and each id.
  */
 export function countByCategory(notes, folder) {
   const counts = { [ALL_CATS]: notes.length, [NO_CAT]: 0 };
@@ -304,14 +302,14 @@ export function countByCategory(notes, folder) {
 }
 
 /**
- * Range les notes d'un dossier en **sections**, une par catégorie dans
- * l'ordre du dossier, puis « Sans catégorie ». Une note de plusieurs
- * catégories apparaît dans chacune. Les sections vides sont omises. L'ordre
- * des notes est conservé (elles arrivent déjà triées).
+ * Groups a folder's notes into **sections**, one per category in folder
+ * order, then "No category". A note with several categories appears in
+ * each. Empty sections are left out. Note order is kept (they arrive already
+ * sorted).
  * @param {module:model~Note[]} notes
  * @param {Folder} folder
- * @returns {Array.&lt;{cat: ?Category, notes: module:model~Note[]}>} `cat` vaut
- *   `null` pour « Sans catégorie ».
+ * @returns {Array.&lt;{cat: ?Category, notes: module:model~Note[]}>} `cat` is
+ *   `null` for "No category".
  */
 export function groupByCategory(notes, folder) {
   const cats = folder.cats || [];
@@ -322,12 +320,12 @@ export function groupByCategory(notes, folder) {
 }
 
 /**
- * Supprime une catégorie : elle est retirée du dossier et des notes (aucune
- * note n'est supprimée). Modifie sur place.
+ * Deletes a category: it is removed from the folder and from the notes (no
+ * note is deleted). Modifies in place.
  * @param {Folder} folder
  * @param {string} catId
  * @param {Object.&lt;string, module:model~Note>} notes
- * @returns {number} Nombre de notes concernées.
+ * @returns {number} Number of notes affected.
  */
 export function deleteCategory(folder, catId, notes) {
   folder.cats = (folder.cats || []).filter((c) => c.id !== catId);
@@ -343,7 +341,7 @@ export function deleteCategory(folder, catId, notes) {
 }
 
 /**
- * Déplace une catégorie d'un cran (vers le haut `-1`, vers le bas `+1`).
+ * Moves a category by one step (up `-1`, down `+1`).
  * @param {Folder} folder
  * @param {string} catId
  * @param {number} dir
@@ -357,10 +355,10 @@ export function moveCategory(folder, catId, dir) {
 }
 
 /**
- * Range une note : dossier, et catégories de ce dossier. Changer de dossier
- * efface les catégories.
+ * Files a note: folder, and categories of that folder. Changing the folder
+ * clears the categories.
  * @param {module:model~Note} note
- * @param {?string} folderId `null` : non classée.
+ * @param {?string} folderId `null`: unfiled.
  * @param {Array.&lt;string>} [cats=[]]
  */
 export function fileNote(note, folderId, cats = []) {

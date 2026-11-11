@@ -1,8 +1,8 @@
-// Catégories de dossier (2.8.6) : sections, filtres, rangement d'une note, gestion.
+// Folder categories (2.8.6): sections, filters, filing a note, management.
 import { test, expect } from '@playwright/test';
 import { openApp, collectErrors } from './helpers.js';
 
-/** Un dossier Saxophone (Technique, Son, Impro) et quatre notes, affiché à l'accueil. */
+/** A Saxophone folder (Technique, Son, Impro) and four notes, shown on home. */
 async function seed(page) {
   await page.evaluate(async () => {
     const { state } = await import('/js/ui/state.js');
@@ -57,12 +57,14 @@ test.beforeEach(async ({ page }) => {
   await seed(page);
 });
 
-test('sections par catégorie, note de deux catégories dans chacune, repli mémorisé', async ({ page }) => {
+test('sections by category, a note with two categories in each, collapsed state remembered', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   await expect(page.locator('.cat-title')).toHaveText(['Technique', 'Son', 'Impro', 'Sans catégorie']);
   await expect(page.locator('.cat-count')).toHaveText(['2', '1', '1', '1']);
   await expect(page.locator('.cat-sec').nth(1)).toContainText('Harmoniques');
-  // Replier « Technique », recharger : toujours replié.
+  // Collapse "Technique", reload: still collapsed.
   await page.click('.cat-sec >> nth=0 >> .cat-head');
   await expect(page.locator('.cat-sec').nth(0).locator('.cat-body')).toBeHidden();
   await page.reload();
@@ -71,16 +73,16 @@ test('sections par catégorie, note de deux catégories dans chacune, repli mém
   expect(errors).toEqual([]);
 });
 
-test('filtre par catégorie, nouvelle note rangée dans la catégorie choisie', async ({ page }) => {
+test('filter by category, new note filed in the chosen category', async ({ page }) => {
   await page.click('[data-cat=son]');
   await expect(page.locator('#listLbl')).toHaveText('Saxophone › Son · 1 note');
-  await expect(page.locator('.cat-sec')).toHaveCount(0); // liste simple
+  await expect(page.locator('.cat-sec')).toHaveCount(0); // plain list
   await expect(page.locator('#listBody')).toContainText('Harmoniques');
   await page.click('#newNote');
   await expect(page.locator('#folderBtn')).toContainText('Saxophone › Son');
 });
 
-test('ranger une note : plusieurs catégories, nouvelle catégorie, autre dossier', async ({ page }) => {
+test('file a note: several categories, new category, another folder', async ({ page }) => {
   await page.click('text=En vrac');
   await expect(page.locator('#folderBtn')).toHaveText(/Saxophone/);
   await page.click('#folderBtn');
@@ -94,17 +96,17 @@ test('ranger une note : plusieurs catégories, nouvelle catégorie, autre dossie
   await expect(page.locator('.ar-cats [data-cat]')).toHaveCount(4);
   await page.click('#arDone');
   await expect(page.locator('#folderBtn')).toContainText('Technique, Impro, Répertoire');
-  // Non classée : les catégories sont effacées.
+  // Unfiled: categories are cleared.
   await page.click('#folderBtn');
   await page.click('[data-folder=""]');
   expect(await note(page, 'n4')).toEqual({ folder: null, cats: [] });
 });
 
-test('gérer les catégories : renommer, ordre, supprimer (sans supprimer de note)', async ({ page }) => {
-  await page.click('[data-cat=all]'); // déjà choisie : ouvre la gestion
+test('manage categories: rename, reorder, delete (without deleting a note)', async ({ page }) => {
+  await page.click('[data-cat=all]'); // already chosen: opens management
   await expect(page.locator('#csTitle')).toHaveText('Catégories de « Saxophone »');
   await page.locator('.cat-name').nth(1).fill('Sonorité');
-  await page.locator('.cat-row').nth(2).locator('[data-move="-1"]').click(); // Impro avant Sonorité
+  await page.locator('.cat-row').nth(2).locator('[data-move="-1"]').click(); // Impro before Sonorité
   const del = page.locator('.cat-row').nth(0).locator('[data-del]');
   await del.click();
   await expect(del).toHaveText('Retirer de 2 notes');
@@ -118,14 +120,14 @@ test('gérer les catégories : renommer, ordre, supprimer (sans supprimer de not
   ).toBe(4);
 });
 
-test('nouvelle catégorie : bouton Ajouter, touche ✓ du clavier, et rien n’est perdu', async ({ page }) => {
-  // Panneau des catégories : ✓ du clavier ajoute (sans fermer).
+test('new category: Add button, keyboard ✓ key, and nothing is lost', async ({ page }) => {
+  // Categories panel: the keyboard's ✓ adds (without closing).
   await page.click('#addCat');
   await page.fill('#csNew', 'Répertoire');
   await page.press('#csNew', 'Enter');
   await expect(page.locator('#csTitle')).toBeVisible();
   await expect(page.locator('.cat-name')).toHaveCount(4);
-  // Nom tapé puis « Enregistrer » directement : il est gardé.
+  // Name typed then "Save" directly: it is kept.
   await page.fill('#csNew', 'Lecture');
   await page.click('#folderSheet [type=submit]');
   await expect(page.locator('#catChips [data-cat]')).toContainText([
@@ -137,29 +139,29 @@ test('nouvelle catégorie : bouton Ajouter, touche ✓ du clavier, et rien n’e
     'Lecture',
   ]);
 
-  // Panneau « Ranger la note » : bouton Ajouter.
+  // "File note" panel: Add button.
   await page.click('[data-cat=all]');
-  await page.locator('#folderSheet [data-del]').first().waitFor(); // gestion ouverte : on referme
+  await page.locator('#folderSheet [data-del]').first().waitFor(); // management open: close it
   await page.click('#csCancel');
   await page.click('text=En vrac');
   await page.click('#folderBtn');
   await page.fill('#arNew', 'Transcriptions');
   await page.click('#arNewForm [type=submit]');
   await expect(page.locator('.ar-cats [data-cat][aria-pressed=true]')).toHaveText(['Transcriptions']);
-  // ✓ du clavier.
+  // The keyboard's ✓.
   await page.fill('#arNew', 'Oreille');
   await page.press('#arNew', 'Enter');
   await expect(page.locator('.ar-cats [data-cat][aria-pressed=true]')).toHaveText([
     'Transcriptions',
     'Oreille',
   ]);
-  // Tapé puis « Fini » : ajouté aussi.
+  // Typed then "Done": added too.
   await page.fill('#arNew', 'Rythme');
   await page.click('#arDone');
   await expect(page.locator('#folderBtn')).toContainText('Transcriptions, Oreille, Rythme');
 });
 
-test('dossier sans catégorie : « + Catégorie » à l’accueil et dans une note', async ({ page }) => {
+test('folder without categories: "+ Category" on home and in a note', async ({ page }) => {
   await page.evaluate(async () => {
     const { state } = await import('/js/ui/state.js');
     const { saveFolders, setMeta } = await import('/js/storage.js');
@@ -176,7 +178,7 @@ test('dossier sans catégorie : « + Catégorie » à l’accueil et dans une no
   await page.click('#csAdd');
   await page.click('#folderSheet [type=submit]');
   await expect(page.locator('#catChips [data-cat]')).toContainText(['Tout', 'Technique']);
-  // Dans une note : la catégorie s'ajoute et se coche.
+  // In a note: the category is added and checked.
   await page.click('text=Gammes');
   await page.click('#folderBtn');
   await page.fill('#arNew', 'Son');

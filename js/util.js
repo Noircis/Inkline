@@ -1,73 +1,72 @@
 /**
  * @module util
  * @description
- * Petites fonctions utilitaires sans dépendance, partagées par tous les modules.
+ * Small dependency-free helpers shared by every module.
  *
- * Aucune de ces fonctions ne touche au DOM : elles sont utilisables telles
- * quelles dans les tests Node.
+ * None of them touches the DOM: they can be used as is in Node tests.
  */
 
-/** Tolérance utilisée pour comparer des durées exprimées en flottants (en noires). */
+/** Tolerance used to compare durations stored as floats (in quarter notes). */
 export const EPS = 1e-6;
 
 /**
- * Génère un identifiant court, suffisamment unique pour un usage local
- * (notes et blocs d'un seul utilisateur).
+ * Generates a short id, unique enough for local use (one user's notes and
+ * blocks).
  *
- * Format : 8 caractères aléatoires en base 36, suivis des 4 derniers caractères
- * de l'horodatage en base 36. Pas de garantie cryptographique : ce n'est pas le but.
+ * Format: 8 random base-36 characters, followed by the last 4 base-36
+ * characters of the timestamp. No cryptographic guarantee: that is not the goal.
  *
- * @returns {string} Identifiant, par ex. `"k3j9x0aa1b2c"`.
+ * @returns {string} Id, e.g. `"k3j9x0aa1b2c"`.
  */
 export function uid() {
   return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 }
 
 /**
- * Modulo mathématique (toujours positif), contrairement à l'opérateur `%`
- * de JavaScript qui conserve le signe du dividende.
+ * Mathematical modulo (always non-negative), unlike JavaScript's `%`
+ * operator, which keeps the sign of the dividend.
  *
  * @example
- * mod(-1, 7) // 6  (alors que -1 % 7 === -1)
+ * mod(-1, 7) // 6  (whereas -1 % 7 === -1)
  *
- * @param {number} a Dividende.
- * @param {number} n Diviseur (strictement positif).
- * @returns {number} Reste dans l'intervalle [0, n).
+ * @param {number} a Dividend.
+ * @param {number} n Divisor (strictly positive).
+ * @returns {number} Remainder in [0, n).
  */
 export function mod(a, n) {
   return ((a % n) + n) % n;
 }
 
 /**
- * Borne une valeur dans un intervalle fermé.
+ * Clamps a value to a closed interval.
  *
- * @param {number} v Valeur.
- * @param {number} lo Borne basse.
- * @param {number} hi Borne haute.
- * @returns {number} `v` ramenée dans [lo, hi].
+ * @param {number} v Value.
+ * @param {number} lo Lower bound.
+ * @param {number} hi Upper bound.
+ * @returns {number} `v` brought back into [lo, hi].
  */
 export function clamp(v, lo, hi) {
   return Math.max(lo, Math.min(hi, v));
 }
 
 /**
- * Arrondit une position temporelle pour neutraliser l'accumulation d'erreurs
- * flottantes. Sans ça, trois croches de triolet (3 × 1/3) donneraient parfois
- * 0.9999999999 au lieu de 1, et la mesure ne serait jamais considérée pleine.
+ * Rounds a time position to cancel accumulated floating-point error.
+ * Without it, three triplet eighths (3 × 1/3) would sometimes add up to
+ * 0.9999999999 instead of 1, and the measure would never count as full.
  *
- * @param {number} x Position en noires.
- * @returns {number} Position arrondie à 1e-9 près.
+ * @param {number} x Position in quarter notes.
+ * @returns {number} Position rounded to 1e-9.
  */
 export function snap(x) {
   return Math.round(x * 1e9) / 1e9;
 }
 
 /**
- * Échappe une chaîne pour l'insérer dans du HTML ou du SVG généré par
- * template strings (protection contre l'injection de balises).
+ * Escapes a string before inserting it into HTML or SVG built with template
+ * strings (protection against tag injection).
  *
- * @param {*} s Valeur à échapper (convertie en chaîne).
- * @returns {string} Chaîne sûre à placer entre balises ou dans un attribut entre guillemets.
+ * @param {*} s Value to escape (converted to a string).
+ * @returns {string} String safe between tags or inside a double-quoted attribute.
  */
 export function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);

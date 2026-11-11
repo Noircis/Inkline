@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>layout - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,34 +63,32 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Moteur de <strong>mise en page</strong> d'une portée : décide où chaque élément se place
-(ligne et abscisse), où tombent les barres, et où se trouve la zone d'ajout.</p>
-<p>C'est une fonction pure : même entrée, même sortie, sans DOM. Le rendu SVG
-(<a href="module-render-staff.html">render-staff</a>) <strong>et</strong> le hit-testing (le toucher de
-l'utilisateur, dans <a href="module-ui_staff_input.html">ui/staff/input</a>) appellent tous deux
-<a href="module-layout.html#.layout">layout</a> avec les mêmes paramètres : ils sont donc
-cohérents par construction.</p>
-<h2>Algorithme</h2>
+                <div class="description usertext"><p><strong>Layout</strong> engine of a staff: decides where each item goes (line and x),
+where barlines fall, and where the add zone is.</p>
+<p>It is a pure function: same input, same output, no DOM. The SVG renderer
+(<a href="module-render-staff.html">render-staff</a>) <strong>and</strong> hit testing (the user's
+tap, in <a href="module-ui_staff_input.html">ui/staff/input</a>) both call
+<a href="module-layout.html#.layout">layout</a> with the same parameters: they are
+therefore consistent by construction.</p>
+<h2>Algorithm</h2>
 <ol>
-<li><strong>Largeurs intrinsèques</strong> : chaque élément reçoit une largeur de base
-selon sa valeur (gravure proportionnelle : une ronde prend plus de place
-qu'une croche), plus de la place pour une altération, un point ou un
-accord chiffré trop long.</li>
-<li><strong>Mesures</strong> : découpage par <a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>.</li>
-<li><strong>Coupure de lignes</strong>, algorithme glouton (<em>first-fit</em>) : une mesure va
-sur la ligne courante si elle tient, sinon elle ouvre une ligne. On ne
-coupe jamais une mesure en deux.</li>
-<li><strong>Justification</strong> : chaque ligne est étirée d'un facteur
-<code>sc = largeurDisponible / largeurUtilisée</code>, plafonné à 2.4 pour éviter
-un étirement absurde. La dernière ligne n'est pas étirée, sauf si le
-motif se termine par une barre de fin <strong>et</strong> que la ligne est déjà
-remplie à plus de 50 %. Une ligne trop pleine (mesure plus large que
-l'écran) est comprimée (<code>sc &lt; 1</code>).</li>
-<li><strong>Positions finales</strong> des éléments, des barres et des débuts de reprise.</li>
+<li><strong>Intrinsic widths</strong>: each item gets a base width from its duration
+(proportional engraving: a whole note takes more room than an eighth),
+plus room for an accidental, a dot or a long chord symbol.</li>
+<li><strong>Measures</strong>: split by <a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>.</li>
+<li><strong>Line breaking</strong>, greedy (<em>first-fit</em>) algorithm: a measure goes on the
+current line if it fits, otherwise it opens a new line. A measure is
+never split in two.</li>
+<li><strong>Justification</strong>: each line is stretched by a factor
+<code>sc = availableWidth / usedWidth</code>, capped at 2.4 to avoid an absurd
+stretch. The last line is not stretched, unless the pattern ends with a
+final barline <strong>and</strong> the line is already more than 50% full. An
+overfull line (measure wider than the screen) is compressed (<code>sc &lt; 1</code>).</li>
+<li><strong>Final positions</strong> of items, barlines and start repeats.</li>
 </ol>
-<h2>Repère vertical</h2>
-<p>Chaque ligne (système) occupe une bande de hauteur fixe <code>SH</code> ; les
-coordonnées y à l'intérieur sont données par <a href="module-layout.html#.geom">geom</a>.</p></div>
+<h2>Vertical reference</h2>
+<p>Each line (system) takes a band of fixed height <code>SH</code>; the y coordinates
+inside it are given by <a href="module-layout.html#.geom">geom</a>.</p></div>
             
 
             
@@ -102,34 +100,32 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Moteur de <strong>mise en page</strong> d'une portée : décide où chaque élément se place
-(ligne et abscisse), où tombent les barres, et où se trouve la zone d'ajout.</p>
-<p>C'est une fonction pure : même entrée, même sortie, sans DOM. Le rendu SVG
-(<a href="module-render-staff.html">render-staff</a>) <strong>et</strong> le hit-testing (le toucher de
-l'utilisateur, dans <a href="module-ui_staff_input.html">ui/staff/input</a>) appellent tous deux
-<a href="module-layout.html#.layout">layout</a> avec les mêmes paramètres : ils sont donc
-cohérents par construction.</p>
-<h2>Algorithme</h2>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Layout</strong> engine of a staff: decides where each item goes (line and x),
+where barlines fall, and where the add zone is.</p>
+<p>It is a pure function: same input, same output, no DOM. The SVG renderer
+(<a href="module-render-staff.html">render-staff</a>) <strong>and</strong> hit testing (the user's
+tap, in <a href="module-ui_staff_input.html">ui/staff/input</a>) both call
+<a href="module-layout.html#.layout">layout</a> with the same parameters: they are
+therefore consistent by construction.</p>
+<h2>Algorithm</h2>
 <ol>
-<li><strong>Largeurs intrinsèques</strong> : chaque élément reçoit une largeur de base
-selon sa valeur (gravure proportionnelle : une ronde prend plus de place
-qu'une croche), plus de la place pour une altération, un point ou un
-accord chiffré trop long.</li>
-<li><strong>Mesures</strong> : découpage par <a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>.</li>
-<li><strong>Coupure de lignes</strong>, algorithme glouton (<em>first-fit</em>) : une mesure va
-sur la ligne courante si elle tient, sinon elle ouvre une ligne. On ne
-coupe jamais une mesure en deux.</li>
-<li><strong>Justification</strong> : chaque ligne est étirée d'un facteur
-<code>sc = largeurDisponible / largeurUtilisée</code>, plafonné à 2.4 pour éviter
-un étirement absurde. La dernière ligne n'est pas étirée, sauf si le
-motif se termine par une barre de fin <strong>et</strong> que la ligne est déjà
-remplie à plus de 50 %. Une ligne trop pleine (mesure plus large que
-l'écran) est comprimée (<code>sc &lt; 1</code>).</li>
-<li><strong>Positions finales</strong> des éléments, des barres et des débuts de reprise.</li>
+<li><strong>Intrinsic widths</strong>: each item gets a base width from its duration
+(proportional engraving: a whole note takes more room than an eighth),
+plus room for an accidental, a dot or a long chord symbol.</li>
+<li><strong>Measures</strong>: split by <a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a>.</li>
+<li><strong>Line breaking</strong>, greedy (<em>first-fit</em>) algorithm: a measure goes on the
+current line if it fits, otherwise it opens a new line. A measure is
+never split in two.</li>
+<li><strong>Justification</strong>: each line is stretched by a factor
+<code>sc = availableWidth / usedWidth</code>, capped at 2.4 to avoid an absurd
+stretch. The last line is not stretched, unless the pattern ends with a
+final barline <strong>and</strong> the line is already more than 50% full. An
+overfull line (measure wider than the screen) is compressed (<code>sc &lt; 1</code>).</li>
+<li><strong>Final positions</strong> of items, barlines and start repeats.</li>
 </ol>
-<h2>Repère vertical</h2>
-<p>Chaque ligne (système) occupe une bande de hauteur fixe <code>SH</code> ; les
-coordonnées y à l'intérieur sont données par <a href="module-layout.html#.geom">geom</a>.</p></li></ul></dd>
+<h2>Vertical reference</h2>
+<p>Each line (system) takes a band of fixed height <code>SH</code>; the y coordinates
+inside it are given by <a href="module-layout.html#.geom">geom</a>.</p></li></ul></dd>
     
 
     
@@ -230,13 +226,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Moitié d'un interligne, en pixels : l'écart vertical entre deux positions <code>s</code> consécutives.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Half a staff space, in pixels: the vertical gap between two consecutive positions <code>s</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line41">line 41</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -276,7 +272,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Moitié d'un interligne, en pixels : l'écart vertical entre deux positions <code>s</code> consécutives.</p>
+    <p>Half a staff space, in pixels: the vertical gap between two consecutive positions <code>s</code>.</p>
 </div>
 
 
@@ -297,13 +293,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur (px) du trou ouvert devant la note où le curseur d'insertion est placé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Width (px) of the gap opened before the note where the insertion cursor is.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line60">line 60</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line58">line 58</a>
     </li></ul></dd>
     
 
@@ -343,7 +339,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Largeur (px) du trou ouvert devant la note où le curseur d'insertion est placé.</p>
+    <p>Width (px) of the gap opened before the note where the insertion cursor is.</p>
 </div>
 
 
@@ -364,13 +360,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur (px) d'une altération de l'armure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Width (px) of a key signature accidental.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line57">line 57</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -410,7 +406,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Largeur (px) d'une altération de l'armure.</p>
+    <p>Width (px) of a key signature accidental.</p>
 </div>
 
 
@@ -431,13 +427,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur supplémentaire (px) réservée après la mesure selon le type de barre.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Extra width (px) reserved after the measure depending on the barline type.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line47">line 47</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -477,7 +473,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Largeur supplémentaire (px) réservée après la mesure selon le type de barre.</p>
+    <p>Extra width (px) reserved after the measure depending on the barline type.</p>
 </div>
 
 
@@ -498,13 +494,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur de base (px) par valeur de note, avant justification.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Base width (px) per note value, before justification.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line44">line 44</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -544,7 +540,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Largeur de base (px) par valeur de note, avant justification.</p>
+    <p>Base width (px) per note value, before justification.</p>
 </div>
 
 
@@ -565,13 +561,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Facteur d'étirement maximal d'une ligne justifiée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum stretch factor of a justified line.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line63">line 63</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -611,7 +607,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Facteur d'étirement maximal d'une ligne justifiée.</p>
+    <p>Maximum stretch factor of a justified line.</p>
 </div>
 
 
@@ -632,13 +628,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Marges intérieures de mesure (px) avant la première et après la dernière note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Inner measure margins (px) before the first and after the last note.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line50">line 50</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line48">line 48</a>
     </li></ul></dd>
     
 
@@ -678,7 +674,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Marges intérieures de mesure (px) avant la première et après la dernière note.</p>
+    <p>Inner measure margins (px) before the first and after the last note.</p>
 </div>
 
 
@@ -699,13 +695,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur (px) réservée au signe de début de reprise <code>‖:</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Width (px) reserved for the start repeat sign <code>‖:</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line54">line 54</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -745,7 +741,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
 
 <div class="description usertext">
-    <p>Largeur (px) réservée au signe de début de reprise <code>‖:</code>.</p>
+    <p>Width (px) reserved for the start repeat sign <code>‖:</code>.</p>
 </div>
 
 
@@ -776,13 +772,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ordonnées de référence de la ligne <code>si</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reference y coordinates of line <code>si</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line352">line 352</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -895,7 +891,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 
             
 
-            <td class="description last"><p>Index de ligne.</p></td>
+            <td class="description last"><p>Line index.</p></td>
         </tr>
 
     
@@ -954,13 +950,13 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met en page une portée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Lays out a staff.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line279">line 279</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line277">line 277</a>
     </li></ul></dd>
     
 
@@ -1065,7 +1061,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
                 </td>
             
 
-            <td class="description last"><p>Bloc portée.</p></td>
+            <td class="description last"><p>Staff block.</p></td>
         </tr>
 
     
@@ -1101,7 +1097,7 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
                 </td>
             
 
-            <td class="description last"><p>Largeur disponible en px.</p></td>
+            <td class="description last"><p>Available width in px.</p></td>
         </tr>
 
     
@@ -1141,8 +1137,8 @@ coordonnées y à l'intérieur sont données par <a href="module-layout.html#.ge
                 </td>
             
 
-            <td class="description last"><p>Bloc en cours d'édition : on garantit alors
-une zone d'ajout assez large, quitte à ouvrir une nouvelle ligne vide.</p></td>
+            <td class="description last"><p>Block being edited: an add zone wide enough
+is then guaranteed, even if it means opening a new empty line.</p></td>
         </tr>
 
     
@@ -1184,8 +1180,8 @@ une zone d'ajout assez large, quitte à ouvrir une nouvelle ligne vide.</p></td>
                 </td>
             
 
-            <td class="description last"><p>Curseur d'insertion placé devant cet
-élément : un trou de INSERT_GAP px y est ouvert (mode Écrire).</p></td>
+            <td class="description last"><p>Insertion cursor placed before this item:
+a gap of INSERT_GAP px is opened there (Write mode).</p></td>
         </tr>
 
     
@@ -1244,14 +1240,14 @@ une zone d'ajout assez large, quitte à ouvrir une nouvelle ligne vide.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Hit-testing vertical : position <code>s</code> la plus proche d'une ordonnée touchée.
-Bornée à [<a href="module-model.html#.STEP_MIN">STEP_MIN</a>, <a href="module-model.html#.STEP_MAX">STEP_MAX</a>].</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Vertical hit testing: position <code>s</code> closest to a tapped y.
+Bounded to [<a href="module-model.html#.STEP_MIN">STEP_MIN</a>, <a href="module-model.html#.STEP_MAX">STEP_MAX</a>].</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line381">line 381</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line379">line 379</a>
     </li></ul></dd>
     
 
@@ -1423,14 +1419,14 @@ Bornée à [<a href="module-model.html#.STEP_MIN">STEP_MIN</a>, <a href="module-
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ordonnée d'une position <code>s</code> (tête de note) sur la ligne de géométrie <code>g</code>.
-Sur une ligne rythmique, toutes les notes sont sur la ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Y of a position <code>s</code> (notehead) on the line with geometry <code>g</code>.
+On a rhythm line, every note is on the line.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line370">line 370</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line368">line 368</a>
     </li></ul></dd>
     
 
@@ -1626,14 +1622,14 @@ Sur une ligne rythmique, toutes les notes sont sur la ligne.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Étape 3 : coupure de lignes, algorithme glouton (<em>first-fit</em>). Une mesure
-va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Step 3: line breaking, greedy (<em>first-fit</em>) algorithm. A measure goes on
+the current line if it fits, otherwise it opens a new line.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line176">line 176</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line174">line 174</a>
     </li></ul></dd>
     
 
@@ -1853,13 +1849,13 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur naturelle (px) d'un élément.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Natural width (px) of an item.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line112">line 112</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line110">line 110</a>
     </li></ul></dd>
     
 
@@ -1972,7 +1968,7 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 
             
 
-            <td class="description last"><p>Ligne rythmique (pas d'altérations).</p></td>
+            <td class="description last"><p>Rhythm line (no accidentals).</p></td>
         </tr>
 
     
@@ -2031,13 +2027,13 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur de l'armure (px).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Key signature width (px).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line138">line 138</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -2185,14 +2181,14 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Largeur naturelle d'une mesure : marges, signe de reprise éventuel,
-éléments, et place pour la barre de fin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Natural width of a measure: margins, optional repeat sign, items, and room
+for the closing barline.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line162">line 162</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -2305,7 +2301,7 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 
             
 
-            <td class="description last"><p>Largeur naturelle de chaque élément.</p></td>
+            <td class="description last"><p>Natural width of each item.</p></td>
         </tr>
 
     
@@ -2364,13 +2360,13 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ajoute une ligne vide à la liste.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Adds an empty line to the list.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line149">line 149</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line147">line 147</a>
     </li></ul></dd>
     
 
@@ -2542,15 +2538,15 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Étapes 4 et 5 : justification de chaque ligne et calcul des positions des
-éléments, des barres et des débuts de reprise. Renseigne aussi <code>end</code> et
-<code>firstMeasure</code> de chaque ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Steps 4 and 5: justification of each line and computation of the
+positions of items, barlines and start repeats. Also fills in each line's
+<code>end</code> and <code>firstMeasure</code>.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line225">line 225</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line223">line 223</a>
     </li></ul></dd>
     
 
@@ -2934,20 +2930,20 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Facteur d'étirement d'une ligne (étape 4, justification).</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Stretch factor of a line (step 4, justification).</p>
 <ul>
-<li>ligne trop pleine : on comprime (<code>&lt; 1</code>) ;</li>
-<li>ligne pleine non finale : on étire jusqu'au bord, au plus ×MAX_STRETCH ;</li>
-<li>dernière ligne : largeur naturelle, sauf fin de motif remplie à plus de
-50 %, ou bloc <code>justify</code> (entraînement) : la dernière ligne est alors
-étirée comme les autres (au plus ×MAX_STRETCH).</li>
+<li>overfull line: compress (<code>&lt; 1</code>);</li>
+<li>full non-final line: stretch to the edge, at most ×MAX_STRETCH;</li>
+<li>last line: natural width, except at the end of a pattern more than 50%
+full, or a <code>justify</code> block (practice): the last line is then stretched
+like the others (at most ×MAX_STRETCH).</li>
 </ul></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line203">line 203</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line201">line 201</a>
     </li></ul></dd>
     
 
@@ -3160,7 +3156,7 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
                 </td>
             
 
-            <td class="description last"><p>Le motif se termine par une barre de fin.</p></td>
+            <td class="description last"><p>The pattern ends with a final barline.</p></td>
         </tr>
 
     
@@ -3200,7 +3196,7 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
                 </td>
             
 
-            <td class="description last"><p>Étirer aussi la dernière ligne, comme les autres.</p></td>
+            <td class="description last"><p>Stretch the last line too, like the others.</p></td>
         </tr>
 
     
@@ -3259,14 +3255,14 @@ va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Abscisse de début de la musique : la 1re ligne porte la clé, l'armure ET le
-chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>X where the music starts: the 1st line carries the clef, key signature AND
+time signature, the following ones the clef and key signature.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line128">line 128</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line126">line 126</a>
     </li></ul></dd>
     
 
@@ -3447,7 +3443,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Largeur de l'armure.</p></td>
+            <td class="description last"><p>Key signature width.</p></td>
         </tr>
 
     
@@ -3508,13 +3504,13 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Position calculée d'un élément.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Computed position of an item.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line65">line 65</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line63">line 63</a>
     </li></ul></dd>
     
 
@@ -3594,7 +3590,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Index de la ligne.</p></td>
+            <td class="description last"><p>Line index.</p></td>
         </tr>
 
     
@@ -3618,7 +3614,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Abscisse de la tête de note (centre).</p></td>
+            <td class="description last"><p>X of the notehead (center).</p></td>
         </tr>
 
     
@@ -3642,7 +3638,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Début de la zone horizontale de l'élément (pour le toucher).</p></td>
+            <td class="description last"><p>Start of the item's horizontal zone (for taps).</p></td>
         </tr>
 
     
@@ -3666,7 +3662,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Fin de cette zone.</p></td>
+            <td class="description last"><p>End of that zone.</p></td>
         </tr>
 
     
@@ -3679,7 +3675,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Position calculée d'un élément.</p>
+    <p>Computed position of an item.</p>
 </div>
 
 
@@ -3711,13 +3707,13 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Résultat de la mise en page.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Result of the layout.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line84">line 84</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line82">line 82</a>
     </li></ul></dd>
     
 
@@ -3805,7 +3801,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ligne rythmique (une seule ligne de portée, pas de hauteurs).</p></td>
+            <td class="description last"><p>Rhythm line (a single staff line, no pitches).</p></td>
         </tr>
 
     
@@ -3865,7 +3861,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Une position par élément, même index que <code>items</code>.</p></td>
+            <td class="description last"><p>One position per item, same index as <code>items</code>.</p></td>
         </tr>
 
     
@@ -3895,7 +3891,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Barres de fin de mesure.</p></td>
+            <td class="description last"><p>End-of-measure barlines.</p></td>
         </tr>
 
     
@@ -3925,7 +3921,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Place de chaque mesure (2.8.4), dans l'ordre d'écriture.</p></td>
+            <td class="description last"><p>Place of each measure (2.8.4), in written order.</p></td>
         </tr>
 
     
@@ -3955,7 +3951,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Débuts de reprise.</p></td>
+            <td class="description last"><p>Start repeats.</p></td>
         </tr>
 
     
@@ -3985,7 +3981,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Largeur de l'armure (0 sans armure).</p></td>
+            <td class="description last"><p>Key signature width (0 without a key signature).</p></td>
         </tr>
 
     
@@ -4017,7 +4013,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ligne du curseur d'insertion (s'il est placé avant une note).</p></td>
+            <td class="description last"><p>Line of the insertion cursor (if it is placed before a note).</p></td>
         </tr>
 
     
@@ -4049,7 +4045,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Abscisse du curseur d'insertion, <code>null</code> s'il est en fin de portée.</p></td>
+            <td class="description last"><p>X of the insertion cursor, <code>null</code> if it is at the end of the staff.</p></td>
         </tr>
 
     
@@ -4079,7 +4075,7 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ligne de la zone d'ajout.</p></td>
+            <td class="description last"><p>Line of the add zone.</p></td>
         </tr>
 
     
@@ -4112,8 +4108,8 @@ chiffrage, les suivantes la clé et l'armure.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Abscisse de la zone d'ajout, <code>null</code> si le
-motif est terminé par une barre de fin.</p></td>
+            <td class="description last"><p>X of the add zone, <code>null</code> if the pattern
+ends with a final barline.</p></td>
         </tr>
 
     
@@ -4143,7 +4139,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Le dernier élément porte une barre de fin.</p></td>
+            <td class="description last"><p>The last item carries a final barline.</p></td>
         </tr>
 
     
@@ -4173,7 +4169,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Hauteur d'une ligne en px.</p></td>
+            <td class="description last"><p>Height of a line in px.</p></td>
         </tr>
 
     
@@ -4203,7 +4199,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Place ajoutée en haut de chaque ligne pour les notes très aiguës (2.8.2).</p></td>
+            <td class="description last"><p>Room added at the top of each line for very high notes (2.8.2).</p></td>
         </tr>
 
     
@@ -4233,7 +4229,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Hauteur totale en px.</p></td>
+            <td class="description last"><p>Total height in px.</p></td>
         </tr>
 
     
@@ -4263,7 +4259,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Capacité d'une mesure en noires.</p></td>
+            <td class="description last"><p>Capacity of a measure in quarter notes.</p></td>
         </tr>
 
     
@@ -4276,7 +4272,7 @@ motif est terminé par une barre de fin.</p></td>
 
 
 <div class="description usertext">
-    <p>Résultat de la mise en page.</p>
+    <p>Result of the layout.</p>
 </div>
 
 
@@ -4308,13 +4304,13 @@ motif est terminé par une barre de fin.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une ligne (système) de la portée.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A line (system) of the staff.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line74">line 74</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line72">line 72</a>
     </li></ul></dd>
     
 
@@ -4394,7 +4390,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Abscisse où commence la musique (après clé et chiffrage).</p></td>
+            <td class="description last"><p>X where the music starts (after clef and time signature).</p></td>
         </tr>
 
     
@@ -4418,7 +4414,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Abscisse après la dernière mesure.</p></td>
+            <td class="description last"><p>X after the last measure.</p></td>
         </tr>
 
     
@@ -4442,7 +4438,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Largeur naturelle occupée (avant justification).</p></td>
+            <td class="description last"><p>Natural width taken (before justification).</p></td>
         </tr>
 
     
@@ -4466,7 +4462,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Numéro (à partir de 1) de la première mesure, affiché en début de ligne.</p></td>
+            <td class="description last"><p>Number (from 1) of the first measure, shown at the start of the line.</p></td>
         </tr>
 
     
@@ -4490,7 +4486,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Mesures placées sur la ligne.</p></td>
+            <td class="description last"><p>Measures placed on the line.</p></td>
         </tr>
 
     
@@ -4503,7 +4499,7 @@ motif est terminé par une barre de fin.</p></td>
 
 
 <div class="description usertext">
-    <p>Une ligne (système) de la portée.</p>
+    <p>A line (system) of the staff.</p>
 </div>
 
 
@@ -4535,13 +4531,13 @@ motif est terminé par une barre de fin.</p></td>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Repères verticaux d'une ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Vertical references of a line.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line335">line 335</a>
+        <a href="layout.js.html">layout.js</a>, <a href="layout.js.html#line333">line 333</a>
     </li></ul></dd>
     
 
@@ -4629,7 +4625,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Haut de la bande.</p></td>
+            <td class="description last"><p>Top of the band.</p></td>
         </tr>
 
     
@@ -4659,7 +4655,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Ligne de base des accords chiffrés.</p></td>
+            <td class="description last"><p>Baseline of chord symbols.</p></td>
         </tr>
 
     
@@ -4689,7 +4685,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Ordonnée de la 5e ligne (en haut).</p></td>
+            <td class="description last"><p>Y of the 5th line (top).</p></td>
         </tr>
 
     
@@ -4719,7 +4715,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Ordonnée de la 1re ligne (en bas) ; <code>s = 0</code> ici.</p></td>
+            <td class="description last"><p>Y of the 1st line (bottom); <code>s = 0</code> here.</p></td>
         </tr>
 
     
@@ -4749,7 +4745,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Ligne du milieu (3e ligne), pivot du sens des hampes.</p></td>
+            <td class="description last"><p>Middle line (3rd line), pivot for stem direction.</p></td>
         </tr>
 
     
@@ -4781,7 +4777,7 @@ motif est terminé par une barre de fin.</p></td>
 
             
 
-            <td class="description last"><p>Ligne unique d'une ligne rythmique.</p></td>
+            <td class="description last"><p>Single line of a rhythm line.</p></td>
         </tr>
 
     
@@ -4794,7 +4790,7 @@ motif est terminé par une barre de fin.</p></td>
 
 
 <div class="description usertext">
-    <p>Repères verticaux d'une ligne.</p>
+    <p>Vertical references of a line.</p>
 </div>
 
 

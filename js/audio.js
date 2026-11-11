@@ -1,31 +1,30 @@
 /**
  * @module audio
  * @description
- * Lecture audio avec la **Web Audio API** : un petit synthétiseur et un
- * séquenceur.
+ * Audio playback with the **Web Audio API**: a small synthesizer and a
+ * sequencer.
  *
- * ## Séquencement
+ * ## Sequencing
  *
- * Toutes les notes d'un morceau sont **programmées d'avance** sur l'horloge
- * audio (`AudioContext.currentTime`), qui est précise à l'échantillon près et
- * insensible aux ralentissements du thread principal. Les `setTimeout` ne
- * servent qu'au surlignage visuel (léger décalage possible, invisible à
- * l'oreille) et à la détection de fin.
+ * All the notes of a piece are **scheduled in advance** on the audio clock
+ * (`AudioContext.currentTime`), which is sample-accurate and immune to
+ * main-thread slowdowns. `setTimeout` is only used for the visual highlight
+ * (a slight offset is possible, inaudible) and to detect the end.
  *
- * Un seul morceau joue à la fois : lancer une lecture arrête la précédente,
- * relancer le même bloc l'arrête (bouton bascule).
+ * Only one piece plays at a time: starting playback stops the previous one,
+ * starting the same block again stops it (toggle button).
  *
- * ## Synthèse
+ * ## Synthesis
  *
- * - **Mélodie** ({@link tone}) : dent de scie + triangle → filtre passe-bas
- *   dont la coupure suit une petite enveloppe (attaque brillante qui
- *   s'adoucit) → gain avec enveloppe attaque / déclin / relâchement.
- * - **Accords** ({@link pad}) : triangle + sinus à l'octave, plus doux.
- * - **Percussion** ({@link perc}) : sinus dont la fréquence chute très vite
- *   (effet « clave »), accentué sur le premier temps.
+ * - **Melody** ({@link tone}): sawtooth + triangle → low-pass filter whose
+ *   cutoff follows a small envelope (bright attack that softens) → gain with
+ *   an attack / decay / release envelope.
+ * - **Chords** ({@link pad}): triangle + sine an octave up, softer.
+ * - **Percussion** ({@link perc}): sine whose frequency drops very fast
+ *   ("clave" effect), accented on the first beat.
  *
- * Les navigateurs n'autorisent le son qu'après une interaction de
- * l'utilisateur : le contexte est créé (ou réveillé) au premier appel.
+ * Browsers only allow sound after a user interaction: the context is
+ * created (or resumed) on the first call.
  */
 
 import { staffEvents, staffSegment } from './rhythm.js';
@@ -38,20 +37,20 @@ import { chordTones } from './chords.js';
 let ac = null;
 
 /**
- * Lecture en cours.
+ * Playback in progress.
  * @typedef {Object} Playback
- * @property {string} id Bloc joué.
- * @property {number[]} timers `setTimeout` à annuler à l'arrêt.
- * @property {AudioScheduledSourceNode[]} nodes Oscillateurs à couper à l'arrêt.
- * @property {function()} onEnd Rappel de fin (appelé aussi en cas d'arrêt).
+ * @property {string} id Block being played.
+ * @property {number[]} timers `setTimeout`s to cancel on stop.
+ * @property {AudioScheduledSourceNode[]} nodes Oscillators to cut on stop.
+ * @property {function()} onEnd End callback (also called on stop).
  */
 
 /** @type {Playback|null} */
 let current = null;
 
 /**
- * Contexte audio, créé à la demande et réveillé s'il est suspendu.
- * @returns {AudioContext|null} `null` si la Web Audio API est absente.
+ * Audio context, created on demand and resumed if suspended.
+ * @returns {AudioContext|null} `null` if the Web Audio API is missing.
  */
 function audioContext() {
   if (!ac) {
@@ -63,15 +62,15 @@ function audioContext() {
   return ac;
 }
 
-/** Fréquence (Hz) d'un numéro MIDI (la 4 = 69 = 440 Hz). */
+/** Frequency (Hz) of a MIDI number (A4 = 69 = 440 Hz). */
 const freq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
 /**
- * Joue une note mélodique.
- * @param {number} t Instant de début (secondes, horloge audio).
- * @param {number} dur Durée (s).
+ * Plays a melody note.
+ * @param {number} t Start time (seconds, audio clock).
+ * @param {number} dur Duration (s).
  * @param {number|null} midi
- * @param {AudioScheduledSourceNode[]} [nodes] Collecteur pour pouvoir couper.
+ * @param {AudioScheduledSourceNode[]} [nodes] Collector, to be able to cut.
  */
 function tone(t, dur, midi, nodes) {
   const c = audioContext();
@@ -86,14 +85,14 @@ function tone(t, dur, midi, nodes) {
   o2.type = 'triangle';
   o1.frequency.value = f;
   o2.frequency.value = f;
-  g1.gain.value = 0.35; // la dent de scie est dosée pour ne pas être agressive
+  g1.gain.value = 0.35; // the sawtooth is dosed so as not to be harsh
   lp.type = 'lowpass';
   lp.Q.value = 0.8;
   lp.frequency.setValueAtTime(f * 1.5, t);
   lp.frequency.linearRampToValueAtTime(f * 4, t + 0.05);
   lp.frequency.setTargetAtTime(f * 2.2, t + 0.06, 0.15);
   const v = 0.16;
-  const end = t + Math.max(0.06, dur * 0.94); // léger détaché entre les notes
+  const end = t + Math.max(0.06, dur * 0.94); // slight detached gap between notes
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(v, t + 0.025);
   g.gain.setTargetAtTime(v * 0.75, t + 0.04, 0.12);
@@ -111,13 +110,13 @@ function tone(t, dur, midi, nodes) {
 }
 
 /**
- * Joue une note de **basse** de grille (2.8.8), façon contrebasse pincée.
+ * Plays a chart **bass** note (2.8.8), like a plucked double bass.
  *
- * La basse sonne entre 82 et 155 Hz, là où un haut-parleur de téléphone ne
- * rend presque rien. On entend pourtant la hauteur d'une note grave par ses
- * **harmoniques** (l'oreille reconstitue la fondamentale absente) : le son est
- * donc riche (dent de scie peu filtrée) et doublé d'une octave douce, pour
- * que le mouvement de basse reste audible même sur un petit haut-parleur.
+ * The bass sounds between 82 and 155 Hz, where a phone speaker renders
+ * almost nothing. Yet the pitch of a low note is heard through its
+ * **harmonics** (the ear rebuilds the missing fundamental): the sound is
+ * therefore rich (lightly filtered sawtooth) and doubled by a soft octave,
+ * so that the bass movement stays audible even on a small speaker.
  *
  * @param {number} t
  * @param {number} dur
@@ -136,11 +135,11 @@ function bass(t, dur, midi, nodes) {
   o1.type = 'sawtooth';
   o2.type = 'triangle';
   o1.frequency.value = f;
-  o2.frequency.value = f * 2; // octave au-dessus : porte la hauteur sur un petit haut-parleur
+  o2.frequency.value = f * 2; // octave above: carries the pitch on a small speaker
   g2.gain.value = 0.45;
   lp.type = 'lowpass';
   lp.Q.value = 1.2;
-  lp.frequency.setValueAtTime(f * 10, t); // attaque claire (le « pincé »)
+  lp.frequency.setValueAtTime(f * 10, t); // clear attack (the "pluck")
   lp.frequency.setTargetAtTime(f * 5, t + 0.03, 0.12);
   const v = 0.2;
   const end = t + Math.max(0.08, dur * 0.92);
@@ -161,7 +160,7 @@ function bass(t, dur, midi, nodes) {
 }
 
 /**
- * Joue une note d'accord (son de nappe).
+ * Plays a chord note (pad sound).
  * @param {number} t
  * @param {number} dur
  * @param {number} midi
@@ -199,9 +198,9 @@ export function pad(t, dur, midi, nodes) {
 }
 
 /**
- * Joue un coup de percussion.
+ * Plays a percussion hit.
  * @param {number} t
- * @param {boolean} accent Premier temps (plus aigu, plus fort).
+ * @param {boolean} accent First beat (higher, louder).
  * @param {AudioScheduledSourceNode[]} [nodes]
  */
 function perc(t, accent, nodes) {
@@ -223,10 +222,10 @@ function perc(t, accent, nodes) {
 }
 
 /**
- * Clic de métronome : bref et aigu (onde triangle), pour se distinguer du
- * « tic » plus grave des lignes rythmiques ({@link perc}).
- * @param {number} t Instant audio (s).
- * @param {boolean} accent Clic accentué (plus aigu et plus fort).
+ * Metronome click: short and high (triangle wave), to stand apart from the
+ * lower "tick" of rhythm lines ({@link perc}).
+ * @param {number} t Audio time (s).
+ * @param {boolean} accent Accented click (higher and louder).
  * @param {AudioScheduledSourceNode[]} [nodes]
  */
 function click(t, accent, nodes) {
@@ -247,7 +246,7 @@ function click(t, accent, nodes) {
 }
 
 /**
- * Fait entendre un élément de portée isolé (retour sonore à la saisie).
+ * Plays a single staff item (audio feedback while typing).
  * @param {module:model~StaffBlock} b
  * @param {number} i
  */
@@ -261,7 +260,7 @@ export function previewItem(b, i) {
 }
 
 /**
- * Le bloc `id` est-il en cours de lecture ?
+ * Is block `id` being played?
  * @param {string} id
  * @returns {boolean}
  */
@@ -270,7 +269,7 @@ export function isPlaying(id) {
 }
 
 /**
- * Arrête la lecture en cours (s'il y en a une) et appelle son rappel de fin.
+ * Stops current playback (if any) and calls its end callback.
  */
 export function stop() {
   if (!current) return;
@@ -281,24 +280,24 @@ export function stop() {
     try {
       n.stop();
     } catch (e) {
-      /* déjà arrêté */
+      /* already stopped */
     }
   });
   p.onEnd();
 }
 
 /**
- * Rappels de lecture.
+ * Playback callbacks.
  * @typedef {Object} PlayCallbacks
- * @property {function(number)} onStep Élément (ou mesure) qui commence.
- * @property {function()} onEnd Fin ou arrêt.
+ * @property {function(number)} onStep Item (or measure) starting.
+ * @property {function()} onEnd End or stop.
  */
 
 /**
- * Prépare une lecture : arrête la précédente, ou bascule (arrêt) si c'est le même bloc.
+ * Prepares playback: stops the previous one, or toggles (stops) if it is the same block.
  * @param {string} id
  * @param {PlayCallbacks} cb
- * @returns {{c: AudioContext, p: Playback}|null} `null` si on vient d'arrêter ce bloc.
+ * @returns {{c: AudioContext, p: Playback}|null} `null` if this block was just stopped.
  */
 function begin(id, cb) {
   const was = isPlaying(id);
@@ -311,10 +310,10 @@ function begin(id, cb) {
 }
 
 /**
- * Programme un rappel visuel à un instant de l'horloge audio.
+ * Schedules a visual callback at a time of the audio clock.
  * @param {Playback} p
  * @param {AudioContext} c
- * @param {number} t Instant audio (s).
+ * @param {number} t Audio time (s).
  * @param {function()} fn
  */
 function at(p, c, t, fn) {
@@ -322,35 +321,35 @@ function at(p, c, t, fn) {
 }
 
 /**
- * Options de lecture d'une portée (utilisées par l'entraînement).
+ * Staff playback options (used by practice).
  * @typedef {Object} PlayOptions
- * @property {boolean} [countIn] Une mesure de décompte (tous les temps) avant de commencer.
- * @property {?Array.<boolean>} [beats] Métronome : temps de la mesure qui cliquent
- *   (`[true, false, true, false]` = 1 et 3). Absent : pas de métronome.
- * @property {boolean} [accent] Accentuer le clic du premier temps.
- * @property {boolean} [mute] Ne pas jouer le rythme lui-même (métronome seul) ;
- *   le surlignage suit quand même la lecture.
- * @property {boolean} [loop] Rejouer en boucle jusqu'à l'arrêt (2.8), sans
- *   nouveau décompte. Chaque passage dure un nombre entier de mesures.
- * @property {number} [from] Jouer à partir de cette mesure (2.8.4, index
- *   d'écriture). Voir {@link module:rhythm.staffSegment|staffSegment}.
- * @property {number} [to] … jusqu'à cette mesure (comprise). Absent : jusqu'à la fin.
+ * @property {boolean} [countIn] One count-in measure (all beats) before starting.
+ * @property {?Array.<boolean>} [beats] Metronome: beats of the measure that click
+ *   (`[true, false, true, false]` = 1 and 3). Missing: no metronome.
+ * @property {boolean} [accent] Accent the first-beat click.
+ * @property {boolean} [mute] Do not play the rhythm itself (metronome only);
+ *   the highlight still follows playback.
+ * @property {boolean} [loop] Replay in a loop until stopped (2.8), with no
+ *   new count-in. Each pass lasts a whole number of measures.
+ * @property {number} [from] Play from this measure (2.8.4, written index).
+ *   See {@link module:rhythm.staffSegment|staffSegment}.
+ * @property {number} [to] … up to this measure (included). Missing: to the end.
  */
 
-/** Décompte : tous les temps cliquent. */
+/** Count-in: every beat clicks. */
 const EVERY_BEAT = Array(16).fill(true);
 
 /**
- * Programme les clics de métronome de `measures` mesures à partir de `t0`.
- * Un clic par groupe de croches ({@link module:model.groupStarts|groupStarts}) :
- * chaque temps en x/4, chaque noire pointée en x/8, et en 7/8 « 2+2+3 » trois
- * clics inégaux.
+ * Schedules the metronome clicks of `measures` measures from `t0`.
+ * One click per group of eighth notes ({@link module:model.groupStarts|groupStarts}):
+ * each beat in x/4, each dotted quarter note in x/8, and in 7/8 "2+2+3"
+ * three uneven clicks.
  * @param {Playback} p
- * @param {number} t0 Instant audio du début (s).
- * @param {number} measures Nombre de mesures.
- * @param {module:model~StaffBlock} b Chiffrage et groupement.
- * @param {number} spq Secondes par noire.
- * @param {Array.<boolean>} beats Temps qui cliquent.
+ * @param {number} t0 Audio time of the start (s).
+ * @param {number} measures Number of measures.
+ * @param {module:model~StaffBlock} b Time signature and grouping.
+ * @param {number} spq Seconds per quarter note.
+ * @param {Array.<boolean>} beats Beats that click.
  * @param {boolean} accent
  */
 function metronome(p, t0, measures, b, spq, beats, accent) {
@@ -363,14 +362,14 @@ function metronome(p, t0, measures, b, spq, beats, accent) {
 }
 
 /**
- * Joue une portée (bascule lecture/arrêt).
+ * Plays a staff (play/stop toggle).
  *
- * Les événements viennent de {@link module:rhythm.staffEvents|staffEvents} (reprises,
- * liaisons, triolets et swing déjà résolus) ; il ne reste qu'à convertir les
- * noires en secondes : `secondes = noires × 60 / tempo`.
+ * Events come from {@link module:rhythm.staffEvents|staffEvents} (repeats,
+ * ties, triplets and swing already resolved); all that is left is converting
+ * quarter notes to seconds: `seconds = quarters × 60 / tempo`.
  *
- * Avec des {@link PlayOptions} (entraînement) : mesure de décompte, métronome
- * sur les temps choisis, rythme coupé.
+ * With {@link PlayOptions} (practice): count-in measure, metronome on the
+ * chosen beats, muted rhythm.
  *
  * @param {module:model~StaffBlock} b
  * @param {PlayCallbacks} cb
@@ -384,9 +383,9 @@ export function playStaff(b, cb, opt = {}) {
   const r = begin(b.id, cb);
   if (!r) return;
   const { c, p } = r;
-  const spq = 60 / (b.tempo || 120); // secondes par noire
-  const start = c.currentTime + 0.12; // petite marge pour que la 1re note ne soit pas tronquée
-  const bar = mlen(b.time) * spq; // durée d'une mesure (s)
+  const spq = 60 / (b.tempo || 120); // seconds per quarter note
+  const start = c.currentTime + 0.12; // small margin so the 1st note is not cut off
+  const bar = mlen(b.time) * spq; // duration of a measure (s)
   if (opt.countIn) metronome(p, start, 1, b, spq, EVERY_BEAT, !!opt.accent);
   let events;
   let total;
@@ -399,10 +398,10 @@ export function playStaff(b, cb, opt = {}) {
     ({ events, total } = staffEvents(b));
     measures = Math.ceil(total / mlen(b.time) - 1e-9);
   }
-  let mark = 0; // nœuds audio du passage précédent (voir plus bas)
-  /** Programme un passage complet à partir de `t0`. */
+  let mark = 0; // audio nodes of the previous pass (see below)
+  /** Schedules a full pass from `t0`. */
   const pass = (t0) => {
-    // En boucle, on oublie les nœuds d'il y a deux passages (déjà terminés).
+    // In a loop, forget the nodes from two passes ago (already finished).
     const old = mark;
     mark = p.nodes.length;
     if (opt.beats) metronome(p, t0, measures, b, spq, opt.beats, !!opt.accent);
@@ -417,8 +416,8 @@ export function playStaff(b, cb, opt = {}) {
     p.nodes.splice(0, old);
     mark -= old;
     const end = t0 + measures * mlen(b.time) * spq;
-    // Boucle : le passage suivant est programmé un peu avant la fin, pour
-    // qu'il commence pile sur la mesure (sans décompte).
+    // Loop: the next pass is scheduled a little before the end, so
+    // that it starts right on the measure (no count-in).
     if (opt.loop) at(p, c, end - 0.3, () => current === p && pass(end));
     else at(p, c, t0 + total * spq + 0.15, stop);
   };
@@ -426,22 +425,22 @@ export function playStaff(b, cb, opt = {}) {
 }
 
 /**
- * Joue une grille (bascule lecture/arrêt) : basse + accords en nappe, et un
- * « charleston » sur les temps 2 et 4 pour les styles swing.
+ * Plays a chart (play/stop toggle): bass + pad chords, and a hi-hat on
+ * beats 2 and 4 for swing styles.
  *
- * Chaque mesure suit {@link module:grid.gridPlayOrder|gridPlayOrder} ; à l'intérieur, les
- * cases se partagent la mesure selon {@link module:grid.slotDurations|slotDurations}.
- * Une mesure vide prolonge le dernier accord, `%` rejoue la mesure précédente.
+ * Each measure follows {@link module:grid.gridPlayOrder|gridPlayOrder}; inside
+ * it, the slots share the measure according to {@link module:grid.slotDurations|slotDurations}.
+ * An empty measure continues the last chord, `%` replays the previous measure.
  *
- * Options (2.8.4) : `from` / `to` pour ne jouer qu'une partie (même règle
- * que {@link module:rhythm.staffSegment|staffSegment} : premier passage par
- * `from`, jusqu'au passage par `to` qui suit), `loop`, `countIn`. L'accord
- * qui sonne sur une case vide ou un `%` ne dépend pas du point de départ :
- * le début de la grille est parcouru en silence pour le retrouver.
+ * Options (2.8.4): `from` / `to` to play only a part (same rule as
+ * {@link module:rhythm.staffSegment|staffSegment}: first pass through `from`,
+ * up to the following pass through `to`), `loop`, `countIn`. The chord
+ * sounding on an empty slot or a `%` does not depend on the starting point:
+ * the start of the chart is walked through silently to find it.
  *
  * @param {module:model~GridBlock} b
  * @param {PlayCallbacks} cb
- * @param {PlayOptions} [opt={}] Seuls `from`, `to`, `loop` et `countIn` comptent ici.
+ * @param {PlayOptions} [opt={}] Only `from`, `to`, `loop` and `countIn` matter here.
  */
 export function playGrid(b, cb, opt = {}) {
   if (!b.measures.length) {
@@ -465,16 +464,16 @@ export function playGrid(b, cb, opt = {}) {
   const start = c.currentTime + 0.15;
   if (opt.countIn) metronome(p, start, 1, b, spq, EVERY_BEAT, false);
   let mark = 0;
-  /** Programme un passage (positions k1 à k2 de l'ordre de lecture) à partir de `t0`. */
+  /** Schedules a pass (positions k1 to k2 of the playback order) from `t0`. */
   const pass = (t0) => {
     const old = mark;
     mark = p.nodes.length;
     let q = 0;
-    let last = null; // dernier accord joué (pour les cases vides et les mesures vides)
+    let last = null; // last chord played (for empty slots and empty measures)
     let prevCh = [];
     for (let k = 0; k <= k2; k++) {
       const i = order[k];
-      const play = k >= k1; // avant le segment : on suit les accords sans jouer
+      const play = k >= k1; // before the segment: follow the chords without playing
       let ch = b.measures[i].ch;
       if (ch.length === 1 && ch[0] === '%') ch = prevCh;
       else if (!ch.length) ch = last ? [last] : [];

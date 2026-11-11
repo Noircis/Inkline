@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>sanitize.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,44 +53,42 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module sanitize
  * @description
- * **Validation des données venant de l'extérieur** : fichiers `.inkline`
- * reçus, sauvegardes importées, contenu du stockage local.
+ * **Validation of data coming from outside**: received `.inkline` files,
+ * imported backups, contents of local storage.
  *
- * ## Pourquoi
+ * ## Why
  *
- * Une donnée importée peut avoir été fabriquée par n'importe qui. Si elle
- * était insérée telle quelle dans le HTML, un champ piégé
- * (`id: '">&lt;img src=x onerror=…>'`) exécuterait du code dans l'app : c'est
- * une injection (XSS). L'équivalent en C++ : un parseur de fichier qui ferait
- * confiance aux tailles annoncées dans l'en-tête.
+ * Imported data may have been crafted by anyone. If it were inserted as is
+ * into the HTML, a booby-trapped field (`id: '">&lt;img src=x onerror=…>'`)
+ * would run code in the app: an injection (XSS). The C++ equivalent: a file
+ * parser that trusts the sizes announced in the header.
  *
- * ## Principe : liste blanche
+ * ## Principle: allowlist
  *
- * On ne « nettoie » pas l'objet reçu : on en **reconstruit un neuf** en ne
- * recopiant que les champs connus, après vérification de leur type et de leur
- * valeur (énumérations, bornes, longueurs). Tout le reste est ignoré. Les
- * identifiants invalides sont régénérés.
+ * The received object is not "cleaned": a **new one is rebuilt** by copying
+ * only the known fields, after checking their type and value (enumerations,
+ * bounds, lengths). Everything else is ignored. Invalid ids are regenerated.
  *
- * C'est la première ligne de défense. La deuxième est l'échappement
- * systématique au rendu ({@link module:util.esc|esc}), la troisième la
- * Content Security Policy d'`index.html`, qui interdit tout script non issu
- * des fichiers de l'app.
+ * This is the first line of defense. The second is systematic escaping at
+ * render time ({@link module:util.esc|esc}), the third the Content Security
+ * Policy of `index.html`, which forbids any script not coming from the app's
+ * files.
  */
 
 import { uid, clamp } from './util.js';
 import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX, INSTRUMENTS } from './model.js';
 import { COLOR_KEYS, cleanFolderName, CAT_NAME_MAX, MAX_CATS } from './folders.js';
 
-/** Format accepté pour un identifiant : alphanumérique minuscule, 1 à 32 caractères. */
+/** Accepted format for an id: lowercase alphanumeric, 1 to 32 characters. */
 const ID_RE = /^[a-z0-9]{1,32}$/;
 
-/** Tonalité iReal : lettre, altération éventuelle, `-` pour mineur. */
+/** iReal key: letter, optional accidental, `-` for minor. */
 const KEY_RE = /^[A-G][b#]?-?$/;
 
-/** Section de grille : quelques lettres (A, B, Intro, Verse…). */
+/** Chart section: a few letters (A, B, Intro, Verse…). */
 const SECTION_RE = /^[A-Za-z]{1,6}$/;
 
-/** Limites de taille : protègent contre des fichiers énormes qui gèleraient l'app. */
+/** Size limits: protect against huge files that would freeze the app. */
 const LIMITS = {
   folders: 200,
   title: 200,
@@ -103,7 +101,7 @@ const LIMITS = {
   notes: 5000,
 };
 
-/** Valeurs possibles du champ `fold` d'un bloc. */
+/** Possible values of a block's `fold` field. */
 const FOLDS = ['open', 'closed'];
 
 const isStr = (v) => typeof v === 'string';
@@ -112,10 +110,10 @@ const str = (v, max) => (isStr(v) ? v.slice(0, max) : '');
 const id = (v) => (isStr(v) &amp;&amp; ID_RE.test(v) ? v : uid());
 
 /**
- * Valide un élément de portée.
- * @param {*} r Valeur brute.
- * @param {boolean} rhythm Ligne rythmique (pas de hauteur).
- * @returns {module:model~StaffItem|null} `null` si l'élément est inutilisable.
+ * Validates a staff item.
+ * @param {*} r Raw value.
+ * @param {boolean} rhythm Rhythm line (no pitch).
+ * @returns {module:model~StaffItem|null} `null` if the item is unusable.
  */
 function item(r, rhythm) {
   if (!r || !Object.prototype.hasOwnProperty.call(DUR, r.d)) return null;
@@ -130,12 +128,12 @@ function item(r, rhythm) {
   if (r.rs === true) it.rs = true;
   if (r.tie === true &amp;&amp; !it.r) it.tie = true;
   if (r.tup === 3) it.tup = 3;
-  if (r.auto === true &amp;&amp; !it.tup) it.auto = true; // morceau d'une note coupée à la barre (2.6)
+  if (r.auto === true &amp;&amp; !it.tup) it.auto = true; // piece of a note split at the barline (2.6)
   return it;
 }
 
 /**
- * Valide une mesure de grille.
+ * Validates a chart measure.
  * @param {*} r
  * @returns {module:model~GridMeasure|null}
  */
@@ -158,7 +156,7 @@ function measure(r) {
 }
 
 /**
- * Valide un bloc.
+ * Validates a block.
  * @param {*} r
  * @returns {module:model~Block|null}
  */
@@ -201,13 +199,13 @@ export function sanitizeBlock(r) {
 }
 
 /**
- * Valide une note complète.
+ * Validates a full note.
  *
- * @param {*} r Valeur brute (issue de `JSON.parse`).
- * @param {{freshIds: boolean}} [opt] `freshIds: true` régénère **tous** les
- *   identifiants : à utiliser pour une note reçue, qui devient une nouvelle
- *   note du carnet au lieu d'écraser une note existante de même id.
- * @returns {module:model~Note|null} `null` si ce n'est pas une note.
+ * @param {*} r Raw value (from `JSON.parse`).
+ * @param {{freshIds: boolean}} [opt] `freshIds: true` regenerates **every**
+ *   id: use it for a received note, which becomes a new note in the notebook
+ *   instead of overwriting an existing note with the same id.
+ * @returns {module:model~Note|null} `null` if it is not a note.
  */
 export function sanitizeNote(r, opt = {}) {
   if (!r || typeof r !== 'object' || !Array.isArray(r.blocks)) return null;
@@ -215,25 +213,25 @@ export function sanitizeNote(r, opt = {}) {
   if (opt.freshIds)
     blocks.forEach((b) => {
       b.id = uid();
-      delete b.fold; // l'affichage réduit appartient à celui qui reçoit la note
+      delete b.fold; // the collapsed display belongs to whoever receives the note
     });
   /** @type {module:model~Note} */
   const note = {
     id: opt.freshIds ? uid() : id(r.id),
     title: str(r.title, LIMITS.title).replace(/\n/g, ' '),
-    // Notes d'avant la 1.7.0 : pas de date de création, on prend la date de
-    // modification (meilleure approximation disponible). main.js enregistre
-    // aussitôt le résultat, pour que cette date ne bouge plus ensuite.
+    // Notes from before 1.7.0: no creation date, so the modification date is
+    // used (best approximation available). main.js saves the result right
+    // away, so that this date no longer moves afterwards.
     created: isNum(r.created) ? r.created : isNum(r.updated) ? r.updated : Date.now(),
     updated: isNum(r.updated) ? r.updated : Date.now(),
     blocks: blocks.length ? blocks : [{ id: uid(), type: 'text', text: '' }],
   };
-  // Rangement (2.0). Une note reçue (freshIds) arrive non classée et non
-  // épinglée : son rangement appartient à celui qui la reçoit.
+  // Filing (2.0). A received note (freshIds) arrives unfiled and not
+  // pinned: its filing belongs to whoever receives it.
   if (!opt.freshIds) {
     if (isStr(r.folder) &amp;&amp; ID_RE.test(r.folder)) {
       note.folder = r.folder;
-      // Catégories (2.8.6) : des ids, sans doublon, bornées.
+      // Categories (2.8.6): ids, no duplicates, bounded.
       if (Array.isArray(r.cats)) {
         const cats = [...new Set(r.cats.filter((c) => isStr(c) &amp;&amp; ID_RE.test(c)))].slice(0, MAX_CATS);
         if (cats.length) note.cats = cats;
@@ -245,8 +243,8 @@ export function sanitizeNote(r, opt = {}) {
 }
 
 /**
- * Valide un carnet entier (stockage local ou sauvegarde).
- * Les clés du dictionnaire sont réalignées sur l'id de chaque note.
+ * Validates a whole notebook (local storage or backup).
+ * The dictionary keys are realigned on each note's id.
  *
  * @param {*} r
  * @returns {Object.&lt;string, module:model~Note>}
@@ -265,7 +263,7 @@ export function sanitizeNotes(r) {
 }
 
 /**
- * Valide un dossier.
+ * Validates a folder.
  * @param {*} r
  * @returns {module:folders~Folder|null}
  */
@@ -279,7 +277,7 @@ function sanitizeFolder(r) {
     color: COLOR_KEYS.includes(r.color) ? r.color : 'blue',
     created: isNum(r.created) ? r.created : Date.now(),
   };
-  // Catégories (2.8.6) : noms non vides, ids uniques.
+  // Categories (2.8.6): non-empty names, unique ids.
   if (Array.isArray(r.cats)) {
     const seen = new Set();
     const cats = [];
@@ -295,7 +293,7 @@ function sanitizeFolder(r) {
 }
 
 /**
- * Valide la liste des dossiers (stockage local ou sauvegarde).
+ * Validates the folder list (local storage or backup).
  * @param {*} r
  * @returns {Object.&lt;string, module:folders~Folder>}
  */

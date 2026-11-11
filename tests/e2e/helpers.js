@@ -1,14 +1,14 @@
-// Outils communs aux tests d'interface.
+// Helpers shared by the interface tests.
 //
-// Les tests touchent la portée comme un utilisateur (clics à des coordonnées),
-// mais calculent ces coordonnées avec le moteur de mise en page de l'appli
-// elle-même : ils ne dépendent pas des pixels exacts.
+// The tests tap the staff like a user (clicks at coordinates),
+// but compute those coordinates with the app's own layout engine:
+// they do not depend on exact pixels.
 
 /**
- * Remplit le stockage local avant le premier chargement (carnet d'une
- * ancienne version, par exemple). Ne s'applique qu'une fois par contexte.
+ * Fills local storage before the first load (a notebook from an old
+ * version, for example). Applies only once per context.
  * @param {import('@playwright/test').BrowserContext} context
- * @param {Object.<string, *>} entries Clés localStorage → valeurs (JSON).
+ * @param {Object.<string, *>} entries localStorage keys → values (JSON).
  */
 export async function seedStorage(context, entries) {
   await context.addInitScript((data) => {
@@ -18,13 +18,13 @@ export async function seedStorage(context, entries) {
   }, entries);
 }
 
-/** Ouvre l'appli et attend l'accueil. */
+/** Opens the app and waits for home. */
 export async function openApp(page) {
   await page.goto('./');
   await page.locator('#newNote').waitFor();
 }
 
-/** Crée une note vide et y ajoute un bloc (`staff`, `rhythm`, `grid`, `text`). */
+/** Creates an empty note and adds a block to it (`staff`, `rhythm`, `grid`, `text`). */
 export async function newNoteWith(page, kind) {
   await page.click('#newNote');
   await page.click(`[data-add=${kind}]`);
@@ -32,8 +32,8 @@ export async function newNoteWith(page, kind) {
 }
 
 /**
- * Coordonnées écran d'une cible sur la portée active, calculées par le
- * moteur de mise en page de l'appli.
+ * Screen coordinates of a target on the active staff, computed by the app's
+ * layout engine.
  * @param {import('@playwright/test').Page} page
  * @param {{t: 'append'|'insert'|'item', s?: number, i?: number}} what
  */
@@ -52,20 +52,20 @@ export async function staffPoint(page, what) {
   }, what);
 }
 
-/** Touche la portée active (zone d'ajout, zone d'insertion ou une note). */
+/** Taps the active staff (add zone, insertion zone or a note). */
 export async function tapStaff(page, what) {
   const p = await staffPoint(page, what);
   await page.mouse.click(p.x, p.y);
 }
 
 /**
- * Glisse sur la portée avec la souris : appuie sur `from`, passe par chaque
- * position de `through` (des hauteurs `s`, calculées avec la mise en page du
- * début du geste, comme l'appli), puis relâche.
+ * Drags on the staff with the mouse: presses on `from`, goes through each
+ * position of `through` (pitches `s`, computed with the layout at the start
+ * of the gesture, like the app), then releases.
  * @param {import('@playwright/test').Page} page
  * @param {{t: 'append'|'insert'|'item', s?: number, i?: number}} from
  * @param {Array.<number>} through
- * @param {function(): Promise<void>} [during] Appelé avant de relâcher.
+ * @param {function(): Promise<void>} [during] Called before releasing.
  */
 export async function dragStaff(page, from, through, during) {
   const start = await staffPoint(page, from);
@@ -78,14 +78,14 @@ export async function dragStaff(page, from, through, during) {
   await page.mouse.up();
 }
 
-/** Touche un bouton de la palette de portée. */
+/** Taps a button of the staff palette. */
 export async function pal(page, selector) {
   await page.click(`#palette ${selector}`);
 }
 
 /**
- * État de la portée active, en écriture compacte : « q », « h. », « r8 »,
- * « 8³ » (triolet), « ~ » (liaison), « + » (morceau automatique).
+ * State of the active staff, in compact notation: "q", "h.", "r8", "8³"
+ * (triplet), "~" (tie), "+" (automatic piece).
  */
 export async function staffState(page) {
   return page.evaluate(async () => {
@@ -114,7 +114,7 @@ export async function staffState(page) {
   });
 }
 
-/** Contenu du carnet tel qu'enregistré dans IndexedDB. */
+/** Notebook content as stored in IndexedDB. */
 export async function storedNotes(page) {
   return page.evaluate(
     () =>
@@ -134,7 +134,7 @@ export async function storedNotes(page) {
   );
 }
 
-/** Erreurs JavaScript de la page (à vérifier vides en fin de test). */
+/** JavaScript errors of the page (to check empty at the end of a test). */
 export function collectErrors(page) {
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));

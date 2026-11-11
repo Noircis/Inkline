@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>main - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,46 +63,46 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Point d'entrée</strong> d'Inkline, chargé par <code>index.html</code> via
+                <div class="description usertext"><p><strong>Entry point</strong> of Inkline, loaded by <code>index.html</code> through
 <code>&lt;script type=&quot;module&quot; src=&quot;js/main.js&quot;&gt;</code>.</p>
-<p>Responsabilités :</p>
+<p>Responsibilities:</p>
 <ol>
-<li>charger le carnet (IndexedDB, de façon asynchrone) ;</li>
-<li>afficher le premier écran ;</li>
-<li>brancher les écouteurs globaux (mise en arrière-plan, redimensionnement,
-clavier virtuel) ;</li>
-<li>gérer le bouton retour d'Android (historique) ;</li>
-<li>enregistrer le service worker (fonctionnement hors ligne).</li>
+<li>load the notebook (IndexedDB, asynchronously);</li>
+<li>show the first screen;</li>
+<li>wire the global listeners (going to the background, resizing, virtual
+keyboard);</li>
+<li>handle Android's back button (history);</li>
+<li>register the service worker (offline use).</li>
 </ol>
-<h2>Graphe des modules</h2>
+<h2>Module graph</h2>
 <pre class="prettyprint source"><code>main
- ├─ lang-init ───── i18n ── locales/en, locales/fr   (importé en premier)
- ├─ ui/home ─────┬─ ui/list-view       (affichages de la liste)
- │               ├─ ui/folder-sheet    (éditeur de dossier)
- │               └─ ui/options         (rappel de sauvegarde)
+ ├─ lang-init ───── i18n ── locales/en, locales/fr   (imported first)
+ ├─ ui/home ─────┬─ ui/list-view       (list displays)
+ │               ├─ ui/folder-sheet    (folder editor)
+ │               └─ ui/options         (backup reminder)
  ├─ ui/note ─────── export ── pdf
  ├─ ui/options ──── ireal
  ├─ ui/training, ui/exercises ── ui/drill-kit, exercise ── placements
  ├─ ui/staff/* ──── render-staff ── layout ── rhythm ── pitch ── model ── util
  ├─ ui/grid-ui ──── grid ── chords
  │
- │  socle commun à tous les écrans (n'importe aucun écran) :
- ├─ ui/nav         registre des écrans, navigation, bouton retour
- ├─ ui/blocks      registre des blocs musicaux, bloc actif, annulation
- ├─ ui/common      version, petits outils d'interface
- ├─ ui/state       état de l'interface
+ │  base shared by every screen (imports no screen):
+ ├─ ui/nav         screen registry, navigation, back button
+ ├─ ui/blocks      musical block registry, active block, undo
+ ├─ ui/common      version, small interface helpers
+ ├─ ui/state       interface state
  ├─ storage ─────── sanitize ── folders
  ├─ search, folders
  ├─ audio (rhythm, grid, chords)
  └─ history
 </code></pre>
-<p>Les écrans (<code>home</code>, <code>note</code>, <code>options</code>) et les blocs (<code>ui/staff</code>,
-<code>grid-ui</code>) <strong>s'enregistrent</strong> auprès de <code>ui/nav</code> et <code>ui/blocks</code> au
-chargement : la navigation les appelle par leur nom, sans les importer.
-Le graphe d'imports est ainsi sans cycle. C'est pourquoi <code>main</code> importe
-chaque écran et chaque bloc : ces imports les enregistrent.</p>
-<p>Les modules hors de <code>ui/</code> (sauf <code>audio</code>, <code>storage</code>, <code>export</code> et <code>main</code>)
-sont purs, sans DOM, et testés sous Node (<code>npm test</code>).</p></div>
+<p>Screens (<code>home</code>, <code>note</code>, <code>options</code>) and blocks (<code>ui/staff</code>, <code>grid-ui</code>)
+<strong>register</strong> with <code>ui/nav</code> and <code>ui/blocks</code> at load time: navigation calls
+them by name, without importing them. The import graph thus has no cycle.
+That is why <code>main</code> imports every screen and every block: those imports
+register them.</p>
+<p>Modules outside <code>ui/</code> (except <code>audio</code>, <code>storage</code>, <code>export</code> and <code>main</code>) are
+pure, DOM-free, and tested under Node (<code>npm test</code>).</p></div>
             
 
             
@@ -114,46 +114,46 @@ sont purs, sans DOM, et testés sous Node (<code>npm test</code>).</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Point d'entrée</strong> d'Inkline, chargé par <code>index.html</code> via
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Entry point</strong> of Inkline, loaded by <code>index.html</code> through
 <code>&lt;script type=&quot;module&quot; src=&quot;js/main.js&quot;&gt;</code>.</p>
-<p>Responsabilités :</p>
+<p>Responsibilities:</p>
 <ol>
-<li>charger le carnet (IndexedDB, de façon asynchrone) ;</li>
-<li>afficher le premier écran ;</li>
-<li>brancher les écouteurs globaux (mise en arrière-plan, redimensionnement,
-clavier virtuel) ;</li>
-<li>gérer le bouton retour d'Android (historique) ;</li>
-<li>enregistrer le service worker (fonctionnement hors ligne).</li>
+<li>load the notebook (IndexedDB, asynchronously);</li>
+<li>show the first screen;</li>
+<li>wire the global listeners (going to the background, resizing, virtual
+keyboard);</li>
+<li>handle Android's back button (history);</li>
+<li>register the service worker (offline use).</li>
 </ol>
-<h2>Graphe des modules</h2>
+<h2>Module graph</h2>
 <pre class="prettyprint source"><code>main
- ├─ lang-init ───── i18n ── locales/en, locales/fr   (importé en premier)
- ├─ ui/home ─────┬─ ui/list-view       (affichages de la liste)
- │               ├─ ui/folder-sheet    (éditeur de dossier)
- │               └─ ui/options         (rappel de sauvegarde)
+ ├─ lang-init ───── i18n ── locales/en, locales/fr   (imported first)
+ ├─ ui/home ─────┬─ ui/list-view       (list displays)
+ │               ├─ ui/folder-sheet    (folder editor)
+ │               └─ ui/options         (backup reminder)
  ├─ ui/note ─────── export ── pdf
  ├─ ui/options ──── ireal
  ├─ ui/training, ui/exercises ── ui/drill-kit, exercise ── placements
  ├─ ui/staff/* ──── render-staff ── layout ── rhythm ── pitch ── model ── util
  ├─ ui/grid-ui ──── grid ── chords
  │
- │  socle commun à tous les écrans (n'importe aucun écran) :
- ├─ ui/nav         registre des écrans, navigation, bouton retour
- ├─ ui/blocks      registre des blocs musicaux, bloc actif, annulation
- ├─ ui/common      version, petits outils d'interface
- ├─ ui/state       état de l'interface
+ │  base shared by every screen (imports no screen):
+ ├─ ui/nav         screen registry, navigation, back button
+ ├─ ui/blocks      musical block registry, active block, undo
+ ├─ ui/common      version, small interface helpers
+ ├─ ui/state       interface state
  ├─ storage ─────── sanitize ── folders
  ├─ search, folders
  ├─ audio (rhythm, grid, chords)
  └─ history
 </code></pre>
-<p>Les écrans (<code>home</code>, <code>note</code>, <code>options</code>) et les blocs (<code>ui/staff</code>,
-<code>grid-ui</code>) <strong>s'enregistrent</strong> auprès de <code>ui/nav</code> et <code>ui/blocks</code> au
-chargement : la navigation les appelle par leur nom, sans les importer.
-Le graphe d'imports est ainsi sans cycle. C'est pourquoi <code>main</code> importe
-chaque écran et chaque bloc : ces imports les enregistrent.</p>
-<p>Les modules hors de <code>ui/</code> (sauf <code>audio</code>, <code>storage</code>, <code>export</code> et <code>main</code>)
-sont purs, sans DOM, et testés sous Node (<code>npm test</code>).</p></li></ul></dd>
+<p>Screens (<code>home</code>, <code>note</code>, <code>options</code>) and blocks (<code>ui/staff</code>, <code>grid-ui</code>)
+<strong>register</strong> with <code>ui/nav</code> and <code>ui/blocks</code> at load time: navigation calls
+them by name, without importing them. The import graph thus has no cycle.
+That is why <code>main</code> imports every screen and every block: those imports
+register them.</p>
+<p>Modules outside <code>ui/</code> (except <code>audio</code>, <code>storage</code>, <code>export</code> and <code>main</code>) are
+pure, DOM-free, and tested under Node (<code>npm test</code>).</p></li></ul></dd>
     
 
     

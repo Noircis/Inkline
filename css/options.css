@@ -1,6 +1,6 @@
-/* Inkline · Roue crantée et écran Options. */
+/* Inkline · Gear and Settings screen. */
 
-/* 8. Accueil : roue crantée, et écran Options */
+/* 8. Home: gear, and Settings screen */
 .icon-btn {
   position: relative;
   padding: 8px 10px;
@@ -62,7 +62,7 @@
 }
 .opt-row + .opt-row {
   border-top: 1px solid var(--rule);
-} /* séparateur entre deux lignes consécutives */
+} /* separator between two consecutive rows */
 .opt-row span {
   display: flex;
   flex-direction: column;

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/nav - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,26 +63,26 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Navigation entre écrans</strong> : accueil (<code>list</code>), note (<code>note</code>), options (<code>options</code>).</p>
-<h2>Registre d'écrans</h2>
-<p>Chaque module d'écran s'enregistre au chargement avec
-<a href="module-ui_nav.html#.registerScreen">registerScreen</a> ; la navigation appelle
-ensuite l'écran par son nom. Ce module n'importe donc <strong>aucun</strong> écran : c'est
-ce qui supprime les imports circulaires d'avant la 2.0 (la vue liste
-importait la note, qui importait la liste…). Les dépendances vont toujours
-des écrans vers <code>nav</code>, jamais l'inverse.</p>
-<h2>Bouton retour d'Android</h2>
-<p>L'accueil est l'écran racine ; note, options et entraînement sont des
-« sous-écrans ». En entrant dans un sous-écran, on ajoute une entrée à
-l'historique du navigateur (<code>history.pushState</code>) qui mémorise l'écran. Le
-bouton retour d'Android déclenche alors un événement <code>popstate</code> (écouté dans
-<code>main.js</code>) qui réaffiche l'écran mémorisé dans l'entrée précédente (ou
-l'accueil), au lieu de fermer l'app.</p>
+                <div class="description usertext"><p><strong>Navigation between screens</strong>: home (<code>list</code>), note (<code>note</code>), settings (<code>options</code>).</p>
+<h2>Screen registry</h2>
+<p>Each screen module registers at load time with
+<a href="module-ui_nav.html#.registerScreen">registerScreen</a>; navigation then calls
+the screen by name. This module therefore imports <strong>no</strong> screen: this is
+what removed the circular imports from before 2.0 (the list view imported
+the note, which imported the list…). Dependencies always go from screens
+to <code>nav</code>, never the other way.</p>
+<h2>Android back button</h2>
+<p>Home is the root screen; note, settings and practice are &quot;sub-screens&quot;.
+Entering a sub-screen adds an entry to the browser history
+(<code>history.pushState</code>) that remembers the screen. Android's back button
+then fires a <code>popstate</code> event (listened to in <code>main.js</code>) that shows again
+the screen stored in the previous entry (or home), instead of closing the
+app.</p>
 <ul>
-<li><a href="module-ui_nav.html#.go">go</a> ouvre un sous-écran de premier niveau ;
-passer d'un sous-écran à un autre <strong>remplace</strong> l'entrée (<code>replaceState</code>).</li>
-<li><a href="module-ui_nav.html#.goChild">goChild</a> ouvre un écran <strong>enfant</strong> (Rythme
-dans Entraînement) : nouvelle entrée, le retour revient au parent.</li>
+<li><a href="module-ui_nav.html#.go">go</a> opens a top-level sub-screen; going from one
+sub-screen to another <strong>replaces</strong> the entry (<code>replaceState</code>).</li>
+<li><a href="module-ui_nav.html#.goChild">goChild</a> opens a <strong>child</strong> screen (Rhythm in
+Practice): new entry, back returns to the parent.</li>
 </ul></div>
             
 
@@ -95,26 +95,26 @@ dans Entraînement) : nouvelle entrée, le retour revient au parent.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Navigation entre écrans</strong> : accueil (<code>list</code>), note (<code>note</code>), options (<code>options</code>).</p>
-<h2>Registre d'écrans</h2>
-<p>Chaque module d'écran s'enregistre au chargement avec
-<a href="module-ui_nav.html#.registerScreen">registerScreen</a> ; la navigation appelle
-ensuite l'écran par son nom. Ce module n'importe donc <strong>aucun</strong> écran : c'est
-ce qui supprime les imports circulaires d'avant la 2.0 (la vue liste
-importait la note, qui importait la liste…). Les dépendances vont toujours
-des écrans vers <code>nav</code>, jamais l'inverse.</p>
-<h2>Bouton retour d'Android</h2>
-<p>L'accueil est l'écran racine ; note, options et entraînement sont des
-« sous-écrans ». En entrant dans un sous-écran, on ajoute une entrée à
-l'historique du navigateur (<code>history.pushState</code>) qui mémorise l'écran. Le
-bouton retour d'Android déclenche alors un événement <code>popstate</code> (écouté dans
-<code>main.js</code>) qui réaffiche l'écran mémorisé dans l'entrée précédente (ou
-l'accueil), au lieu de fermer l'app.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Navigation between screens</strong>: home (<code>list</code>), note (<code>note</code>), settings (<code>options</code>).</p>
+<h2>Screen registry</h2>
+<p>Each screen module registers at load time with
+<a href="module-ui_nav.html#.registerScreen">registerScreen</a>; navigation then calls
+the screen by name. This module therefore imports <strong>no</strong> screen: this is
+what removed the circular imports from before 2.0 (the list view imported
+the note, which imported the list…). Dependencies always go from screens
+to <code>nav</code>, never the other way.</p>
+<h2>Android back button</h2>
+<p>Home is the root screen; note, settings and practice are &quot;sub-screens&quot;.
+Entering a sub-screen adds an entry to the browser history
+(<code>history.pushState</code>) that remembers the screen. Android's back button
+then fires a <code>popstate</code> event (listened to in <code>main.js</code>) that shows again
+the screen stored in the previous entry (or home), instead of closing the
+app.</p>
 <ul>
-<li><a href="module-ui_nav.html#.go">go</a> ouvre un sous-écran de premier niveau ;
-passer d'un sous-écran à un autre <strong>remplace</strong> l'entrée (<code>replaceState</code>).</li>
-<li><a href="module-ui_nav.html#.goChild">goChild</a> ouvre un écran <strong>enfant</strong> (Rythme
-dans Entraînement) : nouvelle entrée, le retour revient au parent.</li>
+<li><a href="module-ui_nav.html#.go">go</a> opens a top-level sub-screen; going from one
+sub-screen to another <strong>replaces</strong> the entry (<code>replaceState</code>).</li>
+<li><a href="module-ui_nav.html#.goChild">goChild</a> opens a <strong>child</strong> screen (Rhythm in
+Practice): new entry, back returns to the parent.</li>
 </ul></li></ul></dd>
     
 
@@ -297,15 +297,14 @@ dans Entraînement) : nouvelle entrée, le retour revient au parent.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton « retour » d'un écran : on recule dans l'historique si on y a ajouté
-une entrée (le <code>popstate</code> affichera l'écran précédent), sinon on affiche
-directement l'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A screen's &quot;back&quot; button: go back in history if an entry was added (the
+<code>popstate</code> will show the previous screen), otherwise show home directly.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_nav.js.html">ui/nav.js</a>, <a href="ui_nav.js.html#line151">line 151</a>
+        <a href="ui_nav.js.html">ui/nav.js</a>, <a href="ui_nav.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -384,7 +383,7 @@ directement l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre un sous-écran de premier niveau : historique, état, rendu, retour en haut de page.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens a top-level sub-screen: history, state, render, back to top of page.</p></li></ul></dd>
     
 
     
@@ -538,7 +537,7 @@ directement l'accueil.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Note à afficher (écran <code>note</code>).</p></td>
+            <td class="description last"><p>Note to show (<code>note</code> screen).</p></td>
         </tr>
 
     
@@ -618,7 +617,7 @@ directement l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre un écran enfant du sous-écran courant : le retour ramènera au parent.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens a child screen of the current sub-screen: back will return to the parent.</p></li></ul></dd>
     
 
     
@@ -753,8 +752,8 @@ directement l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bouton retour d'Android (<code>popstate</code>) : réaffiche l'écran mémorisé dans
-l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Android back button (<code>popstate</code>): shows again the screen stored in the
+history entry we return to, or home.</p></li></ul></dd>
     
 
     
@@ -849,7 +848,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p><code>history.state</code> après le retour.</p></td>
+            <td class="description last"><p><code>history.state</code> after going back.</p></td>
         </tr>
 
     
@@ -889,7 +888,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ouvre une note.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Opens a note.</p></li></ul></dd>
     
 
     
@@ -1028,7 +1027,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Placer le curseur dans le titre.</p></td>
+            <td class="description last"><p>Put the cursor in the title.</p></td>
         </tr>
 
     
@@ -1068,7 +1067,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Enregistre un écran.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Registers a screen.</p></li></ul></dd>
     
 
     
@@ -1227,7 +1226,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Redessine l'écran courant (<code>state.view</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Redraws the current screen (<code>state.view</code>).</p></li></ul></dd>
     
 
     
@@ -1382,7 +1381,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>À appeler en entrant dans un sous-écran de premier niveau.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>To be called when entering a top-level sub-screen.</p></li></ul></dd>
     
 
     
@@ -1544,7 +1543,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Affiche un écran (sans toucher à l'historique).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Shows a screen (without touching history).</p></li></ul></dd>
     
 
     
@@ -1730,7 +1729,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Affiche l'accueil (sans toucher à l'historique).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Shows home (without touching history).</p></li></ul></dd>
     
 
     
@@ -1817,7 +1816,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Options de rendu d'un écran.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Screen render options.</p></li></ul></dd>
     
 
     
@@ -1913,7 +1912,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Conserver la position de défilement (re-rendu après une modification).</p></td>
+            <td class="description last"><p>Keep the scroll position (re-render after a change).</p></td>
         </tr>
 
     
@@ -1945,7 +1944,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Écran note : placer le curseur dans le titre.</p></td>
+            <td class="description last"><p>Note screen: put the cursor in the title.</p></td>
         </tr>
 
     
@@ -1958,7 +1957,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Options de rendu d'un écran.</p>
+    <p>Screen render options.</p>
 </div>
 
 
@@ -1990,7 +1989,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Noms d'écrans.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Screen names.</p></li></ul></dd>
     
 
     
@@ -2036,7 +2035,7 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Noms d'écrans.</p>
+    <p>Screen names.</p>
 </div>
 
 
@@ -2090,8 +2089,8 @@ l'entrée d'historique où l'on revient, ou l'accueil.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Fonction de rendu d'un écran. Renvoie <code>false</code> si l'écran ne peut pas
-s'afficher (note disparue, par exemple) : on retombe alors sur l'accueil.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Screen render function. Returns <code>false</code> if the screen cannot be shown (a
+note that disappeared, for example): we then fall back to home.</p></li></ul></dd>
     
 
     

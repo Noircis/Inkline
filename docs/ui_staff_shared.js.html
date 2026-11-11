@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/shared.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,31 +53,30 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/staff/shared
  * @description
- * **Socle commun** des modules du bloc portée : état propre à la portée
- * (accord en cours de saisie, message ponctuel) et opérations partagées
- * (remise en mesure, position d'insertion, note visée, modification de la
- * sélection).
+ * **Common base** of the staff block modules: staff-specific state (chord
+ * being typed, one-off message) and shared operations (fitting into
+ * measures, insertion position, target note, changing the selection).
  *
- * ## Découpage du bloc portée
+ * ## Split of the staff block
  *
  * ```
- * staff/index     enregistre le type de bloc auprès de ui/blocks
- *  ├─ view        en-tête du bloc et dessin de la portée
- *  │   └─ input   toucher sur la portée, modes Écrire / Modifier
- *  └─ palette     palette du bas d'écran
- *      ├─ bars    sous-menu des barres
- *      └─ chord   saisie d'un accord chiffré
- * tous ──▶ shared (ce module)
+ * staff/index     registers the block type with ui/blocks
+ *  ├─ view        block header and staff drawing
+ *  │   └─ input   taps on the staff, Write / Edit modes
+ *  └─ palette     bottom-of-screen palette
+ *      ├─ bars    barline submenu
+ *      └─ chord   chord symbol input
+ * all ──▶ shared (this module)
  * ```
  *
- * ## Crochets (hooks)
+ * ## Hooks
  *
- * Presque tout doit pouvoir **redessiner la portée** et **rafraîchir la
- * palette**, mais ces deux fonctions vivent dans `view` et `palette`, qui
- * importent eux-mêmes ce module. Pour éviter un import circulaire, elles sont
- * enregistrées dans {@link module:ui/staff/shared.hooks|hooks} au chargement
- * de leur module, et appelées à travers lui : une inversion de dépendance,
- * l'équivalent d'un pointeur de fonction fixé à l'initialisation en C++.
+ * Almost everything must be able to **redraw the staff** and **refresh the
+ * palette**, but those two functions live in `view` and `palette`, which
+ * themselves import this module. To avoid a circular import, they are
+ * registered in {@link module:ui/staff/shared.hooks|hooks} when their module
+ * loads, and called through it: dependency inversion, the equivalent of a
+ * function pointer set at initialization in C++.
  */
 
 import { state, curNote, blockById, touch } from '../state.js';
@@ -86,8 +85,8 @@ import { normalizeStaff, chainStart, chainEnd, singleValue } from '../../measure
 import { pushSnapshot } from '../../history.js';
 
 /**
- * Fonctions fournies par d'autres modules du bloc portée : `redraw` (par
- * `view`) et `refreshPalette` (par `palette`).
+ * Functions provided by other modules of the staff block: `redraw` (by
+ * `view`) and `refreshPalette` (by `palette`).
  * @type {{redraw: function(string), refreshPalette: function()}}
  */
 export const hooks = {
@@ -96,9 +95,9 @@ export const hooks = {
 };
 
 /**
- * État propre au bloc portée : `chordTarget`, la note dont on saisit l'accord
- * (surlignée en mode Écrire) ; `notice`, message ponctuel de la ligne d'aide
- * (refus d'une action).
+ * State specific to the staff block: `chordTarget`, the note whose chord is
+ * being typed (highlighted in Write mode); `notice`, one-off message of the
+ * help line (an action refused).
  * @type {{chordTarget: ?{b: module:model~StaffBlock, i: number}, notice: string}}
  */
 export const staffUi = { chordTarget: null, notice: '' };
@@ -106,7 +105,7 @@ export const staffUi = { chordTarget: null, notice: '' };
 let noticeTimer = null;
 
 /**
- * Affiche un message dans la ligne d'aide de la palette pendant quelques secondes.
+ * Shows a message in the palette's help line for a few seconds.
  * @param {string} text
  */
 export function flash(text) {
@@ -120,7 +119,7 @@ export function flash(text) {
 }
 
 /**
- * Bloc portée actif et sa note (ou `null`).
+ * Active staff block and its note (or `null`).
  * @returns {?{n: module:model~Note, b: module:model~StaffBlock}}
  */
 export function activeStaff() {
@@ -130,8 +129,8 @@ export function activeStaff() {
 }
 
 /**
- * Garde le curseur d'insertion et la sélection dans les bornes (après une
- * suppression ou une annulation, par exemple). Curseur `null` = fin de portée.
+ * Keeps the insertion cursor and the selection within bounds (after a
+ * deletion or an undo, for example). `null` cursor = end of staff.
  * @param {module:model~StaffBlock} b
  */
 export function clampCursor(b) {
@@ -140,9 +139,9 @@ export function clampCursor(b) {
 }
 
 /**
- * Remet la portée en mesure après une modification (liaisons automatiques aux
- * barres, voir {@link module:measure-fit|measure-fit}) et recale la sélection
- * et le curseur sur les nouveaux index.
+ * Fits the staff back into measures after a change (automatic ties at
+ * barlines, see {@link module:measure-fit|measure-fit}) and moves the
+ * selection and cursor to the new indices.
  * @param {module:model~StaffBlock} b
  * @returns {{startOf: number[], tupCross: Set.&lt;number>}}
  */
@@ -158,8 +157,8 @@ export function refit(b) {
 }
 
 /**
- * Position d'insertion effective : index de l'élément devant lequel la
- * prochaine note arrivera (`items.length` = à la fin).
+ * Effective insertion position: index of the item before which the next
+ * note will land (`items.length` = at the end).
  * @param {module:model~StaffBlock} b
  * @returns {number}
  */
@@ -168,11 +167,11 @@ export function insertIndex(b) {
 }
 
 /**
- * Note logique à laquelle s'appliquent les barres et l'accord chiffré : la
- * note sélectionnée en mode Modifier, la note juste avant le curseur en mode
- * Écrire (à défaut, la dernière ou la première). Renvoie son premier morceau.
+ * Logical note that barlines and chord symbols apply to: the selected note
+ * in Edit mode, the note just before the cursor in Write mode (failing that,
+ * the last or the first). Returns its first piece.
  * @param {module:model~StaffBlock} b
- * @returns {number} -1 si la portée est vide.
+ * @returns {number} -1 if the staff is empty.
  */
 export function targetIndex(b) {
   if (!b.items.length) return -1;
@@ -181,10 +180,10 @@ export function targetIndex(b) {
 }
 
 /**
- * Valeur (durée écrite) de la note logique qui contient `i` : celle de
- * l'élément s'il est seul, sinon la valeur unique équivalente à la somme de
- * ses morceaux (une ronde coupée en blanche⁀blanche vaut une ronde), à défaut
- * celle du premier morceau.
+ * Duration (written value) of the logical note containing `i`: the item's
+ * own if it is alone, otherwise the single value equal to the sum of its
+ * pieces (a whole note split into half⁀half is worth a whole note), failing
+ * that the first piece's.
  * @param {module:model~StaffBlock} b
  * @param {number} i
  * @returns {{d: string, dot: boolean, tup: boolean}}
@@ -201,11 +200,11 @@ export function logicalValue(b, i) {
 }
 
 /**
- * Mode Modifier : applique `fn` à la note sélectionnée, puis remet en mesure,
- * enregistre et redessine (avec annulation possible).
+ * Edit mode: applies `fn` to the selected note, then refits into measures,
+ * saves and redraws (with undo available).
  * @param {function(module:model~StaffItem, module:model~StaffBlock)} fn
- * @returns {boolean} `false` hors mode Modifier ou sans sélection (le bouton
- *   règle alors la saisie).
+ * @returns {boolean} `false` outside Edit mode or with no selection (the
+ *   button then sets the input).
  */
 export function withSel(fn) {
   if (state.mode !== 'edit') return false;

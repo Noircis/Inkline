@@ -1,128 +1,126 @@
 /**
  * @module layout
  * @description
- * Moteur de **mise en page** d'une portée : décide où chaque élément se place
- * (ligne et abscisse), où tombent les barres, et où se trouve la zone d'ajout.
+ * **Layout** engine of a staff: decides where each item goes (line and x),
+ * where barlines fall, and where the add zone is.
  *
- * C'est une fonction pure : même entrée, même sortie, sans DOM. Le rendu SVG
- * ({@link module:render-staff|render-staff}) **et** le hit-testing (le toucher de
- * l'utilisateur, dans {@link module:ui/staff/input|ui/staff/input}) appellent tous deux
- * {@link module:layout.layout|layout} avec les mêmes paramètres : ils sont donc
- * cohérents par construction.
+ * It is a pure function: same input, same output, no DOM. The SVG renderer
+ * ({@link module:render-staff|render-staff}) **and** hit testing (the user's
+ * tap, in {@link module:ui/staff/input|ui/staff/input}) both call
+ * {@link module:layout.layout|layout} with the same parameters: they are
+ * therefore consistent by construction.
  *
- * ## Algorithme
+ * ## Algorithm
  *
- * 1. **Largeurs intrinsèques** : chaque élément reçoit une largeur de base
- *    selon sa valeur (gravure proportionnelle : une ronde prend plus de place
- *    qu'une croche), plus de la place pour une altération, un point ou un
- *    accord chiffré trop long.
- * 2. **Mesures** : découpage par {@link module:rhythm.segmentMeasures|segmentMeasures}.
- * 3. **Coupure de lignes**, algorithme glouton (*first-fit*) : une mesure va
- *    sur la ligne courante si elle tient, sinon elle ouvre une ligne. On ne
- *    coupe jamais une mesure en deux.
- * 4. **Justification** : chaque ligne est étirée d'un facteur
- *    `sc = largeurDisponible / largeurUtilisée`, plafonné à 2.4 pour éviter
- *    un étirement absurde. La dernière ligne n'est pas étirée, sauf si le
- *    motif se termine par une barre de fin **et** que la ligne est déjà
- *    remplie à plus de 50 %. Une ligne trop pleine (mesure plus large que
- *    l'écran) est comprimée (`sc < 1`).
- * 5. **Positions finales** des éléments, des barres et des débuts de reprise.
+ * 1. **Intrinsic widths**: each item gets a base width from its duration
+ *    (proportional engraving: a whole note takes more room than an eighth),
+ *    plus room for an accidental, a dot or a long chord symbol.
+ * 2. **Measures**: split by {@link module:rhythm.segmentMeasures|segmentMeasures}.
+ * 3. **Line breaking**, greedy (*first-fit*) algorithm: a measure goes on the
+ *    current line if it fits, otherwise it opens a new line. A measure is
+ *    never split in two.
+ * 4. **Justification**: each line is stretched by a factor
+ *    `sc = availableWidth / usedWidth`, capped at 2.4 to avoid an absurd
+ *    stretch. The last line is not stretched, unless the pattern ends with a
+ *    final barline **and** the line is already more than 50% full. An
+ *    overfull line (measure wider than the screen) is compressed (`sc < 1`).
+ * 5. **Final positions** of items, barlines and start repeats.
  *
- * ## Repère vertical
+ * ## Vertical reference
  *
- * Chaque ligne (système) occupe une bande de hauteur fixe `SH` ; les
- * coordonnées y à l'intérieur sont données par {@link module:layout.geom|geom}.
+ * Each line (system) takes a band of fixed height `SH`; the y coordinates
+ * inside it are given by {@link module:layout.geom|geom}.
  */
 
 import { segmentMeasures } from './rhythm.js';
 import { mlen, STEP_MIN, STEP_MAX, STEP_FIT } from './model.js';
 
-/** Moitié d'un interligne, en pixels : l'écart vertical entre deux positions `s` consécutives. */
+/** Half a staff space, in pixels: the vertical gap between two consecutive positions `s`. */
 export const HALF_SPACE = 5;
 
-/** Largeur de base (px) par valeur de note, avant justification. */
+/** Base width (px) per note value, before justification. */
 const BASE_WIDTH = { w: 46, h: 34, q: 27, 8: 23, 16: 21 };
 
-/** Largeur supplémentaire (px) réservée après la mesure selon le type de barre. */
+/** Extra width (px) reserved after the measure depending on the barline type. */
 const BAR_EXTRA = { double: 4, final: 6, rep: 14 };
 
-/** Marges intérieures de mesure (px) avant la première et après la dernière note. */
+/** Inner measure margins (px) before the first and after the last note. */
 const PAD_L = 10;
 const PAD_R = 8;
 
-/** Largeur (px) réservée au signe de début de reprise `‖:`. */
+/** Width (px) reserved for the start repeat sign `‖:`. */
 const REPEAT_START_W = 16;
 
-/** Largeur (px) d'une altération de l'armure. */
+/** Width (px) of a key signature accidental. */
 export const KEY_ACC_W = 9;
 
-/** Largeur (px) du trou ouvert devant la note où le curseur d'insertion est placé. */
+/** Width (px) of the gap opened before the note where the insertion cursor is. */
 export const INSERT_GAP = 34;
 
-/** Facteur d'étirement maximal d'une ligne justifiée. */
+/** Maximum stretch factor of a justified line. */
 const MAX_STRETCH = 2.4;
 
 /**
- * Position calculée d'un élément.
+ * Computed position of an item.
  * @typedef {Object} ItemPos
- * @property {number} sys Index de la ligne.
- * @property {number} x Abscisse de la tête de note (centre).
- * @property {number} x0 Début de la zone horizontale de l'élément (pour le toucher).
- * @property {number} x1 Fin de cette zone.
+ * @property {number} sys Line index.
+ * @property {number} x X of the notehead (center).
+ * @property {number} x0 Start of the item's horizontal zone (for taps).
+ * @property {number} x1 End of that zone.
  */
 
 /**
- * Une ligne (système) de la portée.
+ * A line (system) of the staff.
  * @typedef {Object} System
- * @property {number} start Abscisse où commence la musique (après clé et chiffrage).
- * @property {number} end Abscisse après la dernière mesure.
- * @property {number} used Largeur naturelle occupée (avant justification).
- * @property {number} firstMeasure Numéro (à partir de 1) de la première mesure, affiché en début de ligne.
- * @property {Array.<{m: module:rhythm~Measure, w: number}>} ms Mesures placées sur la ligne.
+ * @property {number} start X where the music starts (after clef and time signature).
+ * @property {number} end X after the last measure.
+ * @property {number} used Natural width taken (before justification).
+ * @property {number} firstMeasure Number (from 1) of the first measure, shown at the start of the line.
+ * @property {Array.<{m: module:rhythm~Measure, w: number}>} ms Measures placed on the line.
  */
 
 /**
- * Résultat de la mise en page.
+ * Result of the layout.
  * @typedef {Object} Layout
- * @property {boolean} rh Ligne rythmique (une seule ligne de portée, pas de hauteurs).
+ * @property {boolean} rh Rhythm line (a single staff line, no pitches).
  * @property {System[]} systems
- * @property {ItemPos[]} pos Une position par élément, même index que `items`.
- * @property {Array.<{sys:number, x:number, type:string}>} bars Barres de fin de mesure.
- * @property {Array.<{sys:number, x0:number, x1:number}>} mrects Place de chaque mesure (2.8.4), dans l'ordre d'écriture.
- * @property {Array.<{sys:number, x:number}>} starts Débuts de reprise.
- * @property {number} ksw Largeur de l'armure (0 sans armure).
- * @property {?number} insertSys Ligne du curseur d'insertion (s'il est placé avant une note).
- * @property {?number} insertX Abscisse du curseur d'insertion, `null` s'il est en fin de portée.
- * @property {number} appendSys Ligne de la zone d'ajout.
- * @property {number|null} appendX Abscisse de la zone d'ajout, `null` si le
- *   motif est terminé par une barre de fin.
- * @property {boolean} ended Le dernier élément porte une barre de fin.
- * @property {number} SH Hauteur d'une ligne en px.
- * @property {number} padTop Place ajoutée en haut de chaque ligne pour les notes très aiguës (2.8.2).
- * @property {number} height Hauteur totale en px.
- * @property {number} ML Capacité d'une mesure en noires.
+ * @property {ItemPos[]} pos One position per item, same index as `items`.
+ * @property {Array.<{sys:number, x:number, type:string}>} bars End-of-measure barlines.
+ * @property {Array.<{sys:number, x0:number, x1:number}>} mrects Place of each measure (2.8.4), in written order.
+ * @property {Array.<{sys:number, x:number}>} starts Start repeats.
+ * @property {number} ksw Key signature width (0 without a key signature).
+ * @property {?number} insertSys Line of the insertion cursor (if it is placed before a note).
+ * @property {?number} insertX X of the insertion cursor, `null` if it is at the end of the staff.
+ * @property {number} appendSys Line of the add zone.
+ * @property {number|null} appendX X of the add zone, `null` if the pattern
+ *   ends with a final barline.
+ * @property {boolean} ended The last item carries a final barline.
+ * @property {number} SH Height of a line in px.
+ * @property {number} padTop Room added at the top of each line for very high notes (2.8.2).
+ * @property {number} height Total height in px.
+ * @property {number} ML Capacity of a measure in quarter notes.
  */
 
 /**
- * Largeur naturelle (px) d'un élément.
+ * Natural width (px) of an item.
  * @param {module:model~StaffItem} it
- * @param {boolean} rh Ligne rythmique (pas d'altérations).
+ * @param {boolean} rh Rhythm line (no accidentals).
  * @returns {number}
  */
 function itemWidth(it, rh) {
   let w = BASE_WIDTH[it.d];
   if (it.dot) w += 7;
   if (it.a != null && !it.r && !rh) w += 12;
-  if (it.c) w = Math.max(w, it.c.length * 8 + 10); // l'accord chiffré ne doit pas déborder sur le suivant
+  if (it.c) w = Math.max(w, it.c.length * 8 + 10); // the chord symbol must not run into the next one
   return w;
 }
 
 /**
- * Abscisse de début de la musique : la 1re ligne porte la clé, l'armure ET le
- * chiffrage, les suivantes la clé et l'armure.
+ * X where the music starts: the 1st line carries the clef, key signature AND
+ * time signature, the following ones the clef and key signature.
  * @param {boolean} rh
  * @param {boolean} isFirst
- * @param {number} [ksw=0] Largeur de l'armure.
+ * @param {number} [ksw=0] Key signature width.
  * @returns {number}
  */
 function systemStart(rh, isFirst, ksw = 0) {
@@ -131,7 +129,7 @@ function systemStart(rh, isFirst, ksw = 0) {
 }
 
 /**
- * Largeur de l'armure (px).
+ * Key signature width (px).
  * @param {module:model~StaffBlock} b
  * @returns {number}
  */
@@ -141,7 +139,7 @@ function keySigWidth(b) {
 }
 
 /**
- * Ajoute une ligne vide à la liste.
+ * Adds an empty line to the list.
  * @param {System[]} systems
  * @param {boolean} rh
  * @returns {System}
@@ -153,10 +151,10 @@ function newSystem(systems, rh, ksw = 0) {
 }
 
 /**
- * Largeur naturelle d'une mesure : marges, signe de reprise éventuel,
- * éléments, et place pour la barre de fin.
+ * Natural width of a measure: margins, optional repeat sign, items, and room
+ * for the closing barline.
  * @param {module:rhythm~Measure} m
- * @param {number[]} widths Largeur naturelle de chaque élément.
+ * @param {number[]} widths Natural width of each item.
  * @returns {number}
  */
 function measureWidth(m, widths) {
@@ -165,8 +163,8 @@ function measureWidth(m, widths) {
 }
 
 /**
- * Étape 3 : coupure de lignes, algorithme glouton (*first-fit*). Une mesure
- * va sur la ligne courante si elle tient, sinon elle ouvre une nouvelle ligne.
+ * Step 3: line breaking, greedy (*first-fit*) algorithm. A measure goes on
+ * the current line if it fits, otherwise it opens a new line.
  * @param {module:rhythm~Measure[]} measures
  * @param {number[]} widths
  * @param {number} W
@@ -187,17 +185,17 @@ function breakIntoSystems(measures, widths, W, rh, ksw = 0) {
 }
 
 /**
- * Facteur d'étirement d'une ligne (étape 4, justification).
- * - ligne trop pleine : on comprime (`< 1`) ;
- * - ligne pleine non finale : on étire jusqu'au bord, au plus ×{@link MAX_STRETCH} ;
- * - dernière ligne : largeur naturelle, sauf fin de motif remplie à plus de
- *   50 %, ou bloc `justify` (entraînement) : la dernière ligne est alors
- *   étirée comme les autres (au plus ×{@link MAX_STRETCH}).
+ * Stretch factor of a line (step 4, justification).
+ * - overfull line: compress (`< 1`);
+ * - full non-final line: stretch to the edge, at most ×{@link MAX_STRETCH};
+ * - last line: natural width, except at the end of a pattern more than 50%
+ *   full, or a `justify` block (practice): the last line is then stretched
+ *   like the others (at most ×{@link MAX_STRETCH}).
  * @param {System} sys
  * @param {number} W
  * @param {boolean} isLast
- * @param {boolean} ended Le motif se termine par une barre de fin.
- * @param {boolean} [justify=false] Étirer aussi la dernière ligne, comme les autres.
+ * @param {boolean} ended The pattern ends with a final barline.
+ * @param {boolean} [justify=false] Stretch the last line too, like the others.
  * @returns {number}
  */
 function stretchFactor(sys, W, isLast, ended, justify = false) {
@@ -210,9 +208,9 @@ function stretchFactor(sys, W, isLast, ended, justify = false) {
 }
 
 /**
- * Étapes 4 et 5 : justification de chaque ligne et calcul des positions des
- * éléments, des barres et des débuts de reprise. Renseigne aussi `end` et
- * `firstMeasure` de chaque ligne.
+ * Steps 4 and 5: justification of each line and computation of the
+ * positions of items, barlines and start repeats. Also fills in each line's
+ * `end` and `firstMeasure`.
  * @param {System[]} systems
  * @param {module:model~StaffItem[]} items
  * @param {number[]} widths
@@ -245,13 +243,13 @@ function placeSystems(systems, items, widths, W, rh, ended, justify = false, gap
         const it = items[i];
         let w = widths[i] * sc;
         if (i === gapAt) {
-          // Curseur d'insertion devant cet élément : on ouvre un trou.
+          // Insertion cursor before this item: open a gap.
           const gap = INSERT_GAP * Math.min(1, sc);
           insert = { sys: si, x: x + gap / 2 };
           x += gap;
           w -= gap;
         }
-        // La tête est décalée à droite de sa zone pour laisser la place à l'altération.
+        // The head is shifted right within its zone to leave room for the accidental.
         const headOffset = (it.a != null && !it.r && !rh ? 12 : 0) + 8;
         pos[i] = { sys: si, x: x + headOffset * Math.min(1, sc), x0: x, x1: x + w };
         x += w;
@@ -266,14 +264,14 @@ function placeSystems(systems, items, widths, W, rh, ended, justify = false, gap
 }
 
 /**
- * Met en page une portée.
+ * Lays out a staff.
  *
- * @param {module:model~StaffBlock} b Bloc portée.
- * @param {number} W Largeur disponible en px.
- * @param {boolean} [active=false] Bloc en cours d'édition : on garantit alors
- *   une zone d'ajout assez large, quitte à ouvrir une nouvelle ligne vide.
- * @param {?number} [insertAt=null] Curseur d'insertion placé devant cet
- *   élément : un trou de {@link INSERT_GAP} px y est ouvert (mode Écrire).
+ * @param {module:model~StaffBlock} b Staff block.
+ * @param {number} W Available width in px.
+ * @param {boolean} [active=false] Block being edited: an add zone wide enough
+ *   is then guaranteed, even if it means opening a new empty line.
+ * @param {?number} [insertAt=null] Insertion cursor placed before this item:
+ *   a gap of {@link INSERT_GAP} px is opened there (Write mode).
  * @returns {Layout}
  */
 export function layout(b, W, active = false, insertAt = null) {
@@ -296,8 +294,8 @@ export function layout(b, W, active = false, insertAt = null) {
     gapAt,
   );
 
-  // Zone d'ajout : après la dernière mesure, ou sur une nouvelle ligne vide
-  // s'il ne reste pas assez de place (en édition seulement).
+  // Add zone: after the last measure, or on a new empty line
+  // if there is not enough room left (only while editing).
   let last = systems[systems.length - 1];
   if (active && !ended && W - last.end < 48) {
     last = newSystem(systems, rh, ksw);
@@ -306,8 +304,8 @@ export function layout(b, W, active = false, insertAt = null) {
   }
   const appendX = ended ? null : last.ms.length ? last.end + 8 : last.start + 6;
 
-  // Notes très aiguës (au-dessus du mi 6 en clé de sol) : toutes les lignes
-  // s'agrandissent vers le haut d'autant. Rien ne change sinon.
+  // Very high notes (above E6 in treble clef): every line grows upward by
+  // the same amount. Nothing changes otherwise.
   let hi = STEP_FIT;
   if (!rh) items.forEach((it) => !it.r && it.s > hi && (hi = it.s));
   const padTop = (hi - STEP_FIT) * HALF_SPACE;
@@ -333,20 +331,20 @@ export function layout(b, W, active = false, insertAt = null) {
 }
 
 /**
- * Repères verticaux d'une ligne.
+ * Vertical references of a line.
  * @typedef {Object} SystemGeom
- * @property {number} top Haut de la bande.
- * @property {number} chordY Ligne de base des accords chiffrés.
- * @property {number} staffTop Ordonnée de la 5e ligne (en haut).
- * @property {number} staffBottom Ordonnée de la 1re ligne (en bas) ; `s = 0` ici.
- * @property {number} mid Ligne du milieu (3e ligne), pivot du sens des hampes.
- * @property {number} [line] Ligne unique d'une ligne rythmique.
+ * @property {number} top Top of the band.
+ * @property {number} chordY Baseline of chord symbols.
+ * @property {number} staffTop Y of the 5th line (top).
+ * @property {number} staffBottom Y of the 1st line (bottom); `s = 0` here.
+ * @property {number} mid Middle line (3rd line), pivot for stem direction.
+ * @property {number} [line] Single line of a rhythm line.
  */
 
 /**
- * Ordonnées de référence de la ligne `si`.
+ * Reference y coordinates of line `si`.
  * @param {Layout} L
- * @param {number} si Index de ligne.
+ * @param {number} si Line index.
  * @returns {SystemGeom}
  */
 export function geom(L, si) {
@@ -360,8 +358,8 @@ export function geom(L, si) {
 }
 
 /**
- * Ordonnée d'une position `s` (tête de note) sur la ligne de géométrie `g`.
- * Sur une ligne rythmique, toutes les notes sont sur la ligne.
+ * Y of a position `s` (notehead) on the line with geometry `g`.
+ * On a rhythm line, every note is on the line.
  * @param {Layout} L
  * @param {SystemGeom} g
  * @param {number} s
@@ -372,8 +370,8 @@ export function yOfStep(L, g, s) {
 }
 
 /**
- * Hit-testing vertical : position `s` la plus proche d'une ordonnée touchée.
- * Bornée à [{@link module:model.STEP_MIN|STEP_MIN}, {@link module:model.STEP_MAX|STEP_MAX}].
+ * Vertical hit testing: position `s` closest to a tapped y.
+ * Bounded to [{@link module:model.STEP_MIN|STEP_MIN}, {@link module:model.STEP_MAX|STEP_MAX}].
  * @param {SystemGeom} g
  * @param {number} y
  * @returns {number}

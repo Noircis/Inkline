@@ -1,6 +1,6 @@
-// Tests de la langue de l'interface (2.9) : dictionnaires complets, clés
-// utilisées présentes, pluriels, détection, et aucune variable `t` qui
-// masquerait la fonction de traduction.
+// Tests for the interface language (2.9): complete dictionaries, used keys
+// present, plurals, detection, and no `t` variable that would
+// shadow the translation function.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -17,7 +17,7 @@ const jsFiles = (dir) =>
   });
 const SOURCES = jsFiles(path.join(ROOT, 'js')).filter((f) => !f.includes(`${path.sep}locales${path.sep}`));
 
-test('les deux dictionnaires ont exactement les mêmes clés, et aucun texte vide', () => {
+test('both dictionaries have exactly the same keys, and no empty text', () => {
   const en = keysOf(DICTIONARIES.en).sort();
   const fr = keysOf(DICTIONARIES.fr).sort();
   assert.deepEqual(en, fr);
@@ -31,7 +31,7 @@ test('les deux dictionnaires ont exactement les mêmes clés, et aucun texte vid
   initLang('fr');
 });
 
-test('chaque clé utilisée dans le code (t("…"), data-i18n) existe', () => {
+test('every key used in the code (t("…"), data-i18n) exists', () => {
   const known = new Set(keysOf(DICTIONARIES.fr));
   const used = new Set();
   for (const f of SOURCES) {
@@ -39,7 +39,7 @@ test('chaque clé utilisée dans le code (t("…"), data-i18n) existe', () => {
       .readFileSync(f, 'utf8')
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .replace(/\/\/.*$/gm, '');
-    // Clé complète seulement (`'sort.' + key` est vérifié plus bas).
+    // Full key only (`'sort.' + key` is checked further down).
     for (const m of src.matchAll(/\bt\(\s*'([a-zA-Z0-9.]+[a-zA-Z0-9])'/g)) used.add(m[1]);
   }
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
@@ -48,12 +48,12 @@ test('chaque clé utilisée dans le code (t("…"), data-i18n) existe', () => {
     m[1].split(';').forEach((p) => used.add(p.split(':')[1]));
   const missing = [...used].filter((k) => !known.has(k));
   assert.deepEqual(missing, []);
-  // Clés construites (préfixe + valeur) : vérifiées à part.
+  // Built keys (prefix + value): checked separately.
   for (const k of ['sort.updated', 'listView.mosaic', 'color.teal', 'instr.Bb8', 'dur.16', 'rest.8', 'sub.3'])
     assert.ok(known.has(k), k);
 });
 
-test('aucune variable locale « t » dans un module qui traduit (elle masquerait t())', () => {
+test('no local variable "t" in a module that translates (it would shadow t())', () => {
   const bad = [];
   for (const f of SOURCES) {
     const src = fs.readFileSync(f, 'utf8');
@@ -72,7 +72,7 @@ test('aucune variable locale « t » dans un module qui traduit (elle masquerait
   assert.deepEqual(bad, []);
 });
 
-test('pluriels et paramètres', () => {
+test('plurals and parameters', () => {
   initLang('fr');
   assert.equal(t('home.noteCount', { n: 0 }), '0 note');
   assert.equal(t('home.noteCount', { n: 1 }), '1 note');
@@ -84,24 +84,24 @@ test('pluriels et paramètres', () => {
   assert.equal(t('home.noteCount', { n: 1 }), '1 note');
   assert.equal(t('train.bars', { n: 4 }), '4 bars');
   assert.equal(t('home.noResult', { q: 'Bb7' }), 'No note contains “Bb7”.');
-  assert.equal(t('pas.une.cle'), 'pas.une.cle'); // clé absente : visible, jamais vide
+  assert.equal(t('pas.une.cle'), 'pas.une.cle'); // missing key: visible, never empty
   initLang('fr');
 });
 
-test('détection de la langue', () => {
+test('language detection', () => {
   assert.equal(detectLang(['fr-FR', 'en-US']), 'fr');
   assert.equal(detectLang(['fr']), 'fr');
   assert.equal(detectLang(['en-GB', 'fr-FR']), 'en');
-  assert.equal(detectLang(['de-DE', 'fr-FR']), 'fr'); // première langue connue
-  assert.equal(detectLang(['de-DE', 'es']), 'en'); // aucune : anglais
+  assert.equal(detectLang(['de-DE', 'fr-FR']), 'fr'); // first known language
+  assert.equal(detectLang(['de-DE', 'es']), 'en'); // none: English
   assert.equal(detectLang([]), 'en');
   assert.equal(initLang('auto', ['fr-CA']), 'fr');
-  assert.equal(initLang('en', ['fr-FR']), 'en'); // le choix manuel l'emporte
+  assert.equal(initLang('en', ['fr-FR']), 'en'); // the manual choice wins
   assert.equal(lang(), 'en');
   initLang('fr');
 });
 
-test('noms de notes et comptage selon la langue', () => {
+test('note names and counting by language', () => {
   initLang('fr');
   assert.equal(pitchName('treble', 4, -1), 'Si♭ 4');
   assert.equal(startLabel(3), '2 et');

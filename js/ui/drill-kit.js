@@ -1,12 +1,12 @@
 /**
  * @module ui/drill-kit
  * @description
- * Pièces communes aux écrans d'entraînement rythmique (2.8) : réglages
- * mémorisés, choix de la mesure, réglages de lecture et du métronome,
- * bouton lecture, surlignage léger pendant la lecture.
+ * Pieces shared by the rhythm practice screens (2.8): remembered settings,
+ * time signature choice, playback and metronome settings, play button, light
+ * highlight during playback.
  *
- * Utilisé par {@link module:ui/training|ui/training} (Placements) et
- * {@link module:ui/exercises|ui/exercises} (exercices aléatoires).
+ * Used by {@link module:ui/training|ui/training} (Placements) and
+ * {@link module:ui/exercises|ui/exercises} (random exercises).
  */
 
 import { t } from '../i18n.js';
@@ -15,7 +15,7 @@ import { getMeta, setMeta, DRILL_DEFAULTS } from '../storage.js';
 import { METERS } from '../placements.js';
 import * as audio from '../audio.js';
 
-/** Subdivisions proposées (seules les croches sont disponibles pour l'instant). */
+/** Subdivisions offered (only eighth notes are available for now). */
 export const SUBDIVISIONS = [
   { key: '8', ready: true },
   { key: '16', ready: false },
@@ -23,10 +23,10 @@ export const SUBDIVISIONS = [
 ];
 
 /**
- * En-tête commun aux écrans d'entraînement.
- * @param {string} back Libellé du bouton retour.
+ * Header shared by the practice screens.
+ * @param {string} back Back button label.
  * @param {string} title
- * @param {string} [extra=''] HTML ajouté à droite du titre.
+ * @param {string} [extra=''] HTML added to the right of the title.
  * @returns {string}
  */
 export function header(back, title, extra = '') {
@@ -34,7 +34,7 @@ export function header(back, title, extra = '') {
 }
 
 /**
- * Réglages courants (mémorisés entre deux visites).
+ * Current settings (remembered between visits).
  * @returns {module:storage~DrillSettings}
  */
 export function settings() {
@@ -42,7 +42,7 @@ export function settings() {
 }
 
 /**
- * Modifie et mémorise des réglages.
+ * Changes and remembers settings.
  * @param {Object} patch
  */
 export function updateSettings(patch) {
@@ -50,7 +50,7 @@ export function updateSettings(patch) {
 }
 
 /**
- * Temps du métronome pour une mesure (tous par défaut).
+ * Metronome beats for a time signature (all by default).
  * @param {module:placements~Meter} m
  * @returns {Array.<boolean>}
  */
@@ -59,7 +59,7 @@ export function beatsFor(m) {
 }
 
 /**
- * Options de lecture pour {@link module:audio.playStaff|playStaff}.
+ * Playback options for {@link module:audio.playStaff|playStaff}.
  * @param {module:placements~Meter} m
  * @param {boolean} [loop=false]
  * @returns {module:audio~PlayOptions}
@@ -77,9 +77,9 @@ export function playOptions(m, loop = false) {
 }
 
 /**
- * Sélecteur de mesure (puces). Les mesures asymétriques affichent leur
- * groupement en petit (`7/8` `2+2+3`).
- * @param {string} selected Clé de la mesure choisie.
+ * Time signature picker (chips). Odd meters show their grouping in small
+ * print (`7/8` `2+2+3`).
+ * @param {string} selected Key of the chosen time signature.
  * @returns {string}
  */
 export function meterChips(selected) {
@@ -90,7 +90,7 @@ export function meterChips(selected) {
 }
 
 /**
- * Sélecteur de subdivision (seules les croches pour l'instant).
+ * Subdivision picker (eighth notes only for now).
  * @returns {string}
  */
 export function subdivisionSeg() {
@@ -101,7 +101,7 @@ export function subdivisionSeg() {
 }
 
 /**
- * Bouton bascule (`aria-pressed`) pour un réglage booléen.
+ * Toggle button (`aria-pressed`) for a boolean setting.
  * @param {string} key
  * @param {string} label
  * @param {boolean} on
@@ -112,7 +112,7 @@ export const toggle = (key, label, on, disabled = false) =>
   `<button type="button" class="chip" data-opt="${key}" aria-pressed="${on && !disabled}"${disabled ? ` disabled title="${esc(t('train.simpleOnly'))}"` : ''}>${esc(label)}</button>`;
 
 /**
- * Champ tempo (noire = …).
+ * Tempo field (quarter note = …).
  * @param {number} tempo
  * @returns {string}
  */
@@ -120,8 +120,8 @@ export const tempoField = (tempo) =>
   `<label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" id="drillTempo" value="${tempo}" aria-label="Tempo"></label>`;
 
 /**
- * Réglages du métronome : temps qui cliquent (un bouton par groupe), accent,
- * décompte, rythme coupé.
+ * Metronome settings: clicking beats (one button per group), accent,
+ * count-in, muted rhythm.
  * @param {module:placements~Meter} m
  * @returns {string}
  */
@@ -139,11 +139,11 @@ export function metronomeControls(m) {
 }
 
 /**
- * Branche les réglages de lecture d'un écran : tempo, bascules
- * (`data-opt`), temps du métronome.
+ * Wires a screen's playback settings: tempo, toggles (`data-opt`),
+ * metronome beats.
  * @param {HTMLElement} root
  * @param {module:placements~Meter} m
- * @param {function()} onChange Après chaque changement (la lecture en cours est déjà arrêtée).
+ * @param {function()} onChange After each change (current playback is already stopped).
  */
 export function bindPlayControls(root, m, onChange) {
   const tp = /** @type {HTMLInputElement} */ (root.querySelector('#drillTempo'));
@@ -179,9 +179,9 @@ export function bindPlayControls(root, m, onChange) {
 }
 
 /**
- * Met à jour un bouton lecture (`data-play`) : ▶ ou ■.
+ * Updates a play button (`data-play`): ▶ or ■.
  * @param {string} id
- * @param {boolean} [withText=true] Afficher « Écouter » / « Stop » à côté du symbole.
+ * @param {boolean} [withText=true] Show "Listen" / "Stop" next to the symbol.
  */
 export function updatePlay(id, withText = true) {
   const btn = document.querySelector(`[data-play="${CSS.escape(id)}"]`);
@@ -199,11 +199,11 @@ export function updatePlay(id, withText = true) {
 }
 
 /**
- * Surligne l'élément joué dans une portée déjà dessinée, sans tout redessiner
- * (une série peut compter des centaines de mesures). Les groupes `g.it` du
- * SVG sont dans l'ordre des éléments (aucun n'est masqué ici).
- * @param {Element} el Conteneur du SVG.
- * @param {?number} i Élément joué, `null` pour effacer.
+ * Highlights the played item in an already drawn staff, without redrawing
+ * everything (a series can hold hundreds of measures). The `g.it` groups of
+ * the SVG are in item order (none is hidden here).
+ * @param {Element} el SVG container.
+ * @param {?number} i Played item, `null` to clear.
  */
 export function highlight(el, i) {
   if (!el) return;
@@ -213,7 +213,7 @@ export function highlight(el, i) {
   const g = el.querySelectorAll('g.it')[i];
   if (g) {
     g.classList.add('play');
-    // Longue série : on fait défiler la page quand la lecture sort de l'écran.
+    // Long series: scroll the page when playback leaves the screen.
     const r = g.getBoundingClientRect();
     if (r.bottom > window.innerHeight - 70 || r.top < 0)
       g.scrollIntoView({ block: 'center', behavior: 'smooth' });

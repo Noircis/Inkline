@@ -1,6 +1,6 @@
-/* Inkline · Portées : dessin SVG et palettes. */
+/* Inkline · Staves: SVG drawing and palettes. */
 
-/* 4. SVG des portées */
+/* 4. Staff SVG */
 svg .l {
   stroke: var(--line);
   stroke-width: 1;

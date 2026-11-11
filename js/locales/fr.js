@@ -1,8 +1,8 @@
 /**
  * @module locales/fr
- * @description Textes de l'interface en **français** (2.9). Mêmes clés que
- * {@link module:locales/en|locales/en} (vérifié par les tests). Une entrée
- * `{ one, other }` est un pluriel ; `{nom}` est remplacé par {@link module:i18n.t|t}.
+ * @description Interface texts in **French** (2.9). Same keys as
+ * {@link module:locales/en|locales/en} (checked by the tests). An entry
+ * `{ one, other }` is a plural; `{name}` is replaced by {@link module:i18n.t|t}.
  */
 
 export default {

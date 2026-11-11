@@ -1,4 +1,4 @@
-// Tests des grilles d'accords et du format iReal Pro.
+// Tests for chord charts and the iReal Pro format.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { chordTones, chordOk } from '../js/chords.js';
@@ -37,33 +37,33 @@ const blues = {
   ],
 };
 
-test('gridTokens : saisie rapide', () => {
+test('gridTokens: fast input', () => {
   assert.deepEqual(gridTokens('cm7 / f7 NC'), ['Cm7', '', 'F7', 'n']);
   assert.ok(chordOk('Bb13#11') && !chordOk('H7'));
 });
 
-test('slotDurations : répartition à la iReal', () => {
+test('slotDurations: iReal-style split', () => {
   assert.deepEqual(slotDurations(3, '4/4'), [2, 1, 1]);
   assert.deepEqual(slotDurations(2, '3/4'), [2, 1]);
   assert.deepEqual(slotDurations(2, '6/8'), [1.5, 1.5]);
 });
 
-test('gridPlayOrder : reprise avec 1re et 2e fins', () => {
+test('gridPlayOrder: repeat with 1st and 2nd endings', () => {
   assert.deepEqual(gridPlayOrder(blues.measures), [0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 8, 9, 10, 11]);
 });
 
-test('chordTones : D7alt et Cm7b5 (fondamentale comprise depuis la 2.8.8)', () => {
+test('chordTones: D7alt and Cm7b5 (root included since 2.8.8)', () => {
   assert.deepEqual(chordTones('D7alt').notes, [62, 54, 60, 63, 65]);
   assert.deepEqual(chordTones('Cm7b5').notes, [60, 63, 58, 54]);
 });
 
-test('chordTones : deux accords différents ne donnent jamais la même nappe', () => {
-  // Fmaj7 → F♯ø7 : sans fondamentale, les deux nappes étaient la, do, mi.
+test('chordTones: two different chords never give the same pad', () => {
+  // Fmaj7 → F♯ø7: without the root, both pads were A, C, E.
   const set = (c) => [...chordTones(c).notes].sort((a, b) => a - b).join();
   assert.notEqual(set('Fmaj7'), set('F#m7b5'));
-  assert.ok(chordTones('Fmaj7').notes.includes(53)); // fa 3
-  assert.ok(chordTones('F#m7b5').notes.includes(54)); // fa♯ 3
-  // Pour toutes les fondamentales et qualités courantes : la nappe contient la fondamentale.
+  assert.ok(chordTones('Fmaj7').notes.includes(53)); // F3
+  assert.ok(chordTones('F#m7b5').notes.includes(54)); // F♯3
+  // For every root and common quality: the pad contains the root.
   const roots = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
   const quals = ['maj7', 'm7', '7', 'm7b5', 'dim7', '7alt', '9', 'sus4'];
   roots.forEach((r) =>
@@ -76,12 +76,12 @@ test('chordTones : deux accords différents ne donnent jamais la même nappe', (
   );
 });
 
-test('scramble est une involution', () => {
+test('scramble is an involution', () => {
   const s = 'abcdefghijklmnopqrstuvwxyz'.repeat(9);
   assert.equal(scramble(scramble(s)), s);
 });
 
-test('qualités : texte → iReal → texte', () => {
+test('qualities: text → iReal → text', () => {
   const back = (c) => {
     const m = CHORD_RE.exec(chordToIReal(c));
     return m[1] + m[2] + qualityFromIReal(m[3]) + (m[4] ? '/' + m[4] : '');
@@ -93,7 +93,7 @@ test('qualités : texte → iReal → texte', () => {
   assert.equal(back('Ab7b9/G'), 'Ab7b9/G');
 });
 
-test('iReal : aller-retour export → import sans perte', () => {
+test('iReal: lossless export → import round trip', () => {
   const link = toIRealLink('Test Blues', blues);
   assert.match(link, /^irealb:\/\/Test%20Blues=/);
   const [song] = parseIRealAll(link);
@@ -108,14 +108,14 @@ test('iReal : aller-retour export → import sans perte', () => {
   assert.equal(song.measures[11].fin, true);
 });
 
-test('iReal : playlist et fichier HTML', () => {
+test('iReal: playlist and HTML file', () => {
   const link = toIRealLink('A', blues);
   const html = `<a href="${link}===${link.slice(9)}===Ma playlist">x</a>`;
   assert.equal(parseIRealAll(html).length, 2);
   assert.match(toIRealMusic(blues), /^T44\*A\{F7/);
 });
 
-test('parseIRealMusic : sections, reprise, voltas, mesure répétée, fin', () => {
+test('parseIRealMusic: sections, repeat, endings, repeated measure, end', () => {
   const r = parseIRealMusic('T34*A{C^7 |x |N1D-7 G7 }|N2G7 Z');
   assert.equal(r.time, '3/4');
   assert.deepEqual(

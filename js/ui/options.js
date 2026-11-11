@@ -1,26 +1,26 @@
 /**
  * @module ui/options
  * @description
- * Écran **Options**, ouvert par la roue crantée de l'accueil.
+ * **Settings** screen, opened by the gear on the home screen.
  *
- * Il regroupe ce qui concerne le carnet entier, pour garder l'accueil
- * dédié aux notes :
+ * It gathers what concerns the whole notebook, to keep the home screen
+ * dedicated to notes:
  *
- * - **Affichage** : Cartes, Mosaïque ou Liste pour l'accueil ; réduction
- *   automatique des blocs longs ;
- * - **Dossiers** : liste des dossiers (toucher pour modifier), création ;
- * - **Carnet** : exporter une sauvegarde complète (notes et dossiers), importer un fichier
- *   (sauvegarde ou note reçue `.inkline`), date de la dernière sauvegarde ;
- * - **iReal Pro** : importer un lien, une playlist ou un fichier `.html` ;
- * - **À propos** : version, nouveautés, documentation du code.
+ * - **Display**: Cards, Mosaic or List for the home screen; automatic
+ *   collapse of long blocks;
+ * - **Folders**: list of folders (tap to edit), creation;
+ * - **Notebook**: export a full backup (notes and folders), import a file
+ *   (backup or received `.inkline` note), date of the last backup;
+ * - **iReal Pro**: import a link, a playlist or an `.html` file;
+ * - **About**: version, what's new, code documentation.
  *
- * ## Rappel de sauvegarde
+ * ## Backup reminder
  *
- * Les notes ne vivent que sur le téléphone. Au-delà de
- * {@link module:ui/options~BACKUP_REMINDER_DAYS|BACKUP_REMINDER_DAYS} jours
- * sans export, un point apparaît sur la roue crantée
- * ({@link module:ui/options.backupDue|backupDue}) : c'est un rappel visible,
- * mais jamais bloquant.
+ * Notes live only on the phone. After
+ * {@link module:ui/options~BACKUP_REMINDER_DAYS|BACKUP_REMINDER_DAYS} days
+ * without an export, a dot appears on the gear
+ * ({@link module:ui/options.backupDue|backupDue}): a visible reminder, but
+ * never a blocking one.
  */
 
 import { t, lang } from '../i18n.js';
@@ -45,18 +45,18 @@ import { registerScreen, renderScreen, openNote, backToList } from './nav.js';
 import { openFolderSheet } from './folder-sheet.js';
 import { FOLD_MIN_LINES, FOLD_PREVIEW_LINES } from './fold.js';
 
-/** Nombre de jours sans sauvegarde avant d'afficher le rappel. */
+/** Number of days without a backup before showing the reminder. */
 const BACKUP_REMINDER_DAYS = 30;
 
 const DAY = 24 * 3600 * 1000;
 
-/** Adresse du journal des modifications sur GitHub. */
+/** Address of the changelog on GitHub. */
 const CHANGELOG_URL = 'https://github.com/Noircis/Inkline/blob/main/CHANGELOG.md';
 
 /**
- * Faut-il rappeler de sauvegarder ? Oui s'il y a des notes et que la
- * dernière sauvegarde (ou, à défaut, la première utilisation) date de plus de
- * {@link BACKUP_REMINDER_DAYS} jours.
+ * Should a backup be suggested? Yes if there are notes and the last backup
+ * (or, failing that, the first use) is more than {@link BACKUP_REMINDER_DAYS}
+ * days old.
  * @param {number} [now=Date.now()]
  * @returns {boolean}
  */
@@ -68,7 +68,7 @@ export function backupDue(now = Date.now()) {
 }
 
 /**
- * Formule lisible de la date de dernière sauvegarde.
+ * Readable wording of the last backup date.
  * @param {number|undefined} ts
  * @returns {string}
  */
@@ -81,14 +81,14 @@ function lastExportLabel(ts) {
 }
 
 /**
- * Crée une note par morceau iReal trouvé dans `text`.
- * @param {string} text Lien(s) `irealb://` ou fichier `.html` iReal.
- * @returns {number} Nombre de morceaux importés.
+ * Creates one note per iReal tune found in `text`.
+ * @param {string} text `irealb://` link(s) or iReal `.html` file.
+ * @returns {number} Number of tunes imported.
  */
 function importIRealNotes(text) {
   const songs = parseIRealAll(text);
   songs.forEach((s, k) => {
-    // Le compositeur iReal est au format « Nom Prénom » : on le remet dans l'ordre usuel.
+    // iReal stores the composer as "Last First": put it back in the usual order.
     const composer = s.composer && s.composer !== 'Unknown' ? s.composer.split(' ').reverse().join(' ') : '';
     const n = {
       id: uid(),
@@ -103,7 +103,7 @@ function importIRealNotes(text) {
   return songs.length;
 }
 
-/** Pictogrammes des trois affichages (SVG en ligne, colorés par currentColor). */
+/** Pictograms of the three displays (inline SVG, colored with currentColor). */
 const VIEW_ICONS = {
   cards:
     '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="3" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="3" y="12" width="16" height="7" rx="1.5" fill="currentColor"/></svg>',
@@ -112,11 +112,11 @@ const VIEW_ICONS = {
   list: '<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="3" y="4" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="3" y="9.8" width="16" height="2.4" rx="1.2" fill="currentColor"/><rect x="3" y="15.6" width="16" height="2.4" rx="1.2" fill="currentColor"/></svg>',
 };
 
-/** Chevron des lignes cliquables. */
+/** Chevron of tappable rows. */
 const CHEVRON = '<span class="opt-chev" aria-hidden="true">&#8250;</span>';
 
 /**
- * HTML de la section Dossiers.
+ * HTML of the Folders section.
  * @returns {string}
  */
 function foldersHtml() {
@@ -131,9 +131,9 @@ function foldersHtml() {
 }
 
 /**
- * HTML de la section Langue (2.9) : automatique (langue du téléphone ou du
- * navigateur), anglais ou français. Les libellés des langues restent dans
- * leur propre langue, pour qu'on retrouve toujours la sienne.
+ * HTML of the Language section (2.9): automatic (phone or browser
+ * language), English or French. Language names stay in their own language,
+ * so everyone can always find theirs.
  * @param {module:storage~Meta} meta
  * @returns {string}
  */
@@ -151,8 +151,8 @@ function languageHtml(meta) {
 }
 
 /**
- * Branche la section Langue. Toute l'interface est rechargée dans la
- * nouvelle langue (palettes et claviers compris).
+ * Wires the Language section. The whole interface is reloaded in the new
+ * language (palettes and keyboards included).
  */
 function bindLanguage() {
   app.querySelectorAll('[data-lang]').forEach((b) =>
@@ -166,7 +166,7 @@ function bindLanguage() {
 }
 
 /**
- * HTML de la section Affichage.
+ * HTML of the Display section.
  * @param {module:storage~Meta} meta
  * @returns {string}
  */
@@ -182,7 +182,7 @@ function displayHtml(meta) {
 }
 
 /**
- * HTML de la section Carnet (sauvegarde, import).
+ * HTML of the Notebook section (backup, import).
  * @param {module:storage~Meta} meta
  * @returns {string}
  */
@@ -200,7 +200,7 @@ function notebookHtml(meta) {
 }
 
 /**
- * HTML de la section iReal Pro.
+ * HTML of the iReal Pro section.
  * @returns {string}
  */
 function irealHtml() {
@@ -216,7 +216,7 @@ function irealHtml() {
 }
 
 /**
- * HTML de la section À propos.
+ * HTML of the About section.
  * @returns {string}
  */
 function aboutHtml() {
@@ -230,9 +230,9 @@ function aboutHtml() {
   </section>`;
 }
 
-/** Branche la section Affichage. */
+/** Wires the Display section. */
 function bindDisplay() {
-  // Sélecteur d'affichage : mémorisé dans les métadonnées, appliqué au retour sur l'accueil.
+  // Display picker: stored in the metadata, applied when returning home.
   app.querySelectorAll('[data-view]').forEach((b) => {
     b.onclick = () => {
       setMeta({ listView: b.dataset.view });
@@ -243,7 +243,7 @@ function bindDisplay() {
   fold.onchange = () => setMeta({ autoFold: fold.checked || undefined });
 }
 
-/** Branche la section Dossiers. */
+/** Wires the Folders section. */
 function bindFolders() {
   const reopen = () => renderScreen({ keepScroll: true });
   app.querySelectorAll('[data-folder]').forEach((b) => {
@@ -255,8 +255,8 @@ function bindFolders() {
 }
 
 /**
- * Importe un fichier choisi dans les Options : une note reçue est ouverte
- * directement ; une sauvegarde est fusionnée, avec un compte rendu.
+ * Imports a file chosen in Settings: a received note is opened directly; a
+ * backup is merged, with a report.
  * @param {string} text
  */
 function importChosenFile(text) {
@@ -271,7 +271,7 @@ function importChosenFile(text) {
       return;
     }
     const added = Object.keys(state.folders).length - nf;
-    renderScreen({ keepScroll: true }); // la section Dossiers a pu changer
+    renderScreen({ keepScroll: true }); // the Folders section may have changed
     app.querySelector('#optMsg').textContent =
       t('opt.imported', { n: r.count }) + (added ? t('opt.foldersAdded', { n: added }) : '.');
   } catch (err) {
@@ -279,7 +279,7 @@ function importChosenFile(text) {
   }
 }
 
-/** Branche la section Carnet. */
+/** Wires the Notebook section. */
 function bindNotebook() {
   app.querySelector('#optExport').onclick = () => {
     download(
@@ -292,12 +292,12 @@ function bindNotebook() {
     last.classList.remove('due');
     app.querySelector('#optMsg').textContent = t('note.downloaded');
   };
-  // Pas de filtre « accept » : Android grise les extensions qu'il ne connaît
-  // pas (.inkline). Le contenu est vérifié par importFile.
+  // No "accept" filter: Android greys out extensions it does not know
+  // (.inkline). The content is checked by importFile.
   app.querySelector('#optImport').onchange = (e) => readFile(e, importChosenFile);
 }
 
-/** Branche la section iReal Pro. */
+/** Wires the iReal Pro section. */
 function bindIReal() {
   const field = /** @type {HTMLTextAreaElement} */ (app.querySelector('#optIr'));
   const irGo = (txt) => {
@@ -310,8 +310,8 @@ function bindIReal() {
 }
 
 /**
- * Dessine l'écran Options : une fonction par section pour le HTML, une par
- * section pour le branchement des événements.
+ * Draws the Settings screen: one function per section for the HTML, one per
+ * section for wiring the events.
  */
 function renderOptions() {
   const meta = getMeta();

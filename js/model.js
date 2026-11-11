@@ -1,76 +1,76 @@
 /**
  * @module model
  * @description
- * Modèle de données d'Inkline : types (sous forme de `@typedef` JSDoc),
- * constantes de durée et fabriques d'objets.
+ * Inkline's data model: types (as JSDoc `@typedef`s), duration constants and
+ * object factories.
  *
- * ## Vue d'ensemble
+ * ## Overview
  *
  * ```
  * notes : { [id]: Note }
  * Note  = { id, title, created, updated, blocks: Block[] }
- * Block = TextBlock | StaffBlock | GridBlock     (union discriminée par `type`)
+ * Block = TextBlock | StaffBlock | GridBlock     (union discriminated by `type`)
  * ```
  *
- * Toutes les structures sont des objets JSON simples : elles sont sérialisées
- * telles quelles dans `localStorage` et dans les fichiers de sauvegarde. Les
- * champs optionnels sont **absents** plutôt que `false`/`null`, ce qui garde
- * le JSON compact (un morceau de plusieurs centaines de notes reste léger).
+ * Every structure is a plain JSON object: they are serialized as is in
+ * storage and in backup files. Optional fields are **absent** rather than
+ * `false`/`null`, which keeps the JSON compact (a piece of several hundred
+ * notes stays light).
  *
- * ## Unités de temps
+ * ## Time units
  *
- * Toutes les durées sont exprimées en **noires** (quarter notes) :
- * ronde = 4, blanche = 2, noire = 1, croche = 0.5, double croche = 0.25.
- * Une note pointée vaut ×1.5, une note de triolet ×2/3.
+ * Every duration is expressed in **quarter notes**: whole = 4, half = 2,
+ * quarter = 1, eighth = 0.5, sixteenth = 0.25. A dotted note is worth ×1.5,
+ * a triplet note ×2/3.
  *
- * ## Hauteur
+ * ## Pitch
  *
- * La hauteur d'une note est stockée comme **position sur la portée**
- * (`s`, en demi-interlignes, 0 = première ligne du bas) et non comme numéro
- * MIDI : c'est ce que l'utilisateur touche à l'écran. La hauteur réelle est
- * calculée à la demande par {@link module:pitch|pitch}.
+ * A note's pitch is stored as a **position on the staff** (`s`, in half
+ * staff-spaces, 0 = bottom line) and not as a MIDI number: that is what the
+ * user taps on screen. The actual pitch is computed on demand by
+ * {@link module:pitch|pitch}.
  */
 
 import { t } from './i18n.js';
 import { uid } from './util.js';
 
 /**
- * Code de durée écrite d'une note ou d'un silence.
- * - `'w'` ronde, `'h'` blanche, `'q'` noire, `'8'` croche, `'16'` double croche.
+ * Written duration code of a note or rest.
+ * - `'w'` whole, `'h'` half, `'q'` quarter, `'8'` eighth, `'16'` sixteenth.
  * @typedef {'w'|'h'|'q'|'8'|'16'} DurationCode
  */
 
 /**
- * Type de barre de mesure placée **après** un élément de portée.
- * - `'single'` barre simple (force la fin de mesure, même incomplète)
- * - `'double'` double barre
- * - `'final'` barre de fin (termine le motif : plus d'ajout possible)
- * - `'rep'` fin de reprise `:‖`
+ * Type of barline placed **after** a staff item.
+ * - `'single'` single barline (forces the end of the measure, even incomplete)
+ * - `'double'` double barline
+ * - `'final'` final barline (ends the pattern: nothing more can be added)
+ * - `'rep'` end repeat `:‖`
  * @typedef {'single'|'double'|'final'|'rep'} BarType
  */
 
 /**
- * Un élément de portée : note ou silence.
+ * A staff item: note or rest.
  *
  * @typedef {Object} StaffItem
- * @property {DurationCode} d Durée écrite.
- * @property {boolean} [dot] Note pointée (durée ×1.5).
- * @property {boolean} [r] Silence (aucune hauteur).
- * @property {number} [s] Position sur la portée en demi-interlignes (0 = 1re ligne).
- *   Absent pour un silence et sur une ligne rythmique.
- * @property {number} [a] Altération écrite : bémol, bécarre, dièse.
- * @property {string} [c] Accord chiffré affiché au-dessus (ex. `"Bb7"`).
- * @property {BarType} [bar] Barre de mesure placée après l'élément.
- * @property {boolean} [rs] Début de reprise `‖:` placé **avant** l'élément.
- * @property {boolean} [tie] Liaison de prolongation vers l'élément suivant
- *   (même hauteur ; à la lecture, les deux durées n'en font qu'une).
- * @property {3} [tup] Appartient à un triolet (3 notes dans le temps de 2 :
- *   durée réelle = durée écrite × 2/3).
- * @property {boolean} [auto] Morceau créé par la mise en mesure (2.6) : continue dans l'élément suivant (note coupée à la barre). Voir le module `measure-fit`.
+ * @property {DurationCode} d Written duration.
+ * @property {boolean} [dot] Dotted note (duration ×1.5).
+ * @property {boolean} [r] Rest (no pitch).
+ * @property {number} [s] Position on the staff in half staff-spaces (0 = 1st line).
+ *   Absent for a rest and on a rhythm line.
+ * @property {number} [a] Written accidental: flat, natural, sharp.
+ * @property {string} [c] Chord symbol shown above (e.g. `"Bb7"`).
+ * @property {BarType} [bar] Barline placed after the item.
+ * @property {boolean} [rs] Start repeat `‖:` placed **before** the item.
+ * @property {boolean} [tie] Tie to the next item (same pitch; on playback,
+ *   the two durations become one).
+ * @property {3} [tup] Belongs to a triplet (3 notes in the time of 2:
+ *   actual duration = written duration × 2/3).
+ * @property {boolean} [auto] Piece created by fitting into measures (2.6): continues into the next item (note split at the barline). See the `measure-fit` module.
  */
 
 /**
- * Bloc de texte libre.
+ * Free text block.
  * @typedef {Object} TextBlock
  * @property {string} id
  * @property {'text'} type
@@ -78,54 +78,54 @@ import { uid } from './util.js';
  */
 
 /**
- * Bloc portée (clé de sol ou de fa) ou ligne rythmique (une seule ligne, sans hauteur).
+ * Staff block (treble or bass clef) or rhythm line (a single line, no pitch).
  *
  * @typedef {Object} StaffBlock
  * @property {string} id
  * @property {'staff'} type
- * @property {'treble'|'bass'|'rhythm'} clef `'rhythm'` = ligne rythmique.
- * @property {string} time Chiffrage de mesure, ex. `'4/4'`, `'6/8'`.
- * @property {number} tempo Tempo en noires par minute.
- * @property {boolean} swing Croches swing à la lecture.
- * @property {StaffItem[]} items Éléments dans l'ordre.
- * @property {string} [tr] Instrument transpositeur (2.8.3, clé de {@link module:model.INSTRUMENTS|INSTRUMENTS}) : les notes sont écrites comme le musicien les lit, l'écoute joue le son réel. Absent : en ut.
- * @property {number} [ks] Armure (2.5) : nombre de dièses (> 0) ou de bémols (< 0), de -7 à 7. Absente : pas d'armure.
- * @property {Array.<number>} [groups] Groupement des croches dans la mesure (2.8), ex. `[2, 2, 3]` pour un 7/8 « 2+2+3 ». Décide des ligatures et des clics du métronome. Absent : {@link module:model.defaultGroups|defaultGroups}. Pour l'instant seulement sur les blocs générés de l'entraînement.
- * @property {boolean} [justify] Étirer la dernière ligne jusqu'au bord (blocs générés de l'entraînement ; jamais enregistré).
- * @property {'open'|'closed'} [fold] Choix manuel d'affichage d'un bloc long (2.2) : déplié ou réduit. Absent : l'option « Réduire automatiquement » décide.
+ * @property {'treble'|'bass'|'rhythm'} clef `'rhythm'` = rhythm line.
+ * @property {string} time Time signature, e.g. `'4/4'`, `'6/8'`.
+ * @property {number} tempo Tempo in quarter notes per minute.
+ * @property {boolean} swing Swing eighths on playback.
+ * @property {StaffItem[]} items Items in order.
+ * @property {string} [tr] Transposing instrument (2.8.3, key of {@link module:model.INSTRUMENTS|INSTRUMENTS}): notes are written as the musician reads them, playback plays the concert pitch. Absent: in C.
+ * @property {number} [ks] Key signature (2.5): number of sharps (> 0) or flats (< 0), from -7 to 7. Absent: no key signature.
+ * @property {Array.<number>} [groups] Grouping of eighth notes in the measure (2.8), e.g. `[2, 2, 3]` for a "2+2+3" 7/8. Decides beams and metronome clicks. Absent: {@link module:model.defaultGroups|defaultGroups}. For now only on generated practice blocks.
+ * @property {boolean} [justify] Stretch the last line to the edge (generated practice blocks; never saved).
+ * @property {'open'|'closed'} [fold] Manual display choice for a long block (2.2): expanded or collapsed. Absent: the "Collapse automatically" option decides.
  */
 
 /**
- * Une mesure de grille d'accords.
+ * A chord chart measure.
  *
- * `ch` contient de 0 à 4 « cases » (slots) qui se partagent la mesure :
- * - un nom d'accord (`'Cm7'`, `'Bb7alt'`, `'F/A'`…)
- * - `''` : prolonge l'accord précédent sur cette case
- * - `'n'` : *no chord* (N.C.)
- * - `['%']` (seul) : répète la mesure précédente
+ * `ch` holds 0 to 4 slots that share the measure:
+ * - a chord name (`'Cm7'`, `'Bb7alt'`, `'F/A'`…)
+ * - `''`: continues the previous chord over this slot
+ * - `'n'`: *no chord* (N.C.)
+ * - `['%']` (alone): repeats the previous measure
  *
  * @typedef {Object} GridMeasure
- * @property {string[]} ch Cases d'accords.
- * @property {string} [sec] Repère de section (`'A'`, `'B'`, `'Intro'`…) en début de mesure.
- * @property {boolean} [rs] Début de reprise avant la mesure.
- * @property {boolean} [re] Fin de reprise après la mesure.
- * @property {boolean} [dbl] Double barre après la mesure.
- * @property {boolean} [fin] Barre de fin après la mesure.
- * @property {1|2|3} [ending] Début d'une 1re/2e/3e fin (volta).
+ * @property {string[]} ch Chord slots.
+ * @property {string} [sec] Section mark (`'A'`, `'B'`, `'Intro'`…) at the start of the measure.
+ * @property {boolean} [rs] Start repeat before the measure.
+ * @property {boolean} [re] End repeat after the measure.
+ * @property {boolean} [dbl] Double barline after the measure.
+ * @property {boolean} [fin] Final barline after the measure.
+ * @property {1|2|3} [ending] Start of a 1st/2nd/3rd ending (volta).
  */
 
 /**
- * Grille d'accords façon iReal Pro.
+ * iReal Pro style chord chart.
  *
  * @typedef {Object} GridBlock
  * @property {string} id
  * @property {'grid'} type
- * @property {string} time Chiffrage de mesure.
- * @property {string} key Tonalité au format iReal : `'Bb'` (majeur), `'C-'` (mineur).
- * @property {string} style Style iReal (`'Medium Swing'`, `'Bossa Nova'`…).
- * @property {number} tempo Tempo en noires par minute.
+ * @property {string} time Time signature.
+ * @property {string} key Key in iReal format: `'Bb'` (major), `'C-'` (minor).
+ * @property {string} style iReal style (`'Medium Swing'`, `'Bossa Nova'`…).
+ * @property {number} tempo Tempo in quarter notes per minute.
  * @property {GridMeasure[]} measures
- * @property {'open'|'closed'} [fold] Choix manuel d'affichage d'un bloc long (2.2) : déplié ou réduit. Absent : l'option « Réduire automatiquement » décide.
+ * @property {'open'|'closed'} [fold] Manual display choice for a long block (2.2): expanded or collapsed. Absent: the "Collapse automatically" option decides.
  */
 
 /**
@@ -133,37 +133,36 @@ import { uid } from './util.js';
  */
 
 /**
- * Une note du carnet (une « page »).
+ * A note of the notebook (a "page").
  *
  * @typedef {Object} Note
  * @property {string} id
  * @property {string} title
- * @property {number} created Horodatage (ms) de création, rempli automatiquement et
- *   jamais modifié ensuite. Pour les notes antérieures à la 1.7.0 (qui n'avaient
- *   pas ce champ), il a été initialisé avec la date de dernière modification.
- * @property {number} updated Horodatage (ms) de dernière modification, utilisé pour
- *   trier la liste et pour résoudre les conflits à l'import (le plus récent gagne).
+ * @property {number} created Creation timestamp (ms), filled in automatically
+ *   and never changed afterwards. For notes from before 1.7.0 (which did not
+ *   have this field), it was initialized with the last modification date.
+ * @property {number} updated Last modification timestamp (ms), used to sort
+ *   the list and to resolve conflicts on import (the most recent wins).
  * @property {Block[]} blocks
- * @property {string} [folder] Dossier (2.0), voir {@link module:folders|folders}.
- * @property {Array.<string>} [cats] Catégories de son dossier (2.8.6), une ou plusieurs.
- * @property {boolean} [pinned] Épinglée en tête de liste (2.0).
+ * @property {string} [folder] Folder (2.0), see {@link module:folders|folders}.
+ * @property {Array.<string>} [cats] Categories of its folder (2.8.6), one or more.
+ * @property {boolean} [pinned] Pinned at the top of the list (2.0).
  */
 
 /**
- * Durée en noires de chaque {@link DurationCode}.
+ * Duration in quarter notes of each {@link DurationCode}.
  * @type {Object.<DurationCode, number>}
  */
 export const DUR = Object.freeze({ w: 4, h: 2, q: 1, 8: 0.5, 16: 0.25 });
 
-/** Chiffrages de mesure proposés dans l'interface. */
+/** Time signatures offered in the interface. */
 export const TIME_SIGNATURES = ['4/4', '3/4', '2/4', '5/4', '6/8', '12/8'];
 
 /**
- * Durée **réelle** d'un élément de portée, en noires.
+ * **Actual** duration of a staff item, in quarter notes.
  *
- * Combine la durée écrite, le point (×1.5) et le triolet (×2/3).
- * C'est cette valeur qui sert à remplir les mesures, grouper les ligatures
- * et séquencer l'audio.
+ * Combines the written duration, the dot (×1.5) and the triplet (×2/3).
+ * This is the value used to fill measures, group beams and sequence audio.
  *
  * @example
  * qlen({ d: 'q', dot: true })   // 1.5
@@ -177,8 +176,8 @@ export function qlen(it) {
 }
 
 /**
- * Durée **écrite** d'un élément (sans le facteur de triolet). Sert au
- * regroupement des triolets, qui raisonne sur les valeurs écrites.
+ * **Written** duration of an item (without the triplet factor). Used to
+ * group triplets, which works on written values.
  *
  * @param {StaffItem} it
  * @returns {number}
@@ -188,13 +187,13 @@ export function writtenLen(it) {
 }
 
 /**
- * Capacité d'une mesure en noires.
+ * Capacity of a measure in quarter notes.
  *
  * @example
  * mlen('4/4')  // 4
  * mlen('6/8')  // 3
  *
- * @param {string} time Chiffrage `'n/d'`.
+ * @param {string} time Time signature `'n/d'`.
  * @returns {number}
  */
 export function mlen(time) {
@@ -203,9 +202,8 @@ export function mlen(time) {
 }
 
 /**
- * Unité de temps (pulsation) en noires : 1 pour les mesures simples (x/4),
- * 1.5 (noire pointée) pour les mesures composées (x/8). Sert au groupement
- * des ligatures par temps.
+ * Beat unit (pulse) in quarter notes: 1 for simple time (x/4), 1.5 (dotted
+ * quarter) for compound time (x/8). Used to group beams by beat.
  *
  * @param {string} time
  * @returns {number}
@@ -215,20 +213,20 @@ export function beatUnit(time) {
 }
 
 /**
- * Un instrument transpositeur (2.8.3) : de combien sa partie est écrite
- * au-dessus du son réel.
+ * A transposing instrument (2.8.3): how far above the concert pitch its part
+ * is written.
  * @typedef {Object} Instrument
- * @property {string} key Identifiant enregistré dans la portée (`b.tr`) ; libellé : clé
- *   `instr.<key>` des dictionnaires ({@link module:i18n|i18n}).
- * @property {string} tag Étiquette affichée sur la portée (vide en ut).
- * @property {number} steps Écart écrit − réel, en degrés (lignes et interlignes).
- * @property {number} semis Écart écrit − réel, en demi-tons.
+ * @property {string} key Id stored in the staff (`b.tr`); label: key
+ *   `instr.<key>` in the dictionaries ({@link module:i18n|i18n}).
+ * @property {string} tag Label shown on the staff (empty in C).
+ * @property {number} steps Written − concert interval, in degrees (lines and spaces).
+ * @property {number} semis Written − concert interval, in semitones.
  */
 
 /**
- * Instruments proposés. Un sax alto (mi♭) lit une sixte majeure au-dessus du
- * son réel : son do écrit sonne mi♭. Un sax ténor (si♭) lit une neuvième
- * majeure au-dessus (une seconde, plus une octave).
+ * Instruments offered. An alto sax (E♭) reads a major sixth above concert
+ * pitch: its written C sounds E♭. A tenor sax (B♭) reads a major ninth above
+ * (a second, plus an octave).
  * @type {ReadonlyArray.<Instrument>}
  */
 export const INSTRUMENTS = Object.freeze([
@@ -242,7 +240,7 @@ export const INSTRUMENTS = Object.freeze([
 ]);
 
 /**
- * Instrument d'une portée (en ut si absent ou inconnu).
+ * Instrument of a staff (in C if absent or unknown).
  * @param {string} [key]
  * @returns {Instrument}
  */
@@ -251,23 +249,22 @@ export function instrumentOf(key) {
 }
 
 /**
- * Plage des positions de note sur la portée (`s`, en demi-interlignes, 0 =
- * 1re ligne). En clé de sol : du fa 3 (-6, trois lignes supplémentaires en
- * dessous) au ré 7 (20, six lignes supplémentaires au-dessus ; jusqu'à la 2.8.1,
- * le mi 6, 14). La portée s'agrandit vers le haut quand une note dépasse 14
- * (voir {@link module:layout.layout|layout}).
+ * Range of note positions on the staff (`s`, in half staff-spaces, 0 = 1st
+ * line). In treble clef: from F3 (-6, three ledger lines below) to D7 (20,
+ * six ledger lines above; up to 2.8.1, E6, 14). The staff grows upward when
+ * a note goes above 14 (see {@link module:layout.layout|layout}).
  */
 export const STEP_MIN = -6;
-/** Voir {@link STEP_MIN}. */
+/** See {@link STEP_MIN}. */
 export const STEP_MAX = 20;
-/** Plus haute position qui tient dans la hauteur de ligne normale. */
+/** Highest position that fits in the normal line height. */
 export const STEP_FIT = 14;
 
 /**
- * Groupement par défaut des croches d'une mesure (2.8) : des paires en x/4
- * (un temps = deux croches), des groupes de 3 en mesure composée (6/8, 9/8,
- * 12/8, 3/8), et pour les mesures asymétriques des paires terminées par un
- * groupe de 3 (5/8 = 2+3, 7/8 = 2+2+3).
+ * Default grouping of the eighth notes of a measure (2.8): pairs in x/4 (one
+ * beat = two eighths), groups of 3 in compound time (6/8, 9/8, 12/8, 3/8),
+ * and for odd meters pairs ending with a group of 3 (5/8 = 2+3,
+ * 7/8 = 2+2+3).
  *
  * @example
  * defaultGroups('4/4') // [2, 2, 2, 2]
@@ -275,7 +272,7 @@ export const STEP_FIT = 14;
  * defaultGroups('7/8') // [2, 2, 3]
  *
  * @param {string} time
- * @returns {Array.<number>} Tailles des groupes, en croches.
+ * @returns {Array.<number>} Group sizes, in eighth notes.
  */
 export function defaultGroups(time) {
   const [n, d] = time.split('/').map(Number);
@@ -288,8 +285,8 @@ export function defaultGroups(time) {
 }
 
 /**
- * Groupement effectif d'un bloc : `b.groups` s'il couvre exactement la
- * mesure (groupes de 2 ou 3 croches), sinon {@link defaultGroups}.
+ * Effective grouping of a block: `b.groups` if it covers the measure exactly
+ * (groups of 2 or 3 eighths), otherwise {@link defaultGroups}.
  * @param {{time: string, groups: (Array.<number>|undefined)}} b
  * @returns {Array.<number>}
  */
@@ -307,7 +304,7 @@ export function meterGroups(b) {
 }
 
 /**
- * Début de chaque groupe dans la mesure, en noires.
+ * Start of each group in the measure, in quarter notes.
  * @example
  * groupStarts({ time: '7/8', groups: [2, 3, 2] }) // [0, 1, 2.5]
  * @param {{time: string, groups: (Array.<number>|undefined)}} b
@@ -324,7 +321,7 @@ export function groupStarts(b) {
 }
 
 /**
- * Crée une note vide contenant un bloc texte (pour écrire tout de suite).
+ * Creates an empty note holding a text block (to start writing right away).
  * @returns {Note}
  */
 export function newNote() {
@@ -338,7 +335,7 @@ export function newTextBlock() {
 }
 
 /**
- * @param {boolean} rhythm `true` pour une ligne rythmique, `false` pour une portée en clé de sol.
+ * @param {boolean} rhythm `true` for a rhythm line, `false` for a treble clef staff.
  * @returns {StaffBlock}
  */
 export function newStaffBlock(rhythm) {
@@ -354,7 +351,7 @@ export function newStaffBlock(rhythm) {
 }
 
 /**
- * Grille de 4 mesures vides en do majeur, Medium Swing à 120.
+ * Chart of 4 empty measures in C major, Medium Swing at 120.
  * @returns {GridBlock}
  */
 export function newGridBlock() {
@@ -370,8 +367,8 @@ export function newGridBlock() {
 }
 
 /**
- * Note d'exemple affichée sur l'écran d'accueil vide. Montre les différents
- * types de blocs, dont une liaison et un triolet.
+ * Example note shown on the empty home screen. Shows the different block
+ * types, including a tie and a triplet.
  * @returns {Note}
  */
 export function exampleNote() {

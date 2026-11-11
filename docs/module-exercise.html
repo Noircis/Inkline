@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>exercise - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,24 +63,24 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Exercices rythmiques aléatoires</strong> (2.8). Fonctions pures.</p>
-<p>Un exercice est une suite de mesures tirées au hasard selon des réglages
-(ExerciseSettings) : nombre de mesures, nombre de notes par mesure
-(une fourchette), positions permises pour la première note. Chaque mesure
-est ensuite écrite avec les mêmes règles que les Placements
+                <div class="description usertext"><p><strong>Random rhythm exercises</strong> (2.8). Pure functions.</p>
+<p>An exercise is a series of measures drawn at random from settings
+(ExerciseSettings): number of measures, number of notes per measure
+(a range), allowed positions for the first note. Each measure is then
+written with the same rules as Placements
 (<a href="module-placements.html#.placementItems">placementItems</a>).</p>
-<p>Le hasard est <strong>reproductible</strong> : un exercice est entièrement décidé par ses
-réglages et un numéro (la graine, <em>seed</em>). Le même numéro redonne le même
-exercice, ce qui permet de le retrouver ou de le partager (« fais le n° 4821 »).</p>
-<h2>Tirage d'une mesure</h2>
+<p>The randomness is <strong>reproducible</strong>: an exercise is entirely determined by
+its settings and a number (the <em>seed</em>). The same number gives the same
+exercise back, so it can be found again or shared (&quot;do number 4821&quot;).</p>
+<h2>Drawing a measure</h2>
 <ol>
-<li>nombre de notes <code>n</code> au hasard entre min et max ;</li>
-<li>première note <code>p</code> parmi les positions permises, en gardant assez de place
-derrière elle pour les <code>n − 1</code> autres (<code>p ≤ positions − n</code>). Si aucune
-position permise ne laisse assez de place, on réduit <code>n</code> ;</li>
-<li>les <code>n − 1</code> autres notes au hasard après <code>p</code> ;</li>
-<li>jamais deux fois la même mesure dans un exercice (2.8.1) : le tirage se
-fait parmi les mesures pas encore sorties.</li>
+<li>number of notes <code>n</code> at random between min and max;</li>
+<li>first note <code>p</code> among the allowed positions, keeping enough room after it
+for the <code>n − 1</code> others (<code>p ≤ positions − n</code>). If no allowed position
+leaves enough room, <code>n</code> is reduced;</li>
+<li>the <code>n − 1</code> other notes at random after <code>p</code>;</li>
+<li>never the same measure twice in an exercise (2.8.1): the draw is made
+among the measures not drawn yet.</li>
 </ol></div>
             
 
@@ -93,24 +93,24 @@ fait parmi les mesures pas encore sorties.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Exercices rythmiques aléatoires</strong> (2.8). Fonctions pures.</p>
-<p>Un exercice est une suite de mesures tirées au hasard selon des réglages
-(ExerciseSettings) : nombre de mesures, nombre de notes par mesure
-(une fourchette), positions permises pour la première note. Chaque mesure
-est ensuite écrite avec les mêmes règles que les Placements
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Random rhythm exercises</strong> (2.8). Pure functions.</p>
+<p>An exercise is a series of measures drawn at random from settings
+(ExerciseSettings): number of measures, number of notes per measure
+(a range), allowed positions for the first note. Each measure is then
+written with the same rules as Placements
 (<a href="module-placements.html#.placementItems">placementItems</a>).</p>
-<p>Le hasard est <strong>reproductible</strong> : un exercice est entièrement décidé par ses
-réglages et un numéro (la graine, <em>seed</em>). Le même numéro redonne le même
-exercice, ce qui permet de le retrouver ou de le partager (« fais le n° 4821 »).</p>
-<h2>Tirage d'une mesure</h2>
+<p>The randomness is <strong>reproducible</strong>: an exercise is entirely determined by
+its settings and a number (the <em>seed</em>). The same number gives the same
+exercise back, so it can be found again or shared (&quot;do number 4821&quot;).</p>
+<h2>Drawing a measure</h2>
 <ol>
-<li>nombre de notes <code>n</code> au hasard entre min et max ;</li>
-<li>première note <code>p</code> parmi les positions permises, en gardant assez de place
-derrière elle pour les <code>n − 1</code> autres (<code>p ≤ positions − n</code>). Si aucune
-position permise ne laisse assez de place, on réduit <code>n</code> ;</li>
-<li>les <code>n − 1</code> autres notes au hasard après <code>p</code> ;</li>
-<li>jamais deux fois la même mesure dans un exercice (2.8.1) : le tirage se
-fait parmi les mesures pas encore sorties.</li>
+<li>number of notes <code>n</code> at random between min and max;</li>
+<li>first note <code>p</code> among the allowed positions, keeping enough room after it
+for the <code>n − 1</code> others (<code>p ≤ positions − n</code>). If no allowed position
+leaves enough room, <code>n</code> is reduced;</li>
+<li>the <code>n − 1</code> other notes at random after <code>p</code>;</li>
+<li>never the same measure twice in an exercise (2.8.1): the draw is made
+among the measures not drawn yet.</li>
 </ol></li></ul></dd>
     
 
@@ -218,18 +218,17 @@ fait parmi les mesures pas encore sorties.</li>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Toutes les mesures différentes que permettent les réglages, rangées par
-nombre de notes puis par première note. Quand aucune position permise ne
-laisse la place pour <code>n</code> notes, la mesure se réduit (de la première
-position permise jusqu'à la fin).</p>
-<p>Au plus quelques milliers de mesures (12/8 : 2^12), énumérées une fois par
-exercice : c'est instantané.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Every distinct measure the settings allow, ordered by number of notes then
+by first note. When no allowed position leaves room for <code>n</code> notes, the
+measure shrinks (from the first allowed position to the end).</p>
+<p>At most a few thousand measures (12/8: 2^12), enumerated once per
+exercise: it is instantaneous.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="exercise.js.html">exercise.js</a>, <a href="exercise.js.html#line81">line 81</a>
+        <a href="exercise.js.html">exercise.js</a>, <a href="exercise.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -377,24 +376,23 @@ exercice : c'est instantané.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Tire les placements d'un exercice. <strong>Aucune mesure n'apparaît deux fois</strong>
-dans un même exercice, tant que les réglages le permettent (voir
-candidates : avec une seule note et une seule position permise,
-il n'existe qu'une mesure possible).</p>
-<p>Plutôt que de tirer au hasard puis de recommencer si la mesure est déjà
-sortie (ce qui peut tourner longtemps quand il reste peu de choix), on
-tire directement parmi les mesures <strong>pas encore sorties</strong> : même résultat,
-mais le nombre d'opérations est garanti.</p>
-<p>Pour chaque mesure : un nombre de notes au hasard, puis une première note
-au hasard (chaque départ a la même chance, sinon les départs tôt dans la
-mesure, qui offrent plus de combinaisons, sortiraient bien plus souvent),
-puis une mesure au hasard parmi celles qui restent.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Draws the placements of an exercise. <strong>No measure appears twice</strong> in one
+exercise, as long as the settings allow it (see candidates: with a
+single note and a single allowed position, only one measure exists).</p>
+<p>Rather than drawing at random and starting over when the measure was
+already drawn (which can run for a long time when few choices remain), the
+draw is made directly among the measures <strong>not drawn yet</strong>: same result,
+but the number of operations is bounded.</p>
+<p>For each measure: a number of notes at random, then a first note at random
+(every start has the same chance; otherwise early starts, which offer more
+combinations, would come up much more often), then a measure at random
+among those left.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="exercise.js.html">exercise.js</a>, <a href="exercise.js.html#line128">line 128</a>
+        <a href="exercise.js.html">exercise.js</a>, <a href="exercise.js.html#line126">line 126</a>
     </li></ul></dd>
     
 
@@ -509,7 +507,7 @@ puis une mesure au hasard parmi celles qui restent.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Une liste de positions par mesure.</p>
+    <p>One list of positions per measure.</p>
 </div>
 
 
@@ -546,9 +544,9 @@ puis une mesure au hasard parmi celles qui restent.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Générateur pseudo-aléatoire <em>mulberry32</em> : rapide, 32 bits, et surtout
-déterministe (même graine, même suite). <code>Math.random</code> ne permet pas de
-choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><em>mulberry32</em> pseudo-random generator: fast, 32-bit, and above all
+deterministic (same seed, same sequence). <code>Math.random</code> does not let you
+choose the seed, hence this small classic algorithm.</p></li></ul></dd>
     
 
     
@@ -669,7 +667,7 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Tirage dans [0, 1).</p>
+    <p>Draw in [0, 1).</p>
 </div>
 
 
@@ -706,7 +704,7 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Nouveau numéro d'exercice (1 à 9999).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>New exercise number (1 to 9999).</p></li></ul></dd>
     
 
     
@@ -882,7 +880,7 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réglages d'un exercice.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Exercise settings.</p></li></ul></dd>
     
 
     
@@ -992,7 +990,7 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Nombre de mesures (1, 2 ou 4).</p></td>
+            <td class="description last"><p>Number of measures (1, 2 or 4).</p></td>
         </tr>
 
     
@@ -1016,7 +1014,7 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Notes par mesure, au moins.</p></td>
+            <td class="description last"><p>Notes per measure, at least.</p></td>
         </tr>
 
     
@@ -1040,7 +1038,7 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Notes par mesure, au plus.</p></td>
+            <td class="description last"><p>Notes per measure, at most.</p></td>
         </tr>
 
     
@@ -1064,8 +1062,8 @@ choisir sa graine, d'où ce petit algorithme classique.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Positions permises pour la première note
-de chaque mesure (vide : toutes).</p></td>
+            <td class="description last"><p>Allowed positions for the first note of
+each measure (empty: all).</p></td>
         </tr>
 
     
@@ -1089,7 +1087,7 @@ de chaque mesure (vide : toutes).</p></td>
 
             
 
-            <td class="description last"><p>Numéro de l'exercice.</p></td>
+            <td class="description last"><p>Exercise number.</p></td>
         </tr>
 
     
@@ -1102,7 +1100,7 @@ de chaque mesure (vide : toutes).</p></td>
 
 
 <div class="description usertext">
-    <p>Réglages d'un exercice.</p>
+    <p>Exercise settings.</p>
 </div>
 
 

@@ -1,44 +1,44 @@
 /**
  * @module ui/nav
  * @description
- * **Navigation entre écrans** : accueil (`list`), note (`note`), options (`options`).
+ * **Navigation between screens**: home (`list`), note (`note`), settings (`options`).
  *
- * ## Registre d'écrans
+ * ## Screen registry
  *
- * Chaque module d'écran s'enregistre au chargement avec
- * {@link module:ui/nav.registerScreen|registerScreen} ; la navigation appelle
- * ensuite l'écran par son nom. Ce module n'importe donc **aucun** écran : c'est
- * ce qui supprime les imports circulaires d'avant la 2.0 (la vue liste
- * importait la note, qui importait la liste…). Les dépendances vont toujours
- * des écrans vers `nav`, jamais l'inverse.
+ * Each screen module registers at load time with
+ * {@link module:ui/nav.registerScreen|registerScreen}; navigation then calls
+ * the screen by name. This module therefore imports **no** screen: this is
+ * what removed the circular imports from before 2.0 (the list view imported
+ * the note, which imported the list…). Dependencies always go from screens
+ * to `nav`, never the other way.
  *
- * ## Bouton retour d'Android
+ * ## Android back button
  *
- * L'accueil est l'écran racine ; note, options et entraînement sont des
- * « sous-écrans ». En entrant dans un sous-écran, on ajoute une entrée à
- * l'historique du navigateur (`history.pushState`) qui mémorise l'écran. Le
- * bouton retour d'Android déclenche alors un événement `popstate` (écouté dans
- * `main.js`) qui réaffiche l'écran mémorisé dans l'entrée précédente (ou
- * l'accueil), au lieu de fermer l'app.
+ * Home is the root screen; note, settings and practice are "sub-screens".
+ * Entering a sub-screen adds an entry to the browser history
+ * (`history.pushState`) that remembers the screen. Android's back button
+ * then fires a `popstate` event (listened to in `main.js`) that shows again
+ * the screen stored in the previous entry (or home), instead of closing the
+ * app.
  *
- * - {@link module:ui/nav.go|go} ouvre un sous-écran de premier niveau ;
- *   passer d'un sous-écran à un autre **remplace** l'entrée (`replaceState`).
- * - {@link module:ui/nav.goChild|goChild} ouvre un écran **enfant** (Rythme
- *   dans Entraînement) : nouvelle entrée, le retour revient au parent.
+ * - {@link module:ui/nav.go|go} opens a top-level sub-screen; going from one
+ *   sub-screen to another **replaces** the entry (`replaceState`).
+ * - {@link module:ui/nav.goChild|goChild} opens a **child** screen (Rhythm in
+ *   Practice): new entry, back returns to the parent.
  */
 
 import { state } from './state.js';
 
 /**
- * Options de rendu d'un écran.
+ * Screen render options.
  * @typedef {Object} RenderOptions
- * @property {boolean} [keepScroll] Conserver la position de défilement (re-rendu après une modification).
- * @property {boolean} [focusTitle] Écran note : placer le curseur dans le titre.
+ * @property {boolean} [keepScroll] Keep the scroll position (re-render after a change).
+ * @property {boolean} [focusTitle] Note screen: put the cursor in the title.
  */
 
 /**
- * Fonction de rendu d'un écran. Renvoie `false` si l'écran ne peut pas
- * s'afficher (note disparue, par exemple) : on retombe alors sur l'accueil.
+ * Screen render function. Returns `false` if the screen cannot be shown (a
+ * note that disappeared, for example): we then fall back to home.
  * @typedef {function(RenderOptions): (boolean|void)} ScreenRenderer
  */
 
@@ -46,12 +46,12 @@ import { state } from './state.js';
 const screens = {};
 
 /**
- * Noms d'écrans.
+ * Screen names.
  * @typedef {'list'|'note'|'options'|'training'|'rhythm'|'gen'|'genPlay'} ScreenName
  */
 
 /**
- * Enregistre un écran.
+ * Registers a screen.
  * @param {ScreenName} name
  * @param {ScreenRenderer} fn
  */
@@ -60,7 +60,7 @@ export function registerScreen(name, fn) {
 }
 
 /**
- * Redessine l'écran courant (`state.view`).
+ * Redraws the current screen (`state.view`).
  * @param {RenderOptions} [opts={}]
  */
 export function renderScreen(opts = {}) {
@@ -71,7 +71,7 @@ export function renderScreen(opts = {}) {
 }
 
 /**
- * À appeler en entrant dans un sous-écran de premier niveau.
+ * To be called when entering a top-level sub-screen.
  * @param {ScreenName} name
  * @param {string|null} id
  */
@@ -82,7 +82,7 @@ function enterSubView(name, id) {
 }
 
 /**
- * Affiche un écran (sans toucher à l'historique).
+ * Shows a screen (without touching history).
  * @param {ScreenName} name
  * @param {string|null} id
  * @param {RenderOptions} opts
@@ -96,9 +96,9 @@ function show(name, id, opts) {
 }
 
 /**
- * Ouvre un sous-écran de premier niveau : historique, état, rendu, retour en haut de page.
+ * Opens a top-level sub-screen: history, state, render, back to top of page.
  * @param {ScreenName} name
- * @param {string|null} [id=null] Note à afficher (écran `note`).
+ * @param {string|null} [id=null] Note to show (`note` screen).
  * @param {RenderOptions} [opts={}]
  */
 export function go(name, id = null, opts = {}) {
@@ -107,7 +107,7 @@ export function go(name, id = null, opts = {}) {
 }
 
 /**
- * Ouvre un écran enfant du sous-écran courant : le retour ramènera au parent.
+ * Opens a child screen of the current sub-screen: back will return to the parent.
  * @param {ScreenName} name
  */
 export function goChild(name) {
@@ -116,9 +116,9 @@ export function goChild(name) {
 }
 
 /**
- * Bouton retour d'Android (`popstate`) : réaffiche l'écran mémorisé dans
- * l'entrée d'historique où l'on revient, ou l'accueil.
- * @param {*} entry `history.state` après le retour.
+ * Android back button (`popstate`): shows again the screen stored in the
+ * history entry we return to, or home.
+ * @param {*} entry `history.state` after going back.
  */
 export function onHistoryBack(entry) {
   if (entry && entry.inkline && entry.view) show(entry.view, entry.id || null, {});
@@ -126,16 +126,16 @@ export function onHistoryBack(entry) {
 }
 
 /**
- * Ouvre une note.
+ * Opens a note.
  * @param {string} id
- * @param {boolean} [focusTitle] Placer le curseur dans le titre.
+ * @param {boolean} [focusTitle] Put the cursor in the title.
  */
 export function openNote(id, focusTitle) {
   go('note', id, { focusTitle });
 }
 
 /**
- * Affiche l'accueil (sans toucher à l'historique).
+ * Shows home (without touching history).
  */
 function showList() {
   state.view = { name: 'list', id: null };
@@ -144,9 +144,8 @@ function showList() {
 }
 
 /**
- * Bouton « retour » d'un écran : on recule dans l'historique si on y a ajouté
- * une entrée (le `popstate` affichera l'écran précédent), sinon on affiche
- * directement l'accueil.
+ * A screen's "back" button: go back in history if an entry was added (the
+ * `popstate` will show the previous screen), otherwise show home directly.
  */
 export function backToList() {
   if (history.state && history.state.inkline) history.back();

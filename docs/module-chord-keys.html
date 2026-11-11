@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>chord-keys - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,19 +63,18 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Clavier d'accords</strong> (2.8.5) : ce que fait chaque touche. Fonctions pures,
-l'interface est dans <a href="module-ui_chord-keyboard.html">ui/chord-keyboard</a>.</p>
-<p>On saisit un accord en deux temps : la <strong>fondamentale</strong> (<code>C</code> … <code>B</code>, puis
-♭ ou ♯), puis la <strong>couleur</strong> d'un seul toucher (<code>7</code>, <code>−7</code>, <code>Δ7</code>, <code>ø7</code>…).
-Le pavé détaillé (<code>⋯</code>) ajoute les morceaux un par un pour les accords
-rares (<code>C7♯9♭13</code>).</p>
-<p>Les accords sont <strong>enregistrés en texte</strong> dans la notation d'iReal Pro
-(<code>-7</code>, <code>^7</code>, <code>h7</code>, <code>o7</code>), que le reste de l'appli lit déjà
-(<a href="module-chords.html">chords</a>, <a href="module-ireal.html">ireal</a>) ; l'affichage
-les met en forme (<code>C−7</code>, <code>CΔ7</code>, <code>Cø7</code>, <code>C°7</code>).</p>
-<p>Une mesure de grille est une liste de cases (<code>ch</code>) ; on écrit toujours dans
-la <strong>dernière</strong> case. <code>␣</code> en ouvre une nouvelle (deux accords dans la
-mesure), <code>⌫</code> efface le dernier morceau tapé.</p></div>
+                <div class="description usertext"><p><strong>Chord keyboard</strong> (2.8.5): what each key does. Pure functions; the
+interface is in <a href="module-ui_chord-keyboard.html">ui/chord-keyboard</a>.</p>
+<p>A chord is typed in two steps: the <strong>root</strong> (<code>C</code> … <code>B</code>, then ♭ or ♯), then
+the <strong>quality</strong> in a single tap (<code>7</code>, <code>−7</code>, <code>Δ7</code>, <code>ø7</code>…). The detailed pad
+(<code>⋯</code>) adds pieces one by one for rare chords (<code>C7♯9♭13</code>).</p>
+<p>Chords are <strong>stored as text</strong> in iReal Pro notation (<code>-7</code>, <code>^7</code>, <code>h7</code>,
+<code>o7</code>), which the rest of the app already reads
+(<a href="module-chords.html">chords</a>, <a href="module-ireal.html">ireal</a>); the display
+formats them (<code>C−7</code>, <code>CΔ7</code>, <code>Cø7</code>, <code>C°7</code>).</p>
+<p>A chart measure is a list of slots (<code>ch</code>); typing always goes into the
+<strong>last</strong> slot. <code>␣</code> opens a new one (two chords in the measure), <code>⌫</code> erases
+the last piece typed.</p></div>
             
 
             
@@ -87,19 +86,18 @@ mesure), <code>⌫</code> efface le dernier morceau tapé.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Clavier d'accords</strong> (2.8.5) : ce que fait chaque touche. Fonctions pures,
-l'interface est dans <a href="module-ui_chord-keyboard.html">ui/chord-keyboard</a>.</p>
-<p>On saisit un accord en deux temps : la <strong>fondamentale</strong> (<code>C</code> … <code>B</code>, puis
-♭ ou ♯), puis la <strong>couleur</strong> d'un seul toucher (<code>7</code>, <code>−7</code>, <code>Δ7</code>, <code>ø7</code>…).
-Le pavé détaillé (<code>⋯</code>) ajoute les morceaux un par un pour les accords
-rares (<code>C7♯9♭13</code>).</p>
-<p>Les accords sont <strong>enregistrés en texte</strong> dans la notation d'iReal Pro
-(<code>-7</code>, <code>^7</code>, <code>h7</code>, <code>o7</code>), que le reste de l'appli lit déjà
-(<a href="module-chords.html">chords</a>, <a href="module-ireal.html">ireal</a>) ; l'affichage
-les met en forme (<code>C−7</code>, <code>CΔ7</code>, <code>Cø7</code>, <code>C°7</code>).</p>
-<p>Une mesure de grille est une liste de cases (<code>ch</code>) ; on écrit toujours dans
-la <strong>dernière</strong> case. <code>␣</code> en ouvre une nouvelle (deux accords dans la
-mesure), <code>⌫</code> efface le dernier morceau tapé.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Chord keyboard</strong> (2.8.5): what each key does. Pure functions; the
+interface is in <a href="module-ui_chord-keyboard.html">ui/chord-keyboard</a>.</p>
+<p>A chord is typed in two steps: the <strong>root</strong> (<code>C</code> … <code>B</code>, then ♭ or ♯), then
+the <strong>quality</strong> in a single tap (<code>7</code>, <code>−7</code>, <code>Δ7</code>, <code>ø7</code>…). The detailed pad
+(<code>⋯</code>) adds pieces one by one for rare chords (<code>C7♯9♭13</code>).</p>
+<p>Chords are <strong>stored as text</strong> in iReal Pro notation (<code>-7</code>, <code>^7</code>, <code>h7</code>,
+<code>o7</code>), which the rest of the app already reads
+(<a href="module-chords.html">chords</a>, <a href="module-ireal.html">ireal</a>); the display
+formats them (<code>C−7</code>, <code>CΔ7</code>, <code>Cø7</code>, <code>C°7</code>).</p>
+<p>A chart measure is a list of slots (<code>ch</code>); typing always goes into the
+<strong>last</strong> slot. <code>␣</code> opens a new one (two chords in the measure), <code>⌫</code> erases
+the last piece typed.</p></li></ul></dd>
     
 
     
@@ -200,13 +198,13 @@ mesure), <code>⌫</code> efface le dernier morceau tapé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Cases au plus dans une mesure.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Maximum number of slots in a measure.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line33">line 33</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line32">line 32</a>
     </li></ul></dd>
     
 
@@ -246,7 +244,7 @@ mesure), <code>⌫</code> efface le dernier morceau tapé.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Cases au plus dans une mesure.</p>
+    <p>Maximum number of slots in a measure.</p>
 </div>
 
 
@@ -277,14 +275,13 @@ mesure), <code>⌫</code> efface le dernier morceau tapé.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Applique une touche à une mesure (ou à l'accord d'une note : une seule
-case).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Applies a key to a measure (or to a note's chord: a single slot).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line77">line 77</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -382,7 +379,7 @@ applyChordKey(['Bb-7', ''], { t: 'root', v: 'E' }) // ['Bb-7', 'E']</code></pre>
 
             
 
-            <td class="description last"><p>Cases de la mesure (non modifiées).</p></td>
+            <td class="description last"><p>Slots of the measure (not modified).</p></td>
         </tr>
 
     
@@ -432,7 +429,7 @@ applyChordKey(['Bb-7', ''], { t: 'root', v: 'E' }) // ['Bb-7', 'E']</code></pre>
 
         
 <div class="param-desc">
-    <p>Nouvelles cases (<code>[]</code> : mesure vide).</p>
+    <p>New slots (<code>[]</code>: empty measure).</p>
 </div>
 
 
@@ -469,14 +466,14 @@ applyChordKey(['Bb-7', ''], { t: 'root', v: 'E' }) // ['Bb-7', 'E']</code></pre>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Découpe un accord en cours de saisie. La basse peut être en attente
-(<code>C/</code>, après la touche <code>/</code>).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Splits a chord being typed. The bass may be pending (<code>C/</code>, after the <code>/</code>
+key).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line41">line 41</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -624,15 +621,14 @@ applyChordKey(['Bb-7', ''], { t: 'root', v: 'E' }) // ['Bb-7', 'E']</code></pre>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Efface le dernier morceau d'un accord : altération de la basse, basse,
-barre, dernier morceau de couleur (<code>alt</code>, <code>sus</code>, <code>11</code>, <code>♭9</code>, <code>7</code>…),
-altération de la fondamentale, fondamentale.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Erases the last piece of a chord: bass accidental, bass, slash, last
+quality piece (<code>alt</code>, <code>sus</code>, <code>11</code>, <code>♭9</code>, <code>7</code>…), root accidental, root.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line139">line 139</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line136">line 136</a>
     </li></ul></dd>
     
 
@@ -780,13 +776,13 @@ altération de la fondamentale, fondamentale.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Recompose un accord.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Rebuilds a chord.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line48">line 48</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line47">line 47</a>
     </li></ul></dd>
     
 
@@ -865,14 +861,14 @@ altération de la fondamentale, fondamentale.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ajoute, change ou retire l'altération d'un nom de note (même touche deux
-fois : retirée).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Adds, changes or removes the accidental of a note name (same key twice:
+removed).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line57">line 57</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line56">line 56</a>
     </li></ul></dd>
     
 
@@ -985,7 +981,7 @@ fois : retirée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p><code>b</code> ou <code>#</code>.</p></td>
+            <td class="description last"><p><code>b</code> or <code>#</code>.</p></td>
         </tr>
 
     
@@ -1046,13 +1042,13 @@ fois : retirée).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Une touche.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>A key.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line22">line 22</a>
+        <a href="chord-keys.js.html">chord-keys.js</a>, <a href="chord-keys.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -1164,10 +1160,10 @@ fois : retirée).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Type :
-fondamentale (ou basse après <code>/</code>), altération de la dernière lettre,
-couleur complète (remplace), morceau de couleur (ajoute), basse,
-<em>no chord</em>, mesure répétée, case suivante, effacement.</p></td>
+            <td class="description last"><p>Kind:
+root (or bass after <code>/</code>), accidental of the last letter, full quality
+(replaces), quality piece (appends), bass, <em>no chord</em>, repeated measure,
+next slot, erase.</p></td>
         </tr>
 
     
@@ -1199,7 +1195,7 @@ couleur complète (remplace), morceau de couleur (ajoute), basse,
 
             
 
-            <td class="description last"><p>Valeur : lettre, <code>b</code>/<code>#</code>, qualité en notation iReal.</p></td>
+            <td class="description last"><p>Value: letter, <code>b</code>/<code>#</code>, quality in iReal notation.</p></td>
         </tr>
 
     
@@ -1212,7 +1208,7 @@ couleur complète (remplace), morceau de couleur (ajoute), basse,
 
 
 <div class="description usertext">
-    <p>Une touche.</p>
+    <p>A key.</p>
 </div>
 
 

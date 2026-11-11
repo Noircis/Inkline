@@ -1,6 +1,6 @@
-/* Inkline · Clavier d'accords (2.8.5) : grille et accord d'une note. */
+/* Inkline · Chord keyboard (2.8.5): chart and note chord. */
 
-/* Onglets de la palette de grille */
+/* Chart palette tabs */
 .ck-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -24,7 +24,7 @@
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.12);
 }
 
-/* Aperçu de la mesure (ou de l'accord) en cours */
+/* Preview of the current measure (or chord) */
 .ck-field {
   display: flex;
   align-items: baseline;
@@ -73,7 +73,7 @@
   }
 }
 
-/* Touches */
+/* Keys */
 .ck-keys {
   display: flex;
   flex-direction: column;
@@ -131,7 +131,7 @@
   color: var(--surface);
 }
 
-/* Accord d'une note : le clavier remplace la palette pendant la saisie. */
+/* Note chord: the keyboard replaces the palette while typing. */
 .ck-head {
   display: flex;
   align-items: center;

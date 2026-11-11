@@ -1,30 +1,30 @@
 /**
  * @module history
  * @description
- * Annulation (« ↶ ») par **instantanés** : patron *Memento*.
+ * Undo ("↶") through **snapshots**: the *Memento* pattern.
  *
- * Avant chaque modification, l'interface appelle {@link module:history.pushSnapshot|pushSnapshot}
- * qui empile une copie sérialisée (JSON) du titre et des blocs de la note.
- * Annuler dépile le dernier instantané et le réapplique.
+ * Before each change, the interface calls {@link module:history.pushSnapshot|pushSnapshot},
+ * which pushes a serialized (JSON) copy of the note's title and blocks.
+ * Undo pops the last snapshot and applies it again.
  *
- * ## Pourquoi des instantanés plutôt que des commandes inverses ?
+ * ## Why snapshots rather than inverse commands?
  *
- * Un patron *Command* (chaque action sait s'annuler) consommerait moins de
- * mémoire, mais chaque nouvelle fonctionnalité devrait écrire son inverse :
- * source de bugs. Une note pèse quelques Ko ; 80 instantanés par note
- * restent négligeables. La pile est limitée à 80 entrées (les plus anciennes
- * sont oubliées) et n'est pas persistée : elle repart à zéro à chaque lancement.
+ * A *Command* pattern (each action knows how to undo itself) would use less
+ * memory, but every new feature would have to write its own inverse: a
+ * source of bugs. A note weighs a few KB; 80 snapshots per note are
+ * negligible. The stack holds at most 80 entries (the oldest are dropped)
+ * and is not persisted: it starts empty at each launch.
  */
 
-/** Profondeur maximale de la pile, par note. */
+/** Maximum stack depth, per note. */
 const MAX_DEPTH = 80;
 
-// piles d'instantanés JSON, par id de note
+// stacks of JSON snapshots, by note id
 /** @type {Object.<string, string[]>} */
 const stacks = {};
 
 /**
- * Empile l'état actuel d'une note.
+ * Pushes the current state of a note.
  * @param {module:model~Note} n
  */
 export function pushSnapshot(n) {
@@ -34,9 +34,9 @@ export function pushSnapshot(n) {
 }
 
 /**
- * Restaure le dernier instantané d'une note (modifie la note sur place).
+ * Restores a note's last snapshot (modifies the note in place).
  * @param {module:model~Note} n
- * @returns {boolean} `false` s'il n'y avait rien à annuler.
+ * @returns {boolean} `false` if there was nothing to undo.
  */
 export function popSnapshot(n) {
   const h = stacks[n.id];
@@ -48,9 +48,9 @@ export function popSnapshot(n) {
 }
 
 /**
- * Oublie le dernier instantané sans le restaurer : pour une action commencée
- * puis refusée (par exemple un triolet qui traverserait une barre), annulée à
- * la main par l'appelant.
+ * Drops the last snapshot without restoring it: for an action that was
+ * started then refused (for example a triplet that would cross a barline)
+ * and undone by hand by the caller.
  * @param {module:model~Note} n
  */
 export function discardSnapshot(n) {

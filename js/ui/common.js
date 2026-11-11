@@ -1,9 +1,9 @@
 /**
  * @module ui/common
  * @description
- * Petits outils d'interface partagés par les écrans et les blocs : version,
- * lecture de fichier, boutons à confirmation, bouton de lecture audio, espace
- * réservé aux palettes. Ce module ne dépend d'aucun écran.
+ * Small interface helpers shared by screens and blocks: version, file
+ * reading, confirm buttons, audio play button, space reserved for palettes.
+ * This module depends on no screen.
  */
 
 import { t } from '../i18n.js';
@@ -11,16 +11,16 @@ import { esc } from '../util.js';
 import { state } from './state.js';
 import * as audio from '../audio.js';
 
-/** Version affichée dans les Options (à garder alignée sur CHANGELOG.md). */
-export const APP_VERSION = '2.9.0';
+/** Version shown in Settings (keep it in line with CHANGELOG.md). */
+export const APP_VERSION = '2.9.1';
 
-/** HTML des outils d'un bloc actif. */
+/** HTML of an active block's tools. */
 export function toolsHtml() {
   return `<div class="tools"><button type="button" data-tool="up" aria-label="${esc(t('common.moveUp'))}">&#8593;</button><button type="button" data-tool="down" aria-label="${esc(t('common.moveDown'))}">&#8595;</button><button type="button" data-tool="del">${esc(t('common.delete'))}</button></div>`;
 }
 
 /**
- * Ajuste la hauteur d'un `<textarea>` à son contenu (pas d'ascenseur interne).
+ * Fits a `<textarea>` height to its content (no inner scrollbar).
  * @param {HTMLTextAreaElement} el
  */
 export function autosize(el) {
@@ -29,7 +29,7 @@ export function autosize(el) {
 }
 
 /**
- * Lit le fichier choisi dans un `<input type=file>` et passe son texte à `fn`.
+ * Reads the file chosen in an `<input type=file>` and passes its text to `fn`.
  * @param {Event} e
  * @param {function(string)} fn
  */
@@ -40,20 +40,20 @@ export function readFile(e, fn) {
   const r = new FileReader();
   r.onload = () => fn(String(r.result));
   r.readAsText(f);
-  input.value = ''; // pour pouvoir rechoisir le même fichier
+  input.value = ''; // so the same file can be chosen again
 }
 
 /**
- * Action destructrice en deux temps : le premier toucher « arme » le bouton
- * (nouveau libellé, style d'alerte), le second exécute. Sans second toucher,
- * le bouton revient à son état initial. Les boîtes `confirm()` natives sont
- * peu pratiques sur mobile.
+ * Destructive action in two steps: the first tap "arms" the button (new
+ * label, alert style), the second runs it. Without a second tap, the button
+ * returns to its initial state. Native `confirm()` dialogs are awkward on
+ * mobile.
  *
  * @param {HTMLButtonElement} btn
- * @param {string} armedLabel Libellé une fois armé.
+ * @param {string} armedLabel Label once armed.
  * @param {function()} action
- * @param {number} [delay=3500] Durée (ms) pendant laquelle le bouton reste armé.
- * @returns {boolean} `true` si l'action a été exécutée.
+ * @param {number} [delay=3500] Time (ms) the button stays armed.
+ * @returns {boolean} `true` if the action was run.
  */
 export function confirmTap(btn, armedLabel, action, delay = 3500) {
   if (btn.dataset.armed) {
@@ -75,8 +75,8 @@ export function confirmTap(btn, armedLabel, action, delay = 3500) {
 }
 
 /**
- * Réserve en bas de page la hauteur de la palette ouverte (variable CSS
- * `--pal-h`), pour que le contenu ne passe pas dessous.
+ * Reserves the height of the open palette at the bottom of the page (CSS
+ * variable `--pal-h`), so the content does not go under it.
  */
 export function syncPaletteSpace() {
   const pal = document.getElementById('palette');
@@ -86,7 +86,7 @@ export function syncPaletteSpace() {
 }
 
 /**
- * Met à jour le bouton Écouter/Stop d'un bloc.
+ * Updates a block's Listen/Stop button.
  * @param {string} id
  */
 export function updatePlayBtn(id) {
@@ -98,10 +98,10 @@ export function updatePlayBtn(id) {
 }
 
 /**
- * Rappels de lecture communs aux portées et aux grilles : surlignage de
- * l'élément joué, puis remise à zéro à la fin.
- * @param {string} id Bloc joué.
- * @param {function(string)} redraw Fonction de redessin du bloc.
+ * Playback callbacks shared by staves and charts: highlight of the item
+ * being played, then reset at the end.
+ * @param {string} id Block being played.
+ * @param {function(string)} redraw Block redraw function.
  * @returns {module:audio~PlayCallbacks}
  */
 export function playCallbacks(id, redraw) {

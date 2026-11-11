@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>transpose - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,28 +63,30 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Instruments transpositeurs</strong> (2.8.3). Fonctions pures.</p>
-<p>Une portée peut être écrite pour un instrument transpositeur (<code>b.tr</code>, voir
-<a href="module-model.html#.INSTRUMENTS">INSTRUMENTS</a>). Les notes sont alors écrites
-comme le musicien les lit ; l'écoute joue le son réel
+                <div class="description usertext"><p><strong>Transposing instruments</strong> (2.8.3). Pure functions.</p>
+<p>A staff can be written for a transposing instrument (<code>b.tr</code>, see
+<a href="module-model.html#.INSTRUMENTS">INSTRUMENTS</a>). The notes are then written
+as the musician reads them; playback plays the concert pitch
 (<a href="module-pitch.html#.resolveMidis">resolveMidis</a>).</p>
-<p>Changer l'instrument d'une portée qui contient déjà des notes peut vouloir
-dire deux choses, et c'est à l'utilisateur de choisir :</p>
+<p>Changing the instrument of a staff that already holds notes can mean two
+things, and the user chooses:</p>
 <ul>
-<li><strong>transposer</strong> (changeInstrument avec <code>keep: false</code>) : le son
-reste le même, l'écriture change (notes, armure, accords chiffrés). Par
-exemple, un solo relevé en ut devient lisible au sax alto ;</li>
-<li><strong>garder l'écriture</strong> (<code>keep: true</code>) : les notes ne bougent pas, c'est le
-son qui change. Par exemple, une partie d'alto recopiée sur une portée
-restée en ut par erreur.</li>
+<li><strong>transpose</strong> (changeInstrument with <code>keep: false</code>): the sound
+stays the same, the writing changes (notes, key signature, chord
+symbols). For example, a solo transcribed in C becomes readable on alto
+sax;</li>
+<li><strong>keep the writing</strong> (<code>keep: true</code>): the notes do not move, the sound
+changes. For example, an alto part copied by mistake onto a staff left
+in C.</li>
 </ul>
-<h2>Transposer</h2>
-<p>L'écart entre deux instruments se compte en <strong>degrés</strong> et en <strong>demi-tons</strong>
-(do → la : 5 degrés, 9 demi-tons). Chaque note monte du nombre de degrés,
-puis on choisit l'altération qui donne la bonne hauteur. L'armure tourne
-dans le cycle des quintes du même intervalle (sixte majeure : +3 dièses).
-Une armure de plus de 7 altérations est réécrite à l'enharmonique (ré♯
-majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p></div>
+<h2>Transposing</h2>
+<p>The distance between two instruments is counted in <strong>degrees</strong> and in
+<strong>semitones</strong> (C → A: 5 degrees, 9 semitones). Each note moves up by the
+number of degrees, then the accidental giving the right pitch is chosen.
+The key signature moves around the circle of fifths by the same interval
+(major sixth: +3 sharps). A key signature with more than 7 accidentals is
+rewritten enharmonically (D♯ major, 9 sharps, becomes E♭ major, 3 flats),
+and the notes along with it.</p></div>
             
 
             
@@ -96,28 +98,30 @@ majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Instruments transpositeurs</strong> (2.8.3). Fonctions pures.</p>
-<p>Une portée peut être écrite pour un instrument transpositeur (<code>b.tr</code>, voir
-<a href="module-model.html#.INSTRUMENTS">INSTRUMENTS</a>). Les notes sont alors écrites
-comme le musicien les lit ; l'écoute joue le son réel
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Transposing instruments</strong> (2.8.3). Pure functions.</p>
+<p>A staff can be written for a transposing instrument (<code>b.tr</code>, see
+<a href="module-model.html#.INSTRUMENTS">INSTRUMENTS</a>). The notes are then written
+as the musician reads them; playback plays the concert pitch
 (<a href="module-pitch.html#.resolveMidis">resolveMidis</a>).</p>
-<p>Changer l'instrument d'une portée qui contient déjà des notes peut vouloir
-dire deux choses, et c'est à l'utilisateur de choisir :</p>
+<p>Changing the instrument of a staff that already holds notes can mean two
+things, and the user chooses:</p>
 <ul>
-<li><strong>transposer</strong> (changeInstrument avec <code>keep: false</code>) : le son
-reste le même, l'écriture change (notes, armure, accords chiffrés). Par
-exemple, un solo relevé en ut devient lisible au sax alto ;</li>
-<li><strong>garder l'écriture</strong> (<code>keep: true</code>) : les notes ne bougent pas, c'est le
-son qui change. Par exemple, une partie d'alto recopiée sur une portée
-restée en ut par erreur.</li>
+<li><strong>transpose</strong> (changeInstrument with <code>keep: false</code>): the sound
+stays the same, the writing changes (notes, key signature, chord
+symbols). For example, a solo transcribed in C becomes readable on alto
+sax;</li>
+<li><strong>keep the writing</strong> (<code>keep: true</code>): the notes do not move, the sound
+changes. For example, an alto part copied by mistake onto a staff left
+in C.</li>
 </ul>
-<h2>Transposer</h2>
-<p>L'écart entre deux instruments se compte en <strong>degrés</strong> et en <strong>demi-tons</strong>
-(do → la : 5 degrés, 9 demi-tons). Chaque note monte du nombre de degrés,
-puis on choisit l'altération qui donne la bonne hauteur. L'armure tourne
-dans le cycle des quintes du même intervalle (sixte majeure : +3 dièses).
-Une armure de plus de 7 altérations est réécrite à l'enharmonique (ré♯
-majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p></li></ul></dd>
+<h2>Transposing</h2>
+<p>The distance between two instruments is counted in <strong>degrees</strong> and in
+<strong>semitones</strong> (C → A: 5 degrees, 9 semitones). Each note moves up by the
+number of degrees, then the accidental giving the right pitch is chosen.
+The key signature moves around the circle of fifths by the same interval
+(major sixth: +3 sharps). A key signature with more than 7 accidentals is
+rewritten enharmonically (D♯ major, 9 sharps, becomes E♭ major, 3 flats),
+and the notes along with it.</p></li></ul></dd>
     
 
     
@@ -224,13 +228,13 @@ majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Change l'instrument d'une portée (modifie le bloc).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Changes the instrument of a staff (modifies the block).</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transpose.js.html">transpose.js</a>, <a href="transpose.js.html#line57">line 57</a>
+        <a href="transpose.js.html">transpose.js</a>, <a href="transpose.js.html#line59">line 59</a>
     </li></ul></dd>
     
 
@@ -361,7 +365,7 @@ majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p>
 
             
 
-            <td class="description last"><p>Clé de l'instrument visé.</p></td>
+            <td class="description last"><p>Key of the target instrument.</p></td>
         </tr>
 
     
@@ -395,7 +399,7 @@ majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p>
 
             
 
-            <td class="description last"><p><code>keep</code> : garder l'écriture (le son change).</p></td>
+            <td class="description last"><p><code>keep</code>: keep the writing (the sound changes).</p></td>
         </tr>
 
     
@@ -421,8 +425,8 @@ majeur, 9 dièses, devient mi♭ majeur, 3 bémols), et les notes avec elle.</p>
 
         
 <div class="param-desc">
-    <p>Nombre de notes repliées d'une octave parce
-qu'elles sortaient de la portée (voir <a href="module-model.html#.STEP_MAX">STEP_MAX</a>).</p>
+    <p>Number of notes folded by an octave because
+they left the staff (see <a href="module-model.html#.STEP_MAX">STEP_MAX</a>).</p>
 </div>
 
 
@@ -459,15 +463,15 @@ qu'elles sortaient de la portée (voir <a href="module-model.html#.STEP_MAX">STE
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Déplacement d'armure (en quintes) pour un intervalle de <code>semis</code> demi-tons :
-+2 demi-tons (seconde majeure) = +2 dièses, +9 (sixte majeure) = +3,
-+5 (quarte) = 1 bémol.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Key signature shift (in fifths) for an interval of <code>semis</code> semitones:
++2 semitones (major second) = +2 sharps, +9 (major sixth) = +3,
++5 (fourth) = 1 flat.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="transpose.js.html">transpose.js</a>, <a href="transpose.js.html#line43">line 43</a>
+        <a href="transpose.js.html">transpose.js</a>, <a href="transpose.js.html#line45">line 45</a>
     </li></ul></dd>
     
 
@@ -582,7 +586,7 @@ qu'elles sortaient de la portée (voir <a href="module-model.html#.STEP_MAX">STE
 
         
 <div class="param-desc">
-    <p>De -5 à +6.</p>
+    <p>From -5 to +6.</p>
 </div>
 
 

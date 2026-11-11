@@ -1,76 +1,75 @@
 /**
  * @module ui/measure-select
  * @description
- * **Sélection de mesures à l'appui long** (2.8.4), commune aux portées, aux
- * lignes rythmiques, aux grilles et aux écrans d'entraînement.
+ * **Measure selection by long press** (2.8.4), shared by staves, rhythm
+ * lines, charts and practice screens.
  *
- * 1. **Appui long** (450 ms sans bouger de plus de 10 px) sur une mesure : un
- *    cadre apparaît autour d'elle, le téléphone vibre brièvement.
- * 2. Sans lever le doigt, **glisser** étend la sélection jusqu'à la mesure
- *    sous le doigt (dans les deux sens, sur plusieurs lignes). La page ne
- *    défile pas pendant ce glisser.
- * 3. En levant le doigt, une **barre contextuelle** apparaît au-dessus de la
- *    sélection : « Jouer d'ici » pour une seule mesure (jusqu'à la fin),
- *    « Boucle » pour plusieurs (le passage en boucle). Les deux commencent par
- *    une mesure de décompte.
+ * 1. **Long press** (450 ms without moving more than 10 px) on a measure: a
+ *    frame appears around it, the phone vibrates briefly.
+ * 2. Without lifting the finger, **dragging** extends the selection to the
+ *    measure under the finger (both ways, across several lines). The page
+ *    does not scroll during this drag.
+ * 3. When the finger lifts, a **context bar** appears above the selection:
+ *    "Play from here" for a single measure (to the end), "Loop" for several
+ *    (the passage, looped). Both start with a count-in measure.
  *
- * Un toucher ailleurs efface la sélection (et arrête la lecture qu'elle a
- * lancée), comme ✕. Il n'y a qu'une sélection à la fois dans l'appli.
+ * A tap elsewhere clears the selection (and stops the playback it started),
+ * as does ✕. There is only one selection at a time in the app.
  *
- * Chaque zone (portée, grille…) se branche avec {@link bindMeasureSelect} en
- * fournissant un petit objet {@link SelectTarget} : comment trouver la mesure
- * sous le doigt, où dessiner le cadre, comment jouer. Après chaque
- * redessin de la zone, elle appelle {@link refreshMeasureSelect} (le cadre
- * vit dans la zone, un redessin l'efface).
+ * Each area (staff, chart…) plugs in with {@link bindMeasureSelect}, giving a
+ * small {@link SelectTarget} object: how to find the measure under the
+ * finger, where to draw the frame, how to play. After each redraw of the
+ * area, it calls {@link refreshMeasureSelect} (the frame lives in the area;
+ * a redraw erases it).
  *
- * ## Pourquoi tant de précautions sur le geste
+ * ## Why so much care with the gesture
  *
- * - Le navigateur envoie un `click` en levant le doigt, même après un appui
- *   long : on l'avale, sinon une grille ouvrirait le clavier.
- * - Android ouvre un menu (ou sélectionne du texte) sur un appui long : on
- *   l'empêche (`contextmenu`, CSS `-webkit-touch-callout`).
- * - Pour glisser sans faire défiler la page, on annule les `touchmove` une
- *   fois la sélection armée (seulement à ce moment-là : avant, le doigt peut
- *   encore servir à faire défiler).
+ * - The browser sends a `click` when the finger lifts, even after a long
+ *   press: it is swallowed, otherwise a chart would open the keyboard.
+ * - Android opens a menu (or selects text) on a long press: this is
+ *   prevented (`contextmenu`, CSS `-webkit-touch-callout`).
+ * - To drag without scrolling the page, `touchmove` events are cancelled
+ *   once the selection is armed (only then: before that, the finger may
+ *   still be scrolling).
  */
 
 import { t } from '../i18n.js';
 import * as audio from '../audio.js';
 import { geom } from '../layout.js';
 
-/** Durée de l'appui long (ms). */
+/** Long press duration (ms). */
 export const LONG_PRESS_MS = 450;
-/** Déplacement toléré pendant l'appui long (px). */
+/** Movement tolerated during the long press (px). */
 const SLOP = 10;
 
 /**
- * Ce qu'une zone fournit pour être sélectionnable.
+ * What an area provides to be selectable.
  * @typedef {Object} SelectTarget
- * @property {function(number, number): ?number} measureAt Mesure (index
- *   d'écriture) sous un point de la fenêtre, `null` si aucune.
+ * @property {function(number, number): ?number} measureAt Measure (written
+ *   index) under a window point, `null` if none.
  * @property {function(number, number): Array.<{x: number, y: number, w: number, h: number}>} boxes
- *   Rectangles (dans la zone) qui couvrent les mesures `a` à `b`, un par ligne.
+ *   Rectangles (in the area) covering measures `a` to `b`, one per line.
  * @property {function(number, number, boolean, function()): void} play
- *   Lance la lecture de `a` à `b` (boucle ou non), avec décompte ; le dernier
- *   argument est à appeler à la fin de la lecture.
- * @property {function(): string} playId Identifiant de lecture (pour savoir si elle tourne).
- * @property {function(PointerEvent): boolean} [skip] Vrai si le geste ne doit
- *   pas servir à sélectionner (zone de glisser de note, par exemple).
+ *   Starts playback from `a` to `b` (looped or not), with a count-in; the
+ *   last argument must be called when playback ends.
+ * @property {function(): string} playId Playback id (to know whether it is running).
+ * @property {function(PointerEvent): boolean} [skip] True if the gesture must
+ *   not be used for selection (a note drag zone, for example).
  */
 
 /**
- * Sélection courante.
+ * Current selection.
  * @type {?{wrap: HTMLElement, t: SelectTarget, a: number, b: number, anchor: number, mine: boolean}}
  */
 let cur = null;
-/** Avaler le prochain `click` (celui qui suit l'appui long). */
+/** Swallow the next `click` (the one following the long press). */
 let swallowClick = false;
-/** Barre contextuelle (créée au premier usage). */
+/** Context bar (created on first use). */
 let bar = null;
 
 /**
- * Efface la sélection (cadre et barre) ; arrête la lecture si c'est elle
- * qui l'a lancée.
+ * Clears the selection (frame and bar); stops playback if the selection
+ * started it.
  */
 export function clearMeasureSelect() {
   if (!cur) return;
@@ -82,7 +81,7 @@ export function clearMeasureSelect() {
 }
 
 /**
- * Sélection courante (pour les tests et les écrans).
+ * Current selection (for tests and screens).
  * @returns {?{a: number, b: number}}
  */
 export function measureSelection() {
@@ -90,7 +89,7 @@ export function measureSelection() {
 }
 
 /**
- * Redessine le cadre et replace la barre, après un redessin de la zone.
+ * Redraws the frame and repositions the bar, after a redraw of the area.
  * @param {HTMLElement} wrap
  */
 export function refreshMeasureSelect(wrap) {
@@ -99,13 +98,13 @@ export function refreshMeasureSelect(wrap) {
   placeBar();
 }
 
-/** Dessine le cadre autour des mesures sélectionnées. */
+/** Draws the frame around the selected measures. */
 function drawBoxes() {
   const { wrap, t: tg, a, b } = cur;
   wrap.querySelectorAll('.msel-box').forEach((x) => x.remove());
   const boxes = tg.boxes(a, b);
   if (!boxes.length) {
-    clearMeasureSelect(); // la mesure n'existe plus (bloc modifié)
+    clearMeasureSelect(); // the measure no longer exists (block changed)
     return;
   }
   boxes.forEach(({ x, y, w, h }) => {
@@ -116,7 +115,7 @@ function drawBoxes() {
   });
 }
 
-/** Crée la barre contextuelle. */
+/** Creates the context bar. */
 function makeBar() {
   bar = document.createElement('div');
   bar.className = 'msel-bar';
@@ -135,13 +134,13 @@ function makeBar() {
     }
     audio.stop();
     cur.mine = true;
-    // Une mesure : jusqu'à la fin ; plusieurs : le passage en boucle.
+    // One measure: to the end; several: the passage, looped.
     tg.play(a, a === b ? Infinity : b, a !== b, updateBar);
     updateBar();
   });
 }
 
-/** Libellé du bouton de la barre. */
+/** Label of the bar's button. */
 function updateBar() {
   if (!bar || !cur) return;
   const go = bar.querySelector('[data-msel=go]');
@@ -154,7 +153,7 @@ function updateBar() {
       : '🔁 ' + t('play.loop');
 }
 
-/** Place la barre au-dessus de la sélection (en dessous s'il n'y a pas la place). */
+/** Places the bar above the selection (below if there is no room). */
 function placeBar() {
   if (!bar) makeBar();
   if (!cur) return;
@@ -167,22 +166,22 @@ function placeBar() {
   const bw = bar.offsetWidth || 200;
   const bh = bar.offsetHeight || 44;
   let top = first.top - bh - 8;
-  if (top < 64) top = last.bottom + 8; // sous l'en-tête : on passe en dessous
+  if (top < 64) top = last.bottom + 8; // under the header: go below
   const left = Math.max(8, Math.min(window.innerWidth - bw - 8, first.left + first.width / 2 - bw / 2));
   bar.style.left = `${left + window.scrollX}px`;
   bar.style.top = `${top + window.scrollY}px`;
 }
 
 /**
- * Rend une zone sélectionnable à l'appui long.
- * @param {HTMLElement} wrap Élément de la zone (doit être en `position: relative`).
+ * Makes an area selectable by long press.
+ * @param {HTMLElement} wrap Element of the area (must be `position: relative`).
  * @param {SelectTarget} tg
  */
 export function bindMeasureSelect(wrap, tg) {
   wrap.classList.add('msel-zone');
-  /** Appui en attente : position de départ et minuterie. */
+  /** Pending press: start position and timer. */
   let press = null;
-  /** Glisser de sélection en cours. */
+  /** Selection drag in progress. */
   let armed = false;
 
   const cancel = () => {
@@ -203,7 +202,7 @@ export function bindMeasureSelect(wrap, tg) {
       timer: setTimeout(() => {
         press = null;
         if (!wrap.isConnected) return;
-        // Armé : nouvelle sélection, la lecture en cours s'arrête.
+        // Armed: new selection, current playback stops.
         clearMeasureSelect();
         audio.stop();
         cur = { wrap, t: tg, a: m, b: m, anchor: m, mine: false };
@@ -212,12 +211,12 @@ export function bindMeasureSelect(wrap, tg) {
         try {
           navigator.vibrate?.(15);
         } catch {
-          /* pas de vibreur */
+          /* no vibrator */
         }
         try {
           wrap.setPointerCapture(id);
         } catch {
-          /* doigt déjà levé */
+          /* finger already lifted */
         }
         drawBoxes();
         if (bar) bar.hidden = true;
@@ -247,7 +246,7 @@ export function bindMeasureSelect(wrap, tg) {
   };
   wrap.addEventListener('pointerup', end);
   wrap.addEventListener('pointercancel', end);
-  // Glisser de sélection : le doigt sélectionne, la page ne défile pas.
+  // Selection drag: the finger selects, the page does not scroll.
   wrap.addEventListener(
     'touchmove',
     (e) => {
@@ -255,19 +254,19 @@ export function bindMeasureSelect(wrap, tg) {
     },
     { passive: false },
   );
-  // Pas de menu du navigateur sur un appui long.
+  // No browser menu on a long press.
   wrap.addEventListener('contextmenu', (e) => {
     if (press || armed || (cur && cur.wrap === wrap)) e.preventDefault();
   });
 }
 
-// Le `click` qui suit l'appui long est avalé ; un toucher ailleurs que dans la
-// barre efface la sélection. (Écoute en phase de capture, avant les zones.)
+// The `click` following the long press is swallowed; a tap outside the
+// bar clears the selection. (Capture-phase listener, before the areas.)
 document.addEventListener(
   'pointerdown',
   () => {
-    // Nouveau toucher : le `click` d'un ancien appui long (qui n'est pas
-    // toujours envoyé, par exemple après un glisser) ne doit plus être avalé.
+    // New tap: the `click` of an old long press (which is not always sent,
+    // for example after a drag) must no longer be swallowed.
     swallowClick = false;
   },
   true,
@@ -285,26 +284,26 @@ document.addEventListener(
   },
   true,
 );
-// La zone a disparu (autre écran, note refermée…) : on efface la sélection.
+// The area is gone (another screen, note closed…): clear the selection.
 new MutationObserver(() => {
   if (cur && !cur.wrap.isConnected) clearMeasureSelect();
 }).observe(document.body, { childList: true, subtree: true });
 window.addEventListener('resize', () => cur && refreshMeasureSelect(cur.wrap));
 
 /**
- * {@link SelectTarget} pour une portée dessinée par
- * {@link module:render-staff.staffSvg|staffSvg} : les mesures sont retrouvées
- * dans la mise en page ({@link module:layout~Layout|Layout}, `mrects`).
+ * {@link SelectTarget} for a staff drawn by
+ * {@link module:render-staff.staffSvg|staffSvg}: measures are found in the
+ * layout ({@link module:layout~Layout|Layout}, `mrects`).
  *
- * @param {HTMLElement} wrap Conteneur du SVG.
- * @param {function(): ?module:layout~Layout} getLayout Mise en page telle que dessinée.
+ * @param {HTMLElement} wrap SVG container.
+ * @param {function(): ?module:layout~Layout} getLayout Layout as drawn.
  * @param {Omit<SelectTarget, 'measureAt'|'boxes'>} rest `play`, `playId`, `skip`.
  * @returns {SelectTarget}
  */
 export function staffTarget(wrap, getLayout, rest) {
   /**
-   * Repère du SVG à l'écran : il peut être décalé dans la zone (marges) et
-   * agrandi par le CSS (exercices aléatoires).
+   * Position of the SVG on screen: it may be offset in the area (margins) and
+   * enlarged by CSS (random exercises).
    */
   const frame = () => {
     const svg = wrap.querySelector('svg');
@@ -323,7 +322,7 @@ export function staffTarget(wrap, getLayout, rest) {
       const y = (cy - f.r.top) / f.k;
       const si = Math.max(0, Math.min(L.systems.length - 1, Math.floor(y / L.SH)));
       const on = L.mrects.map((m, k) => ({ ...m, k })).filter((m) => m.sys === si);
-      if (!on.length) return null; // ligne vide (zone d'ajout)
+      if (!on.length) return null; // empty line (add zone)
       const hit = on.find((m) => x >= m.x0 && x < m.x1);
       if (hit) return hit.k;
       return x < on[0].x0 ? on[0].k : on[on.length - 1].k;

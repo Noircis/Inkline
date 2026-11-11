@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/staff/input - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,22 +63,22 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p><strong>Toucher sur la portée</strong> et <strong>modes de saisie</strong> (2.5), sur le modèle du
-mode « N » de MuseScore :</p>
+                <div class="description usertext"><p><strong>Taps on the staff</strong> and <strong>input modes</strong> (2.5), modeled on MuseScore's
+&quot;N&quot; mode:</p>
 <ul>
-<li><strong>Écrire</strong> : la palette règle la prochaine note ; toucher une note place
-le curseur d'insertion devant elle ; la zone bleue insère une note.</li>
-<li><strong>Modifier</strong> : toucher une note la sélectionne ; la palette la modifie ;
-toucher plus haut ou plus bas la déplace.</li>
+<li><strong>Write</strong>: the palette sets the next note; tapping a note puts the
+insertion cursor before it; the blue zone inserts a note.</li>
+<li><strong>Edit</strong>: tapping a note selects it; the palette changes it; tapping
+higher or lower moves it.</li>
 </ul>
-<p><strong>Glisser</strong> (2.8.2) : le doigt n'est pas toujours précis. Dans la zone
-d'insertion (Écrire) ou sur la note sélectionnée (Modifier), la note suit
-le doigt tant qu'il reste posé : on l'entend changer de hauteur, et une
-bulle au-dessus du doigt affiche son nom. Elle est posée en levant le doigt.
-Ailleurs, rien ne change : on peut faire défiler la page depuis la portée.</p>
-<p>Après toute insertion, la portée est remise en mesure
-(<a href="module-ui_staff_shared.html#.refit">refit</a>) : une note qui déborde est
-coupée à la barre et liée.</p></div>
+<p><strong>Dragging</strong> (2.8.2): fingers are not always precise. In the insertion zone
+(Write) or on the selected note (Edit), the note follows the finger as long
+as it stays down: you hear it change pitch, and a bubble above the finger
+shows its name. It is placed when the finger lifts. Elsewhere, nothing
+changes: the page can be scrolled from the staff.</p>
+<p>After any insertion, the staff is fitted back into measures
+(<a href="module-ui_staff_shared.html#.refit">refit</a>): a note that overflows is
+split at the barline and tied.</p></div>
             
 
             
@@ -90,22 +90,22 @@ coupée à la barre et liée.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p><strong>Toucher sur la portée</strong> et <strong>modes de saisie</strong> (2.5), sur le modèle du
-mode « N » de MuseScore :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p><strong>Taps on the staff</strong> and <strong>input modes</strong> (2.5), modeled on MuseScore's
+&quot;N&quot; mode:</p>
 <ul>
-<li><strong>Écrire</strong> : la palette règle la prochaine note ; toucher une note place
-le curseur d'insertion devant elle ; la zone bleue insère une note.</li>
-<li><strong>Modifier</strong> : toucher une note la sélectionne ; la palette la modifie ;
-toucher plus haut ou plus bas la déplace.</li>
+<li><strong>Write</strong>: the palette sets the next note; tapping a note puts the
+insertion cursor before it; the blue zone inserts a note.</li>
+<li><strong>Edit</strong>: tapping a note selects it; the palette changes it; tapping
+higher or lower moves it.</li>
 </ul>
-<p><strong>Glisser</strong> (2.8.2) : le doigt n'est pas toujours précis. Dans la zone
-d'insertion (Écrire) ou sur la note sélectionnée (Modifier), la note suit
-le doigt tant qu'il reste posé : on l'entend changer de hauteur, et une
-bulle au-dessus du doigt affiche son nom. Elle est posée en levant le doigt.
-Ailleurs, rien ne change : on peut faire défiler la page depuis la portée.</p>
-<p>Après toute insertion, la portée est remise en mesure
-(<a href="module-ui_staff_shared.html#.refit">refit</a>) : une note qui déborde est
-coupée à la barre et liée.</p></li></ul></dd>
+<p><strong>Dragging</strong> (2.8.2): fingers are not always precise. In the insertion zone
+(Write) or on the selected note (Edit), the note follows the finger as long
+as it stays down: you hear it change pitch, and a bubble above the finger
+shows its name. It is placed when the finger lifts. Elsewhere, nothing
+changes: the page can be scrolled from the staff.</p>
+<p>After any insertion, the staff is fitted back into measures
+(<a href="module-ui_staff_shared.html#.refit">refit</a>): a note that overflows is
+split at the barline and tied.</p></li></ul></dd>
     
 
     
@@ -206,7 +206,7 @@ coupée à la barre et liée.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Bulle qui affiche le nom de la note pendant un glisser (créée au premier usage).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Bubble showing the note name during a drag (created on first use).</p></li></ul></dd>
     
 
     
@@ -252,7 +252,7 @@ coupée à la barre et liée.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Bulle qui affiche le nom de la note pendant un glisser (créée au premier usage).</p>
+    <p>Bubble showing the note name during a drag (created on first use).</p>
 </div>
 
 
@@ -283,22 +283,22 @@ coupée à la barre et liée.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Branche le toucher sur la zone d'une portée : glisser une note (2.8.2) et
-touchers simples (staffTap).</p>
-<p>Un glisser commence au <code>pointerdown</code> :</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Wires touch on a staff's area: note dragging (2.8.2) and simple taps
+(staffTap).</p>
+<p>A drag starts on <code>pointerdown</code>:</p>
 <ul>
-<li><strong>Écrire</strong>, dans la zone d'insertion (ou la zone d'ajout en fin de
-portée) : la note est insérée tout de suite, à la hauteur du doigt ;</li>
-<li><strong>Modifier</strong>, sur la note déjà sélectionnée : elle va à la hauteur du doigt.</li>
+<li><strong>Write</strong>, in the insertion zone (or the add zone at the end of the
+staff): the note is inserted right away, at the finger's pitch;</li>
+<li><strong>Edit</strong>, on the note already selected: it goes to the finger's pitch.</li>
 </ul>
-<p>Puis, tant que le doigt reste posé, la note suit (<code>pointermove</code>) ; on la
-pose en levant le doigt. Tout le geste ne compte que pour une annulation.
-Pendant le geste, le défilement de la page est bloqué (<code>touchmove</code>
-annulé) ; partout ailleurs sur la portée, la page défile normalement.</p>
-<p>Le point de repère vertical est figé au début du geste : si la portée
-s'agrandit (note très aiguë), la note ne s'emballe pas sous le doigt.</p>
-<p>Un toucher qui ne commence pas de glisser reste un simple <code>click</code>
-(staffTap) : placer le curseur, sélectionner, désélectionner.</p></li></ul></dd>
+<p>Then, as long as the finger stays down, the note follows (<code>pointermove</code>);
+it is placed when the finger lifts. The whole gesture counts as a single
+undo. During the gesture, page scrolling is blocked (<code>touchmove</code>
+cancelled); everywhere else on the staff, the page scrolls normally.</p>
+<p>The vertical reference is frozen at the start of the gesture: if the staff
+grows (very high note), the note does not run away under the finger.</p>
+<p>A tap that does not start a drag stays a simple <code>click</code> (staffTap):
+place the cursor, select, deselect.</p></li></ul></dd>
     
 
     
@@ -481,13 +481,13 @@ s'agrandit (note très aiguë), la note ne s'emballe pas sous le doigt.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Zones où un glisser peut commencer, posées en calques invisibles sur la
-portée (<code>touch-action: none</code>). Le navigateur décide de faire défiler la
-page dès que le doigt touche l'écran, avant même nos gestionnaires : il
-faut donc lui dire à l'avance où le doigt sert à placer une note. Partout
-ailleurs, la page défile comme avant.</p>
-<p>Mêmes zones que hitTest : la zone d'insertion et la zone d'ajout
-(Écrire), la note sélectionnée (Modifier), sur toute la hauteur de la ligne.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Zones where a drag can start, laid as invisible overlays on the staff
+(<code>touch-action: none</code>). The browser decides to scroll the page as soon as
+the finger touches the screen, before our handlers even run: it must
+therefore be told in advance where the finger is used to place a note.
+Everywhere else, the page scrolls as before.</p>
+<p>Same zones as hitTest: the insertion zone and the add zone (Write),
+the selected note (Edit), over the full height of the line.</p></li></ul></dd>
     
 
     
@@ -606,7 +606,7 @@ ailleurs, la page défile comme avant.</p>
 
             
 
-            <td class="description last"><p>Largeur du rendu.</p></td>
+            <td class="description last"><p>Render width.</p></td>
         </tr>
 
     
@@ -632,7 +632,7 @@ ailleurs, la page défile comme avant.</p>
 
         
 <div class="param-desc">
-    <p>HTML des calques (vide si aucun).</p>
+    <p>HTML of the overlays (empty if none).</p>
 </div>
 
 
@@ -669,9 +669,9 @@ ailleurs, la page défile comme avant.</p>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Change de mode. En passant en Modifier, la note juste avant le curseur est
-sélectionnée ; en revenant en Écrire, le curseur se place juste après la
-note qui était sélectionnée : on reprend là où on en était.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Changes mode. Switching to Edit selects the note just before the cursor;
+returning to Write puts the cursor just after the note that was selected:
+you pick up where you left off.</p></li></ul></dd>
     
 
     
@@ -809,14 +809,14 @@ note qui était sélectionnée : on reprend là où on en était.</p></li></ul><
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Où tombe un toucher : ligne, élément touché, zones d'insertion. Refait la
-mise en page avec la même largeur et le même curseur que le rendu.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Where a tap lands: line, item touched, insertion zones. Redoes the layout
+with the same width and cursor as the render.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_input.js.html">ui/staff/input.js</a>, <a href="ui_staff_input.js.html#line131">line 131</a>
+        <a href="ui_staff_input.js.html">ui/staff/input.js</a>, <a href="ui_staff_input.js.html#line130">line 130</a>
     </li></ul></dd>
     
 
@@ -953,7 +953,7 @@ mise en page avec la même largeur et le même curseur que le rendu.</p></li></u
 
             
 
-            <td class="description last"><p>Abscisse dans la fenêtre.</p></td>
+            <td class="description last"><p>X in the window.</p></td>
         </tr>
 
     
@@ -977,7 +977,7 @@ mise en page avec la même largeur et le même curseur que le rendu.</p></li></u
 
             
 
-            <td class="description last"><p>Ordonnée dans la fenêtre.</p></td>
+            <td class="description last"><p>Y in the window.</p></td>
         </tr>
 
     
@@ -1017,9 +1017,9 @@ mise en page avec la même largeur et le même curseur que le rendu.</p></li></u
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Insère une note (ou un silence) avec les réglages de saisie, à la position
-<code>at</code>, puis remet la portée en mesure. Un triolet qui traverserait une barre
-est refusé (message dans la palette).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Inserts a note (or a rest) with the input settings, at position <code>at</code>, then
+fits the staff back into measures. A triplet that would cross a barline is
+refused (message in the palette).</p></li></ul></dd>
     
 
     
@@ -1260,7 +1260,7 @@ est refusé (message dans la palette).</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p>Index de la note insérée (premier morceau), -1 si refusée.</p>
+    <p>Index of the inserted note (first piece), -1 if refused.</p>
 </div>
 
 
@@ -1297,7 +1297,7 @@ est refusé (message dans la palette).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Élément à insérer, construit à partir des réglages de saisie.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Item to insert, built from the input settings.</p></li></ul></dd>
     
 
     
@@ -1440,7 +1440,7 @@ est refusé (message dans la palette).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Géométrie de la ligne touchée.</p></td>
+            <td class="description last"><p>Geometry of the tapped line.</p></td>
         </tr>
 
     
@@ -1464,7 +1464,7 @@ est refusé (message dans la palette).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Ordonnée du toucher (hauteur de la note).</p></td>
+            <td class="description last"><p>Y of the tap (pitch of the note).</p></td>
         </tr>
 
     
@@ -1488,7 +1488,7 @@ est refusé (message dans la palette).</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Index d'insertion.</p></td>
+            <td class="description last"><p>Insertion index.</p></td>
         </tr>
 
     
@@ -1547,16 +1547,15 @@ est refusé (message dans la palette).</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met la note <code>h</code> (et les notes qui lui sont liées) à la position <code>s</code>, sans
-annulation ni sauvegarde. Une liaison relie deux notes de même hauteur :
-déplacer une note rompt la liaison qui y arrive, et entraîne les notes qui
-lui sont liées.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Puts note <code>h</code> (and the notes tied to it) at position <code>s</code>, without undo or
+save. A tie joins two notes of the same pitch: moving a note breaks the
+tie coming into it, and drags along the notes tied to it.</p></li></ul></dd>
     
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ui_staff_input.js.html">ui/staff/input.js</a>, <a href="ui_staff_input.js.html#line115">line 115</a>
+        <a href="ui_staff_input.js.html">ui/staff/input.js</a>, <a href="ui_staff_input.js.html#line114">line 114</a>
     </li></ul></dd>
     
 
@@ -1669,7 +1668,7 @@ lui sont liées.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Index de la note.</p></td>
+            <td class="description last"><p>Index of the note.</p></td>
         </tr>
 
     
@@ -1693,7 +1692,7 @@ lui sont liées.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Nouvelle position.</p></td>
+            <td class="description last"><p>New position.</p></td>
         </tr>
 
     
@@ -1733,7 +1732,7 @@ lui sont liées.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Affiche (ou cache, <code>text</code> vide) la bulle au-dessus du doigt.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Shows (or hides, with empty <code>text</code>) the bubble above the finger.</p></li></ul></dd>
     
 
     
@@ -1964,31 +1963,32 @@ lui sont liées.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Gère un toucher sur la portée.</p>
+    <dd class="tag-description"><ul class="dummy"><li><p>Handles a tap on the staff.</p>
 <ol>
-<li>Active le bloc s'il ne l'était pas (et ferme le clavier éventuel).</li>
-<li>Refait la mise en page avec la même largeur et le même curseur que le
-rendu, puis convertit les coordonnées : ligne = <code>floor(y / hauteurDeLigne)</code>,
-élément = celui dont l'intervalle <code>[x0, x1)</code> contient x, hauteur =
+<li>Activates the block if it was not active (and closes any keyboard).</li>
+<li>Redoes the layout with the same width and cursor as the render, then
+converts the coordinates: line = <code>floor(y / lineHeight)</code>, item = the one
+whose interval <code>[x0, x1)</code> contains x, pitch =
 <a href="module-layout.html#.stepFromY">stepFromY</a>.</li>
-<li><strong>Mode Écrire</strong> :
+<li><strong>Write mode</strong>:
 <ul>
-<li><strong>zone bleue</strong> (au curseur, ou en fin de portée) : insère une note avec
-les réglages de saisie, à la hauteur touchée ;</li>
-<li><strong>une note</strong> : place le curseur juste avant elle (rien n'est modifié) ;</li>
-<li><strong>fin de portée</strong>, quand le curseur est au milieu : y ramène le curseur.</li>
+<li><strong>blue zone</strong> (at the cursor, or at the end of the staff): inserts a
+note with the input settings, at the tapped pitch;</li>
+<li><strong>a note</strong>: puts the cursor just before it (nothing is changed);</li>
+<li><strong>end of staff</strong>, when the cursor is in the middle: brings the cursor
+back there.</li>
 </ul>
 </li>
-<li><strong>Mode Modifier</strong> :
+<li><strong>Edit mode</strong>:
 <ul>
-<li><strong>la note déjà sélectionnée</strong> : la déplace à la hauteur touchée ;</li>
-<li><strong>une autre note</strong> : la sélectionne ;</li>
-<li>ailleurs : désélectionne.</li>
+<li><strong>the note already selected</strong>: moves it to the tapped pitch;</li>
+<li><strong>another note</strong>: selects it;</li>
+<li>elsewhere: deselects.</li>
 </ul>
 </li>
 </ol>
-<p>Une note coupée par une barre est traitée en entier : on la sélectionne, ou
-on place le curseur, toujours sur son premier morceau.</p></li></ul></dd>
+<p>A note split by a barline is handled as a whole: it is selected, or the
+cursor placed, always on its first piece.</p></li></ul></dd>
     
 
     

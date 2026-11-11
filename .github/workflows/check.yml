@@ -1,7 +1,7 @@
-# Intégration continue : à chaque push et pull request, GitHub vérifie le
-# projet (formatage, analyse, tests unitaires, tests d'interface). Le résultat
-# s'affiche à côté de chaque commit : coche verte ou croix rouge.
-name: Vérifications
+# Continuous integration: on every push and pull request, GitHub checks the
+# project (formatting, lint, unit tests, interface tests). The result shows
+# next to each commit: green check or red cross.
+name: Checks
 
 on:
   push:
@@ -19,22 +19,22 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Dépendances de développement
+      - name: Development dependencies
         run: npm ci
 
-      - name: Formatage, analyse, tests unitaires
+      - name: Formatting, lint, unit tests
         run: npm run check
 
-      - name: Navigateur pour les tests d'interface
+      - name: Browser for interface tests
         run: npx playwright install --with-deps chromium
 
-      - name: Tests d'interface
+      - name: Interface tests
         run: npm run test:e2e
 
-      - name: Rapport en cas d'échec
+      - name: Report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: rapport-tests-interface
+          name: interface-test-report
           path: test-results/
           retention-days: 7

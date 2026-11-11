@@ -1,9 +1,9 @@
 /**
  * @module ui/staff/index
  * @description
- * **Bloc portée** (et ligne rythmique) : point d'entrée. Enregistre le type de
- * bloc `staff` auprès de {@link module:ui/blocks|ui/blocks}. Le découpage en
- * modules est décrit dans {@link module:ui/staff/shared|ui/staff/shared}.
+ * **Staff block** (and rhythm line): entry point. Registers the `staff` block
+ * type with {@link module:ui/blocks|ui/blocks}. The split into modules is
+ * described in {@link module:ui/staff/shared|ui/staff/shared}.
  */
 
 import { registerBlockKind } from '../blocks.js';

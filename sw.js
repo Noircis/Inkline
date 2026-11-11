@@ -1,35 +1,35 @@
 /**
- * Service worker d'Inkline : fonctionnement hors ligne.
+ * Inkline's service worker: offline use.
  *
- * Stratégie « stale-while-revalidate » :
- * - on répond immédiatement depuis le cache (démarrage instantané, hors ligne OK) ;
- * - en parallèle, on retélécharge le fichier et on met le cache à jour pour
- *   la prochaine ouverture.
+ * "Stale-while-revalidate" strategy:
+ * - answer immediately from the cache (instant startup, works offline);
+ * - in parallel, download the file again and update the cache for the next
+ *   opening.
  *
- * Conséquence : après une mise en ligne, la nouvelle version apparaît à la
- * DEUXIÈME ouverture de l'app.
+ * Consequence: after a deployment, the new version shows up on the SECOND
+ * opening of the app.
  *
- * Le nom du cache est versionné. Changer CACHE (à chaque version publiée)
- * fait installer un nouveau worker qui précharge les fichiers et supprime les
- * anciens caches à l'activation. skipWaiting() et clients.claim() le rendent
- * actif sans attendre la fermeture de tous les onglets.
+ * The cache name is versioned. Changing CACHE (on every published version)
+ * installs a new worker that preloads the files and deletes the old caches
+ * on activation. skipWaiting() and clients.claim() make it active without
+ * waiting for every tab to close.
  *
- * Depuis la 1.5.0, les polices sont hébergées dans le dépôt : l'app ne
- * contacte plus aucun autre serveur.
+ * Since 1.5.0, fonts are hosted in the repository: the app no longer
+ * contacts any other server.
  *
- * Piège du cache HTTP (corrigé en 1.6.1) : GitHub Pages envoie
- * « Cache-Control: max-age=600 ». Un fetch() ordinaire peut donc renvoyer,
- * pendant 10 minutes, l'ANCIENNE version d'un fichier gardée par le cache
- * HTTP du navigateur, qui est distinct du cache du service worker. Un nouveau
- * worker pouvait ainsi précharger d'anciens fichiers sous le nouveau nom de
- * cache, et l'app restait bloquée sur l'ancienne version. D'où :
- *   - préchargement avec cache: 'reload' (toujours depuis le réseau) ;
- *   - revalidation avec cache: 'no-cache' (le serveur confirme ou renvoie).
+ * HTTP cache trap (fixed in 1.6.1): GitHub Pages sends
+ * "Cache-Control: max-age=600". A plain fetch() can therefore return, for
+ * 10 minutes, the OLD version of a file kept by the browser's HTTP cache,
+ * which is separate from the service worker cache. A new worker could thus
+ * preload old files under the new cache name, and the app stayed stuck on
+ * the old version. Hence:
+ *   - preloading with cache: 'reload' (always from the network);
+ *   - revalidation with cache: 'no-cache' (the server confirms or resends).
  */
 
-const CACHE = 'inkline-2.9.0';
+const CACHE = 'inkline-2.9.1';
 
-/** Fichiers préchargés à l'installation : tout ce qu'il faut pour démarrer hors ligne. */
+/** Files preloaded on install: everything needed to start offline. */
 const CORE = [
   './',
   './index.html',
@@ -138,7 +138,7 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== location.origin) return; // rien d'autre à mettre en cache
+  if (url.origin !== location.origin) return; // nothing else to cache
   e.respondWith(
     caches.open(CACHE).then(async (c) => {
       const hit = await c.match(req, { ignoreSearch: true });
@@ -154,7 +154,7 @@ self.addEventListener('fetch', (e) => {
       }
       const r = await net;
       if (r) return r;
-      // Navigation hors ligne vers une URL inconnue : on sert l'app.
+      // Offline navigation to an unknown URL: serve the app.
       if (req.mode === 'navigate') return (await c.match('./index.html')) || Response.error();
       return Response.error();
     }),

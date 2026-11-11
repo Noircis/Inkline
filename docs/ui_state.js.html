@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/state.js - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -53,49 +53,49 @@
             <pre class="prettyprint source linenums"><code>/**
  * @module ui/state
  * @description
- * **État de l'interface**, partagé par tous les modules `ui/*`.
+ * **Interface state**, shared by every `ui/*` module.
  *
- * L'app suit un modèle *immediate mode* : il n'y a pas de framework réactif.
- * Un module modifie `state` (ou une note), puis demande explicitement le
- * re-rendu de ce qui a changé (`renderNote`, `redrawStaff`, `redrawGrid`).
+ * The app follows an *immediate mode* model: there is no reactive framework.
+ * A module changes `state` (or a note), then explicitly asks for a re-render
+ * of what changed (`renderNote`, `redrawStaff`, `redrawGrid`).
  *
- * Toutes les variables d'état sont regroupées ici plutôt qu'éparpillées en
- * variables globales : on sait ainsi ce qui existe et qui le modifie.
+ * All state variables are gathered here rather than scattered as globals:
+ * that way we know what exists and who changes it.
  */
 
 import { scheduleSave } from '../storage.js';
 
 /**
- * Réglages de saisie de la palette de portée, utilisés pour la **prochaine**
- * note ajoutée (quand aucune note n'est sélectionnée).
+ * Input settings of the staff palette, used for the **next** note added
+ * (when no note is selected).
  *
  * @typedef {Object} InputSettings
- * @property {module:model~DurationCode} d Valeur.
- * @property {boolean} dot Pointée.
- * @property {boolean} rest Mode silence (persistant).
- * @property {?number} acc Altération (consommée par la prochaine note).
- * @property {boolean} rs La prochaine note ouvre une reprise (consommé).
- * @property {boolean} tie La prochaine note est liée à la précédente (consommé).
- * @property {boolean} tup Mode triolet (persistant).
+ * @property {module:model~DurationCode} d Duration.
+ * @property {boolean} dot Dotted.
+ * @property {boolean} rest Rest mode (persistent).
+ * @property {?number} acc Accidental (consumed by the next note).
+ * @property {boolean} rs The next note opens a repeat (consumed).
+ * @property {boolean} tie The next note is tied to the previous one (consumed).
+ * @property {boolean} tup Triplet mode (persistent).
  */
 
 /**
  * @typedef {Object} UiState
- * @property {Object.&lt;string, module:model~Note>} notes Le carnet.
- * @property {Object.&lt;string, module:folders~Folder>} folders Les dossiers.
- * @property {{name: 'list'|'note'|'options', id: string|null}} view Écran affiché.
- * @property {string} query Recherche en cours sur l'accueil (non mémorisée).
- * @property {string|null} activeId Bloc en cours d'édition (une palette est ouverte).
- * @property {number|null} sel Sélection dans le bloc actif : index d'élément
- *   de portée **ou** index de mesure de grille, selon le type du bloc. Un seul
- *   bloc est actif à la fois, il n'y a donc pas d'ambiguïté ; `setActive`
- *   remet `sel` à `null` à chaque changement de bloc.
- * @property {'write'|'edit'} mode Mode des portées (2.5) : Écrire (la palette
- *   règle la prochaine note, on insère au curseur) ou Modifier (la palette
- *   modifie la note sélectionnée).
- * @property {number|null} cursor Mode Écrire : index de l'élément devant
- *   lequel la prochaine note sera insérée ; `null` = en fin de portée.
- * @property {number|null} playIdx Élément ou mesure en cours de lecture.
+ * @property {Object.&lt;string, module:model~Note>} notes The notebook.
+ * @property {Object.&lt;string, module:folders~Folder>} folders The folders.
+ * @property {{name: 'list'|'note'|'options', id: string|null}} view Screen shown.
+ * @property {string} query Current search on the home screen (not remembered).
+ * @property {string|null} activeId Block being edited (a palette is open).
+ * @property {number|null} sel Selection in the active block: staff item index
+ *   **or** chart measure index, depending on the block type. Only one block
+ *   is active at a time, so there is no ambiguity; `setActive` resets `sel`
+ *   to `null` on every block change.
+ * @property {'write'|'edit'} mode Staff mode (2.5): Write (the palette sets
+ *   the next note, inserted at the cursor) or Edit (the palette changes the
+ *   selected note).
+ * @property {number|null} cursor Write mode: index of the item before which
+ *   the next note will be inserted; `null` = at the end of the staff.
+ * @property {number|null} playIdx Item or measure being played.
  * @property {InputSettings} input
  */
 
@@ -114,7 +114,7 @@ export const state = {
 };
 
 /**
- * Note affichée, ou `undefined` sur la liste.
+ * Note shown, or `undefined` on the list.
  * @returns {module:model~Note|undefined}
  */
 export function curNote() {
@@ -122,7 +122,7 @@ export function curNote() {
 }
 
 /**
- * Bloc de la note affichée, par id.
+ * Block of the note shown, by id.
  * @param {string|null} id
  * @returns {module:model~Block|null}
  */
@@ -132,7 +132,7 @@ export function blockById(id) {
 }
 
 /**
- * Marque une note comme modifiée et programme la sauvegarde.
+ * Marks a note as changed and schedules the save.
  * @param {module:model~Note} n
  */
 export function touch(n) {
@@ -141,17 +141,17 @@ export function touch(n) {
 }
 
 /**
- * Enregistre un changement de **rangement** (dossier, épingle) : contrairement
- * à {@link module:ui/state.touch|touch}, la date de modification ne change
- * pas. Ranger une note n'est pas la modifier : elle ne doit pas remonter en
- * tête du tri « Modifiées récemment ».
+ * Saves a **filing** change (folder, pin): unlike
+ * {@link module:ui/state.touch|touch}, the modification date does not
+ * change. Filing a note is not editing it: it must not jump to the top of
+ * the "Recently modified" sort.
  * @param {module:model~Note} n
  */
 export function saveArrangement(n) {
   scheduleSave(state.notes, n.id);
 }
 
-/** Élément racine où sont rendues les vues. */
+/** Root element where views are rendered. */
 export const app = /** @type {HTMLElement} */ (document.getElementById('app'));
 </code></pre>
         </article>

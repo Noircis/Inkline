@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>ui/common - Inkline · documentation</title>
     
-    <meta name="description" content="Documentation du code d'Inkline" />
+    <meta name="description" content="Inkline code documentation" />
     
     
     
@@ -63,9 +63,9 @@
         <div class="container-overview">
         
             
-                <div class="description usertext"><p>Petits outils d'interface partagés par les écrans et les blocs : version,
-lecture de fichier, boutons à confirmation, bouton de lecture audio, espace
-réservé aux palettes. Ce module ne dépend d'aucun écran.</p></div>
+                <div class="description usertext"><p>Small interface helpers shared by screens and blocks: version, file
+reading, confirm buttons, audio play button, space reserved for palettes.
+This module depends on no screen.</p></div>
             
 
             
@@ -77,9 +77,9 @@ réservé aux palettes. Ce module ne dépend d'aucun écran.</p></div>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Petits outils d'interface partagés par les écrans et les blocs : version,
-lecture de fichier, boutons à confirmation, bouton de lecture audio, espace
-réservé aux palettes. Ce module ne dépend d'aucun écran.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Small interface helpers shared by screens and blocks: version, file
+reading, confirm buttons, audio play button, space reserved for palettes.
+This module depends on no screen.</p></li></ul></dd>
     
 
     
@@ -180,7 +180,7 @@ réservé aux palettes. Ce module ne dépend d'aucun écran.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Version affichée dans les Options (à garder alignée sur CHANGELOG.md).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Version shown in Settings (keep it in line with CHANGELOG.md).</p></li></ul></dd>
     
 
     
@@ -226,7 +226,7 @@ réservé aux palettes. Ce module ne dépend d'aucun écran.</p></li></ul></dd>
 
 
 <div class="description usertext">
-    <p>Version affichée dans les Options (à garder alignée sur CHANGELOG.md).</p>
+    <p>Version shown in Settings (keep it in line with CHANGELOG.md).</p>
 </div>
 
 
@@ -257,7 +257,7 @@ réservé aux palettes. Ce module ne dépend d'aucun écran.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Ajuste la hauteur d'un <code>&lt;textarea&gt;</code> à son contenu (pas d'ascenseur interne).</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Fits a <code>&lt;textarea&gt;</code> height to its content (no inner scrollbar).</p></li></ul></dd>
     
 
     
@@ -392,10 +392,10 @@ réservé aux palettes. Ce module ne dépend d'aucun écran.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Action destructrice en deux temps : le premier toucher « arme » le bouton
-(nouveau libellé, style d'alerte), le second exécute. Sans second toucher,
-le bouton revient à son état initial. Les boîtes <code>confirm()</code> natives sont
-peu pratiques sur mobile.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Destructive action in two steps: the first tap &quot;arms&quot; the button (new
+label, alert style), the second runs it. Without a second tap, the button
+returns to its initial state. Native <code>confirm()</code> dialogs are awkward on
+mobile.</p></li></ul></dd>
     
 
     
@@ -542,7 +542,7 @@ peu pratiques sur mobile.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Libellé une fois armé.</p></td>
+            <td class="description last"><p>Label once armed.</p></td>
         </tr>
 
     
@@ -618,7 +618,7 @@ peu pratiques sur mobile.</p></li></ul></dd>
                 </td>
             
 
-            <td class="description last"><p>Durée (ms) pendant laquelle le bouton reste armé.</p></td>
+            <td class="description last"><p>Time (ms) the button stays armed.</p></td>
         </tr>
 
     
@@ -644,7 +644,7 @@ peu pratiques sur mobile.</p></li></ul></dd>
 
         
 <div class="param-desc">
-    <p><code>true</code> si l'action a été exécutée.</p>
+    <p><code>true</code> if the action was run.</p>
 </div>
 
 
@@ -681,8 +681,8 @@ peu pratiques sur mobile.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Rappels de lecture communs aux portées et aux grilles : surlignage de
-l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Playback callbacks shared by staves and charts: highlight of the item
+being played, then reset at the end.</p></li></ul></dd>
     
 
     
@@ -777,7 +777,7 @@ l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Bloc joué.</p></td>
+            <td class="description last"><p>Block being played.</p></td>
         </tr>
 
     
@@ -801,7 +801,7 @@ l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
 
             
 
-            <td class="description last"><p>Fonction de redessin du bloc.</p></td>
+            <td class="description last"><p>Block redraw function.</p></td>
         </tr>
 
     
@@ -860,7 +860,7 @@ l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Lit le fichier choisi dans un <code>&lt;input type=file&gt;</code> et passe son texte à <code>fn</code>.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reads the file chosen in an <code>&lt;input type=file&gt;</code> and passes its text to <code>fn</code>.</p></li></ul></dd>
     
 
     
@@ -1019,8 +1019,8 @@ l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Réserve en bas de page la hauteur de la palette ouverte (variable CSS
-<code>--pal-h</code>), pour que le contenu ne passe pas dessous.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Reserves the height of the open palette at the bottom of the page (CSS
+variable <code>--pal-h</code>), so the content does not go under it.</p></li></ul></dd>
     
 
     
@@ -1105,7 +1105,7 @@ l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>HTML des outils d'un bloc actif.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>HTML of an active block's tools.</p></li></ul></dd>
     
 
     
@@ -1190,7 +1190,7 @@ l'élément joué, puis remise à zéro à la fin.</p></li></ul></dd>
 <dl class="details">
     
     <dt class="tag-description">Description:</dt>
-    <dd class="tag-description"><ul class="dummy"><li><p>Met à jour le bouton Écouter/Stop d'un bloc.</p></li></ul></dd>
+    <dd class="tag-description"><ul class="dummy"><li><p>Updates a block's Listen/Stop button.</p></li></ul></dd>
     
 
     

@@ -2,7 +2,7 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
-    <!-- interactive-widget=resizes-content : le clavier Android réduit la page au lieu de passer par-dessus les palettes -->
+    <!-- interactive-widget=resizes-content: the Android keyboard shrinks the page instead of covering the palettes -->
     <meta
       name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"
@@ -10,14 +10,14 @@
     <meta name="theme-color" content="#F2F4F8" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0F1218" media="(prefers-color-scheme: dark)" />
     <!--
-  Content Security Policy : ce que la page a le droit de charger et d'exécuter.
-  - script-src 'self' : uniquement les fichiers .js de l'app. Un script injecté
-    dans le HTML (onerror=…, <script> inline) est refusé par le navigateur :
-    c'est le filet de sécurité si un échappement était oublié.
-  - style-src 'unsafe-inline' : nécessaire pour les attributs style="…" et
-    element.style (ne permet pas d'exécuter du code).
-  - img-src data: blob: : images générées pour l'export ; font-src data: : polices embarquées.
-  - Aucune autre origine : l'app ne contacte aucun serveur tiers.
+  Content Security Policy: what the page is allowed to load and run.
+  - script-src 'self': only the app's .js files. A script injected into the
+    HTML (onerror=…, inline <script>) is refused by the browser: it is the
+    safety net if an escape was forgotten.
+  - style-src 'unsafe-inline': needed for style="…" attributes and
+    element.style (does not allow running code).
+  - img-src data: blob:: images generated for export; font-src data:: embedded fonts.
+  - No other origin: the app contacts no third-party server.
 -->
     <meta
       http-equiv="Content-Security-Policy"
@@ -44,10 +44,10 @@
     <link rel="stylesheet" href="css/chord-keys.css" />
   </head>
   <body>
-    <!-- Les vues (liste, note) sont rendues ici par js/ui/views.js -->
+    <!-- Screens (home, note, settings…) are rendered here by js/ui/nav.js -->
     <div class="wrap" id="app"></div>
 
-    <!-- Palette de portée (js/ui/staff-ui.js). Visible quand un bloc portée est actif. -->
+    <!-- Staff palette (js/ui/staff/palette.js). Visible when a staff block is active. -->
     <div id="palette" hidden>
       <div class="pal-inner">
         <div class="pal-info">
@@ -267,7 +267,7 @@
       </div>
     </div>
 
-    <!-- Palette de grille (js/ui/grid-ui.js). Visible quand un bloc grille est actif. -->
+    <!-- Chart palette (js/ui/grid-ui.js). Visible when a chart block is active. -->
     <div id="gpal" hidden>
       <div class="pal-inner">
         <div class="pal-info">
