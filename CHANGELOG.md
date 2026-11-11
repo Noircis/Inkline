@@ -4,6 +4,12 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.11.1] - 2026-11-11
+
+### Added
+
+- Metronome: 6/4 and 7/4 time signatures.
+
 ## [2.11.0] - 2026-11-11
 
 ### Added

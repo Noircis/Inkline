@@ -204,3 +204,13 @@ test('presets: validation, loading keeps the display options', () => {
     'twoBars',
   ]);
 });
+
+test('6/4 and 7/4 (2.11.1)', () => {
+  const s = S({ meter: '7/4', tempo: 60 });
+  assert.equal(s.meter, '7/4');
+  assert.deepEqual(s.accents, [2, 1, 1, 1, 1, 1, 1]);
+  close(cycleEvents(s).duration, 7);
+  assert.ok(!canTwoFour('7/4'));
+  assert.ok(canTwoFour('6/4'));
+  assert.deepEqual(beatLevels(S({ meter: '6/4', jazz: '24' })), [0, 2, 0, 2, 0, 2]);
+});

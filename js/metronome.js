@@ -9,7 +9,7 @@
  * ## Beats and tempo
  *
  * A bar is split into **beats** following the eighth-note groups of its time
- * signature ({@link module:placements.METERS|METERS}): 4 beats in 4/4, 2 in
+ * signature ({@link METRO_METERS}): 4 beats in 4/4, 2 in
  * 6/8, 3 uneven beats in 7/8 "2+2+3". The tempo counts the usual beat unit:
  *
  * | Time signatures       | Tempo counts         |
@@ -37,7 +37,28 @@
  * of the "every other bar" mode is fully silent.
  */
 
-import { METERS, meterOf } from './placements.js';
+import { METERS, meter } from './placements.js';
+
+/**
+ * Time signatures of the metronome: those of the practice screens, plus 6/4
+ * and 7/4 (2.11.1).
+ * @type {ReadonlyArray.<module:placements~Meter>}
+ */
+export const METRO_METERS = Object.freeze([
+  ...METERS.slice(0, 4),
+  meter('6/4', [2, 2, 2, 2, 2, 2]),
+  meter('7/4', [2, 2, 2, 2, 2, 2, 2]),
+  ...METERS.slice(4),
+]);
+
+/**
+ * Metronome time signature from its key (4/4 if unknown).
+ * @param {string} key
+ * @returns {module:placements~Meter}
+ */
+export function meterOf(key) {
+  return METRO_METERS.find((m) => m.key === key) || METRO_METERS[0];
+}
 
 /** Tempo bounds (beats per minute). */
 export const TEMPO_MIN = 20;
@@ -67,7 +88,7 @@ export const PRESET_NAME_MAX = 40;
  * Metronome settings.
  * @typedef {Object} MetroSettings
  * @property {number} tempo Beats per minute ({@link TEMPO_MIN} to {@link TEMPO_MAX}).
- * @property {string} meter Key of {@link module:placements.METERS|METERS}.
+ * @property {string} meter Key of {@link METRO_METERS}.
  * @property {Array.<number>} accents Level of each beat: 2 strong, 1 normal, 0 muted.
  * @property {string} subdiv One of {@link SUBDIVS}.
  * @property {number} subVol Subdivision volume, 0 to 1.
@@ -330,18 +351,18 @@ const num = (v) => typeof v === 'number' && Number.isFinite(v);
 export function sanitizeMetro(r) {
   const d = METRO_DEFAULTS;
   const o = r && typeof r === 'object' ? r : {};
-  const meter = METERS.some((m) => m.key === o.meter) ? o.meter : d.meter;
-  const n = beatsOf(meter);
+  const key = METRO_METERS.some((m) => m.key === o.meter) ? o.meter : d.meter;
+  const n = beatsOf(key);
   const accents =
     Array.isArray(o.accents) && o.accents.length === n && o.accents.every((a) => [0, 1, 2].includes(a))
       ? o.accents.slice()
       : defaultAccents(n);
-  const subdiv = subdivsFor(meter).includes(o.subdiv) ? o.subdiv : 'none';
+  const subdiv = subdivsFor(key).includes(o.subdiv) ? o.subdiv : 'none';
   let jazz = JAZZ.includes(o.jazz) ? o.jazz : 'off';
-  if (jazz === '24' && !canTwoFour(meter)) jazz = 'off';
+  if (jazz === '24' && !canTwoFour(key)) jazz = 'off';
   return {
     tempo: num(o.tempo) ? clampTempo(o.tempo) : d.tempo,
-    meter,
+    meter: key,
     accents,
     subdiv,
     subVol: num(o.subVol) ? Math.min(1, Math.max(0, o.subVol)) : d.subVol,
@@ -360,11 +381,11 @@ export function sanitizeMetro(r) {
  * Settings after a time signature change: accents reset, subdivision and
  * jazz mode kept when the new time signature allows them.
  * @param {MetroSettings} s
- * @param {string} meter
+ * @param {string} key Time signature key.
  * @returns {MetroSettings}
  */
-export function withMeter(s, meter) {
-  return sanitizeMetro({ ...s, meter, accents: null, onceBeat: Math.min(s.onceBeat, beatsOf(meter) - 1) });
+export function withMeter(s, key) {
+  return sanitizeMetro({ ...s, meter: key, accents: null, onceBeat: Math.min(s.onceBeat, beatsOf(key) - 1) });
 }
 
 /**

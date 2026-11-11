@@ -34,7 +34,6 @@
 import { t } from '../i18n.js';
 import { esc, uid } from '../util.js';
 import { getMeta, setMeta } from '../storage.js';
-import { METERS, meterOf } from '../placements.js';
 import {
   METRO_DEFAULTS,
   SOUNDS,
@@ -43,6 +42,8 @@ import {
   PRESETS_MAX,
   PRESET_NAME_MAX,
   UNIT_GLYPHS,
+  METRO_METERS,
+  meterOf,
   sanitizeMetro,
   withMeter,
   beatsOf,
@@ -207,7 +208,7 @@ function mainHtml() {
   const unit = UNIT_GLYPHS[beatUnit(s.meter)];
   const step = (n) =>
     `<button type="button" class="btn mstep" data-step="${n}" aria-label="${esc(t('metro.stepN', { n: n > 0 ? '+' + n : String(n) }))}">${n > 0 ? '+' + n : '−' + -n}</button>`;
-  const meters = METERS.map((m) => {
+  const meters = METRO_METERS.map((m) => {
     const sub = m.kind === 'odd' ? `<small>${m.groups.join('+')}</small>` : '';
     return `<button type="button" class="chip" data-mmeter="${esc(m.key)}" aria-pressed="${m.key === s.meter}">${esc(m.time)}${sub}</button>`;
   }).join('');
