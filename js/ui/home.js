@@ -50,7 +50,7 @@ import { registerScreen, openNote, go } from './nav.js';
 import { hideAllPalettes } from './blocks.js';
 import { backupDue } from './options.js';
 import { renderNoteList } from './list-view.js';
-import { GEAR, LOUPE, METRONOME } from './icons.js';
+import { GEAR, LOUPE, METRONOME, PRACTICE } from './icons.js';
 import { openFolderSheet, openCategoriesSheet } from './folder-sheet.js';
 
 /**
@@ -165,7 +165,7 @@ function renderHome() {
   state.sel = null;
   hideAllPalettes();
   const due = backupDue();
-  app.innerHTML = `<header class="top"><div class="grow"><h1 class="brand">Inkline</h1></div><button class="btn icon-btn" id="trainBtn" type="button" aria-label="${esc(t('home.training'))}">${METRONOME}</button><button class="btn icon-btn" id="optBtn" type="button" aria-label="${esc(due ? t('home.optionsBackup') : t('home.options'))}">${GEAR}${due ? '<span class="dot" aria-hidden="true"></span>' : ''}</button><button class="btn primary" id="newNote" type="button">${esc(t('home.newNoteBtn'))}</button></header>
+  app.innerHTML = `<header class="top"><div class="grow"><h1 class="brand">Inkline</h1></div><button class="btn icon-btn" id="metroSpikeBtn" type="button" aria-label="${esc(t('metroSpike.open'))}">${METRONOME}</button><button class="btn icon-btn" id="trainBtn" type="button" aria-label="${esc(t('home.training'))}">${PRACTICE}</button><button class="btn icon-btn" id="optBtn" type="button" aria-label="${esc(due ? t('home.optionsBackup') : t('home.options'))}">${GEAR}${due ? '<span class="dot" aria-hidden="true"></span>' : ''}</button><button class="btn primary" id="newNote" type="button">${esc(t('home.newNoteBtn'))}</button></header>
   <div id="homeBody"></div>`;
   app.querySelector('#optBtn').onclick = () => go('options');
   app.querySelector('#trainBtn').onclick = () => go('training');

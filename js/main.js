@@ -60,6 +60,8 @@ import './ui/note.js';
 import './ui/options.js';
 import './ui/training.js';
 import './ui/exercises.js';
+// 2.10 spike (temporary): metronome engine test panel.
+import './ui/metro-spike.js';
 
 // Asynchronous loading (IndexedDB): top-level `await`. The rest of this
 // file, including the first render, only runs once the notebook is

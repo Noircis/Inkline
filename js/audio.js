@@ -62,6 +62,15 @@ function audioContext() {
   return ac;
 }
 
+/**
+ * The shared audio context (2.10): the metronome plays through the same
+ * context as staves and charts. Created or resumed on demand.
+ * @returns {AudioContext|null} `null` if the Web Audio API is missing.
+ */
+export function getAudioContext() {
+  return audioContext();
+}
+
 /** Frequency (Hz) of a MIDI number (A4 = 69 = 440 Hz). */
 const freq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
