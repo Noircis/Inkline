@@ -63,12 +63,24 @@ function audioContext() {
 }
 
 /**
- * The shared audio context (2.10): the metronome plays through the same
+ * The shared audio context (2.11): the metronome plays through the same
  * context as staves and charts. Created or resumed on demand.
  * @returns {AudioContext|null} `null` if the Web Audio API is missing.
  */
 export function getAudioContext() {
   return audioContext();
+}
+
+/** Called whenever a staff, chart or practice playback starts. */
+const startListeners = [];
+
+/**
+ * Registers a function called when a playback starts (2.11: the metronome
+ * stops, one tempo at a time).
+ * @param {function()} fn
+ */
+export function onPlaybackStart(fn) {
+  startListeners.push(fn);
 }
 
 /** Frequency (Hz) of a MIDI number (A4 = 69 = 440 Hz). */
@@ -312,6 +324,7 @@ function begin(id, cb) {
   const was = isPlaying(id);
   stop();
   if (was) return null;
+  startListeners.forEach((fn) => fn());
   const c = audioContext();
   if (!c) return null;
   current = { id, timers: [], nodes: [], onEnd: cb.onEnd };

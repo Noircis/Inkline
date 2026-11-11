@@ -21,7 +21,7 @@ import { noteToInkline, noteToPng, noteToPdf, shareOrDownload, slug } from '../e
 import { pushSnapshot } from '../history.js';
 import * as audio from '../audio.js';
 import { registerScreen, backToList, renderScreen } from './nav.js';
-import { toolsHtml, autosize, confirmTap } from './common.js';
+import { toolsHtml, autosize, confirmTap, metroButton } from './common.js';
 import { PIN_ICON } from './icons.js';
 import { blockKind, redrawBlock, setActive, updateActive } from './blocks.js';
 import { openArrangeSheet } from './folder-sheet.js';
@@ -51,7 +51,7 @@ function renderNote(opts = {}) {
   const n = curNote();
   if (!n) return false;
   const sy = window.scrollY;
-  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(t('note.back'))}</button><div class="grow"></div><button class="btn icon-btn pin-btn" id="pinBtn" type="button" aria-pressed="${!!n.pinned}" aria-label="${esc(t('note.pin'))}">${PIN_ICON}</button><button class="btn" id="shareBtn" type="button" aria-expanded="false">${esc(t('note.share'))}</button></header>
+  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(t('note.back'))}</button><div class="grow"></div>${metroButton()}<button class="btn icon-btn pin-btn" id="pinBtn" type="button" aria-pressed="${!!n.pinned}" aria-label="${esc(t('note.pin'))}">${PIN_ICON}</button><button class="btn" id="shareBtn" type="button" aria-expanded="false">${esc(t('note.share'))}</button></header>
   <div class="sharebox" id="shareBox" hidden>
     <button class="btn primary" type="button" data-share="inkline">${esc(t('note.shareInkline'))}<small>${esc(t('note.shareInklineSub'))}</small></button>
     <button class="btn" type="button" data-share="png">${esc(t('note.shareImage'))}<small>PNG</small></button>

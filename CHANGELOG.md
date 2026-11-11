@@ -4,6 +4,34 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.11.0] - 2026-11-11
+
+### Added
+
+- **Metronome, from every screen.** The ♩ button in every header opens it over the current screen; Android's back button closes it and leaves the screen as it was.
+  - Tempo from 20 to 400: drag the big number up or down, −5 −1 +1 +5 (hold to repeat), or **tap tempo** (average of the last 4 taps). The Italian marking is shown under the number.
+  - Every time signature of the practice screens, odd meters included (7/8 as 2+2+3, 2+3+2 or 3+2+2). The tempo counts quarter notes in x/4, dotted quarters in 6/8, 9/8, 12/8 and eighths in 5/8 and 7/8.
+  - **Accents per beat**: tap a beat to switch it between strong, normal and muted.
+  - **Subdivisions**: eighths, triplets, sixteenths, dotted eighth and sixteenth, with their own volume.
+  - **Swing** on eighth subdivisions, from straight to 75 %.
+  - **Jazz modes**: click on 2 and 4 only; click once per bar (on the beat of your choice), optionally every other bar.
+  - Five sounds: click, woodblock, cowbell, cross-stick, hi-hat.
+  - **Presets**: save the current settings under a name, load, rename, delete.
+  - Options: vibration and full-screen flash on each beat, keep the screen on.
+- **Mini-bar**: while it plays, the collapsed metronome stays at the bottom of every screen (beat lights, tempo − +, stop, expand), above an open palette.
+- The metronome keeps playing with the screen locked: one cycle is rendered in advance and looped by the audio hardware, with no script running.
+- One tempo at a time: playing a staff, a chart or a practice exercise stops the metronome, and the other way round.
+
+### Changed
+
+- New icon for the Practice button on the home screen; the metronome icon now opens the metronome.
+
+### Technical
+
+- New pure modules `metronome` (settings, cycle sounds, tap tempo, presets) and `metro-clock` (timing of a looping cycle, seamless swaps on any change), with unit tests; `metro-engine` renders and loops the cycle.
+- The 2.10 engine spike and its test panel are removed (`js/ui/metro-spike.js`, `css/metro-spike.css`).
+- `ui/nav` handles overlays with their own history entry (`openOverlay`, `closeOverlay`).
+
 ## [2.9.1] - 2026-11-11
 
 ### Changed

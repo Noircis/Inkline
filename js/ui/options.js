@@ -40,7 +40,7 @@ import { parseIRealAll, songToGrid } from '../ireal.js';
 import { sortedFolders, countByFolder } from '../folders.js';
 import { download } from '../export.js';
 import { LIST_VIEWS } from './list-view.js';
-import { APP_VERSION, readFile } from './common.js';
+import { APP_VERSION, readFile, metroButton } from './common.js';
 import { registerScreen, renderScreen, openNote, backToList } from './nav.js';
 import { openFolderSheet } from './folder-sheet.js';
 import { FOLD_MIN_LINES, FOLD_PREVIEW_LINES } from './fold.js';
@@ -315,7 +315,7 @@ function bindIReal() {
  */
 function renderOptions() {
   const meta = getMeta();
-  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(t('note.back'))}</button><div class="grow"></div><h1 class="top-title">${esc(t('home.options'))}</h1></header>
+  app.innerHTML = `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(t('note.back'))}</button><div class="grow"></div><h1 class="top-title">${esc(t('home.options'))}</h1>${metroButton()}</header>
   ${languageHtml(meta)}
   ${displayHtml(meta)}
   <section class="opt">

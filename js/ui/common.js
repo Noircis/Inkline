@@ -10,9 +10,10 @@ import { t } from '../i18n.js';
 import { esc } from '../util.js';
 import { state } from './state.js';
 import * as audio from '../audio.js';
+import { METRONOME } from './icons.js';
 
 /** Version shown in Settings (keep it in line with CHANGELOG.md). */
-export const APP_VERSION = '2.9.1';
+export const APP_VERSION = '2.11.0';
 
 /** HTML of an active block's tools. */
 export function toolsHtml() {
@@ -72,6 +73,15 @@ export function confirmTap(btn, armedLabel, action, delay = 3500) {
     }
   }, delay);
   return false;
+}
+
+/**
+ * Header button that opens the metronome (2.11), on every screen. The click
+ * is handled by {@link module:ui/metronome|ui/metronome} (delegated listener).
+ * @returns {string}
+ */
+export function metroButton() {
+  return `<button class="btn icon-btn" type="button" data-metro-open aria-label="${esc(t('metro.open'))}">${METRONOME}</button>`;
 }
 
 /**

@@ -14,6 +14,7 @@ import { esc } from '../util.js';
 import { getMeta, setMeta, DRILL_DEFAULTS } from '../storage.js';
 import { METERS } from '../placements.js';
 import * as audio from '../audio.js';
+import { metroButton } from './common.js';
 
 /** Subdivisions offered (only eighth notes are available for now). */
 export const SUBDIVISIONS = [
@@ -30,7 +31,7 @@ export const SUBDIVISIONS = [
  * @returns {string}
  */
 export function header(back, title, extra = '') {
-  return `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(back)}</button><div class="grow"></div><h1 class="top-title">${esc(title)}</h1>${extra}</header>`;
+  return `<header class="top"><button class="btn ghost" id="back" type="button">&#8249; ${esc(back)}</button><div class="grow"></div><h1 class="top-title">${esc(title)}</h1>${extra}${metroButton()}</header>`;
 }
 
 /**

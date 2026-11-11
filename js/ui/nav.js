@@ -115,12 +115,38 @@ export function goChild(name) {
   show(name, null, {});
 }
 
+/** Close functions of the open overlays (metronome sheet), newest last. */
+const overlays = [];
+
+/**
+ * Opens an overlay drawn over the current screen (2.11): it gets its own
+ * history entry, so Android's back button closes it and leaves the screen
+ * under it as it was (no re-render, same scroll position).
+ * @param {function()} close Hides the overlay.
+ */
+export function openOverlay(close) {
+  history.pushState({ ...(history.state || {}), overlay: overlays.length + 1 }, '');
+  overlays.push(close);
+}
+
+/**
+ * Closes the newest overlay through history (the `popstate` calls its close
+ * function).
+ */
+export function closeOverlay() {
+  if (overlays.length) history.back();
+}
+
 /**
  * Android back button (`popstate`): shows again the screen stored in the
  * history entry we return to, or home.
  * @param {*} entry `history.state` after going back.
  */
 export function onHistoryBack(entry) {
+  if (overlays.length) {
+    overlays.pop()();
+    return;
+  }
   if (entry && entry.inkline && entry.view) show(entry.view, entry.id || null, {});
   else if (state.view.name !== 'list') showList();
 }

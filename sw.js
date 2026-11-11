@@ -27,7 +27,7 @@
  *   - revalidation with cache: 'no-cache' (the server confirms or resends).
  */
 
-const CACHE = 'inkline-2.10.0-spike.2';
+const CACHE = 'inkline-2.11.0';
 
 /** Files preloaded on install: everything needed to start offline. */
 const CORE = [
@@ -47,7 +47,7 @@ const CORE = [
   './css/training.css',
   './css/staff-modes.css',
   './css/chord-keys.css',
-  './css/metro-spike.css',
+  './css/metronome.css',
   './css/fonts.css',
   './fonts/bricolage-grotesque-latin-600-normal.woff2',
   './fonts/bricolage-grotesque-latin-700-normal.woff2',
@@ -91,6 +91,7 @@ const CORE = [
   './js/chord-keys.js',
   './js/exercise.js',
   './js/measure-fit.js',
+  './js/metronome.js',
   './js/metro-clock.js',
   './js/metro-engine.js',
   './js/ui/state.js',
@@ -117,7 +118,7 @@ const CORE = [
   './js/ui/grid-ui.js',
   './js/ui/options.js',
   './js/ui/list-view.js',
-  './js/ui/metro-spike.js',
+  './js/ui/metronome.js',
 ];
 
 self.addEventListener('install', (e) => {

@@ -18,7 +18,7 @@
  *   training     practice (2.3)
  *   staff-modes  staff input modes, key signature (2.5)
  *   chord-keys   chord keyboard (2.8.5)
- *   metro-spike  temporary metronome engine test panel (2.10 spike)
+ *   metronome    metronome sheet, mini-bar and flash (2.11)
  *
  * No color is hard-coded outside the tokens (base.css).
  */
@@ -62,6 +62,7 @@ img {
   --f-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --f-music: 'Noto Music', 'Noto Sans Symbols 2', 'Segoe UI Symbol', serif;
   --pal-h: 0px;
+  --metro-h: 0px;
   /* Folder colors (2.0): only the key is stored, the hue follows the theme. */
   --fc-red: #d23c3c;
   --fc-orange: #e07316;
@@ -154,7 +155,7 @@ button {
   margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 0 calc(32px + var(--pal-h));
+  padding-block: 0 calc(32px + var(--pal-h) + var(--metro-h));
 }
 .top {
   position: sticky;

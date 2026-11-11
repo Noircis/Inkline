@@ -60,6 +60,7 @@ import { sanitizeNote, sanitizeNotes, sanitizeFolders } from './sanitize.js';
 import { SORT_KEYS } from './search.js';
 import { openDb, getAll, write, STORES } from './db.js';
 import { METERS, meterOf, slotsOf } from './placements.js';
+import { sanitizeMetro, sanitizePresets } from './metronome.js';
 
 /** `localStorage` key of the notebook up to 2.0 (historical: do not change). */
 const STORAGE_KEY = 'carnet-portees-v1';
@@ -440,6 +441,8 @@ export function importFile(notes, text, folders = {}) {
  * @property {boolean} [autoFold] "Collapse long blocks automatically" option (2.2).
  * @property {module:storage~DrillSettings} [drill] Last settings of Rhythm practice (2.3).
  * @property {module:storage~GenSettings} [gen] Last settings of random exercises (2.8).
+ * @property {module:metronome~MetroSettings} [metro] Metronome settings (2.11).
+ * @property {Array.<module:metronome~MetroPreset>} [metroPresets] Metronome presets (2.11).
  */
 
 /**
@@ -628,6 +631,8 @@ export function getMeta() {
       autoFold: m.autoFold === true ? true : undefined,
       drill: drillOf(m.drill),
       gen: genOf(m.gen),
+      metro: m.metro ? sanitizeMetro(m.metro) : undefined,
+      metroPresets: sanitizePresets(m.metroPresets),
     };
   } catch (e) {
     return {};

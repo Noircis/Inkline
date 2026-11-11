@@ -288,7 +288,7 @@
 }
 .transport {
   position: sticky;
-  bottom: 0;
+  bottom: var(--metro-h);
   z-index: 4;
   margin-top: 16px;
   padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));

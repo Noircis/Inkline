@@ -78,6 +78,9 @@ js/
   folding.js          collapsed display rule for long blocks
   placements.js       rhythm practice: time signatures, writing placements, series
   exercise.js         random rhythm exercises (reproducible draw by number)
+  metronome.js        metronome: settings, accents, jazz modes, subdivisions, cycle sounds, presets
+  metro-clock.js      metronome timing: beats of a looping cycle, seamless swaps
+  metro-engine.js     metronome audio: pre-rendered looping cycle (plays with the screen locked)
   transpose.js        transposing instruments: rewriting a staff for another instrument
   chord-keys.js       chord keyboard: effect of each key
   i18n.js             interface language: t('key'), plurals, detection
@@ -101,6 +104,7 @@ js/
     training.js       Practice and Placements screens
     exercises.js      random exercise screens (settings, playback)
     drill-kit.js      shared practice pieces (settings, metronome, playback)
+    metronome.js      metronome sheet (any screen), mini-bar, presets, lights, vibration, flash
     measure-select.js measure selection by long press (play from here, loop)
     chord-keyboard.js on-screen chord keyboard (chart, note chord)
     staff/            staff block: index (registration), view (header, drawing),
@@ -117,7 +121,7 @@ docs/                 generated documentation (npm run docs)
 
 The code is split into two layers:
 
-- **Pure modules** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `chord-keys`, `measure-fit`, `i18n`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
+- **Pure modules** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `chord-keys`, `measure-fit`, `i18n`, `metronome`, `metro-clock`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`): wires the logic to the browser.
 
 Screens (`ui/home`, `ui/note`, `ui/options`…) and musical blocks (`ui/staff`, `ui/grid-ui`) **register** at load time with two registries, `ui/nav` and `ui/blocks`, which then call them by name. These registries import no screen: the import graph has no cycle (see the `main` module).
@@ -150,6 +154,8 @@ See the `model` module for the details of the types. In short:
 - optional fields are absent rather than `false`.
 
 The format is backward compatible: a note created in 1.0 opens in the latest version. Each note carries a creation date (`created`) and a modification date (`updated`); for notes from before 1.7.0, the creation date was initialized with the modification date.
+
+The metronome settings and presets (2.11) are also metadata (`metro`, `metroPresets`).
 
 Since 2.0, a note can carry `folder` (folder id) and `pinned`; since 2.8.6, `cats` (ids of categories of its folder). Folders `{ id, name, color, created, cats }` are stored separately; a note without a folder, or whose folder disappeared, is "unfiled".
 

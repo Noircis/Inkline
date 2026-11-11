@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>ui/metronome.js - Inkline · documentation</title>
+    
+    <meta name="description" content="Inkline code documentation" />
+    
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="../" target="_blank" class="menu-item" >Application</a></h2><h3>Modules</h3><ul><li><a href="module-audio.html">audio</a><ul class='methods'><li data-type='method'><a href="module-audio.html#.getAudioContext">getAudioContext</a></li><li data-type='method'><a href="module-audio.html#.isPlaying">isPlaying</a></li><li data-type='method'><a href="module-audio.html#.onPlaybackStart">onPlaybackStart</a></li><li data-type='method'><a href="module-audio.html#.pad">pad</a></li><li data-type='method'><a href="module-audio.html#.playGrid">playGrid</a></li><li data-type='method'><a href="module-audio.html#.playStaff">playStaff</a></li><li data-type='method'><a href="module-audio.html#.previewItem">previewItem</a></li><li data-type='method'><a href="module-audio.html#.stop">stop</a></li><li data-type='method'><a href="module-audio.html#~at">at</a></li><li data-type='method'><a href="module-audio.html#~audioContext">audioContext</a></li><li data-type='method'><a href="module-audio.html#~bass">bass</a></li><li data-type='method'><a href="module-audio.html#~begin">begin</a></li><li data-type='method'><a href="module-audio.html#~click">click</a></li><li data-type='method'><a href="module-audio.html#~freq">freq</a></li><li data-type='method'><a href="module-audio.html#~metronome">metronome</a></li><li data-type='method'><a href="module-audio.html#~perc">perc</a></li><li data-type='method'><a href="module-audio.html#~tone">tone</a></li></ul></li><li><a href="module-chord-keys.html">chord-keys</a><ul class='members'><li data-type='member'><a href="module-chord-keys.html#.MAX_SLOTS">MAX_SLOTS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chord-keys.html#.applyChordKey">applyChordKey</a></li><li data-type='method'><a href="module-chord-keys.html#.splitChord">splitChord</a></li><li data-type='method'><a href="module-chord-keys.html#~backChord">backChord</a></li><li data-type='method'><a href="module-chord-keys.html#~join">join</a></li><li data-type='method'><a href="module-chord-keys.html#~toggleAcc">toggleAcc</a></li></ul></li><li><a href="module-chords.html">chords</a><ul class='members'><li data-type='member'><a href="module-chords.html#.CHORD_RE">CHORD_RE</a></li><li data-type='member'><a href="module-chords.html#~LETTERS">LETTERS</a></li><li data-type='member'><a href="module-chords.html#~LETTER_PC">LETTER_PC</a></li></ul><ul class='methods'><li data-type='method'><a href="module-chords.html#.chordHtml">chordHtml</a></li><li data-type='method'><a href="module-chords.html#.chordOk">chordOk</a></li><li data-type='method'><a href="module-chords.html#.chordParts">chordParts</a></li><li data-type='method'><a href="module-chords.html#.chordTones">chordTones</a></li><li data-type='method'><a href="module-chords.html#.transposeChord">transposeChord</a></li><li data-type='method'><a href="module-chords.html#~pitchClass">pitchClass</a></li><li data-type='method'><a href="module-chords.html#~prettyQuality">prettyQuality</a></li><li data-type='method'><a href="module-chords.html#~transposeName">transposeName</a></li></ul></li><li><a href="module-db.html">db</a><ul class='members'><li data-type='member'><a href="module-db.html#.STORES">STORES</a></li><li data-type='member'><a href="module-db.html#~DB_NAME">DB_NAME</a></li><li data-type='member'><a href="module-db.html#~DB_VERSION">DB_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-db.html#.getAll">getAll</a></li><li data-type='method'><a href="module-db.html#.openDb">openDb</a></li><li data-type='method'><a href="module-db.html#.write">write</a></li><li data-type='method'><a href="module-db.html#~done">done</a></li></ul></li><li><a href="module-exercise.html">exercise</a><ul class='methods'><li data-type='method'><a href="module-exercise.html#.candidates">candidates</a></li><li data-type='method'><a href="module-exercise.html#.generateExercise">generateExercise</a></li><li data-type='method'><a href="module-exercise.html#.mulberry32">mulberry32</a></li><li data-type='method'><a href="module-exercise.html#.newSeed">newSeed</a></li></ul></li><li><a href="module-export.html">export</a><ul class='methods'><li data-type='method'><a href="module-export.html#.download">download</a></li><li data-type='method'><a href="module-export.html#.noteToInkline">noteToInkline</a></li><li data-type='method'><a href="module-export.html#.noteToPdf">noteToPdf</a></li><li data-type='method'><a href="module-export.html#.noteToPng">noteToPng</a></li><li data-type='method'><a href="module-export.html#.paginate">paginate</a></li><li data-type='method'><a href="module-export.html#.parseFontFaces">parseFontFaces</a></li><li data-type='method'><a href="module-export.html#.shareOrDownload">shareOrDownload</a></li><li data-type='method'><a href="module-export.html#.slug">slug</a></li><li data-type='method'><a href="module-export.html#~caption">caption</a></li><li data-type='method'><a href="module-export.html#~embeddedFontCss">embeddedFontCss</a></li><li data-type='method'><a href="module-export.html#~noteToSvg">noteToSvg</a></li><li data-type='method'><a href="module-export.html#~rasterize">rasterize</a></li><li data-type='method'><a href="module-export.html#~toBlob">toBlob</a></li><li data-type='method'><a href="module-export.html#~wrap">wrap</a></li></ul></li><li><a href="module-folders.html">folders</a><ul class='members'><li data-type='member'><a href="module-folders.html#.ALL">ALL</a></li><li data-type='member'><a href="module-folders.html#.ALL_CATS">ALL_CATS</a></li><li data-type='member'><a href="module-folders.html#.CAT_NAME_MAX">CAT_NAME_MAX</a></li><li data-type='member'><a href="module-folders.html#.COLOR_KEYS">COLOR_KEYS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_COLORS">FOLDER_COLORS</a></li><li data-type='member'><a href="module-folders.html#.FOLDER_NAME_MAX">FOLDER_NAME_MAX</a></li><li data-type='member'><a href="module-folders.html#.MAX_CATS">MAX_CATS</a></li><li data-type='member'><a href="module-folders.html#.NO_CAT">NO_CAT</a></li><li data-type='member'><a href="module-folders.html#.UNFILED">UNFILED</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folders.html#.addCategory">addCategory</a></li><li data-type='method'><a href="module-folders.html#.catsOf">catsOf</a></li><li data-type='method'><a href="module-folders.html#.cleanFolderName">cleanFolderName</a></li><li data-type='method'><a href="module-folders.html#.countByCategory">countByCategory</a></li><li data-type='method'><a href="module-folders.html#.countByFolder">countByFolder</a></li><li data-type='method'><a href="module-folders.html#.deleteCategory">deleteCategory</a></li><li data-type='method'><a href="module-folders.html#.deleteFolder">deleteFolder</a></li><li data-type='method'><a href="module-folders.html#.fileNote">fileNote</a></li><li data-type='method'><a href="module-folders.html#.folderOf">folderOf</a></li><li data-type='method'><a href="module-folders.html#.groupByCategory">groupByCategory</a></li><li data-type='method'><a href="module-folders.html#.inCategory">inCategory</a></li><li data-type='method'><a href="module-folders.html#.inSelection">inSelection</a></li><li data-type='method'><a href="module-folders.html#.moveCategory">moveCategory</a></li><li data-type='method'><a href="module-folders.html#.newFolder">newFolder</a></li><li data-type='method'><a href="module-folders.html#.sortedFolders">sortedFolders</a></li></ul></li><li><a href="module-folding.html">folding</a><ul class='members'><li data-type='member'><a href="module-folding.html#.FOLD_MIN_LINES">FOLD_MIN_LINES</a></li><li data-type='member'><a href="module-folding.html#.FOLD_PREVIEW_LINES">FOLD_PREVIEW_LINES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-folding.html#.shouldFold">shouldFold</a></li></ul></li><li><a href="module-grid.html">grid</a><ul class='members'><li data-type='member'><a href="module-grid.html#.KEYS">KEYS</a></li><li data-type='member'><a href="module-grid.html#.SECTIONS">SECTIONS</a></li><li data-type='member'><a href="module-grid.html#.STYLES">STYLES</a></li><li data-type='member'><a href="module-grid.html#~SVG_GAP">SVG_GAP</a></li><li data-type='member'><a href="module-grid.html#~SVG_ROW">SVG_ROW</a></li><li data-type='member'><a href="module-grid.html#~SVG_TOP">SVG_TOP</a></li></ul><ul class='methods'><li data-type='method'><a href="module-grid.html#.gridHtml">gridHtml</a></li><li data-type='method'><a href="module-grid.html#.gridPlayOrder">gridPlayOrder</a></li><li data-type='method'><a href="module-grid.html#.gridSvg">gridSvg</a></li><li data-type='method'><a href="module-grid.html#.gridTokens">gridTokens</a></li><li data-type='method'><a href="module-grid.html#.keyLabel">keyLabel</a></li><li data-type='method'><a href="module-grid.html#.measureText">measureText</a></li><li data-type='method'><a href="module-grid.html#.slotDurations">slotDurations</a></li><li data-type='method'><a href="module-grid.html#~svgBarlines">svgBarlines</a></li><li data-type='method'><a href="module-grid.html#~svgChords">svgChords</a></li><li data-type='method'><a href="module-grid.html#~svgDots">svgDots</a></li><li data-type='method'><a href="module-grid.html#~svgLabels">svgLabels</a></li><li data-type='method'><a href="module-grid.html#~svgVline">svgVline</a></li></ul></li><li><a href="module-history.html">history</a><ul class='methods'><li data-type='method'><a href="module-history.html#.discardSnapshot">discardSnapshot</a></li><li data-type='method'><a href="module-history.html#.popSnapshot">popSnapshot</a></li><li data-type='method'><a href="module-history.html#.pushSnapshot">pushSnapshot</a></li></ul></li><li><a href="module-i18n.html">i18n</a><ul class='members'><li data-type='member'><a href="module-i18n.html#.DICTIONARIES">DICTIONARIES</a></li><li data-type='member'><a href="module-i18n.html#.LANGS">LANGS</a></li><li data-type='member'><a href="module-i18n.html#.lang">lang</a></li><li data-type='member'><a href="module-i18n.html#.locale">locale</a></li><li data-type='member'><a href="module-i18n.html#~DICTS">DICTS</a></li><li data-type='member'><a href="module-i18n.html#~cur">cur</a></li><li data-type='member'><a href="module-i18n.html#~plural">plural</a></li></ul><ul class='methods'><li data-type='method'><a href="module-i18n.html#.detectLang">detectLang</a></li><li data-type='method'><a href="module-i18n.html#.initLang">initLang</a></li><li data-type='method'><a href="module-i18n.html#.keysOf">keysOf</a></li><li data-type='method'><a href="module-i18n.html#.t">t</a></li><li data-type='method'><a href="module-i18n.html#.translateDom">translateDom</a></li><li data-type='method'><a href="module-i18n.html#~lookup">lookup</a></li></ul></li><li><a href="module-ireal.html">ireal</a><ul class='methods'><li data-type='method'><a href="module-ireal.html#.chordToIReal">chordToIReal</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealAll">parseIRealAll</a></li><li data-type='method'><a href="module-ireal.html#.parseIRealMusic">parseIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#.qualityFromIReal">qualityFromIReal</a></li><li data-type='method'><a href="module-ireal.html#.scramble">scramble</a></li><li data-type='method'><a href="module-ireal.html#.songToGrid">songToGrid</a></li><li data-type='method'><a href="module-ireal.html#.toIRealLink">toIRealLink</a></li><li data-type='method'><a href="module-ireal.html#.toIRealMusic">toIRealMusic</a></li><li data-type='method'><a href="module-ireal.html#~newParser">newParser</a></li><li data-type='method'><a href="module-ireal.html#~obfuscate50">obfuscate50</a></li><li data-type='method'><a href="module-ireal.html#~qualityToIReal">qualityToIReal</a></li><li data-type='method'><a href="module-ireal.html#~readToken">readToken</a></li><li data-type='method'><a href="module-ireal.html#~tidy">tidy</a></li><li data-type='method'><a href="module-ireal.html#~unscramble">unscramble</a></li></ul></li><li><a href="module-lang-init.html">lang-init</a></li><li><a href="module-layout.html">layout</a><ul class='members'><li data-type='member'><a href="module-layout.html#.HALF_SPACE">HALF_SPACE</a></li><li data-type='member'><a href="module-layout.html#.INSERT_GAP">INSERT_GAP</a></li><li data-type='member'><a href="module-layout.html#.KEY_ACC_W">KEY_ACC_W</a></li><li data-type='member'><a href="module-layout.html#~BAR_EXTRA">BAR_EXTRA</a></li><li data-type='member'><a href="module-layout.html#~BASE_WIDTH">BASE_WIDTH</a></li><li data-type='member'><a href="module-layout.html#~MAX_STRETCH">MAX_STRETCH</a></li><li data-type='member'><a href="module-layout.html#~PAD_L">PAD_L</a></li><li data-type='member'><a href="module-layout.html#~REPEAT_START_W">REPEAT_START_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-layout.html#.geom">geom</a></li><li data-type='method'><a href="module-layout.html#.layout">layout</a></li><li data-type='method'><a href="module-layout.html#.stepFromY">stepFromY</a></li><li data-type='method'><a href="module-layout.html#.yOfStep">yOfStep</a></li><li data-type='method'><a href="module-layout.html#~breakIntoSystems">breakIntoSystems</a></li><li data-type='method'><a href="module-layout.html#~itemWidth">itemWidth</a></li><li data-type='method'><a href="module-layout.html#~keySigWidth">keySigWidth</a></li><li data-type='method'><a href="module-layout.html#~measureWidth">measureWidth</a></li><li data-type='method'><a href="module-layout.html#~newSystem">newSystem</a></li><li data-type='method'><a href="module-layout.html#~placeSystems">placeSystems</a></li><li data-type='method'><a href="module-layout.html#~stretchFactor">stretchFactor</a></li><li data-type='method'><a href="module-layout.html#~systemStart">systemStart</a></li></ul></li><li><a href="module-locales_en.html">locales/en</a></li><li><a href="module-locales_fr.html">locales/fr</a></li><li><a href="module-main.html">main</a></li><li><a href="module-measure-fit.html">measure-fit</a><ul class='methods'><li data-type='method'><a href="module-measure-fit.html#.chainEnd">chainEnd</a></li><li data-type='method'><a href="module-measure-fit.html#.chainStart">chainStart</a></li><li data-type='method'><a href="module-measure-fit.html#.decompose">decompose</a></li><li data-type='method'><a href="module-measure-fit.html#.normalizeStaff">normalizeStaff</a></li><li data-type='method'><a href="module-measure-fit.html#.resizeEvent">resizeEvent</a></li><li data-type='method'><a href="module-measure-fit.html#.singleValue">singleValue</a></li><li data-type='method'><a href="module-measure-fit.html#~baseProps">baseProps</a></li><li data-type='method'><a href="module-measure-fit.html#~cutAtBars">cutAtBars</a></li><li data-type='method'><a href="module-measure-fit.html#~eventsOf">eventsOf</a></li><li data-type='method'><a href="module-measure-fit.html#~isMult">isMult</a></li><li data-type='method'><a href="module-measure-fit.html#~materialize">materialize</a></li><li data-type='method'><a href="module-measure-fit.html#~piecesFrom">piecesFrom</a></li><li data-type='method'><a href="module-measure-fit.html#~valuesFor">valuesFor</a></li></ul></li><li><a href="module-metro-clock.html">metro-clock</a><ul class='methods'><li data-type='method'><a href="module-metro-clock.html#.beatAt">beatAt</a></li><li data-type='method'><a href="module-metro-clock.html#.beatTime">beatTime</a></li><li data-type='method'><a href="module-metro-clock.html#.swapPoint">swapPoint</a></li></ul></li><li><a href="module-metro-engine.html">metro-engine</a><ul class='methods'><li data-type='method'><a href="module-metro-engine.html#.configure">configure</a></li><li data-type='method'><a href="module-metro-engine.html#.init">init</a></li><li data-type='method'><a href="module-metro-engine.html#.isRunning">isRunning</a></li><li data-type='method'><a href="module-metro-engine.html#.position">position</a></li><li data-type='method'><a href="module-metro-engine.html#.start">start</a></li><li data-type='method'><a href="module-metro-engine.html#.stop">stop</a></li><li data-type='method'><a href="module-metro-engine.html#~apply">apply</a></li><li data-type='method'><a href="module-metro-engine.html#~env">env</a></li><li data-type='method'><a href="module-metro-engine.html#~hit">hit</a></li><li data-type='method'><a href="module-metro-engine.html#~noiseBuffer">noiseBuffer</a></li><li data-type='method'><a href="module-metro-engine.html#~noiseHit">noiseHit</a></li><li data-type='method'><a href="module-metro-engine.html#~renderCycle">renderCycle</a></li><li data-type='method'><a href="module-metro-engine.html#~source">source</a></li><li data-type='method'><a href="module-metro-engine.html#~startLoop">startLoop</a></li><li data-type='method'><a href="module-metro-engine.html#~swapLoop">swapLoop</a></li><li data-type='method'><a href="module-metro-engine.html#~tone">tone</a></li><li data-type='method'><a href="module-metro-engine.html#~updateSession">updateSession</a></li></ul></li><li><a href="module-metronome.html">metronome</a><ul class='members'><li data-type='member'><a href="module-metronome.html#.JAZZ">JAZZ</a></li><li data-type='member'><a href="module-metronome.html#.METRO_DEFAULTS">METRO_DEFAULTS</a></li><li data-type='member'><a href="module-metronome.html#.PRESETS_MAX">PRESETS_MAX</a></li><li data-type='member'><a href="module-metronome.html#.SOUNDS">SOUNDS</a></li><li data-type='member'><a href="module-metronome.html#.SUBDIVS">SUBDIVS</a></li><li data-type='member'><a href="module-metronome.html#.SWING_MIN">SWING_MIN</a></li><li data-type='member'><a href="module-metronome.html#.TEMPO_MIN">TEMPO_MIN</a></li><li data-type='member'><a href="module-metronome.html#.UNIT_GLYPHS">UNIT_GLYPHS</a></li><li data-type='member'><a href="module-metronome.html#~MARKINGS">MARKINGS</a></li><li data-type='member'><a href="module-metronome.html#~PRESET_FIELDS">PRESET_FIELDS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-metronome.html#.applyPreset">applyPreset</a></li><li data-type='method'><a href="module-metronome.html#.beatLevels">beatLevels</a></li><li data-type='method'><a href="module-metronome.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-metronome.html#.beatsOf">beatsOf</a></li><li data-type='method'><a href="module-metronome.html#.canTwoFour">canTwoFour</a></li><li data-type='method'><a href="module-metronome.html#.clampTempo">clampTempo</a></li><li data-type='method'><a href="module-metronome.html#.cleanPresetName">cleanPresetName</a></li><li data-type='method'><a href="module-metronome.html#.cycleBars">cycleBars</a></li><li data-type='method'><a href="module-metronome.html#.cycleEvents">cycleEvents</a></li><li data-type='method'><a href="module-metronome.html#.defaultAccents">defaultAccents</a></li><li data-type='method'><a href="module-metronome.html#.eighthSeconds">eighthSeconds</a></li><li data-type='method'><a href="module-metronome.html#.presetPart">presetPart</a></li><li data-type='method'><a href="module-metronome.html#.sanitizeMetro">sanitizeMetro</a></li><li data-type='method'><a href="module-metronome.html#.sanitizePresets">sanitizePresets</a></li><li data-type='method'><a href="module-metronome.html#.subdivsFor">subdivsFor</a></li><li data-type='method'><a href="module-metronome.html#.swingApplies">swingApplies</a></li><li data-type='method'><a href="module-metronome.html#.tapTempo">tapTempo</a></li><li data-type='method'><a href="module-metronome.html#.tempoMarking">tempoMarking</a></li><li data-type='method'><a href="module-metronome.html#.withMeter">withMeter</a></li><li data-type='method'><a href="module-metronome.html#~subOffsets">subOffsets</a></li></ul></li><li><a href="module-model.html">model</a><ul class='members'><li data-type='member'><a href="module-model.html#.DUR">DUR</a></li><li data-type='member'><a href="module-model.html#.INSTRUMENTS">INSTRUMENTS</a></li><li data-type='member'><a href="module-model.html#.STEP_FIT">STEP_FIT</a></li><li data-type='member'><a href="module-model.html#.STEP_MAX">STEP_MAX</a></li><li data-type='member'><a href="module-model.html#.STEP_MIN">STEP_MIN</a></li><li data-type='member'><a href="module-model.html#.TIME_SIGNATURES">TIME_SIGNATURES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-model.html#.beatUnit">beatUnit</a></li><li data-type='method'><a href="module-model.html#.defaultGroups">defaultGroups</a></li><li data-type='method'><a href="module-model.html#.exampleNote">exampleNote</a></li><li data-type='method'><a href="module-model.html#.groupStarts">groupStarts</a></li><li data-type='method'><a href="module-model.html#.instrumentOf">instrumentOf</a></li><li data-type='method'><a href="module-model.html#.meterGroups">meterGroups</a></li><li data-type='method'><a href="module-model.html#.mlen">mlen</a></li><li data-type='method'><a href="module-model.html#.newGridBlock">newGridBlock</a></li><li data-type='method'><a href="module-model.html#.newNote">newNote</a></li><li data-type='method'><a href="module-model.html#.newStaffBlock">newStaffBlock</a></li><li data-type='method'><a href="module-model.html#.newTextBlock">newTextBlock</a></li><li data-type='method'><a href="module-model.html#.qlen">qlen</a></li><li data-type='method'><a href="module-model.html#.writtenLen">writtenLen</a></li></ul></li><li><a href="module-pdf.html">pdf</a><ul class='members'><li data-type='member'><a href="module-pdf.html#.A4">A4</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pdf.html#.buildPdf">buildPdf</a></li></ul></li><li><a href="module-pitch.html">pitch</a><ul class='members'><li data-type='member'><a href="module-pitch.html#.noteName">noteName</a></li><li data-type='member'><a href="module-pitch.html#~CLEF_BASE">CLEF_BASE</a></li><li data-type='member'><a href="module-pitch.html#~FLAT_ORDER">FLAT_ORDER</a></li><li data-type='member'><a href="module-pitch.html#~NOTE_NAMES">NOTE_NAMES</a></li><li data-type='member'><a href="module-pitch.html#~SEMITONES">SEMITONES</a></li><li data-type='member'><a href="module-pitch.html#~SHARP_ORDER">SHARP_ORDER</a></li></ul><ul class='methods'><li data-type='method'><a href="module-pitch.html#.keyAcc">keyAcc</a></li><li data-type='method'><a href="module-pitch.html#.midiOf">midiOf</a></li><li data-type='method'><a href="module-pitch.html#.pitchName">pitchName</a></li><li data-type='method'><a href="module-pitch.html#.resolveMidis">resolveMidis</a></li><li data-type='method'><a href="module-pitch.html#~degreeOf">degreeOf</a></li></ul></li><li><a href="module-placements.html">placements</a><ul class='members'><li data-type='member'><a href="module-placements.html#.EIGHTH_GLYPH">EIGHTH_GLYPH</a></li><li data-type='member'><a href="module-placements.html#.METERS">METERS</a></li><li data-type='member'><a href="module-placements.html#.SLOTS">SLOTS</a></li><li data-type='member'><a href="module-placements.html#.slotsOf">slotsOf</a></li><li data-type='member'><a href="module-placements.html#~PAIR">PAIR</a></li><li data-type='member'><a href="module-placements.html#~REST_GLYPH">REST_GLYPH</a></li><li data-type='member'><a href="module-placements.html#~TRIPLE">TRIPLE</a></li></ul><ul class='methods'><li data-type='method'><a href="module-placements.html#.combinations">combinations</a></li><li data-type='method'><a href="module-placements.html#.meterOf">meterOf</a></li><li data-type='method'><a href="module-placements.html#.placementItems">placementItems</a></li><li data-type='method'><a href="module-placements.html#.placementSeries">placementSeries</a></li><li data-type='method'><a href="module-placements.html#.seriesBlock">seriesBlock</a></li><li data-type='method'><a href="module-placements.html#.startGlyphs">startGlyphs</a></li><li data-type='method'><a href="module-placements.html#.startLabel">startLabel</a></li><li data-type='method'><a href="module-placements.html#~groupSeries">groupSeries</a></li><li data-type='method'><a href="module-placements.html#~meter">meter</a></li></ul></li><li><a href="module-render-staff.html">render-staff</a><ul class='methods'><li data-type='method'><a href="module-render-staff.html#.staffSvg">staffSvg</a></li><li data-type='method'><a href="module-render-staff.html#~accSvg">accSvg</a></li><li data-type='method'><a href="module-render-staff.html#~barSvg">barSvg</a></li><li data-type='method'><a href="module-render-staff.html#~beamGroupsBySystem">beamGroupsBySystem</a></li><li data-type='method'><a href="module-render-staff.html#~chordSvgText">chordSvgText</a></li><li data-type='method'><a href="module-render-staff.html#~drawAppendZone">drawAppendZone</a></li><li data-type='method'><a href="module-render-staff.html#~drawBars">drawBars</a></li><li data-type='method'><a href="module-render-staff.html#~drawBeams">drawBeams</a></li><li data-type='method'><a href="module-render-staff.html#~drawItems">drawItems</a></li><li data-type='method'><a href="module-render-staff.html#~drawNote">drawNote</a></li><li data-type='method'><a href="module-render-staff.html#~drawStaffLines">drawStaffLines</a></li><li data-type='method'><a href="module-render-staff.html#~drawTies">drawTies</a></li><li data-type='method'><a href="module-render-staff.html#~drawTuplets">drawTuplets</a></li><li data-type='method'><a href="module-render-staff.html#~freeStem">freeStem</a></li><li data-type='method'><a href="module-render-staff.html#~isVisible">isVisible</a></li><li data-type='method'><a href="module-render-staff.html#~keySigSvg">keySigSvg</a></li><li data-type='method'><a href="module-render-staff.html#~ledgerLines">ledgerLines</a></li><li data-type='method'><a href="module-render-staff.html#~restSvg">restSvg</a></li><li data-type='method'><a href="module-render-staff.html#~tieSvg">tieSvg</a></li></ul></li><li><a href="module-rhythm.html">rhythm</a><ul class='methods'><li data-type='method'><a href="module-rhythm.html#.beamGroups">beamGroups</a></li><li data-type='method'><a href="module-rhythm.html#.segmentMeasures">segmentMeasures</a></li><li data-type='method'><a href="module-rhythm.html#.staffEvents">staffEvents</a></li><li data-type='method'><a href="module-rhythm.html#.staffPlayOrder">staffPlayOrder</a></li><li data-type='method'><a href="module-rhythm.html#.staffSegment">staffSegment</a></li><li data-type='method'><a href="module-rhythm.html#.swingWarp">swingWarp</a></li><li data-type='method'><a href="module-rhythm.html#.tupletGroups">tupletGroups</a></li><li data-type='method'><a href="module-rhythm.html#~measureOfItem">measureOfItem</a></li><li data-type='method'><a href="module-rhythm.html#~straightBeats">straightBeats</a></li><li data-type='method'><a href="module-rhythm.html#~tupletIndex">tupletIndex</a></li></ul></li><li><a href="module-sanitize.html">sanitize</a><ul class='methods'><li data-type='method'><a href="module-sanitize.html#.sanitizeBlock">sanitizeBlock</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeFolders">sanitizeFolders</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNote">sanitizeNote</a></li><li data-type='method'><a href="module-sanitize.html#.sanitizeNotes">sanitizeNotes</a></li><li data-type='method'><a href="module-sanitize.html#~item">item</a></li><li data-type='method'><a href="module-sanitize.html#~measure">measure</a></li><li data-type='method'><a href="module-sanitize.html#~sanitizeFolder">sanitizeFolder</a></li></ul></li><li><a href="module-search.html">search</a><ul class='members'><li data-type='member'><a href="module-search.html#.SORT_KEYS">SORT_KEYS</a></li><li data-type='member'><a href="module-search.html#.SORT_MODES">SORT_MODES</a></li></ul><ul class='methods'><li data-type='method'><a href="module-search.html#.matchNote">matchNote</a></li><li data-type='method'><a href="module-search.html#.normalize">normalize</a></li><li data-type='method'><a href="module-search.html#.sortNotes">sortNotes</a></li><li data-type='method'><a href="module-search.html#~searchableText">searchableText</a></li></ul></li><li><a href="module-storage.html">storage</a><ul class='members'><li data-type='member'><a href="module-storage.html#.DRILL_DEFAULTS">DRILL_DEFAULTS</a></li><li data-type='member'><a href="module-storage.html#.GEN_DEFAULTS">GEN_DEFAULTS</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_APP">BACKUP_APP</a></li><li data-type='member'><a href="module-storage.html#~BACKUP_VERSION">BACKUP_VERSION</a></li><li data-type='member'><a href="module-storage.html#~FOLDERS_KEY">FOLDERS_KEY</a></li><li data-type='member'><a href="module-storage.html#~META_KEY">META_KEY</a></li><li data-type='member'><a href="module-storage.html#~NOTE_APP">NOTE_APP</a></li><li data-type='member'><a href="module-storage.html#~SAVE_DELAY">SAVE_DELAY</a></li><li data-type='member'><a href="module-storage.html#~STORAGE_KEY">STORAGE_KEY</a></li><li data-type='member'><a href="module-storage.html#~backend">backend</a></li><li data-type='member'><a href="module-storage.html#~db">db</a></li><li data-type='member'><a href="module-storage.html#~dirty">dirty</a></li><li data-type='member'><a href="module-storage.html#~fullPending">fullPending</a></li><li data-type='member'><a href="module-storage.html#~saved">saved</a></li><li data-type='member'><a href="module-storage.html#~savedLocal">savedLocal</a></li></ul><ul class='methods'><li data-type='method'><a href="module-storage.html#.backupJson">backupJson</a></li><li data-type='method'><a href="module-storage.html#.flushSave">flushSave</a></li><li data-type='method'><a href="module-storage.html#.getMeta">getMeta</a></li><li data-type='method'><a href="module-storage.html#.importFile">importFile</a></li><li data-type='method'><a href="module-storage.html#.loadAll">loadAll</a></li><li data-type='method'><a href="module-storage.html#.noteFileJson">noteFileJson</a></li><li data-type='method'><a href="module-storage.html#.requestPersistence">requestPersistence</a></li><li data-type='method'><a href="module-storage.html#.saveFolders">saveFolders</a></li><li data-type='method'><a href="module-storage.html#.scheduleSave">scheduleSave</a></li><li data-type='method'><a href="module-storage.html#.setMeta">setMeta</a></li><li data-type='method'><a href="module-storage.html#.storageBackend">storageBackend</a></li><li data-type='method'><a href="module-storage.html#~beatsOf">beatsOf</a></li><li data-type='method'><a href="module-storage.html#~dictOf">dictOf</a></li><li data-type='method'><a href="module-storage.html#~drillOf">drillOf</a></li><li data-type='method'><a href="module-storage.html#~genOf">genOf</a></li><li data-type='method'><a href="module-storage.html#~migrateFromLocal">migrateFromLocal</a></li><li data-type='method'><a href="module-storage.html#~readDb">readDb</a></li><li data-type='method'><a href="module-storage.html#~readLocal">readLocal</a></li><li data-type='method'><a href="module-storage.html#~sortsOf">sortsOf</a></li><li data-type='method'><a href="module-storage.html#~writeChanges">writeChanges</a></li></ul></li><li><a href="module-transpose.html">transpose</a><ul class='methods'><li data-type='method'><a href="module-transpose.html#.changeInstrument">changeInstrument</a></li><li data-type='method'><a href="module-transpose.html#.fifthsOf">fifthsOf</a></li></ul></li><li><a href="module-ui_blocks.html">ui/blocks</a><ul class='methods'><li data-type='method'><a href="module-ui_blocks.html#.blockKind">blockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.hideAllPalettes">hideAllPalettes</a></li><li data-type='method'><a href="module-ui_blocks.html#.redrawBlock">redrawBlock</a></li><li data-type='method'><a href="module-ui_blocks.html#.registerBlockKind">registerBlockKind</a></li><li data-type='method'><a href="module-ui_blocks.html#.setActive">setActive</a></li><li data-type='method'><a href="module-ui_blocks.html#.undo">undo</a></li><li data-type='method'><a href="module-ui_blocks.html#.updateActive">updateActive</a></li></ul></li><li><a href="module-ui_chord-keyboard.html">ui/chord-keyboard</a><ul class='methods'><li data-type='method'><a href="module-ui_chord-keyboard.html#.mountChordKeyboard">mountChordKeyboard</a></li><li data-type='method'><a href="module-ui_chord-keyboard.html#~key">key</a></li></ul></li><li><a href="module-ui_common.html">ui/common</a><ul class='members'><li data-type='member'><a href="module-ui_common.html#.APP_VERSION">APP_VERSION</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_common.html#.autosize">autosize</a></li><li data-type='method'><a href="module-ui_common.html#.confirmTap">confirmTap</a></li><li data-type='method'><a href="module-ui_common.html#.metroButton">metroButton</a></li><li data-type='method'><a href="module-ui_common.html#.playCallbacks">playCallbacks</a></li><li data-type='method'><a href="module-ui_common.html#.readFile">readFile</a></li><li data-type='method'><a href="module-ui_common.html#.syncPaletteSpace">syncPaletteSpace</a></li><li data-type='method'><a href="module-ui_common.html#.toolsHtml">toolsHtml</a></li><li data-type='method'><a href="module-ui_common.html#.updatePlayBtn">updatePlayBtn</a></li></ul></li><li><a href="module-ui_drill-kit.html">ui/drill-kit</a><ul class='members'><li data-type='member'><a href="module-ui_drill-kit.html#.SUBDIVISIONS">SUBDIVISIONS</a></li><li data-type='member'><a href="module-ui_drill-kit.html#.tempoField">tempoField</a></li><li data-type='member'><a href="module-ui_drill-kit.html#.toggle">toggle</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_drill-kit.html#.beatsFor">beatsFor</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.bindPlayControls">bindPlayControls</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.header">header</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.highlight">highlight</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.meterChips">meterChips</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.metronomeControls">metronomeControls</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.playOptions">playOptions</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.settings">settings</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.subdivisionSeg">subdivisionSeg</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.updatePlay">updatePlay</a></li><li data-type='method'><a href="module-ui_drill-kit.html#.updateSettings">updateSettings</a></li></ul></li><li><a href="module-ui_exercises.html">ui/exercises</a><ul class='methods'><li data-type='method'><a href="module-ui_exercises.html#~buildBlock">buildBlock</a></li><li data-type='method'><a href="module-ui_exercises.html#~draw">draw</a></li><li data-type='method'><a href="module-ui_exercises.html#~exerciseSettings">exerciseSettings</a></li><li data-type='method'><a href="module-ui_exercises.html#~gen">gen</a></li><li data-type='method'><a href="module-ui_exercises.html#~play">play</a></li><li data-type='method'><a href="module-ui_exercises.html#~renderGen">renderGen</a></li><li data-type='method'><a href="module-ui_exercises.html#~renderGenPlay">renderGenPlay</a></li><li data-type='method'><a href="module-ui_exercises.html#~startsFor">startsFor</a></li><li data-type='method'><a href="module-ui_exercises.html#~stepper">stepper</a></li><li data-type='method'><a href="module-ui_exercises.html#~updateFewHint">updateFewHint</a></li><li data-type='method'><a href="module-ui_exercises.html#~updateGen">updateGen</a></li></ul></li><li><a href="module-ui_fold.html">ui/fold</a><ul class='methods'><li data-type='method'><a href="module-ui_fold.html#.applyFold">applyFold</a></li><li data-type='method'><a href="module-ui_fold.html#.guardFoldedTaps">guardFoldedTaps</a></li><li data-type='method'><a href="module-ui_fold.html#.isFolded">isFolded</a></li><li data-type='method'><a href="module-ui_fold.html#~toggleFold">toggleFold</a></li></ul></li><li><a href="module-ui_folder-sheet.html">ui/folder-sheet</a><ul class='methods'><li data-type='method'><a href="module-ui_folder-sheet.html#.openArrangeSheet">openArrangeSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#.openCategoriesSheet">openCategoriesSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#.openFolderSheet">openFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~bindDelete">bindDelete</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~closeFolderSheet">closeFolderSheet</a></li><li data-type='method'><a href="module-ui_folder-sheet.html#~sheetHtml">sheetHtml</a></li></ul></li><li><a href="module-ui_grid-ui.html">ui/grid-ui</a><ul class='methods'><li data-type='method'><a href="module-ui_grid-ui.html#.redrawGrid">redrawGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~applyInput">applyInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~badMeasure">badMeasure</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindGridSelect">bindGridSelect</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindGridSettings">bindGridSettings</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindIRealPanel">bindIRealPanel</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~bindMeasureSelection">bindMeasureSelection</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockEl">gridBlockEl</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~gridBlockHtml">gridBlockHtml</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~importIntoGrid">importIntoGrid</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~loadInput">loadInput</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~nextMeasure">nextMeasure</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~setTab">setTab</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~setTextMode">setTextMode</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~showGridPalette">showGridPalette</a></li><li data-type='method'><a href="module-ui_grid-ui.html#~updateGridPalette">updateGridPalette</a></li></ul></li><li><a href="module-ui_home.html">ui/home</a><ul class='members'><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li><li data-type='member'><a href="module-ui_home.html#.hidden">hidden</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_home.html#~bindCatChips">bindCatChips</a></li><li data-type='method'><a href="module-ui_home.html#~catChipsHtml">catChipsHtml</a></li><li data-type='method'><a href="module-ui_home.html#~chipsHtml">chipsHtml</a></li><li data-type='method'><a href="module-ui_home.html#~currentCategory">currentCategory</a></li><li data-type='method'><a href="module-ui_home.html#~currentSelection">currentSelection</a></li><li data-type='method'><a href="module-ui_home.html#~editFolder">editFolder</a></li><li data-type='method'><a href="module-ui_home.html#~emptyHtml">emptyHtml</a></li><li data-type='method'><a href="module-ui_home.html#~newNote">newNote</a></li><li data-type='method'><a href="module-ui_home.html#~refreshResults">refreshResults</a></li><li data-type='method'><a href="module-ui_home.html#~renderHome">renderHome</a></li><li data-type='method'><a href="module-ui_home.html#~renderOnboarding">renderOnboarding</a></li><li data-type='method'><a href="module-ui_home.html#~renderSections">renderSections</a></li><li data-type='method'><a href="module-ui_home.html#~select">select</a></li><li data-type='method'><a href="module-ui_home.html#~sortFor">sortFor</a></li></ul></li><li><a href="module-ui_icons.html">ui/icons</a><ul class='members'><li data-type='member'><a href="module-ui_icons.html#.GEAR">GEAR</a></li><li data-type='member'><a href="module-ui_icons.html#.LOUPE">LOUPE</a></li><li data-type='member'><a href="module-ui_icons.html#.METRONOME">METRONOME</a></li><li data-type='member'><a href="module-ui_icons.html#.PIN_ICON">PIN_ICON</a></li><li data-type='member'><a href="module-ui_icons.html#.PRACTICE">PRACTICE</a></li></ul></li><li><a href="module-ui_list-view.html">ui/list-view</a><ul class='members'><li data-type='member'><a href="module-ui_list-view.html#.LIST_VIEWS">LIST_VIEWS</a></li><li data-type='member'><a href="module-ui_list-view.html#~MOSAIC_STAFF_W">MOSAIC_STAFF_W</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_list-view.html#.noteSummary">noteSummary</a></li><li data-type='method'><a href="module-ui_list-view.html#.relativeDate">relativeDate</a></li><li data-type='method'><a href="module-ui_list-view.html#.renderNoteList">renderNoteList</a></li><li data-type='method'><a href="module-ui_list-view.html#~catLabel">catLabel</a></li><li data-type='method'><a href="module-ui_list-view.html#~chordsPreview">chordsPreview</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstStaff">firstStaff</a></li><li data-type='method'><a href="module-ui_list-view.html#~firstText">firstText</a></li><li data-type='method'><a href="module-ui_list-view.html#~folderTag">folderTag</a></li><li data-type='method'><a href="module-ui_list-view.html#~itemHtml">itemHtml</a></li><li data-type='method'><a href="module-ui_list-view.html#~shortDate">shortDate</a></li></ul></li><li><a href="module-ui_measure-select.html">ui/measure-select</a><ul class='members'><li data-type='member'><a href="module-ui_measure-select.html#.LONG_PRESS_MS">LONG_PRESS_MS</a></li><li data-type='member'><a href="module-ui_measure-select.html#~SLOP">SLOP</a></li><li data-type='member'><a href="module-ui_measure-select.html#~bar">bar</a></li><li data-type='member'><a href="module-ui_measure-select.html#~cur">cur</a></li><li data-type='member'><a href="module-ui_measure-select.html#~swallowClick">swallowClick</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_measure-select.html#.bindMeasureSelect">bindMeasureSelect</a></li><li data-type='method'><a href="module-ui_measure-select.html#.clearMeasureSelect">clearMeasureSelect</a></li><li data-type='method'><a href="module-ui_measure-select.html#.measureSelection">measureSelection</a></li><li data-type='method'><a href="module-ui_measure-select.html#.refreshMeasureSelect">refreshMeasureSelect</a></li><li data-type='method'><a href="module-ui_measure-select.html#.staffTarget">staffTarget</a></li><li data-type='method'><a href="module-ui_measure-select.html#~drawBoxes">drawBoxes</a></li><li data-type='method'><a href="module-ui_measure-select.html#~makeBar">makeBar</a></li><li data-type='method'><a href="module-ui_measure-select.html#~placeBar">placeBar</a></li><li data-type='method'><a href="module-ui_measure-select.html#~updateBar">updateBar</a></li></ul></li><li><a href="module-ui_metronome.html">ui/metronome</a><ul class='members'><li data-type='member'><a href="module-ui_metronome.html#.value">value</a></li><li data-type='member'><a href="module-ui_metronome.html#~DRAG_PX">DRAG_PX</a></li><li data-type='member'><a href="module-ui_metronome.html#~SUB_KEYS">SUB_KEYS</a></li><li data-type='member'><a href="module-ui_metronome.html#~editing">editing</a></li><li data-type='member'><a href="module-ui_metronome.html#~presets">presets</a></li><li data-type='member'><a href="module-ui_metronome.html#~repeat">repeat</a></li><li data-type='member'><a href="module-ui_metronome.html#~s">s</a></li><li data-type='member'><a href="module-ui_metronome.html#~taps">taps</a></li><li data-type='member'><a href="module-ui_metronome.html#~view">view</a></li><li data-type='member'><a href="module-ui_metronome.html#~wake">wake</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_metronome.html#~beatsHtml">beatsHtml</a></li><li data-type='method'><a href="module-ui_metronome.html#~cycleBeat">cycleBeat</a></li><li data-type='method'><a href="module-ui_metronome.html#~dragTempo">dragTempo</a></li><li data-type='method'><a href="module-ui_metronome.html#~hideSheet">hideSheet</a></li><li data-type='method'><a href="module-ui_metronome.html#~kick">kick</a></li><li data-type='method'><a href="module-ui_metronome.html#~loop">loop</a></li><li data-type='method'><a href="module-ui_metronome.html#~mainHtml">mainHtml</a></li><li data-type='method'><a href="module-ui_metronome.html#~onChange">onChange</a></li><li data-type='method'><a href="module-ui_metronome.html#~onClick">onClick</a></li><li data-type='method'><a href="module-ui_metronome.html#~onInput">onInput</a></li><li data-type='method'><a href="module-ui_metronome.html#~onPointerDown">onPointerDown</a></li><li data-type='method'><a href="module-ui_metronome.html#~onSubmit">onSubmit</a></li><li data-type='method'><a href="module-ui_metronome.html#~openSheet">openSheet</a></li><li data-type='method'><a href="module-ui_metronome.html#~paintLights">paintLights</a></li><li data-type='method'><a href="module-ui_metronome.html#~presetSummary">presetSummary</a></li><li data-type='method'><a href="module-ui_metronome.html#~presetsHtml">presetsHtml</a></li><li data-type='method'><a href="module-ui_metronome.html#~render">render</a></li><li data-type='method'><a href="module-ui_metronome.html#~renderMini">renderMini</a></li><li data-type='method'><a href="module-ui_metronome.html#~save">save</a></li><li data-type='method'><a href="module-ui_metronome.html#~savePresets">savePresets</a></li><li data-type='method'><a href="module-ui_metronome.html#~scheduleConfigure">scheduleConfigure</a></li><li data-type='method'><a href="module-ui_metronome.html#~setTempo">setTempo</a></li><li data-type='method'><a href="module-ui_metronome.html#~swingLabel">swingLabel</a></li><li data-type='method'><a href="module-ui_metronome.html#~syncWake">syncWake</a></li><li data-type='method'><a href="module-ui_metronome.html#~togglePlay">togglePlay</a></li><li data-type='method'><a href="module-ui_metronome.html#~update">update</a></li></ul></li><li><a href="module-ui_nav.html">ui/nav</a><ul class='methods'><li data-type='method'><a href="module-ui_nav.html#.backToList">backToList</a></li><li data-type='method'><a href="module-ui_nav.html#.closeOverlay">closeOverlay</a></li><li data-type='method'><a href="module-ui_nav.html#.go">go</a></li><li data-type='method'><a href="module-ui_nav.html#.goChild">goChild</a></li><li data-type='method'><a href="module-ui_nav.html#.onHistoryBack">onHistoryBack</a></li><li data-type='method'><a href="module-ui_nav.html#.openNote">openNote</a></li><li data-type='method'><a href="module-ui_nav.html#.openOverlay">openOverlay</a></li><li data-type='method'><a href="module-ui_nav.html#.registerScreen">registerScreen</a></li><li data-type='method'><a href="module-ui_nav.html#.renderScreen">renderScreen</a></li><li data-type='method'><a href="module-ui_nav.html#~enterSubView">enterSubView</a></li><li data-type='method'><a href="module-ui_nav.html#~show">show</a></li><li data-type='method'><a href="module-ui_nav.html#~showList">showList</a></li></ul></li><li><a href="module-ui_note.html">ui/note</a><ul class='methods'><li data-type='method'><a href="module-ui_note.html#~addBlock">addBlock</a></li><li data-type='method'><a href="module-ui_note.html#~bindArrangement">bindArrangement</a></li><li data-type='method'><a href="module-ui_note.html#~bindShare">bindShare</a></li><li data-type='method'><a href="module-ui_note.html#~bindTitle">bindTitle</a></li><li data-type='method'><a href="module-ui_note.html#~blockEl">blockEl</a></li><li data-type='method'><a href="module-ui_note.html#~folderButtonHtml">folderButtonHtml</a></li><li data-type='method'><a href="module-ui_note.html#~renderNote">renderNote</a></li></ul></li><li><a href="module-ui_options.html">ui/options</a><ul class='methods'><li data-type='method'><a href="module-ui_options.html#.backupDue">backupDue</a></li><li data-type='method'><a href="module-ui_options.html#~aboutHtml">aboutHtml</a></li><li data-type='method'><a href="module-ui_options.html#~bindDisplay">bindDisplay</a></li><li data-type='method'><a href="module-ui_options.html#~bindFolders">bindFolders</a></li><li data-type='method'><a href="module-ui_options.html#~bindIReal">bindIReal</a></li><li data-type='method'><a href="module-ui_options.html#~bindLanguage">bindLanguage</a></li><li data-type='method'><a href="module-ui_options.html#~bindNotebook">bindNotebook</a></li><li data-type='method'><a href="module-ui_options.html#~displayHtml">displayHtml</a></li><li data-type='method'><a href="module-ui_options.html#~foldersHtml">foldersHtml</a></li><li data-type='method'><a href="module-ui_options.html#~importChosenFile">importChosenFile</a></li><li data-type='method'><a href="module-ui_options.html#~importIRealNotes">importIRealNotes</a></li><li data-type='method'><a href="module-ui_options.html#~irealHtml">irealHtml</a></li><li data-type='method'><a href="module-ui_options.html#~languageHtml">languageHtml</a></li><li data-type='method'><a href="module-ui_options.html#~lastExportLabel">lastExportLabel</a></li><li data-type='method'><a href="module-ui_options.html#~notebookHtml">notebookHtml</a></li><li data-type='method'><a href="module-ui_options.html#~renderOptions">renderOptions</a></li></ul></li><li><a href="module-ui_staff_bars.html">ui/staff/bars</a><ul class='members'><li data-type='member'><a href="module-ui_staff_bars.html#.barBar">barBar</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_staff_bars.html#.applyBar">applyBar</a></li><li data-type='method'><a href="module-ui_staff_bars.html#.syncBarMenu">syncBarMenu</a></li></ul></li><li><a href="module-ui_staff_chord.html">ui/staff/chord</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_chord.html#.closeChord">closeChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#.openChord">openChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#~applyChord">applyChord</a></li><li data-type='method'><a href="module-ui_staff_chord.html#~setTextMode">setTextMode</a></li></ul></li><li><a href="module-ui_staff_index.html">ui/staff/index</a></li><li><a href="module-ui_staff_input.html">ui/staff/input</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_input.html#.bindStaffInput">bindStaffInput</a></li><li data-type='method'><a href="module-ui_staff_input.html#.dragZonesHtml">dragZonesHtml</a></li><li data-type='method'><a href="module-ui_staff_input.html#.setMode">setMode</a></li><li data-type='method'><a href="module-ui_staff_input.html#~hitTest">hitTest</a></li><li data-type='method'><a href="module-ui_staff_input.html#~insertNote">insertNote</a></li><li data-type='method'><a href="module-ui_staff_input.html#~newItem">newItem</a></li><li data-type='method'><a href="module-ui_staff_input.html#~setStep">setStep</a></li><li data-type='method'><a href="module-ui_staff_input.html#~showTip">showTip</a></li><li data-type='method'><a href="module-ui_staff_input.html#~staffTap">staffTap</a></li></ul></li><li><a href="module-ui_staff_palette.html">ui/staff/palette</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_palette.html#.showStaffPalette">showStaffPalette</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~erase">erase</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~helpText">helpText</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~onAccidental">onAccidental</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~onDuration">onDuration</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~resizeSel">resizeSel</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~setInput">setInput</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~shownValues">shownValues</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~step">step</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~toggleRestOf">toggleRestOf</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~toggleTie">toggleTie</a></li><li data-type='method'><a href="module-ui_staff_palette.html#~updateStaffPalette">updateStaffPalette</a></li></ul></li><li><a href="module-ui_staff_shared.html">ui/staff/shared</a><ul class='members'><li data-type='member'><a href="module-ui_staff_shared.html#.hooks">hooks</a></li><li data-type='member'><a href="module-ui_staff_shared.html#.staffUi">staffUi</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_staff_shared.html#.activeStaff">activeStaff</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.clampCursor">clampCursor</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.flash">flash</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.insertIndex">insertIndex</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.logicalValue">logicalValue</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.refit">refit</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.targetIndex">targetIndex</a></li><li data-type='method'><a href="module-ui_staff_shared.html#.withSel">withSel</a></li></ul></li><li><a href="module-ui_staff_view.html">ui/staff/view</a><ul class='methods'><li data-type='method'><a href="module-ui_staff_view.html#.redrawStaff">redrawStaff</a></li><li data-type='method'><a href="module-ui_staff_view.html#.staffBlockEl">staffBlockEl</a></li><li data-type='method'><a href="module-ui_staff_view.html#~bindInstrument">bindInstrument</a></li><li data-type='method'><a href="module-ui_staff_view.html#~bindSelect">bindSelect</a></li><li data-type='method'><a href="module-ui_staff_view.html#~headerHtml">headerHtml</a></li><li data-type='method'><a href="module-ui_staff_view.html#~renderedLayout">renderedLayout</a></li></ul></li><li><a href="module-ui_state.html">ui/state</a><ul class='members'><li data-type='member'><a href="module-ui_state.html#.app">app</a></li><li data-type='member'><a href="module-ui_state.html#.state">state</a></li></ul><ul class='methods'><li data-type='method'><a href="module-ui_state.html#.blockById">blockById</a></li><li data-type='method'><a href="module-ui_state.html#.curNote">curNote</a></li><li data-type='method'><a href="module-ui_state.html#.saveArrangement">saveArrangement</a></li><li data-type='method'><a href="module-ui_state.html#.touch">touch</a></li></ul></li><li><a href="module-ui_training.html">ui/training</a><ul class='methods'><li data-type='method'><a href="module-ui_training.html#~applyPlaySettings">applyPlaySettings</a></li><li data-type='method'><a href="module-ui_training.html#~draw">draw</a></li><li data-type='method'><a href="module-ui_training.html#~play">play</a></li><li data-type='method'><a href="module-ui_training.html#~renderPlacements">renderPlacements</a></li><li data-type='method'><a href="module-ui_training.html#~renderSections">renderSections</a></li><li data-type='method'><a href="module-ui_training.html#~renderTraining">renderTraining</a></li><li data-type='method'><a href="module-ui_training.html#~setOpen">setOpen</a></li><li data-type='method'><a href="module-ui_training.html#~updateFoldAll">updateFoldAll</a></li></ul></li><li><a href="module-util.html">util</a><ul class='members'><li data-type='member'><a href="module-util.html#.EPS">EPS</a></li></ul><ul class='methods'><li data-type='method'><a href="module-util.html#.clamp">clamp</a></li><li data-type='method'><a href="module-util.html#.esc">esc</a></li><li data-type='method'><a href="module-util.html#.mod">mod</a></li><li data-type='method'><a href="module-util.html#.snap">snap</a></li><li data-type='method'><a href="module-util.html#.uid">uid</a></li></ul></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ui/metronome.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module ui/metronome
+ * @description
+ * **Metronome** interface (2.11), reachable from every screen.
+ *
+ * - The ♩ button of each screen header ({@link module:ui/common.metroButton|metroButton})
+ *   opens a full-height **sheet** over the current screen. It is an overlay,
+ *   not a screen: Android's back button closes it and the screen under it is
+ *   left as it was ({@link module:ui/nav.openOverlay|openOverlay}).
+ * - Collapsed while playing, the metronome becomes a **mini-bar** at the
+ *   bottom of every screen (above an open palette): beat lights, tempo − +,
+ *   stop, expand. Its height is reserved (`--metro-h`) so it never hides
+ *   content.
+ *
+ * ```
+ * ┌ ⌄            Metronome      ★ Presets ┐
+ * │    ●     ○     ●     ○                 │  tap a beat: strong → normal → muted
+ * │              ♩ = 120                   │  drag up/down on the number
+ * │   [−5] [−1]   Allegro    [+1] [+5]     │  long press repeats
+ * │               [ TAP ]                  │
+ * │ Time signature, subdivision, swing, sound, jazz modes, options │
+ * │              [ ▶ Start ]               │
+ * ```
+ *
+ * Settings are remembered (`meta.metro`), as are the presets
+ * (`meta.metroPresets`). What to play is computed by
+ * {@link module:metronome|metronome}, played by {@link module:metro-engine|metro-engine}.
+ *
+ * While playing and visible, the lights follow the audio clock; the
+ * vibration and flash options fire on audible beats; the "keep the screen on"
+ * option holds a Wake Lock.
+ */
+
+import { t } from '../i18n.js';
+import { esc, uid } from '../util.js';
+import { getMeta, setMeta } from '../storage.js';
+import { METERS, meterOf } from '../placements.js';
+import {
+  METRO_DEFAULTS,
+  SOUNDS,
+  SWING_MIN,
+  SWING_MAX,
+  PRESETS_MAX,
+  PRESET_NAME_MAX,
+  UNIT_GLYPHS,
+  sanitizeMetro,
+  withMeter,
+  beatsOf,
+  beatUnit,
+  beatLevels,
+  subdivsFor,
+  canTwoFour,
+  swingApplies,
+  clampTempo,
+  tempoMarking,
+  tapTempo,
+  presetPart,
+  applyPreset,
+  cleanPresetName,
+  cycleBars,
+} from '../metronome.js';
+import * as engine from '../metro-engine.js';
+import { openOverlay, closeOverlay } from './nav.js';
+import { confirmTap } from './common.js';
+
+/** Subdivision → dictionary key suffix (keys cannot hold dots). */
+const SUB_KEYS = { none: 'none', 8: 's8', 3: 's3', 16: 's16', 8.16: 's816' };
+
+/** Tempo drag: pixels per BPM. */
+const DRAG_PX = 6;
+
+/** @type {module:metronome~MetroSettings} */
+let s = sanitizeMetro(getMeta().metro || METRO_DEFAULTS);
+/** @type {Array.&lt;module:metronome~MetroPreset>} */
+let presets = getMeta().metroPresets || [];
+/** Sheet view: settings or preset list. */
+let view = 'main';
+/** Preset being renamed (id). */
+let editing = null;
+/** Tap tempo series (ms). */
+let taps = [];
+let sheetOpen = false;
+let raf = 0;
+let lastK = null;
+/** @type {?WakeLockSentinel} */
+let wake = null;
+let configTimer = 0;
+
+const sheet = document.createElement('section');
+sheet.id = 'metroSheet';
+sheet.className = 'metro-sheet';
+sheet.hidden = true;
+sheet.setAttribute('role', 'dialog');
+sheet.setAttribute('aria-modal', 'true');
+const mini = document.createElement('div');
+mini.id = 'metroMini';
+mini.className = 'metro-mini';
+mini.hidden = true;
+const flashEl = document.createElement('div');
+flashEl.className = 'metro-flash';
+flashEl.setAttribute('aria-hidden', 'true');
+document.body.append(sheet, mini, flashEl);
+
+// ---------- Settings ----------
+
+/** Saves the settings and hands them to the engine. */
+function save() {
+  setMeta({ metro: s });
+  engine.configure(s);
+}
+
+/**
+ * Changes settings, then redraws.
+ * @param {Object} patch
+ */
+function update(patch) {
+  s = sanitizeMetro({ ...s, ...patch });
+  save();
+  render();
+}
+
+/**
+ * Changes the tempo without redrawing everything (drag, steps, tap): only the
+ * numbers change; the engine gets the new tempo at most every 60 ms.
+ * @param {number} bpm
+ * @param {boolean} [persist=true] Save now (false during a drag).
+ */
+function setTempo(bpm, persist = true) {
+  const v = clampTempo(bpm);
+  if (v === s.tempo &amp;&amp; !persist) return;
+  s = { ...s, tempo: v };
+  sheet.querySelectorAll('#mTempoVal').forEach((el) => (el.textContent = String(v)));
+  const mark = sheet.querySelector('#mMark');
+  if (mark) mark.textContent = tempoMarking(v);
+  const mt = mini.querySelector('.mm-tempo');
+  if (mt) mt.textContent = `${UNIT_GLYPHS[beatUnit(s.meter)]} ${v}`;
+  scheduleConfigure();
+  if (persist) setMeta({ metro: s });
+}
+
+/** Hands the settings to the engine, at most every 60 ms (drags, sliders). */
+function scheduleConfigure() {
+  if (configTimer) return;
+  configTimer = setTimeout(() => {
+    configTimer = 0;
+    engine.configure(s);
+  }, 60);
+}
+
+// ---------- Sheet ----------
+
+/** Opens the sheet over the current screen. */
+function openSheet() {
+  if (sheetOpen) return;
+  sheetOpen = true;
+  view = 'main';
+  editing = null;
+  sheet.hidden = false;
+  document.documentElement.classList.add('metro-open');
+  openOverlay(hideSheet);
+  render();
+  sheet.querySelector('.metro-head button')?.focus({ preventScroll: true });
+}
+
+/** Hides the sheet (called by the history `popstate`). */
+function hideSheet() {
+  sheetOpen = false;
+  sheet.hidden = true;
+  sheet.innerHTML = '';
+  document.documentElement.classList.remove('metro-open');
+  renderMini();
+}
+
+/** Redraws the sheet (current view) and the mini-bar. */
+function render() {
+  if (sheetOpen) {
+    sheet.setAttribute('aria-label', t('metro.title'));
+    sheet.innerHTML = view === 'presets' ? presetsHtml() : mainHtml();
+    lastK = null;
+    paintLights(engine.position());
+  }
+  renderMini();
+}
+
+/**
+ * Beat buttons (lights and accents).
+ * @returns {string}
+ */
+function beatsHtml() {
+  const levels = beatLevels(s, 0);
+  const names = ['metro.muted', 'metro.normal', 'metro.strong'];
+  const groups = meterOf(s.meter).groups;
+  return levels
+    .map(
+      (lv, i) =>
+        `&lt;button type="button" class="mbeat lv${lv}${groups[i] === 3 &amp;&amp; groups.some((g) => g === 2) ? ' long' : ''}" data-mbeat="${i}" aria-label="${esc(t('metro.beatN', { n: i + 1 }) + ', ' + t(names[lv]))}">&lt;span class="dot">&lt;/span>&lt;span class="num">${i + 1}&lt;/span>&lt;/button>`,
+    )
+    .join('');
+}
+
+/**
+ * Settings view of the sheet.
+ * @returns {string}
+ */
+function mainHtml() {
+  const on = engine.isRunning();
+  const unit = UNIT_GLYPHS[beatUnit(s.meter)];
+  const step = (n) =>
+    `&lt;button type="button" class="btn mstep" data-step="${n}" aria-label="${esc(t('metro.stepN', { n: n > 0 ? '+' + n : String(n) }))}">${n > 0 ? '+' + n : '−' + -n}&lt;/button>`;
+  const meters = METERS.map((m) => {
+    const sub = m.kind === 'odd' ? `&lt;small>${m.groups.join('+')}&lt;/small>` : '';
+    return `&lt;button type="button" class="chip" data-mmeter="${esc(m.key)}" aria-pressed="${m.key === s.meter}">${esc(m.time)}${sub}&lt;/button>`;
+  }).join('');
+  const subs = subdivsFor(s.meter)
+    .map(
+      (k) =>
+        `&lt;button type="button" data-msub="${esc(k)}" aria-pressed="${k === s.subdiv}" aria-label="${esc(t('metro.subs.' + SUB_KEYS[k]))}">${esc(t('metro.subGlyphs.' + SUB_KEYS[k]))}&lt;/button>`,
+    )
+    .join('');
+  const sounds = SOUNDS.map(
+    (k) => `&lt;option value="${k}"${k === s.sound ? ' selected' : ''}>${esc(t('metro.sounds.' + k))}&lt;/option>`,
+  ).join('');
+  const swingOk = swingApplies(s);
+  const n = beatsOf(s.meter);
+  const onceOpts = Array.from(
+    { length: n },
+    (_, i) => `&lt;option value="${i}"${i === s.onceBeat ? ' selected' : ''}>${i + 1}&lt;/option>`,
+  ).join('');
+  const opt = (k) =>
+    `&lt;button type="button" class="chip" data-mopt="${k}" aria-pressed="${!!s[k]}">${esc(t('metro.' + k))}&lt;/button>`;
+  return `&lt;div class="metro-wrap">
+&lt;header class="metro-head">&lt;button type="button" class="btn icon-btn" data-m="close" aria-label="${esc(t('metro.collapse'))}">&amp;#x2304;&lt;/button>&lt;h2>${esc(t('metro.title'))}&lt;/h2>&lt;span class="grow">&lt;/span>&lt;button type="button" class="btn" data-m="presets">&amp;#9733; ${esc(t('metro.presets'))}&lt;/button>&lt;/header>
+&lt;div class="metro-beats" id="mBeats">${beatsHtml()}&lt;/div>
+&lt;div class="metro-tempo" id="mTempo" aria-label="${esc(t('metro.tempoDrag'))}">&lt;span class="mt-unit">${unit} =&lt;/span> &lt;span id="mTempoVal" class="mt-val">${s.tempo}&lt;/span>&lt;div id="mMark" class="mt-mark">${esc(tempoMarking(s.tempo))}&lt;/div>&lt;/div>
+&lt;div class="metro-steps">${step(-5)}${step(-1)}${step(1)}${step(5)}&lt;/div>
+&lt;button type="button" class="metro-tap" data-m="tap">${esc(t('metro.tap'))}&lt;/button>
+&lt;div class="metro-rows">
+&lt;div class="mrow">&lt;span class="mlbl">${esc(t('metro.meter'))}&lt;/span>&lt;div class="mchips">${meters}&lt;/div>&lt;/div>
+&lt;div class="mrow">&lt;span class="mlbl">${esc(t('metro.subdiv'))}&lt;/span>&lt;div class="msub">${subs}&lt;/div>&lt;/div>
+&lt;label class="mrow">&lt;span class="mlbl">${esc(t('metro.subVol'))}&lt;/span>&lt;input type="range" min="0" max="100" step="5" data-k="subVol" value="${Math.round(s.subVol * 100)}"${s.subdiv === 'none' ? ' disabled' : ''}>&lt;/label>
+&lt;label class="mrow">&lt;span class="mlbl">${esc(t('metro.swing'))} &lt;output id="mSwingVal">${esc(swingLabel(s.swing))}&lt;/output>&lt;/span>&lt;input type="range" min="${SWING_MIN}" max="${SWING_MAX}" step="1" data-k="swing" value="${s.swing}"${swingOk ? '' : ' disabled'}>&lt;/label>
+${swingOk ? '' : `&lt;p class="mhint">${esc(t('metro.swingHint'))}&lt;/p>`}
+&lt;label class="mrow">&lt;span class="mlbl">${esc(t('metro.sound'))}&lt;/span>&lt;select data-k="sound">${sounds}&lt;/select>&lt;/label>
+&lt;div class="mrow">&lt;span class="mlbl">${esc(t('metro.jazz'))}&lt;/span>&lt;div class="mchips">&lt;button type="button" class="chip" data-mjazz="24" aria-pressed="${s.jazz === '24'}"${canTwoFour(s.meter) ? '' : ' disabled'}>${esc(t('metro.jazz24'))}&lt;/button>&lt;button type="button" class="chip" data-mjazz="once" aria-pressed="${s.jazz === 'once'}">${esc(t('metro.jazzOnce'))}&lt;/button>&lt;/div>&lt;/div>
+${
+  s.jazz === 'once'
+    ? `&lt;div class="mrow mrow-sub">&lt;label>${esc(t('metro.onceBeat'))} &lt;select data-k="onceBeat">${onceOpts}&lt;/select>&lt;/label>&lt;label class="mcheck">&lt;input type="checkbox" data-k="twoBars"${s.twoBars ? ' checked' : ''}> ${esc(t('metro.twoBars'))}&lt;/label>&lt;/div>`
+    : ''
+}
+&lt;div class="mrow">&lt;span class="mlbl">${esc(t('metro.options'))}&lt;/span>&lt;div class="mchips">${opt('vibrate')}${opt('flash')}${opt('wake')}&lt;/div>&lt;/div>
+&lt;/div>
+&lt;button type="button" class="btn primary metro-play${on ? ' on' : ''}" data-m="play">${on ? '&amp;#9632; ' + esc(t('metro.stop')) : '&amp;#9654; ' + esc(t('metro.start'))}&lt;/button>
+&lt;/div>`;
+}
+
+/**
+ * Swing value as shown: "straight", "triplet" or a percentage.
+ * @param {number} v
+ * @returns {string}
+ */
+function swingLabel(v) {
+  if (v &lt;= SWING_MIN) return t('metro.swingStraight');
+  if (v === 67) return t('metro.swingTriplet');
+  return t('metro.swingValue', { n: v });
+}
+
+/**
+ * Short description of a preset: tempo, time signature, jazz mode.
+ * @param {module:metronome~MetroSettings} p
+ * @returns {string}
+ */
+function presetSummary(p) {
+  const jazz =
+    p.jazz === '24' ? ' · ' + t('metro.jazz24') : p.jazz === 'once' ? ' · ' + t('metro.jazzOnce') : '';
+  return `${UNIT_GLYPHS[beatUnit(p.meter)]} ${p.tempo} · ${meterOf(p.meter).time}${jazz}`;
+}
+
+/**
+ * Preset view of the sheet.
+ * @returns {string}
+ */
+function presetsHtml() {
+  const rows = presets
+    .map((p) => {
+      if (p.id === editing)
+        return `&lt;li class="mpreset">&lt;form class="mp-form" data-rename="${esc(p.id)}">&lt;input type="text" name="name" maxlength="${PRESET_NAME_MAX}" value="${esc(p.name)}" aria-label="${esc(t('metro.presetName'))}" required>&lt;button type="submit" class="btn primary">${esc(t('metro.ok'))}&lt;/button>&lt;/form>&lt;/li>`;
+      return `&lt;li class="mpreset">&lt;button type="button" class="mp-load" data-load="${esc(p.id)}">&lt;span>${esc(p.name)}&lt;/span>&lt;small>${esc(presetSummary(p.s))}&lt;/small>&lt;/button>&lt;button type="button" class="btn icon-btn" data-edit="${esc(p.id)}" aria-label="${esc(t('metro.presetRename'))}">&amp;#9998;&lt;/button>&lt;button type="button" class="btn icon-btn" data-del="${esc(p.id)}" aria-label="${esc(t('metro.presetDelete'))}">&amp;#x2715;&lt;/button>&lt;/li>`;
+    })
+    .join('');
+  const full = presets.length >= PRESETS_MAX;
+  return `&lt;div class="metro-wrap">
+&lt;header class="metro-head">&lt;button type="button" class="btn ghost" data-m="main">&amp;#8249; ${esc(t('metro.title'))}&lt;/button>&lt;span class="grow">&lt;/span>&lt;h2>${esc(t('metro.presets'))}&lt;/h2>&lt;/header>
+&lt;form class="mp-form" id="mpSave">&lt;input type="text" name="name" maxlength="${PRESET_NAME_MAX}" placeholder="${esc(t('metro.presetName'))}" aria-label="${esc(t('metro.presetName'))}"${full ? ' disabled' : ''}>&lt;button type="submit" class="btn primary"${full ? ' disabled' : ''}>${esc(t('metro.presetSave'))}&lt;/button>&lt;/form>
+&lt;p class="mhint">${esc(t('metro.presetCurrent', { s: presetSummary(s) }))}&lt;/p>
+${rows ? `&lt;ul class="mpresets">${rows}&lt;/ul>` : `&lt;p class="mhint">${esc(t('metro.presetEmpty'))}&lt;/p>`}
+&lt;/div>`;
+}
+
+/** Saves the preset list. */
+function savePresets() {
+  setMeta({ metroPresets: presets });
+}
+
+// ---------- Mini-bar ----------
+
+/** Shows the mini-bar while playing with the sheet closed; reserves its height. */
+function renderMini() {
+  const show = engine.isRunning() &amp;&amp; !sheetOpen;
+  mini.hidden = !show;
+  if (show) {
+    const dots = beatLevels(s, 0)
+      .map((lv) => `&lt;span class="mm-dot lv${lv}">&lt;/span>`)
+      .join('');
+    mini.innerHTML = `&lt;div class="mm-in">&lt;span class="mm-beats" id="mmBeats">${dots}&lt;/span>&lt;button type="button" class="btn icon-btn" data-m="minus" aria-label="${esc(t('metro.stepN', { n: '-1' }))}">&amp;minus;&lt;/button>&lt;span class="mm-tempo">${UNIT_GLYPHS[beatUnit(s.meter)]} ${s.tempo}&lt;/span>&lt;button type="button" class="btn icon-btn" data-m="plus" aria-label="${esc(t('metro.stepN', { n: '+1' }))}">+&lt;/button>&lt;span class="mm-meter">${esc(meterOf(s.meter).time)}&lt;/span>&lt;span class="grow">&lt;/span>&lt;button type="button" class="btn icon-btn" data-m="stop" aria-label="${esc(t('metro.stop'))}">&amp;#9632;&lt;/button>&lt;button type="button" class="btn icon-btn" data-m="open" aria-label="${esc(t('metro.expand'))}">&amp;#x2303;&lt;/button>&lt;/div>`;
+    lastK = null;
+  }
+  document.documentElement.style.setProperty('--metro-h', show ? mini.offsetHeight + 'px' : '0px');
+}
+
+// ---------- Lights, vibration, flash ----------
+
+/**
+ * Lights the sounding beat in the sheet and the mini-bar.
+ * @param {?{k: number, beat: number, bar: number, level: number}} p
+ */
+function paintLights(p) {
+  for (const box of [sheet.querySelector('#mBeats'), mini.querySelector('#mmBeats')]) {
+    if (!box) continue;
+    [...box.children].forEach((el, i) => el.classList.toggle('on', !!p &amp;&amp; i === p.beat));
+    box.classList.toggle('silent-bar', !!p &amp;&amp; p.bar === 1 &amp;&amp; cycleBars(s) === 2);
+  }
+}
+
+/** Animation loop: lights, and vibration / flash on each new audible beat. */
+function loop() {
+  raf = 0;
+  if (!engine.isRunning() || document.hidden) return;
+  const p = engine.position();
+  if (p &amp;&amp; p.k !== lastK) {
+    const first = lastK === null;
+    lastK = p.k;
+    paintLights(p);
+    if (!first &amp;&amp; p.level) {
+      if (s.vibrate &amp;&amp; navigator.vibrate) navigator.vibrate(p.level === 2 ? 45 : 25);
+      if (s.flash) {
+        flashEl.classList.remove('go', 'strong');
+        void flashEl.offsetWidth; // restart the animation
+        flashEl.classList.add('go');
+        if (p.level === 2) flashEl.classList.add('strong');
+      }
+    }
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+/** Starts the light loop if needed. */
+function kick() {
+  if (!raf &amp;&amp; engine.isRunning() &amp;&amp; !document.hidden) raf = requestAnimationFrame(loop);
+}
+
+/** Holds or releases the screen Wake Lock according to the settings. */
+async function syncWake() {
+  const want = engine.isRunning() &amp;&amp; s.wake &amp;&amp; !document.hidden;
+  if (want &amp;&amp; !wake &amp;&amp; navigator.wakeLock) {
+    try {
+      wake = await navigator.wakeLock.request('screen');
+      wake.addEventListener('release', () => (wake = null));
+    } catch (e) {
+      wake = null;
+    }
+  } else if (!want &amp;&amp; wake) {
+    wake.release().catch(() => {});
+    wake = null;
+  }
+}
+
+// ---------- Events ----------
+
+/** Starts or stops the metronome. */
+function togglePlay() {
+  if (engine.isRunning()) engine.stop();
+  else {
+    engine.configure(s);
+    engine.start();
+  }
+}
+
+/**
+ * Cycles the level of a beat: strong → normal → muted → strong. A jazz mode
+ * is turned off first (its pattern becomes the starting point).
+ * @param {number} i
+ */
+function cycleBeat(i) {
+  const acc = s.jazz === 'off' ? s.accents.slice() : beatLevels(s, 0);
+  acc[i] = (acc[i] + 2) % 3;
+  update({ accents: acc, jazz: 'off' });
+}
+
+/**
+ * Taps on the sheet and the mini-bar.
+ * @param {MouseEvent} e
+ */
+function onClick(e) {
+  const el = /** @type {HTMLElement} */ (e.target).closest('button');
+  if (!el || el.disabled) return;
+  const d = el.dataset;
+  if (d.step) {
+    if (e.detail === 0) setTempo(s.tempo + Number(d.step)); // keyboard; touch goes through pointerdown
+    return;
+  }
+  if (d.m === 'tap') return; // handled on pointerdown (more precise)
+  if (d.m === 'close') return closeOverlay();
+  if (d.m === 'open') return openSheet();
+  if (d.m === 'play' || d.m === 'stop') return togglePlay();
+  if (d.m === 'minus') return setTempo(s.tempo - 1);
+  if (d.m === 'plus') return setTempo(s.tempo + 1);
+  if (d.m === 'presets' || d.m === 'main') {
+    view = d.m === 'presets' ? 'presets' : 'main';
+    editing = null;
+    return render();
+  }
+  if (d.mbeat !== undefined) return cycleBeat(Number(d.mbeat));
+  if (d.mmeter) {
+    if (d.mmeter === s.meter) return;
+    s = withMeter(s, d.mmeter);
+    save();
+    return render();
+  }
+  if (d.msub) return update({ subdiv: d.msub });
+  if (d.mjazz) return update({ jazz: s.jazz === d.mjazz ? 'off' : d.mjazz });
+  if (d.mopt) {
+    update({ [d.mopt]: !s[d.mopt] });
+    return syncWake();
+  }
+  if (d.load) {
+    const p = presets.find((x) => x.id === d.load);
+    if (p) {
+      s = applyPreset(s, p);
+      save();
+      view = 'main';
+      render();
+    }
+    return;
+  }
+  if (d.edit) {
+    editing = d.edit;
+    render();
+    /** @type {HTMLInputElement} */ (sheet.querySelector('[data-rename] input'))?.focus();
+    return;
+  }
+  if (d.del)
+    confirmTap(/** @type {HTMLButtonElement} */ (el), t('metro.presetDeleteConfirm'), () => {
+      presets = presets.filter((x) => x.id !== d.del);
+      savePresets();
+      render();
+    });
+}
+
+/**
+ * Form submissions: save a preset, rename a preset.
+ * @param {SubmitEvent} e
+ */
+function onSubmit(e) {
+  e.preventDefault();
+  const form = /** @type {HTMLFormElement} */ (e.target);
+  const name = cleanPresetName(/** @type {HTMLInputElement} */ (form.elements.namedItem('name')).value);
+  if (!name) return;
+  if (form.dataset.rename) {
+    presets = presets.map((p) => (p.id === form.dataset.rename ? { ...p, name } : p));
+    editing = null;
+  } else {
+    // Same name: the preset is updated instead of duplicated.
+    const same = presets.find((p) => p.name.toLowerCase() === name.toLowerCase());
+    if (same) presets = presets.map((p) => (p === same ? { ...p, s: presetPart(s) } : p));
+    else if (presets.length &lt; PRESETS_MAX) presets = [...presets, { id: uid(), name, s: presetPart(s) }];
+  }
+  savePresets();
+  render();
+}
+
+/**
+ * Sliders while moving (no redraw: the finger keeps the slider).
+ * @param {Event} e
+ */
+function onInput(e) {
+  const el = /** @type {HTMLInputElement} */ (e.target);
+  if (el.type !== 'range') return;
+  if (el.dataset.k === 'subVol') s = { ...s, subVol: Number(el.value) / 100 };
+  if (el.dataset.k === 'swing') {
+    s = { ...s, swing: Number(el.value) };
+    const out = sheet.querySelector('#mSwingVal');
+    if (out) out.textContent = swingLabel(s.swing);
+  }
+  scheduleConfigure();
+}
+
+/**
+ * Selects, check box, end of a slider move: saved.
+ * @param {Event} e
+ */
+function onChange(e) {
+  const el = /** @type {HTMLInputElement} */ (e.target);
+  const k = el.dataset.k;
+  if (k === 'sound') return update({ sound: el.value });
+  if (k === 'onceBeat') return update({ onceBeat: Number(el.value) });
+  if (k === 'twoBars') return update({ twoBars: el.checked });
+  if (k === 'subVol' || k === 'swing') save();
+}
+
+/** Repeat timer of a held −/+ button. */
+let repeat = 0;
+
+/**
+ * Pointer down: tap tempo (on the press, more precise than the click), held
+ * −/+ buttons (repeat), tempo drag on the big number.
+ * @param {PointerEvent} e
+ */
+function onPointerDown(e) {
+  const tgt = /** @type {HTMLElement} */ (e.target);
+  const tap = tgt.closest('[data-m="tap"]');
+  if (tap) {
+    const r = tapTempo(taps, performance.now());
+    taps = r.taps;
+    tap.classList.remove('hit');
+    void (/** @type {HTMLElement} */ (tap).offsetWidth);
+    tap.classList.add('hit');
+    if (r.bpm) setTempo(r.bpm);
+    return;
+  }
+  const st = /** @type {HTMLElement} */ (tgt.closest('[data-step]'));
+  if (st) {
+    const d = Number(st.dataset.step);
+    setTempo(s.tempo + d);
+    const stopRepeat = () => {
+      clearTimeout(repeat);
+      repeat = 0;
+      window.removeEventListener('pointerup', stopRepeat);
+      window.removeEventListener('pointercancel', stopRepeat);
+    };
+    const again = () => {
+      setTempo(s.tempo + d);
+      repeat = setTimeout(again, 90);
+    };
+    repeat = setTimeout(again, 450);
+    window.addEventListener('pointerup', stopRepeat);
+    window.addEventListener('pointercancel', stopRepeat);
+    return;
+  }
+  const zone = /** @type {HTMLElement} */ (tgt.closest('#mTempo'));
+  if (zone) dragTempo(zone, e);
+}
+
+/**
+ * Tempo drag: up = faster, one BPM every {@link DRAG_PX} px.
+ * @param {HTMLElement} zone
+ * @param {PointerEvent} e
+ */
+function dragTempo(zone, e) {
+  const y0 = e.clientY;
+  const t0 = s.tempo;
+  zone.setPointerCapture(e.pointerId);
+  zone.classList.add('drag');
+  const move = (ev) => setTempo(t0 + Math.round((y0 - ev.clientY) / DRAG_PX), false);
+  const end = () => {
+    zone.classList.remove('drag');
+    zone.removeEventListener('pointermove', move);
+    zone.removeEventListener('pointerup', end);
+    zone.removeEventListener('pointercancel', end);
+    setMeta({ metro: s });
+  };
+  zone.addEventListener('pointermove', move);
+  zone.addEventListener('pointerup', end);
+  zone.addEventListener('pointercancel', end);
+}
+
+for (const el of [sheet, mini]) el.addEventListener('click', onClick);
+sheet.addEventListener('submit', onSubmit);
+sheet.addEventListener('input', onInput);
+sheet.addEventListener('change', onChange);
+sheet.addEventListener('pointerdown', onPointerDown);
+
+// The ♩ button of every screen header (headers are redrawn often).
+document.addEventListener('click', (e) => {
+  if (/** @type {HTMLElement} */ (e.target).closest('[data-metro-open]')) openSheet();
+});
+
+document.addEventListener('visibilitychange', () => {
+  kick();
+  syncWake();
+});
+
+engine.init({
+  onChange: () => {
+    render();
+    kick();
+    syncWake();
+  },
+  meta: () => ({ title: t('metro.title'), artist: `${s.tempo} BPM · ${meterOf(s.meter).time}` }),
+  nudge: (d) => setTempo(s.tempo + d),
+});
+engine.configure(s);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.4</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>
