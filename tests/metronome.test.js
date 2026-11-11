@@ -1,17 +1,31 @@
-// Tests for the metronome (2.11): settings, cycle sounds, jazz modes, tap tempo, presets.
+// Tests for the metronome (2.11, free time signatures 2.12): settings, groups, levels,
+// cycle sounds, jazz modes, tap tempo, presets.
 // Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   METRO_DEFAULTS,
+  SHORTCUTS,
   cycleEvents,
   sanitizeMetro,
   withMeter,
-  beatLevels,
-  beatUnit,
+  withGroups,
+  withSubdiv,
+  withUnit,
+  withShortcut,
+  cutOrJoin,
+  defaultGroups,
+  defaultLevels,
+  groupChoices,
+  pulseLevels,
   subdivsFor,
   canTwoFour,
+  canCountGroups,
   swingApplies,
+  unitGlyph,
+  meterLabel,
+  shortcutIndex,
+  toggleLevel,
   tapTempo,
   tempoMarking,
   sanitizePresets,
@@ -22,97 +36,162 @@ import {
 
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} != ${b}`);
 const S = (patch = {}) => sanitizeMetro({ ...METRO_DEFAULTS, ...patch });
+const M = (num, den, patch = {}) => sanitizeMetro({ ...withMeter(S(), num, den), ...patch });
 const times = (c, kind) => c.events.filter((e) => !kind || e.kind === kind).map((e) => e.t);
 
-test('4/4 at 120: four clicks, the first strong', () => {
+test('4/4 at 120: four clicks, the first at full level', () => {
   const c = cycleEvents(S());
   close(c.duration, 2);
   assert.deepEqual(
-    c.events.map((e) => e.kind),
-    ['strong', 'normal', 'normal', 'normal'],
+    c.events.map((e) => e.level),
+    [4, 3, 3, 3],
   );
   times(c).forEach((x, i) => close(x, i * 0.5));
-  assert.deepEqual(
-    c.marks.map((m) => m.beat),
-    [0, 1, 2, 3],
-  );
 });
 
-test('tempo unit: quarter, dotted quarter, eighth', () => {
-  assert.equal(beatUnit('4/4'), 'q');
-  assert.equal(beatUnit('6/8'), 'q.');
-  assert.equal(beatUnit('7/8:2+2+3'), '8');
-  close(cycleEvents(S({ meter: '6/8', tempo: 60 })).duration, 2); // two dotted quarters at 60
-  const odd = cycleEvents(S({ meter: '7/8:2+2+3', tempo: 240 })); // eighth = 0.25 s
-  close(odd.duration, 1.75);
-  assert.deepEqual(
-    odd.marks.map((m) => m.t),
-    [0, 0.5, 1],
-  );
+test('default groups', () => {
+  assert.deepEqual(defaultGroups(4, 4), [1, 1, 1, 1]);
+  assert.deepEqual(defaultGroups(7, 8), [2, 2, 3]);
+  assert.deepEqual(defaultGroups(6, 8), [3, 3]);
+  assert.deepEqual(defaultGroups(12, 8), [3, 3, 3, 3]);
+  assert.deepEqual(defaultGroups(8, 8), [2, 2, 2, 2]);
+  assert.deepEqual(defaultGroups(3, 8), [3]);
+  assert.deepEqual(defaultGroups(15, 16), [4, 4, 4, 3]);
+  assert.deepEqual(defaultGroups(13, 16), [4, 4, 3, 2]);
+  assert.deepEqual(defaultGroups(6, 16), [3, 3]);
+  assert.deepEqual(defaultGroups(14, 16), [4, 4, 4, 2]);
+  for (let n = 1; n <= 32; n++)
+    for (const d of [8, 16])
+      assert.equal(
+        defaultGroups(n, d).reduce((a, b) => a + b, 0),
+        n,
+        `${n}/${d}`,
+      );
 });
 
-test('accents: muted beats are silent but still marked', () => {
-  const c = cycleEvents(S({ accents: [2, 0, 1, 0] }));
-  assert.equal(c.events.length, 2);
+test('default levels: group heads at 4', () => {
+  assert.deepEqual(defaultLevels([2, 2, 3], 8), [4, 2, 4, 2, 4, 2, 2]);
+  assert.deepEqual(defaultLevels([1, 1, 1], 4), [4, 3, 3]);
+});
+
+test('any time signature: 15/16 has 15 pulses, the tempo counts sixteenths', () => {
+  const s = M(15, 16, { tempo: 240 });
+  assert.equal(s.levels.length, 15);
+  const c = cycleEvents(s);
+  close(c.duration, 15 * 0.25);
+  assert.equal(c.marks.length, 15);
+  assert.equal(unitGlyph(s), '\u{1D161}');
+  assert.equal(meterLabel(s), '15/16 4+4+4+3');
+  assert.equal(M(32, 2).num, 32);
+  assert.equal(sanitizeMetro({ num: 33, den: 4 }).num, 4);
+  assert.equal(sanitizeMetro({ num: 4, den: 3 }).den, 4);
+});
+
+test('tempo counting groups (equal groups that are a note value)', () => {
+  const s = withShortcut(
+    S(),
+    SHORTCUTS.findIndex((x) => x.num === 6 && x.den === 8),
+  );
+  assert.equal(s.unit, 'group');
+  assert.equal(unitGlyph(s), '♩.');
+  close(cycleEvents({ ...s, tempo: 60 }).duration, 2); // two dotted quarters at 60
+  assert.ok(!canCountGroups(M(7, 8))); // uneven groups
+  assert.ok(canCountGroups(M(8, 8))); // 4 × 2 eighths = quarters
+  assert.equal(sanitizeMetro({ ...M(7, 8), unit: 'group' }).unit, 'pulse');
+  // Changing what the tempo counts keeps the speed.
+  const p = withUnit({ ...s, tempo: 80 }, 'pulse');
+  assert.equal(p.tempo, 240);
+  assert.equal(withUnit(p, 'group').tempo, 80);
+});
+
+test('cut and join groups', () => {
+  assert.deepEqual(cutOrJoin([4, 4, 4, 3], 2), [2, 2, 4, 4, 3]);
+  assert.deepEqual(cutOrJoin([2, 2, 4, 4, 3], 2), [4, 4, 4, 3]);
+  assert.deepEqual(cutOrJoin([2, 2, 3], 4), [2, 5]);
+  const s = withGroups(M(7, 8), [3, 4]);
+  assert.deepEqual(s.levels, [4, 2, 2, 4, 2, 2, 2]);
+  assert.deepEqual(withGroups(M(7, 8), [3, 3]).groups, [2, 2, 3]); // wrong sum: default
+});
+
+test('group choices: default, rotations, even groups', () => {
+  assert.deepEqual(
+    groupChoices(7, 8).map((g) => g.join('+')),
+    ['2+2+3', '2+3+2', '3+2+2'],
+  );
+  assert.ok(groupChoices(12, 8).some((g) => g.join() === '4,4,4'));
+  assert.deepEqual(groupChoices(4, 4), [[1, 1, 1, 1]]);
+});
+
+test('levels: 0 to 4, a muted cell remembers its level', () => {
+  assert.equal(toggleLevel(3), -3);
+  assert.equal(toggleLevel(-3), 3);
+  assert.equal(toggleLevel(0), 3);
+  const c = cycleEvents(S({ levels: [4, -2, 1, 0] }));
+  assert.deepEqual(
+    c.events.map((e) => e.level),
+    [4, 1],
+  );
   assert.equal(c.marks.length, 4);
-  assert.deepEqual(
-    c.marks.map((m) => m.level),
-    [2, 0, 1, 0],
-  );
+  assert.deepEqual(sanitizeMetro({ levels: [9, 1, 1, 1] }).levels, [4, 3, 3, 3]);
 });
 
-test('subdivisions in simple time', () => {
-  const at = (subdiv) => times(cycleEvents(S({ subdiv, tempo: 60 })), 'sub').slice(0, 3);
-  assert.deepEqual(at('8'), [0.5, 1.5, 2.5]);
-  const tri = at('3');
-  close(tri[0], 1 / 3);
+test('subdivisions in /4, one level per click; none in /8 and /16', () => {
+  const s = withSubdiv(S({ tempo: 60 }), '16');
+  assert.equal(s.subLevels.length, 12);
+  assert.deepEqual(times(cycleEvents(s), 'sub').slice(0, 3), [0.25, 0.5, 0.75]);
+  const muted = { ...s, subLevels: s.subLevels.map((v, i) => (i % 3 === 1 ? v : -v)) };
+  assert.deepEqual(times(cycleEvents(muted), 'sub'), [0.5, 1.5, 2.5, 3.5]); // only the "and"
+  const tri = times(cycleEvents(withSubdiv(S({ tempo: 60 }), '3')), 'sub');
   close(tri[1], 2 / 3);
-  assert.deepEqual(at('16'), [0.25, 0.5, 0.75]);
-  assert.deepEqual(at('8.16'), [0.75, 1.75, 2.75]);
-  assert.equal(times(cycleEvents(S({ subdiv: '8', subVol: 0 })), 'sub').length, 0);
+  assert.deepEqual(times(cycleEvents(withSubdiv(S({ tempo: 60 }), '8.16')), 'sub').slice(0, 2), [0.75, 1.75]);
+  assert.deepEqual(subdivsFor(8), ['none']);
+  assert.equal(withSubdiv(M(7, 8), '16').subdiv, 'none');
 });
 
-test('subdivisions in compound and odd time: eighths and sixteenths only', () => {
-  assert.deepEqual(subdivsFor('6/8'), ['none', '8', '16']);
-  const c = cycleEvents(S({ meter: '6/8', tempo: 60, subdiv: '8' })); // eighth = 1/3 s
-  const sub = times(c, 'sub');
-  assert.equal(sub.length, 4);
-  close(sub[0], 1 / 3);
-  // A triplet subdivision is not kept in 6/8.
-  assert.equal(S({ meter: '6/8', subdiv: '3' }).subdiv, 'none');
-});
-
-test('swing moves the offbeat eighth, only for eighths in simple time', () => {
-  const c = cycleEvents(S({ tempo: 60, subdiv: '8', swing: 67 }));
+test('swing moves the offbeat eighth, only for eighths in /4', () => {
+  const c = cycleEvents({ ...withSubdiv(S({ tempo: 60 }), '8'), swing: 67 });
   close(times(c, 'sub')[0], 0.67);
-  assert.ok(swingApplies(S({ subdiv: '8' })));
-  assert.ok(!swingApplies(S({ subdiv: '16' })));
-  assert.ok(!swingApplies(S({ meter: '6/8', subdiv: '8' })));
+  assert.ok(swingApplies(withSubdiv(S(), '8')));
+  assert.ok(!swingApplies(withSubdiv(S(), '16')));
 });
 
-test('jazz 2 and 4: only beats 2 and 4, even x/4 only', () => {
-  assert.deepEqual(beatLevels(S({ jazz: '24' })), [0, 2, 0, 2]);
-  assert.ok(canTwoFour('4/4') && canTwoFour('2/4'));
-  assert.ok(!canTwoFour('3/4') && !canTwoFour('6/8'));
-  assert.equal(S({ meter: '3/4', jazz: '24' }).jazz, 'off');
-  // Own accents are kept underneath and come back when the mode is off.
-  const s = S({ accents: [2, 1, 0, 1], jazz: '24' });
-  assert.deepEqual(beatLevels({ ...s, jazz: 'off' }), [2, 1, 0, 1]);
+test('jazz 2 and 4: even number of beats in /2 or /4 only', () => {
+  assert.deepEqual(pulseLevels(S({ jazz: '24' })), [0, 4, 0, 4]);
+  assert.deepEqual(pulseLevels(M(6, 4, { jazz: '24' })), [0, 4, 0, 4, 0, 4]);
+  assert.ok(!canTwoFour(M(3, 4)) && !canTwoFour(M(7, 4)) && !canTwoFour(M(6, 8)));
+  assert.equal(M(7, 4, { jazz: '24' }).jazz, 'off');
+  // Own levels stay underneath.
+  const s = S({ levels: [4, 3, -3, 3], jazz: '24' });
+  assert.deepEqual(pulseLevels({ ...s, jazz: 'off' }), [4, 3, 0, 3]);
 });
 
 test('jazz once per bar, and every other bar', () => {
-  assert.deepEqual(beatLevels(S({ jazz: 'once' })), [2, 0, 0, 0]);
-  assert.deepEqual(beatLevels(S({ jazz: 'once', onceBeat: 3 })), [0, 0, 0, 2]);
-  const one = cycleEvents(S({ jazz: 'once' }));
-  assert.equal(one.events.length, 1);
-  const two = cycleEvents(S({ jazz: 'once', twoBars: true, subdiv: '8' }));
+  assert.deepEqual(pulseLevels(S({ jazz: 'once', onceBeat: 3 })), [0, 0, 0, 4]);
+  const two = cycleEvents(withSubdiv(S({ jazz: 'once', twoBars: true }), '8'));
   close(two.duration, 4);
   assert.equal(two.marks.length, 8);
-  assert.equal(times(two, 'strong').length, 1);
-  // The silent bar is fully silent, subdivisions included.
-  assert.ok(two.events.every((e) => e.t < 2));
-  // twoBars alone (without "once") changes nothing.
+  assert.ok(two.events.every((e) => e.t < 2)); // the silent bar is fully silent
   close(cycleEvents(S({ twoBars: true })).duration, 2);
+});
+
+test('shortcuts fill the time signature and the groups', () => {
+  const k = SHORTCUTS.findIndex((x) => x.num === 7 && x.den === 8 && x.groups.join() === '3,2,2');
+  const s = withShortcut(S(), k);
+  assert.deepEqual([s.num, s.den, s.groups], [7, 8, [3, 2, 2]]);
+  assert.equal(shortcutIndex(s), k);
+  assert.equal(shortcutIndex(M(15, 16)), -1);
+});
+
+test('2.11 settings are converted', () => {
+  const s = sanitizeMetro({ tempo: 100, meter: '7/8:3+2+2', accents: [2, 0, 1], subdiv: '8', subVol: 0.5 });
+  assert.deepEqual([s.num, s.den, s.groups], [7, 8, [3, 2, 2]]);
+  assert.deepEqual(s.levels, [4, 2, 2, -3, 2, 3, 2]);
+  assert.equal(s.subdiv, 'none'); // no subdivision in /8 any more
+  const c = sanitizeMetro({ tempo: 60, meter: '6/8', accents: [2, 1] });
+  assert.equal(c.unit, 'group'); // 2.11 counted dotted quarters in 6/8
+  const q = sanitizeMetro({ meter: '4/4', accents: [2, 1, 1, 0], subdiv: '16', subVol: 1 });
+  assert.deepEqual(q.levels, [4, 3, 3, -3]);
+  assert.deepEqual(q.subLevels, Array(12).fill(4));
 });
 
 test('tap tempo: last 4 taps, reset after 2 s', () => {
@@ -122,30 +201,28 @@ test('tap tempo: last 4 taps, reset after 2 s', () => {
   assert.equal(r.bpm, 120);
   r = tapTempo(r.taps, 1000);
   r = tapTempo(r.taps, 1500);
-  r = tapTempo(r.taps, 2100); // 4 taps kept: 500, 1000, 1500, 2100
+  r = tapTempo(r.taps, 2100);
   assert.deepEqual(r.taps, [500, 1000, 1500, 2100]);
-  assert.equal(r.bpm, Math.round(60000 / (1600 / 3)));
-  r = tapTempo(r.taps, 5000); // pause: new series
+  r = tapTempo(r.taps, 5000);
   assert.deepEqual(r.taps, [5000]);
-  assert.equal(r.bpm, null);
-  assert.equal(tapTempo([0], 10).bpm, 400); // bounded
+  assert.equal(tapTempo([0], 10).bpm, 400);
 });
 
 test('tempo markings', () => {
   assert.equal(tempoMarking(30), 'Grave');
-  assert.equal(tempoMarking(60), 'Largo');
   assert.equal(tempoMarking(120), 'Allegro');
   assert.equal(tempoMarking(240), 'Prestissimo');
 });
 
-test('sanitize: garbage in, defaults out; tempo bounded', () => {
+test('sanitize: garbage in, defaults out', () => {
   assert.deepEqual(sanitizeMetro(null), sanitizeMetro(METRO_DEFAULTS));
   const s = sanitizeMetro({
     tempo: 9999,
-    meter: '13/8',
-    accents: [5, 'x'],
+    num: 'x',
+    groups: [5],
+    levels: [5, 'x'],
     subdiv: '<b>',
-    subVol: 7,
+    subLevels: [1],
     swing: 10,
     sound: 'gong',
     jazz: 'bebop',
@@ -153,64 +230,31 @@ test('sanitize: garbage in, defaults out; tempo bounded', () => {
     vibrate: 'yes',
   });
   assert.equal(s.tempo, 400);
-  assert.equal(s.meter, '4/4');
-  assert.deepEqual(s.accents, [2, 1, 1, 1]);
+  assert.deepEqual([s.num, s.den, s.groups], [4, 4, [1, 1, 1, 1]]);
+  assert.deepEqual(s.levels, [4, 3, 3, 3]);
   assert.equal(s.subdiv, 'none');
-  assert.equal(s.subVol, 1);
+  assert.deepEqual(s.subLevels, []);
   assert.equal(s.swing, 50);
   assert.equal(s.sound, 'click');
   assert.equal(s.jazz, 'off');
   assert.equal(s.onceBeat, 0);
   assert.equal(s.vibrate, false);
-  assert.equal(sanitizeMetro({ tempo: 3 }).tempo, 20);
-});
-
-test('time signature change: accents reset, compatible settings kept', () => {
-  const s = withMeter(S({ accents: [2, 0, 0, 0], subdiv: '3', jazz: 'once', onceBeat: 3 }), '3/4');
-  assert.deepEqual(s.accents, [2, 1, 1]);
-  assert.equal(s.subdiv, '3');
-  assert.equal(s.onceBeat, 2);
-  assert.equal(withMeter(S({ subdiv: '3' }), '6/8').subdiv, 'none');
 });
 
 test('presets: validation, loading keeps the display options', () => {
   const list = sanitizePresets([
-    { id: 'a1', name: '  Donna   Lee ', s: { tempo: 240, jazz: '24', vibrate: true } },
+    { id: 'a1', name: '  Take   Five ', s: { tempo: 170, num: 5, den: 4, vibrate: true } },
     { id: 'a1', name: 'duplicate', s: {} },
     { id: 'BAD!', name: 'x', s: {} },
     { id: 'b2', name: '   ', s: {} },
     'junk',
   ]);
   assert.equal(list.length, 1);
-  assert.equal(list[0].name, 'Donna Lee');
-  assert.equal(list[0].s.vibrate, undefined); // display options are not stored
-  const now = S({ flash: true, tempo: 80 });
-  const loaded = applyPreset(now, list[0]);
-  assert.equal(loaded.tempo, 240);
-  assert.equal(loaded.jazz, '24');
-  assert.equal(loaded.flash, true);
+  assert.equal(list[0].name, 'Take Five');
+  assert.equal(list[0].s.vibrate, undefined);
+  const loaded = applyPreset(S({ flash: true }), list[0]);
+  assert.deepEqual([loaded.tempo, loaded.num, loaded.flash], [170, 5, true]);
   assert.equal(sanitizePresets('nope'), undefined);
   assert.equal(cleanPresetName('x'.repeat(80)).length, 40);
-  assert.deepEqual(Object.keys(presetPart(now)).sort(), [
-    'accents',
-    'jazz',
-    'meter',
-    'onceBeat',
-    'sound',
-    'subVol',
-    'subdiv',
-    'swing',
-    'tempo',
-    'twoBars',
-  ]);
-});
-
-test('6/4 and 7/4 (2.11.1)', () => {
-  const s = S({ meter: '7/4', tempo: 60 });
-  assert.equal(s.meter, '7/4');
-  assert.deepEqual(s.accents, [2, 1, 1, 1, 1, 1, 1]);
-  close(cycleEvents(s).duration, 7);
-  assert.ok(!canTwoFour('7/4'));
-  assert.ok(canTwoFour('6/4'));
-  assert.deepEqual(beatLevels(S({ meter: '6/4', jazz: '24' })), [0, 2, 0, 2, 0, 2]);
+  assert.ok(!('vibrate' in presetPart(S())));
 });

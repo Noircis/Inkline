@@ -4,6 +4,17 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.12.0] - 2026-11-11
+
+### Changed
+
+- **Metronome: any time signature.** Two menus replace the list: the top number (1 to 32) and the bottom number (2, 4, 8 or 16), so 15/16 or 11/8 are possible. A third menu holds shortcuts to the usual ones (4/4, 3/4, 6/8, 7/8 in its three groupings…).
+- **One level bar per pulse**, from 0 (silent) to 4 (full), instead of strong / normal / muted. Tap a bar to switch it off and on again (it keeps its level), slide up or down to set its level. The bars are also the lights.
+- **Groups** in /8 and /16: the default grouping comes first (7/8 = 2+2+3, 15/16 = 4+4+4+3), a menu offers the others, and a tap between two bars splits or joins a group. Each group starts with an accent.
+- **Subdivisions** in /2 and /4 now have a small bar per click, with the same levels: accent the "and" of each beat, mute one sixteenth out of four… The global subdivision volume is gone.
+- The tempo counts pulses, or groups when they are all equal (6/8 counts dotted quarters by default). Switching between the two keeps the speed.
+- Settings and presets of 2.11 are converted.
+
 ## [2.11.1] - 2026-11-11
 
 ### Added

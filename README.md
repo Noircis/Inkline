@@ -78,7 +78,7 @@ js/
   folding.js          collapsed display rule for long blocks
   placements.js       rhythm practice: time signatures, writing placements, series
   exercise.js         random rhythm exercises (reproducible draw by number)
-  metronome.js        metronome: settings, accents, jazz modes, subdivisions, cycle sounds, presets
+  metronome.js        metronome: any time signature, groups, levels, jazz modes, subdivisions, cycle sounds, presets
   metro-clock.js      metronome timing: beats of a looping cycle, seamless swaps
   metro-engine.js     metronome audio: pre-rendered looping cycle (plays with the screen locked)
   transpose.js        transposing instruments: rewriting a staff for another instrument

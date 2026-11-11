@@ -70,7 +70,7 @@ import { t } from './i18n.js';
  * @param {Array.<number>} groups
  * @returns {Meter}
  */
-export function meter(time, groups) {
+function meter(time, groups) {
   const odd = groups.some((g) => g !== groups[0]);
   return {
     key: odd ? `${time}:${groups.join('+')}` : time,

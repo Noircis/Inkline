@@ -38,70 +38,124 @@
   font-size: 22px;
 }
 
-/* Beats: tap to change the accent */
-.metro-beats {
+/* Level bars: one per pulse (also the lights); tap = on/off, slide = level */
+.mbars {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: 6px 10px;
-  padding: 6px 0;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 10px 6px;
+  padding: 6px 0 0;
+  touch-action: none;
+  user-select: none;
 }
-.mbeat {
+.mbars.grouped {
+  gap: 10px 0;
+}
+.mcol {
+  flex: 0 0 var(--cw, 36px);
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 4px;
-  min-width: 44px;
-  padding: 6px 2px;
+}
+.mbar {
+  position: relative;
+  height: 64px;
+  padding: 0;
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.mbars.dense .mbar {
+  height: 52px;
+}
+.mbar .fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--lv, 0) * 100%);
+  background: var(--ink);
+  transition: height 0.08s;
+}
+.mbar.off {
+  border-style: dashed;
+}
+.mbar.off .fill {
+  opacity: 0.15;
+}
+.mbar.on {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.mbar.on .fill {
+  background: var(--accent);
+}
+.mbars.jazz .mbar {
+  border-color: var(--accent);
+}
+.silent-bar .mbar.on {
+  box-shadow: 0 0 0 2px var(--muted);
+  border-color: var(--muted);
+}
+.mnum {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.mcol.head .mnum {
+  color: var(--ink);
+  font-weight: 700;
+}
+.msubs {
+  display: flex;
+  gap: 3px;
+}
+.mbar.small {
+  flex: 1;
+  height: 28px;
+  border-width: 1px;
+  border-radius: 4px;
+}
+/* Between two pulses (/8, /16): tap to split or join groups */
+.mgap {
+  flex: 0 0 12px;
+  align-self: stretch;
+  min-height: 64px;
+  padding: 0;
   border: 0;
   background: none;
-  color: var(--muted);
-  font: inherit;
-  font-size: 13px;
+  position: relative;
 }
-.mbeat .dot,
-.mm-dot {
-  display: block;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2px solid var(--line);
-  transition:
-    transform 0.06s,
-    background-color 0.06s;
+.mgap::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 18px;
+  left: 50%;
+  border-left: 1px dotted var(--rule);
 }
-.mbeat.long .dot {
-  width: 36px;
-  border-radius: 13px;
+.mgap.cut {
+  flex-basis: 18px;
 }
-.mbeat.lv2 .dot,
-.mm-dot.lv2 {
-  background: var(--ink);
-  border-color: var(--ink);
+.mgap.cut::after {
+  top: 0;
+  bottom: 14px;
+  border-left: 2px solid var(--muted);
 }
-.mbeat.lv1 .dot,
-.mm-dot.lv1 {
-  background: var(--surface);
+.mbars.dense .mgap {
+  flex-basis: 8px;
+  min-height: 52px;
 }
-.mbeat.lv0 .dot,
-.mm-dot.lv0 {
-  border-style: dashed;
-  opacity: 0.55;
+.mbars.dense .mgap.cut {
+  flex-basis: 14px;
 }
-.mbeat.on .dot,
-.mm-dot.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  opacity: 1;
-  transform: scale(1.12);
-}
-.mbeat.lv0.on .dot,
-.mm-dot.lv0.on {
-  background: var(--accent-soft);
-}
-.silent-bar .on {
-  filter: grayscale(1);
-  opacity: 0.6;
+.mbars-hint {
+  margin: 0;
+  text-align: center;
 }
 
 /* Tempo: drag up and down */
@@ -241,6 +295,24 @@
   border-radius: 8px;
   padding: 0 8px;
 }
+.mmeter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mmeter select[data-k='num'],
+.mmeter select[data-k='den'] {
+  min-width: 64px;
+  font-weight: 700;
+}
+.mslash {
+  font-weight: 700;
+  color: var(--muted);
+}
+.mglyph {
+  font-family: var(--f-music);
+  font-size: 18px;
+}
 .mcheck {
   display: inline-flex;
   align-items: center;
@@ -346,9 +418,31 @@
   margin-right: 4px;
 }
 .mm-dot {
+  display: block;
   width: 12px;
   height: 12px;
-  border-width: 1.5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+}
+.mm-dot.lv4 {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.mm-dot.lv0 {
+  border-style: dashed;
+  opacity: 0.55;
+}
+.mm-dot.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  opacity: 1;
+}
+.mm-count {
+  min-width: 44px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
 }
 .mm-tempo {
   font-family: var(--f-music), var(--f-body);
@@ -394,8 +488,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mbeat .dot,
-  .mm-dot {
+  .mbar .fill {
     transition: none;
   }
 }

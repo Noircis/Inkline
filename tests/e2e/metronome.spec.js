@@ -29,18 +29,22 @@ test('from a note: sheet, accents, start, collapse to the mini-bar, back closes 
   await expect(sheet(page).locator('h2')).toHaveText('Métronome');
   await expect(page.locator('#mTempoVal')).toHaveText('120');
   await expect(page.locator('#mMark')).toHaveText('Allegro');
-  await expect(page.locator('.mbeat')).toHaveCount(4);
-  await expect(page.locator('.mbeat').nth(0)).toHaveClass(/lv2/);
+  await expect(page.locator('[data-mbar]')).toHaveCount(4);
+  await expect(page.locator('[data-mbar="0"]')).toHaveAttribute('aria-label', 'Pulsation 1, niveau 4');
 
-  // Tap a beat: normal → muted.
-  await page.click('[data-mbeat="1"]');
-  await expect(page.locator('.mbeat').nth(1)).toHaveClass(/lv0/);
+  // Tap a bar: off, then on again at the same level.
+  await page.click('[data-mbar="1"]');
+  await expect(page.locator('[data-mbar="1"]')).toHaveClass(/off/);
+  await expect(page.locator('[data-mbar="1"]')).toHaveAttribute('aria-label', 'Pulsation 2, niveau 0');
+  await page.click('[data-mbar="1"]');
+  await expect(page.locator('[data-mbar="1"]')).toHaveAttribute('aria-label', 'Pulsation 2, niveau 3');
+  await page.click('[data-mbar="1"]');
   await page.click('[data-step="5"]');
   await expect(page.locator('#mTempoVal')).toHaveText('125');
 
   await page.click('.metro-play');
   await expect(page.locator('.metro-play')).toHaveClass(/on/);
-  await expect(page.locator('.mbeat.on')).toHaveCount(1, { timeout: 3000 });
+  await expect(page.locator('[data-mbar].on')).toHaveCount(1, { timeout: 3000 });
 
   // Collapse: the note is still there, the mini-bar plays on.
   await page.click('[data-m="close"]');
@@ -68,18 +72,34 @@ test('from a note: sheet, accents, start, collapse to the mini-bar, back closes 
   expect(errors).toEqual([]);
 });
 
-test('time signatures, subdivisions, swing and the cycle rendered', async ({ page }) => {
+test('any time signature: menus, groups, shortcuts, subdivisions, swing', async ({ page }) => {
   await openApp(page);
   await page.click('[data-metro-open]');
-  await page.click('[data-mmeter="7/8:2+2+3"]');
-  await expect(page.locator('.mbeat')).toHaveCount(3);
-  await expect(page.locator('.mt-unit')).toHaveText('♪ =');
-  await expect(page.locator('[data-msub]')).toHaveCount(3);
-  await page.click('[data-mmeter="4/4"]');
+  await page.selectOption('[data-k="num"]', '15');
+  await page.selectOption('[data-k="den"]', '16');
+  await expect(page.locator('[data-mbar]')).toHaveCount(15);
+  await expect(page.locator('[data-k="groups"]')).toHaveValue('4+4+4+3');
+  await expect(page.locator('.mgap.cut')).toHaveCount(3);
+  await expect(page.locator('[data-msub]')).toHaveCount(0); // no subdivision in /16
+  await expect(page.locator('[data-k="shortcut"]')).toHaveValue('');
+  // Tap between pulses 2 and 3: the first group is split.
+  await page.click('[data-mcut="2"]');
+  await expect(page.locator('[data-k="groups"]')).toHaveValue('2+2+4+4+3');
+  await page.click('[data-mcut="2"]');
+  await expect(page.locator('[data-k="groups"]')).toHaveValue('4+4+4+3');
+
+  // Shortcut 6/8: two groups of 3, the tempo counts dotted quarters.
+  await page.selectOption('[data-k="shortcut"]', { label: '6/8' });
+  await expect(page.locator('[data-mbar]')).toHaveCount(6);
+  await expect(page.locator('input[data-k="unit"][value="group"]')).toBeChecked();
+  await expect(page.locator('.mt-unit')).toHaveText('♩. =');
+
+  await page.selectOption('[data-k="shortcut"]', { label: '4/4' });
   await expect(page.locator('[data-msub]')).toHaveCount(5);
-  await expect(page.locator('[data-k="swing"]')).toBeDisabled();
+  await expect(page.locator('[data-k="swing"]')).toHaveCount(0);
+  await page.click('[data-msub="16"]');
+  await expect(page.locator('[data-msubbar]')).toHaveCount(12);
   await page.click('[data-msub="8"]');
-  await expect(page.locator('[data-k="swing"]')).toBeEnabled();
   await page.locator('[data-k="swing"]').fill('67');
   await expect(page.locator('#mSwingVal')).toHaveText('ternaire');
 
@@ -92,15 +112,35 @@ test('time signatures, subdivisions, swing and the cycle rendered', async ({ pag
   await page.click('.metro-play');
 });
 
+test('slide on a bar: the level snaps to the steps 0 to 4', async ({ page }) => {
+  await openApp(page);
+  await page.click('[data-metro-open]');
+  const bar = page.locator('[data-mbar="0"]');
+  const box = await bar.boundingBox();
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + 45, { steps: 5 }); // 3 steps down
+  await page.mouse.up();
+  await expect(bar).toHaveAttribute('aria-label', 'Pulsation 1, niveau 1');
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x, y + 200, { steps: 5 });
+  await page.mouse.up();
+  await expect(bar).toHaveAttribute('aria-label', 'Pulsation 1, niveau 0');
+  await expect(bar).toHaveClass(/off/);
+});
+
 test('jazz 2 and 4 only in even x/4; settings survive a reload', async ({ page }) => {
   await openApp(page);
   await page.click('[data-metro-open]');
   await page.click('[data-mjazz="24"]');
-  await expect(page.locator('.mbeat.lv2')).toHaveCount(2);
-  await expect(page.locator('.mbeat').nth(0)).toHaveClass(/lv0/);
-  await page.click('[data-mmeter="3/4"]');
+  await expect(page.locator('[data-mbar].off')).toHaveCount(2);
+  await expect(page.locator('[data-mbar="0"]')).toHaveClass(/off/);
+  await page.selectOption('[data-k="num"]', '3');
   await expect(page.locator('[data-mjazz="24"]')).toBeDisabled();
-  await page.click('[data-mmeter="4/4"]');
+  await page.selectOption('[data-k="num"]', '4');
   await page.click('[data-mjazz="24"]');
   await page.selectOption('[data-k="sound"]', 'wood');
   await page.click('[data-step="-5"]');

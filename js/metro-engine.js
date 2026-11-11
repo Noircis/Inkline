@@ -114,6 +114,9 @@ export function configure(s) {
 
 // ---------- Sounds ----------
 
+/** Gain of each level (1 to 4); level 4 also uses the brighter "strong" pitch. */
+const LEVEL_GAIN = [0, 0.22, 0.4, 0.65, 1];
+
 /**
  * Pitch (Hz) and gain of each sound for each kind of hit.
  * @type {Object.<string, Object.<string, {f: number, g: number}>>}
@@ -186,18 +189,22 @@ function noiseHit(c, out, noise, f, at, peak, decay) {
 }
 
 /**
- * Plays one hit of the chosen sound into an offline context.
+ * Plays one hit of the chosen sound into an offline context. Pulses at
+ * level 4 use the "strong" pitch, the others the "normal" one; subdivisions
+ * their own, a little lower.
  * @param {BaseAudioContext} c
  * @param {AudioNode} out
  * @param {AudioBuffer} noise
  * @param {string} sound
- * @param {'strong'|'normal'|'sub'} kind
+ * @param {'pulse'|'sub'} type
+ * @param {number} level 1 to 4.
  * @param {number} at
- * @param {number} subVol
  */
-function hit(c, out, noise, sound, kind, at, subVol) {
-  const v = (VOICES[sound] || VOICES.click)[kind];
-  const g = v.g * (kind === 'sub' ? subVol : 1);
+function hit(c, out, noise, sound, type, level, at) {
+  const voice = VOICES[sound] || VOICES.click;
+  const kind = type === 'sub' ? 'sub' : level === 4 ? 'strong' : 'normal';
+  const v = voice[kind];
+  const g = voice.strong.g * LEVEL_GAIN[level] * (type === 'sub' ? 0.85 : 1);
   switch (sound) {
     case 'wood':
       tone(c, out, 'sine', v.f, at, g, 0.07);
@@ -253,7 +260,7 @@ async function renderCycle(sr, s) {
   out.gain.value = MASTER;
   out.connect(oc.destination);
   const noise = noiseBuffer(oc);
-  for (const e of cyc.events) hit(oc, out, noise, s.sound, e.kind, Math.round(e.t * sr) / sr, s.subVol);
+  for (const e of cyc.events) hit(oc, out, noise, s.sound, e.kind, e.level, Math.round(e.t * sr) / sr);
   const raw = await oc.startRendering();
   // Fold the tail past the end back onto the start: the loop is circular.
   const d = raw.getChannelData(0);
