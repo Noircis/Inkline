@@ -13,7 +13,7 @@ import * as audio from '../audio.js';
 import { METRONOME } from './icons.js';
 
 /** Version shown in Settings (keep it in line with CHANGELOG.md). */
-export const APP_VERSION = '2.15.0';
+export const APP_VERSION = '2.15.1';
 
 /** HTML of an active block's tools. */
 export function toolsHtml() {

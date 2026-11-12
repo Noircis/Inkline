@@ -75,10 +75,17 @@ export const LEVEL_MAX = 4;
 export const SOUNDS = Object.freeze(['click', 'wood', 'cowbell', 'rim', 'hat']);
 
 /**
- * Subdivisions of a pulse (/2 and /4 only): none, in 2, in 3, in 4, dotted
- * (3/4 + 1/4). Labels: `metro.subs.*` keys.
+ * Subdivisions of a pulse (/2 and /4 only): none, in 2, 3, 4, 5, 6 or 7
+ * (2.15.1: quintuplets to septuplets; the dotted eighth left, it is swing at
+ * 75 %). Labels: `metro.subs.*` keys.
  */
-export const SUBDIVS = Object.freeze(['none', '8', '3', '16', '8.16']);
+export const SUBDIVS = Object.freeze(['none', '8', '3', '16', '5', '6', '7']);
+
+/** Clicks per pulse of each subdivision, the pulse included. */
+const SUB_CLICKS = { none: 1, 8: 2, 3: 3, 16: 4, 5: 5, 6: 6, 7: 7 };
+
+/** Swing that plays a dotted eighth and a sixteenth (3/4 + 1/4). */
+export const SWING_DOTTED = 75;
 
 /** Swing bounds (%): position of the offbeat eighth within the beat. */
 export const SWING_MIN = 50;
@@ -217,7 +224,7 @@ export function defaultLevels(groups, den) {
  * @returns {number}
  */
 export function subCount(subdiv) {
-  return { none: 0, 8: 1, 3: 2, 16: 3, 8.16: 1 }[subdiv] || 0;
+  return (SUB_CLICKS[subdiv] || 1) - 1;
 }
 
 /** Default level of a subdivision click. */
@@ -425,18 +432,9 @@ export function pulseSeconds(s, tempo = s.tempo) {
  * @returns {Array.<number>}
  */
 function subOffsets(s) {
-  switch (s.subdiv) {
-    case '8':
-      return [s.swing / 100];
-    case '3':
-      return [1 / 3, 2 / 3];
-    case '16':
-      return [1 / 4, 2 / 4, 3 / 4];
-    case '8.16':
-      return [3 / 4];
-    default:
-      return [];
-  }
+  if (s.subdiv === '8') return [s.swing / 100];
+  const n = SUB_CLICKS[s.subdiv] || 1;
+  return Array.from({ length: n - 1 }, (_, k) => (k + 1) / n);
 }
 
 /**
@@ -900,7 +898,9 @@ function sanitizePoly(r) {
  */
 export function sanitizeMetro(r) {
   const d = METRO_DEFAULTS;
-  const o = fromLegacy(r && typeof r === 'object' ? r : {});
+  const raw = r && typeof r === 'object' ? r : {};
+  // 2.15.1: the dotted eighth subdivision became eighths with swing at 75 %.
+  const o = fromLegacy(raw.subdiv === '8.16' ? { ...raw, subdiv: '8', swing: SWING_DOTTED } : raw);
   const n = Number.isInteger(o.num) && o.num >= 1 && o.num <= NUM_MAX ? o.num : d.num;
   const den = DENS.includes(o.den) ? o.den : d.den;
   const okGroups =

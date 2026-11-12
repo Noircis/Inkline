@@ -156,7 +156,20 @@ test('subdivisions in /4, one level per click; none in /8 and /16', () => {
   assert.deepEqual(times(cycleEvents(muted), 'sub'), [0.5, 1.5, 2.5, 3.5]); // only the "and"
   const tri = times(cycleEvents(withSubdiv(S({ tempo: 60 }), '3')), 'sub');
   close(tri[1], 2 / 3);
-  assert.deepEqual(times(cycleEvents(withSubdiv(S({ tempo: 60 }), '8.16')), 'sub').slice(0, 2), [0.75, 1.75]);
+  // Quintuplets to septuplets (2.15.1): n − 1 clicks evenly spread.
+  for (const n of [5, 6, 7]) {
+    const sub = times(cycleEvents(withSubdiv(S({ tempo: 60 }), String(n))), 'sub');
+    assert.equal(sub.length, 4 * (n - 1));
+    sub.slice(0, n - 1).forEach((x, k) => close(x, (k + 1) / n));
+    assert.equal(withSubdiv(S(), String(n)).subLevels.length, 4 * (n - 1));
+  }
+  assert.equal(withSubdiv(M(6, 8), '5').subdiv, 'none'); // /8: no subdivision
+  // The old dotted eighth (8.16) comes back as eighths swung at 75 %, levels kept.
+  const old = sanitizeMetro({ subdiv: '8.16', subLevels: [1, 2, 3, 4], swing: 50 });
+  assert.equal(old.subdiv, '8');
+  assert.equal(old.swing, 75);
+  assert.deepEqual(old.subLevels, [1, 2, 3, 4]);
+  assert.deepEqual(times(cycleEvents({ ...old, tempo: 60 }), 'sub').slice(0, 2), [0.75, 1.75]);
   assert.deepEqual(subdivsFor(8), ['none']);
   assert.equal(withSubdiv(M(7, 8), '16').subdiv, 'none');
 });

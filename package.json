@@ -1,6 +1,6 @@
 {
   "name": "inkline",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "description": "Music notebook for Android: text, staves, rhythms and chord charts (offline PWA).",
   "type": "module",
   "private": true,

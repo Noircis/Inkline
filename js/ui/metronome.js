@@ -59,6 +59,7 @@ import {
   SOUNDS,
   SWING_MIN,
   SWING_MAX,
+  SWING_DOTTED,
   PRESETS_MAX,
   PRESET_NAME_MAX,
   NUM_MAX,
@@ -112,7 +113,7 @@ import { confirmTap } from './common.js';
 import { state, curNote, blockById, touch } from './state.js';
 
 /** Subdivision → dictionary key suffix (keys cannot hold dots). */
-const SUB_KEYS = { none: 'none', 8: 's8', 3: 's3', 16: 's16', 8.16: 's816' };
+const SUB_KEYS = { none: 'none', 8: 's8', 3: 's3', 16: 's16', 5: 's5', 6: 's6', 7: 's7' };
 
 /** Sub-pages of the sheet, in the order of the rows. */
 const PAGES = ['meter', 'subdiv', 'sound', 'jazz', 'poly', 'gap', 'ramp', 'options'];
@@ -355,11 +356,13 @@ function barsHtml(opt = {}) {
   }
   // Same width for every bar, so that long bars wrap into even rows.
   const w = sc
-    ? s.num <= 4
-      ? 64
-      : s.num <= 6
-        ? 48
-        : 36
+    ? sc > 3
+      ? 80
+      : s.num <= 4
+        ? 64
+        : s.num <= 6
+          ? 48
+          : 36
     : s.num <= 4
       ? 44
       : s.num <= 8
@@ -381,7 +384,7 @@ function rowValue(page) {
       return meterLabel(s);
     case 'subdiv':
       return (
-        t(s.subdiv === 'none' ? 'metro.subGlyphs.none' : 'metro.subs.' + SUB_KEYS[s.subdiv]) +
+        t(s.subdiv === 'none' ? 'metro.subNone' : 'metro.subs.' + SUB_KEYS[s.subdiv]) +
         (swingApplies(s) && s.swing > SWING_MIN ? ' · ' + t('metro.swing') + ' ' + swingLabel(s.swing) : '')
       );
     case 'sound':
@@ -557,7 +560,7 @@ function subdivBody() {
         `<button type="button" data-msub="${esc(k)}" aria-pressed="${k === s.subdiv}" aria-label="${esc(t('metro.subs.' + SUB_KEYS[k]))}">${esc(t('metro.subGlyphs.' + SUB_KEYS[k]))}</button>`,
     )
     .join('');
-  let html = `<div class="msub">${subs}</div>`;
+  let html = `<p class="mlbl msub-lbl">${esc(t('metro.subClicks'))}</p><div class="msub">${subs}</div>`;
   if (s.subdiv !== 'none')
     html += `${barsHtml({ subs: true })}<p class="mhint">${esc(t('metro.levelHint'))}</p>`;
   if (swingApplies(s))
@@ -747,6 +750,7 @@ const PAGE_BODIES = {
 function swingLabel(v) {
   if (v <= SWING_MIN) return t('metro.swingStraight');
   if (v === 67) return t('metro.swingTriplet');
+  if (v === SWING_DOTTED) return t('metro.swingDotted');
   return t('metro.swingValue', { n: v });
 }
 

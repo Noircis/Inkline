@@ -4,6 +4,17 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.15.1] - 2026-11-12
+
+### Added
+
+- **Metronome: quintuplets, sextuplets and septuplets** (5, 6 and 7 clicks per beat), with a level bar per click like the others.
+
+### Changed
+
+- The subdivision choices are now numbered by **clicks per beat**, 1 to 7, in the body font: no more note glyphs, which Android drew as colored emoji.
+- The **dotted eighth and sixteenth** choice is gone: it played the same as eighths with swing at 75 %, now labelled "dotted" on the swing slider. Settings and presets that used it are converted.
+
 ## [2.15.0] - 2026-11-12
 
 ### Added

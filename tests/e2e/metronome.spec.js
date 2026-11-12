@@ -128,11 +128,16 @@ test('subdivision page: per-click bars and swing; jazz once per bar with silence
   await openApp(page);
   await page.click('[data-metro-open]');
   await goPage(page, 'subdiv');
-  await expect(page.locator('[data-msub]')).toHaveCount(5);
+  await expect(page.locator('[data-msub]')).toHaveCount(7);
+  await expect(page.locator('[data-msub="5"]')).toHaveAttribute('aria-label', 'Quintolets');
   await expect(page.locator('[data-k="swing"]')).toHaveCount(0);
   await page.click('[data-msub="16"]');
   await expect(page.locator('[data-msubbar]')).toHaveCount(12);
+  await page.click('[data-msub="7"]');
+  await expect(page.locator('[data-msubbar]')).toHaveCount(24);
   await page.click('[data-msub="8"]');
+  await page.locator('[data-k="swing"]').fill('75');
+  await expect(page.locator('#mSwingVal')).toHaveText('pointé');
   await page.locator('[data-k="swing"]').fill('67');
   await expect(page.locator('#mSwingVal')).toHaveText('ternaire');
   await page.click('[data-m="back"]');

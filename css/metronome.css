@@ -346,10 +346,10 @@
   border-radius: 10px;
   background: var(--bg);
   color: var(--ink);
-  font: 20px var(--f-music);
+  font: 600 18px var(--f-body);
 }
-.msub button[data-msub='none'] {
-  font: 600 13px var(--f-body);
+.msub-lbl {
+  margin: 0 0 -4px;
 }
 .msub button[aria-pressed='true'] {
   border-color: var(--accent);
