@@ -172,6 +172,10 @@ Since 2.1, the notebook is stored in **IndexedDB** (database `inkline`, stores `
 - **Fallback**: if IndexedDB is unavailable, the app works as before with `localStorage`. Settings show the storage in use (About).
 - **Tests**: `tests/storage-idb.test.js` uses `fake-indexeddb`, an in-memory IndexedDB implementation for Node.
 
+## License
+
+Proprietary, all rights reserved (see `LICENSE`). Since 2.15.1; earlier versions were published under the GPL v3, and copies obtained under it stay under it. The fonts in `fonts/` keep their SIL Open Font License.
+
 ## Publishing a new version
 
 1. Update `APP_VERSION` in `js/ui/common.js`, `version` in `package.json` and `CACHE` in `sw.js`.

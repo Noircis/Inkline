@@ -13,6 +13,7 @@ Entries are written in English since 2.9.1; earlier entries are kept in French, 
 ### Changed
 
 - The subdivision choices are now numbered by **clicks per beat**, 1 to 7, in the body font: no more note glyphs, which Android drew as colored emoji.
+- **License**: Inkline is now proprietary, all rights reserved (it was GPL v3). Copies of earlier versions obtained under the GPL stay under it.
 - The **dotted eighth and sixteenth** choice is gone: it played the same as eighths with swing at 75 %, now labelled "dotted" on the swing slider. Settings and presets that used it are converted.
 
 ## [2.15.0] - 2026-11-12
