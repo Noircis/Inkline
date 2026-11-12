@@ -97,6 +97,13 @@
 .mbars.jazz .mbar {
   border-color: var(--accent);
 }
+.silent-bar .mm-dot.on {
+  background: var(--muted);
+  border-color: var(--muted);
+}
+.silent-bar .mbar.on .fill {
+  background: var(--muted);
+}
 .silent-bar .mbar.on {
   box-shadow: 0 0 0 2px var(--muted);
   border-color: var(--muted);
@@ -277,7 +284,7 @@
   font-size: 20px;
 }
 .mchoices input[type='radio'],
-.mchoices input[type='checkbox'] {
+.mchoices input[type='checkbox']:not(.switch) {
   width: 22px;
   height: 22px;
   accent-color: var(--accent);
@@ -558,4 +565,51 @@
   .mbar .fill {
     transition: none;
   }
+}
+
+/* Labelled menus on one line (silences, ramp) */
+.mrow-inline {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.mrow-inline .mlbl {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.mrow-inline select {
+  min-width: 120px;
+}
+.metro-rows.dim {
+  opacity: 0.5;
+}
+
+/* Tempo ramp on the main page: target and progress */
+.mramp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.mramp .mglyph,
+.mrow-inline .mglyph {
+  font-size: 16px;
+}
+.mramp-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rule);
+  overflow: hidden;
+}
+.mramp-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 0.3s;
 }

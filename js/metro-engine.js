@@ -20,6 +20,15 @@
  * Sound tails that run past the end of the cycle are folded back onto its
  * start (the loop is circular), so a click near the loop point is never cut.
  *
+ * ## Stream of bars (2.14)
+ *
+ * A tempo ramp or random silences make every bar different: no single cycle
+ * can loop. The engine then plans the bars ({@link module:metronome.planBar|planBar}),
+ * renders them by chunks of a few seconds and schedules each chunk at its
+ * exact audio time, a little ahead (12 s while visible, 80 s once hidden:
+ * Chrome may then run timers only once a minute). A change of settings drops
+ * what comes after the next bar line and plans again from there.
+ *
  * ## Output
  *
  * The loop plays straight into `AudioContext.destination`. Two other routes
@@ -34,7 +43,7 @@
  */
 
 import { getAudioContext, stop as stopPlayback, onPlaybackStart } from './audio.js';
-import { cycleEvents, METRO_DEFAULTS } from './metronome.js';
+import { cycleEvents, chunkEvents, planBar, pulseSeconds, streams, METRO_DEFAULTS } from './metronome.js';
 import { beatAt, swapPoint } from './metro-clock.js';
 
 /** Minimum delay (s) between rendering a new cycle and swapping it in. */
@@ -103,13 +112,16 @@ export function isRunning() {
 }
 
 /**
- * Sets the settings to play; while playing, the new cycle takes over right away.
+ * Sets the settings to play; while playing, the new cycle takes over right
+ * away (a stream of bars: from the next bar line).
  * @param {module:metronome~MetroSettings} s
+ * @param {{restart: (boolean|undefined)}} [opt] `restart`: start the session
+ *   again (the tempo was changed by hand during a ramp).
  */
-export function configure(s) {
+export function configure(s, opt = {}) {
   settings = s;
   updateSession();
-  if (running) apply();
+  if (running) apply(!!opt.restart);
 }
 
 // ---------- Sounds ----------
@@ -244,24 +256,35 @@ function noiseBuffer(c) {
 }
 
 /**
- * Renders one cycle: every hit of {@link module:metronome.cycleEvents|cycleEvents},
- * tails folded back onto the start.
+ * Renders a list of hits offline.
  * @param {number} sr Sample rate (Hz), the one of the live context.
+ * @param {Array.<module:metronome~MetroEvent>} events
+ * @param {module:metronome~MetroSettings} s
+ * @param {number} length Length of the render (samples), tails included.
+ * @returns {Promise.<AudioBuffer>}
+ */
+function renderEvents(sr, events, s, length) {
+  const C = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const oc = new C(1, length, sr);
+  const out = oc.createGain();
+  out.gain.value = MASTER;
+  out.connect(oc.destination);
+  const noise = noiseBuffer(oc);
+  for (const e of events) hit(oc, out, noise, s.sound, e.kind, e.level, Math.round(e.t * sr) / sr);
+  return oc.startRendering();
+}
+
+/**
+ * Renders one looping cycle: every hit of {@link module:metronome.cycleEvents|cycleEvents},
+ * tails folded back onto the start.
+ * @param {number} sr
  * @param {module:metronome~MetroSettings} s
  * @returns {Promise.<{buf: AudioBuffer, len: number, marks: Array.<module:metronome~MetroMark>, samples: Array.<number>}>}
  */
 async function renderCycle(sr, s) {
   const cyc = cycleEvents(s);
   const len = Math.max(1, Math.round(cyc.duration * sr));
-  const extra = Math.round(TAIL * sr);
-  const C = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-  const oc = new C(1, len + extra, sr);
-  const out = oc.createGain();
-  out.gain.value = MASTER;
-  out.connect(oc.destination);
-  const noise = noiseBuffer(oc);
-  for (const e of cyc.events) hit(oc, out, noise, s.sound, e.kind, e.level, Math.round(e.t * sr) / sr);
-  const raw = await oc.startRendering();
+  const raw = await renderEvents(sr, cyc.events, s, len + Math.round(TAIL * sr));
   // Fold the tail past the end back onto the start: the loop is circular.
   const d = raw.getChannelData(0);
   const data = new Float32Array(len);
@@ -286,16 +309,11 @@ export function start() {
   running = true;
   updateSession();
   hooks.onChange();
-  apply();
+  apply(false);
 }
 
-/**
- * Stops the metronome and every scheduled source.
- */
-export function stop() {
-  if (!running) return;
-  running = false;
-  gen++;
+/** Stops every source, forgets the loop and the stream. */
+function teardown() {
   live.forEach((s) => {
     try {
       s.stop();
@@ -309,18 +327,41 @@ export function stop() {
   tl = null;
   marks = [];
   lastSwap = -Infinity;
+  if (stream) clearInterval(stream.timer);
+  stream = null;
+  mode = null;
+}
+
+/**
+ * Stops the metronome and every scheduled source.
+ */
+export function stop() {
+  if (!running) return;
+  running = false;
+  gen++;
+  teardown();
   updateSession();
   hooks.onChange();
 }
 
 /**
- * Renders the cycle with the current settings, then starts it or swaps it in.
- * A render overtaken by a newer one is dropped.
+ * Plays the current settings: a looping cycle, or a stream of bars (tempo
+ * ramp, random or growing silences, see {@link module:metronome.streams|streams}).
+ * Switching from one to the other restarts playback.
+ * @param {boolean} restart Start the session again (a ramp starts again from the tempo).
  */
-async function apply() {
+async function apply(restart) {
   const c = getAudioContext();
   if (!c) return;
   const g = ++gen;
+  const want = streams(settings) ? 'stream' : 'loop';
+  if (mode && mode !== want) teardown();
+  mode = want;
+  if (want === 'stream') {
+    if (!stream) startStream(c);
+    else replan(c, restart);
+    return topUp(g);
+  }
   const r = await renderCycle(c.sampleRate, settings);
   if (g !== gen || !running) return;
   if (!src) startLoop(c, r);
@@ -329,15 +370,16 @@ async function apply() {
 }
 
 /**
- * A looping source, connected to the speakers.
+ * A source, connected to the speakers.
  * @param {AudioContext} c
  * @param {AudioBuffer} buf
+ * @param {boolean} [loop=true]
  * @returns {AudioBufferSourceNode}
  */
-function source(c, buf) {
+function source(c, buf, loop = true) {
   const s = c.createBufferSource();
   s.buffer = buf;
-  s.loop = true;
+  s.loop = loop;
   s.connect(c.destination);
   live.add(s);
   s.onended = () => {
@@ -377,22 +419,209 @@ function swapLoop(c, r) {
   lastSwap = sp.at;
 }
 
+// ---------- Stream of bars (2.14) ----------
+
 /**
- * Beat sounding now, for the lights (read from the audio clock, output
+ * Rendered ahead while the page is visible (s): short, so that a change is
+ * re-rendered quickly.
+ */
+const AHEAD_VISIBLE = 12;
+/**
+ * Rendered ahead once the page is hidden (s). Chrome may then run timers
+ * only once a minute: more than a minute must already be scheduled.
+ */
+const AHEAD_HIDDEN = 80;
+/** Length of a rendered chunk (s), at least one bar. */
+const CHUNK = 4;
+/** Top-up period (ms). */
+const TOP_UP = 3000;
+
+/**
+ * Stream state.
+ * @typedef {Object} Stream
+ * @property {number} seed Seed of the random silences of this session.
+ * @property {number} nextBar Next bar to plan.
+ * @property {number} nextT Audio time where the next chunk starts.
+ * @property {number} elapsed Seconds of the session at `nextT`.
+ * @property {Array.<{src: AudioBufferSourceNode, t0: number, t1: number}>} chunks Scheduled chunks.
+ * @property {Array.<Object>} marks Pulse starts, absolute audio times, with a counter `k`.
+ * @property {Array.<{t: number, bar: number, elapsed: number}>} bars Bar starts.
+ * @property {?number} endAt Audio time of the end (ramp ending with "stop").
+ * @property {number} count Pulse counter (for `k`).
+ * @property {number} busy Generation of the top-up running.
+ * @property {number} timer Top-up interval.
+ */
+
+/** @type {?Stream} */
+let stream = null;
+/** @type {?('loop'|'stream')} */
+let mode = null;
+
+/**
+ * Starts a stream, a little ahead so the first click is whole.
+ * @param {AudioContext} c
+ */
+function startStream(c) {
+  const at = c.currentTime + 0.1;
+  startAt = at;
+  stream = {
+    seed: (Math.random() * 2 ** 31) | 0,
+    nextBar: 0,
+    nextT: at,
+    elapsed: 0,
+    chunks: [],
+    marks: [],
+    bars: [],
+    endAt: null,
+    count: 0,
+    busy: -1,
+    timer: setInterval(() => topUp(gen), TOP_UP),
+  };
+}
+
+/**
+ * Settings changed while streaming: what is scheduled after the next bar
+ * line is dropped, and the stream goes on from there with the new settings.
+ * @param {AudioContext} c
+ * @param {boolean} restart Start the session again from that bar line.
+ */
+function replan(c, restart) {
+  const limit = c.currentTime + LEAD;
+  const next = stream.bars.find((b) => b.t >= limit);
+  const cut = next ? next.t : stream.nextT;
+  for (const ch of stream.chunks) {
+    if (ch.t0 >= cut) ch.src.stop();
+    else if (ch.t1 > cut) ch.src.stop(cut);
+  }
+  stream.chunks = stream.chunks.filter((ch) => ch.t0 < cut);
+  stream.marks = stream.marks.filter((m) => m.t < cut);
+  stream.bars = stream.bars.filter((b) => b.t < cut);
+  stream.nextT = cut;
+  stream.nextBar = restart ? 0 : next ? next.bar : stream.nextBar;
+  stream.elapsed = restart ? 0 : next ? next.elapsed : stream.elapsed;
+  stream.endAt = null;
+}
+
+/**
+ * Renders and schedules chunks until enough is ahead. A top-up overtaken by
+ * a newer generation (settings changed) drops its result.
+ * @param {number} g Generation.
+ */
+async function topUp(g) {
+  const c = getAudioContext();
+  if (!c || !stream || stream.busy === g) return;
+  stream.busy = g;
+  const sr = c.sampleRate;
+  while (running && g === gen && stream && stream.endAt === null) {
+    const ahead = document.hidden ? AHEAD_HIDDEN : AHEAD_VISIBLE;
+    if (stream.nextT >= c.currentTime + ahead) break;
+    // Plan bars until the chunk is long enough.
+    const plans = [];
+    const bars = [];
+    let dur = 0;
+    let bar = stream.nextBar;
+    let elapsed = stream.elapsed;
+    while (dur < CHUNK && plans.length < 64) {
+      const p = planBar(settings, bar, elapsed, stream.seed);
+      if (!p) break;
+      bars.push({ t: stream.nextT + dur, bar, elapsed });
+      const d = settings.num * pulseSeconds(settings, p.tempo);
+      plans.push(p);
+      dur += d;
+      elapsed += d;
+      bar++;
+    }
+    if (!plans.length) {
+      endStream(c);
+      break;
+    }
+    const ch = chunkEvents(settings, plans, stream.nextBar);
+    const buf = await renderEvents(sr, ch.events, settings, Math.round((ch.duration + TAIL) * sr));
+    if (g !== gen || !running || !stream) return;
+    const t0 = stream.nextT;
+    const node = source(c, buf, false);
+    // A late render still lands on the grid: started with the right offset.
+    if (t0 >= c.currentTime) node.start(t0);
+    else node.start(c.currentTime, c.currentTime - t0);
+    stream.chunks.push({ src: node, t0, t1: t0 + ch.duration });
+    for (const m of ch.marks) stream.marks.push({ ...m, t: t0 + m.t, k: stream.count++ });
+    stream.bars.push(...bars);
+    stream.nextT = t0 + ch.duration;
+    stream.nextBar = bar;
+    stream.elapsed = elapsed;
+    prune(c);
+  }
+  if (stream && stream.busy === g) stream.busy = -1;
+}
+
+/**
+ * The session is over (ramp ending with "stop"): the metronome stops once the
+ * last bar has sounded.
+ * @param {AudioContext} c
+ */
+function endStream(c) {
+  stream.endAt = stream.nextT;
+  const at = stream.endAt;
+  setTimeout(
+    () => {
+      if (running && stream && stream.endAt === at) stop();
+    },
+    Math.max(0, (at - c.currentTime) * 1000) + 200,
+  );
+}
+
+/**
+ * Forgets what has already sounded (keeps a little for the lights).
+ * @param {AudioContext} c
+ */
+function prune(c) {
+  const old = c.currentTime - 2;
+  stream.chunks = stream.chunks.filter((ch) => ch.t1 > old);
+  const keep = (arr) => {
+    const i = arr.findIndex((x) => x.t > old);
+    return i > 1 ? arr.slice(i - 1) : arr;
+  };
+  stream.marks = keep(stream.marks);
+  stream.bars = keep(stream.bars);
+}
+
+// Hidden page: schedule more ahead right away (timers may slow down).
+document.addEventListener('visibilitychange', () => {
+  if (running && stream) topUp(gen);
+});
+
+/**
+ * Pulse sounding now, for the lights (read from the audio clock, output
  * latency included).
- * @returns {?{k: number, beat: number, bar: number, level: number}} `k`:
- *   global beat count (changes on every beat); `null` when nothing sounds yet.
+ * @returns {?{k: number, beat: number, bar: number, level: number, silent: boolean, tempo: number}}
+ *   `k`: pulse counter (changes on every pulse); `bar`: bar index (in the
+ *   cycle, or since the start of a stream); `null` when nothing sounds yet.
  */
 export function position() {
-  if (!running || !tl || !marks.length) return null;
+  if (!running) return null;
   const c = getAudioContext();
   if (!c) return null;
   const now = c.currentTime - (c.outputLatency || 0);
   if (now < startAt) return null;
+  if (mode === 'stream') {
+    if (!stream || !stream.marks.length) return null;
+    const ms = stream.marks;
+    let lo = 0;
+    let hi = ms.length - 1;
+    if (ms[0].t > now) return null;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (ms[mid].t <= now) lo = mid;
+      else hi = mid - 1;
+    }
+    const m = ms[lo];
+    return { k: m.k, beat: m.beat, bar: m.bar, level: m.level, silent: m.silent, tempo: m.tempo };
+  }
+  if (!tl || !marks.length) return null;
   const k = beatAt(tl, now);
   const n = tl.marks.length;
   const m = marks[((k % n) + n) % n];
-  return m ? { k, beat: m.beat, bar: m.bar, level: m.level } : null;
+  return m ? { k, beat: m.beat, bar: m.bar, level: m.level, silent: m.silent, tempo: m.tempo } : null;
 }
 
 /** Media Session: lock-screen texts and playing state. */

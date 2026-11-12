@@ -115,7 +115,9 @@ test('time signature page: menus, groups, shortcuts, tempo unit', async ({ page 
   await expect(page.locator('[data-msub]')).toHaveCount(0); // no subdivision in /8
 });
 
-test('subdivision page: per-click bars and swing; jazz page', async ({ page }) => {
+test('subdivision page: per-click bars and swing; jazz once per bar with silences 1 + 1', async ({
+  page,
+}) => {
   await openApp(page);
   await page.click('[data-metro-open]');
   await goPage(page, 'subdiv');
@@ -131,9 +133,15 @@ test('subdivision page: per-click bars and swing; jazz page', async ({ page }) =
 
   await goPage(page, 'jazz');
   await page.check('input[data-k="jazz"][value="once"]');
-  await page.check('[data-k="twoBars"]');
+  await expect(page.locator('[data-k="twoBars"]')).toHaveCount(0); // now in Silences
   await page.click('[data-m="back"]');
   await expect(row(page, 'jazz')).toHaveText('1 fois par mesure');
+  await goPage(page, 'gap');
+  await page.check('input[data-k="gapMode"][value="bars"]');
+  await page.selectOption('[data-k="gap.on"]', '1');
+  await page.selectOption('[data-k="gap.off"]', '1');
+  await page.click('[data-m="back"]');
+  await expect(row(page, 'gap')).toHaveText('1 + 1');
   await page.click('.metro-play');
   // Two bars of 4/4 at 120: a 4 s cycle.
   await expect.poll(() => page.evaluate(() => window.__renders.at(-1))).toBeGreaterThan(4);
@@ -297,4 +305,54 @@ test.describe('English', () => {
     await page.click('[data-m="presets"]');
     await expect(page.locator('#mpSave button')).toHaveText('Save');
   });
+});
+
+test('random silences: bars rendered ahead, chunk after chunk; lights in grey', async ({ page }) => {
+  await openApp(page);
+  await page.click('[data-metro-open]');
+  await steps(page, 1, 5); // 125
+  await goPage(page, 'gap');
+  await page.check('input[data-k="gapMode"][value="random"]');
+  await page.selectOption('[data-k="gap.pct"]', '90');
+  await page.click('[data-m="back"]');
+  await expect(row(page, 'gap')).toHaveText('Hasard 90 %');
+  await page.click('.metro-play');
+  // 12 s ahead in chunks of about 4 s: several renders, none of them a loop.
+  await expect.poll(() => page.evaluate(() => window.__renders.length)).toBeGreaterThan(2);
+  await expect(page.locator('#mBeats.silent-bar')).toHaveCount(1, { timeout: 5000 });
+  // A change while streaming: playback goes on (from the next bar line).
+  await page.click('[data-mbar="0"]');
+  await expect(page.locator('[data-mbar].on')).toHaveCount(1, { timeout: 4000 });
+  await page.click('.metro-play');
+  await expect(page.locator('.metro-play')).not.toHaveClass(/on/);
+});
+
+test('tempo ramp: the number follows, then the metronome stops at the end', async ({ page }) => {
+  await openApp(page);
+  await page.click('[data-metro-open]');
+  await goPage(page, 'meter');
+  await page.selectOption('[data-k="shortcut"]', { label: '2/4' });
+  await page.click('[data-m="back"]');
+  // 300 BPM: drag the number up.
+  const box = await page.locator('#mTempo').boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2 - 6 * 180, { steps: 20 });
+  await page.mouse.up();
+  await expect(page.locator('#mTempoVal')).toHaveText('300');
+  await goPage(page, 'ramp');
+  await page.check('[data-k="rampOn"]');
+  await page.selectOption('[data-k="ramp.to"]', '320');
+  await page.selectOption('[data-k="ramp.step"]', '10');
+  await page.selectOption('[data-k="ramp.every"]', '1');
+  await page.selectOption('[data-k="ramp.end"]', 'stop');
+  await expect(page.locator('.mhint').last()).toHaveText('300 → 320 en 3 mesures');
+  await page.click('[data-m="back"]');
+  await expect(row(page, 'ramp')).toHaveText('300 → 320');
+  await expect(page.locator('.mramp')).toBeVisible();
+  await page.click('.metro-play');
+  await expect(page.locator('#mTempoVal')).toHaveText('320', { timeout: 4000 });
+  // Three bars of 2/4 (about 1.2 s), then it stops; the tempo is back at the start.
+  await expect(page.locator('.metro-play')).not.toHaveClass(/on/, { timeout: 5000 });
+  await expect(page.locator('#mTempoVal')).toHaveText('300');
 });

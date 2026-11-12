@@ -84,7 +84,12 @@ import {
   presetPart,
   applyPreset,
   cleanPresetName,
-  cycleBars,
+  GAP_MODES,
+  GROW_MINUTES,
+  RAMP_ENDS,
+  TEMPO_MIN,
+  TEMPO_MAX,
+  rampBars,
 } from '../metronome.js';
 import * as engine from '../metro-engine.js';
 import { openOverlay, closeOverlay } from './nav.js';
@@ -94,7 +99,7 @@ import { confirmTap } from './common.js';
 const SUB_KEYS = { none: 'none', 8: 's8', 3: 's3', 16: 's16', 8.16: 's816' };
 
 /** Sub-pages of the sheet, in the order of the rows. */
-const PAGES = ['meter', 'subdiv', 'sound', 'jazz', 'options'];
+const PAGES = ['meter', 'subdiv', 'sound', 'jazz', 'gap', 'ramp', 'options'];
 
 /** Tempo drag: pixels per BPM. */
 const DRAG_PX = 6;
@@ -178,17 +183,26 @@ function setTempo(bpm, persist = true) {
   const mark = sheet.querySelector('#mMark');
   if (mark) mark.textContent = tempoMarking(v);
   const mt = mini.querySelector('.mm-tempo');
-  if (mt) mt.textContent = `${unitGlyph(s)} ${v}`;
-  scheduleConfigure();
+  if (mt) mt.textContent = `${s.ramp.on ? '\u2934 ' : ''}${unitGlyph(s)} ${v}`;
+  // During a ramp, a tempo set by hand starts the ramp again from there.
+  scheduleConfigure(s.ramp.on);
   if (persist) setMeta({ metro: s });
 }
 
-/** Hands the settings to the engine, at most every 60 ms (drags, sliders). */
-function scheduleConfigure() {
+/** A change waiting for {@link scheduleConfigure} asks to start the session again. */
+let pendingRestart = false;
+
+/**
+ * Hands the settings to the engine, at most every 60 ms (drags, sliders).
+ * @param {boolean} [restart=false] Start the session again (see {@link module:metro-engine.configure|configure}).
+ */
+function scheduleConfigure(restart = false) {
+  pendingRestart = pendingRestart || restart;
   if (configTimer) return;
   configTimer = setTimeout(() => {
     configTimer = 0;
-    engine.configure(s);
+    engine.configure(s, { restart: pendingRestart });
+    pendingRestart = false;
   }, 60);
 }
 
@@ -281,7 +295,7 @@ function barHtml(attr, v, label, cls = '') {
  * @returns {string}
  */
 function barsHtml(opt = {}) {
-  const levels = s.jazz === 'off' ? s.levels : pulseLevels(s, 0);
+  const levels = s.jazz === 'off' ? s.levels : pulseLevels(s);
   const heads = new Set(groupHeads(s.groups));
   const sc = opt.subs ? subCount(s.subdiv) : 0;
   let html = '';
@@ -338,6 +352,15 @@ function rowValue(page) {
       return t('metro.sounds.' + s.sound);
     case 'jazz':
       return t(s.jazz === '24' ? 'metro.jazz24' : s.jazz === 'once' ? 'metro.jazzOnce' : 'metro.jazzOff');
+    case 'gap':
+      if (s.gap.mode === 'bars') return `${s.gap.on} + ${s.gap.off}`;
+      if (s.gap.mode === 'random')
+        return `${t('metro.gapModes.random')} ${t('metro.pctN', { n: s.gap.pct })}`;
+      if (s.gap.mode === 'grow')
+        return `${t('metro.pctN', { n: s.gap.from })} → ${t('metro.pctN', { n: s.gap.to })}`;
+      return t('metro.gapModes.off');
+    case 'ramp':
+      return s.ramp.on ? `${s.tempo} → ${s.ramp.to}` : t('metro.optionsNone');
     default: {
       const on = ['vibrate', 'flash', 'wake'].filter((k) => s[k]).map((k) => t('metro.' + k));
       return on.length ? on.join(', ') : t('metro.optionsNone');
@@ -365,6 +388,7 @@ ${barsHtml()}
 <div class="metro-tempo" id="mTempo" role="button" tabindex="0" aria-label="${esc(t('metro.tempoZone'))}"><span class="mt-unit">${unitGlyph(s)} =</span> <span id="mTempoVal" class="mt-val">${s.tempo}</span><div id="mMark" class="mt-mark">${esc(tempoMarking(s.tempo))}</div></div>
 <div class="metro-steps">${step(-1)}${step(1)}</div>
 </div>
+${s.ramp.on ? `<div class="mramp" aria-hidden="true"><span>&#10548; <span class="mglyph">${unitGlyph(s)}</span> ${s.tempo} → ${s.ramp.to}</span><span class="mramp-bar"><span id="mRampFill"></span></span></div>` : ''}
 <ul class="mlist">${rows}</ul>
 <button type="button" class="btn primary metro-play${on ? ' on' : ''}" data-m="play">${on ? '&#9632; ' + esc(t('metro.stop')) : '&#9654; ' + esc(t('metro.start'))}</button>
 </div>`;
@@ -475,7 +499,7 @@ function jazzBody() {
       { length: s.num },
       (_, i) => `<option value="${i}"${i === s.onceBeat ? ' selected' : ''}>${i + 1}</option>`,
     ).join('');
-    html += `<div class="metro-rows"><label class="mrow"><span class="mlbl">${esc(t('metro.onceBeat'))}</span><select data-k="onceBeat">${onceOpts}</select></label><label class="mcheck"><input type="checkbox" data-k="twoBars"${s.twoBars ? ' checked' : ''}> ${esc(t('metro.twoBars'))}</label></div>`;
+    html += `<div class="metro-rows"><label class="mrow"><span class="mlbl">${esc(t('metro.onceBeat'))}</span><select data-k="onceBeat">${onceOpts}</select></label></div><p class="mhint">${esc(t('metro.onceHint'))}</p>`;
   }
   return html;
 }
@@ -493,12 +517,91 @@ function optionsBody() {
     .join('')}</ul>`;
 }
 
+/**
+ * A labelled menu of numbers.
+ * @param {string} k `data-k` of the menu.
+ * @param {string} label
+ * @param {Array.<number>} values
+ * @param {number} value Selected value.
+ * @param {function(number): string} [fmt] Shown text of each value.
+ * @returns {string}
+ */
+function numberMenu(k, label, values, value, fmt = String) {
+  return `<label class="mrow mrow-inline"><span class="mlbl">${esc(label)}</span><select data-k="${k}">${values
+    .map((v) => `<option value="${v}"${v === value ? ' selected' : ''}>${esc(fmt(v))}</option>`)
+    .join('')}</select></label>`;
+}
+
+/**
+ * Integers from `a` to `b` by `step`.
+ * @param {number} a
+ * @param {number} b
+ * @param {number} [step=1]
+ * @returns {Array.<number>}
+ */
+const range = (a, b, step = 1) =>
+  Array.from({ length: Math.floor((b - a) / step) + 1 }, (_, i) => a + i * step);
+
+/**
+ * Silences page: the four modes, and the settings of the chosen one.
+ * @returns {string}
+ */
+function gapBody() {
+  const g = s.gap;
+  const pct = (n) => t('metro.pctN', { n });
+  let html = choiceList(
+    'gapMode',
+    GAP_MODES.map((m) => ({ v: m, label: t('metro.gapModes.' + m) })),
+    g.mode,
+  );
+  let rows = '';
+  if (g.mode === 'bars')
+    rows =
+      numberMenu('gap.on', t('metro.gapOn'), range(1, 8), g.on) +
+      numberMenu('gap.off', t('metro.gapOff'), range(1, 8), g.off);
+  if (g.mode === 'random') rows = numberMenu('gap.pct', t('metro.gapPct'), range(10, 90, 10), g.pct, pct);
+  if (g.mode === 'grow')
+    rows =
+      numberMenu('gap.from', t('metro.gapFrom'), range(0, 80, 10), g.from, pct) +
+      numberMenu('gap.to', t('metro.gapTo'), range(g.from + 10, 90, 10), g.to, pct) +
+      numberMenu('gap.minutes', t('metro.gapMinutes'), GROW_MINUTES.slice(), g.minutes, (n) =>
+        t('metro.minutesN', { n }),
+      );
+  if (rows) html += `<div class="metro-rows">${rows}</div>`;
+  return html + `<p class="mhint">${esc(t('metro.gapHint'))}</p>`;
+}
+
+/**
+ * Tempo ramp page: switch, target, step, bars per step, end, summary.
+ * @returns {string}
+ */
+function rampBody() {
+  const r = s.ramp;
+  const up = r.to >= s.tempo;
+  const html = `<ul class="mlist mchoices"><li><label class="mitem"><span class="mitem-lbl">${esc(t('metro.rampOn'))}<small>${esc(t('metro.rampOnHint'))}</small></span><input type="checkbox" class="switch" data-k="rampOn"${r.on ? ' checked' : ''}></label></li></ul>
+<div class="metro-rows${r.on ? '' : ' dim'}">
+<div class="mrow mrow-inline"><span class="mlbl">${esc(t('metro.rampFrom'))}</span><strong><span class="mglyph">${unitGlyph(s)}</span> ${s.tempo}</strong></div>
+${numberMenu('ramp.to', t('metro.rampTo'), range(TEMPO_MIN, TEMPO_MAX), r.to)}
+${numberMenu('ramp.step', t('metro.rampStep'), range(1, 20), r.step, (n) => (up ? '+' : '−') + n)}
+${numberMenu('ramp.every', t('metro.rampEvery'), range(1, 16), r.every, (n) => t('metro.barsN', { n }))}
+<label class="mrow mrow-inline"><span class="mlbl">${esc(t('metro.rampEnd'))}</span><select data-k="ramp.end">${RAMP_ENDS.map(
+    (e) => `<option value="${e}"${e === r.end ? ' selected' : ''}>${esc(t('metro.rampEnds.' + e))}</option>`,
+  ).join('')}</select></label>
+</div>`;
+  return (
+    html +
+    `<p class="mhint">${esc(t('metro.rampSummary', { a: s.tempo, b: r.to, bars: t('metro.barsN', { n: rampBars(s) }) }))}</p>`
+  );
+}
+
 /** Content of each sub-page. */
 const PAGE_BODIES = {
   meter: meterBody,
   subdiv: subdivBody,
   sound: soundBody,
   jazz: jazzBody,
+  gap: gapBody,
+  ramp: rampBody,
   options: optionsBody,
 };
 
@@ -558,12 +661,12 @@ function renderMini() {
   const show = engine.isRunning() && !sheetOpen;
   mini.hidden = !show;
   if (show) {
-    const lv = pulseLevels(s, 0);
+    const lv = pulseLevels(s);
     const beats =
       s.num <= MINI_DOTS_MAX
         ? `<span class="mm-beats" id="mmBeats">${lv.map((v) => `<span class="mm-dot lv${v}"></span>`).join('')}</span>`
         : `<span class="mm-count" id="mmCount">1/${s.num}</span>`;
-    mini.innerHTML = `<div class="mm-in">${beats}<button type="button" class="btn icon-btn" data-m="minus" aria-label="${esc(t('metro.stepN', { n: '-1' }))}">&minus;</button><span class="mm-tempo">${unitGlyph(s)} ${s.tempo}</span><button type="button" class="btn icon-btn" data-m="plus" aria-label="${esc(t('metro.stepN', { n: '+1' }))}">+</button><span class="mm-meter">${esc(meterLabel(s))}</span><span class="grow"></span><button type="button" class="btn icon-btn" data-m="stop" aria-label="${esc(t('metro.stop'))}">&#9632;</button><button type="button" class="btn icon-btn" data-m="open" aria-label="${esc(t('metro.expand'))}">&#x2303;</button></div>`;
+    mini.innerHTML = `<div class="mm-in">${beats}<button type="button" class="btn icon-btn" data-m="minus" aria-label="${esc(t('metro.stepN', { n: '-1' }))}">&minus;</button><span class="mm-tempo">${s.ramp.on ? '&#10548; ' : ''}${unitGlyph(s)} ${s.tempo}</span><button type="button" class="btn icon-btn" data-m="plus" aria-label="${esc(t('metro.stepN', { n: '+1' }))}">+</button><span class="mm-meter">${esc(meterLabel(s))}</span><span class="grow"></span><button type="button" class="btn icon-btn" data-m="stop" aria-label="${esc(t('metro.stop'))}">&#9632;</button><button type="button" class="btn icon-btn" data-m="open" aria-label="${esc(t('metro.expand'))}">&#x2303;</button></div>`;
     lastK = null;
   }
   document.documentElement.style.setProperty('--metro-h', show ? mini.offsetHeight + 'px' : '0px');
@@ -576,7 +679,7 @@ function renderMini() {
  * @param {?{k: number, beat: number, bar: number, level: number}} p
  */
 function paintLights(p) {
-  const silent = !!p && p.bar === 1 && cycleBars(s) === 2;
+  const silent = !!p && p.silent;
   for (const [box, sel] of [
     [sheet.querySelector('#mBeats'), '[data-mbar]'],
     [mini.querySelector('#mmBeats'), '.mm-dot'],
@@ -587,6 +690,25 @@ function paintLights(p) {
   }
   const count = mini.querySelector('#mmCount');
   if (count && p) count.textContent = `${p.beat + 1}/${s.num}`;
+  if (p && s.ramp.on) showRamp(p);
+}
+
+/**
+ * During a ramp: the tempo playing now (the big number and the mini-bar),
+ * and the progress of the ramp.
+ * @param {{bar: number, tempo: number}} p
+ */
+function showRamp(p) {
+  const val = sheet.querySelector('#mTempoVal');
+  if (val) val.textContent = String(p.tempo);
+  const mt = mini.querySelector('.mm-tempo');
+  if (mt) mt.textContent = `\u2934 ${unitGlyph(s)} ${p.tempo}`;
+  const fill = /** @type {HTMLElement} */ (sheet.querySelector('#mRampFill'));
+  if (fill) {
+    const total = rampBars(s);
+    const done = s.ramp.end === 'loop' ? p.bar % total : Math.min(p.bar, total);
+    fill.style.width = `${Math.round((100 * done) / total)}%`;
+  }
 }
 
 /** Animation loop: lights, and vibration / flash on each new audible pulse. */
@@ -598,7 +720,7 @@ function loop() {
     const first = lastK === null;
     lastK = p.k;
     paintLights(p);
-    if (!first && p.level) {
+    if (!first && p.level && !p.silent) {
       if (s.vibrate && navigator.vibrate) navigator.vibrate(p.level === LEVEL_MAX ? 45 : 25);
       if (s.flash) {
         flashEl.classList.remove('go', 'strong');
@@ -651,7 +773,7 @@ function togglePlay() {
  */
 function editableLevels() {
   if (s.jazz === 'off') return s.levels.slice();
-  return pulseLevels(s, 0).map((v) => (v > 0 ? v : -3));
+  return pulseLevels(s).map((v) => (v > 0 ? v : -3));
 }
 
 /**
@@ -778,7 +900,11 @@ function onChange(e) {
   const k = el.dataset.k;
   if (k === 'sound' || k === 'jazz') return update({ [k]: el.value });
   if (k === 'onceBeat') return update({ onceBeat: Number(el.value) });
-  if (k === 'twoBars') return update({ twoBars: el.checked });
+  if (k === 'gapMode') return update({ gap: { ...s.gap, mode: el.value } });
+  if (k && k.startsWith('gap.')) return update({ gap: { ...s.gap, [k.slice(4)]: Number(el.value) } });
+  if (k === 'rampOn') return update({ ramp: { ...s.ramp, on: el.checked } });
+  if (k === 'ramp.end') return update({ ramp: { ...s.ramp, end: el.value } });
+  if (k && k.startsWith('ramp.')) return update({ ramp: { ...s.ramp, [k.slice(5)]: Number(el.value) } });
   if (k === 'vibrate' || k === 'flash' || k === 'wake') {
     update({ [k]: el.checked });
     return syncWake();

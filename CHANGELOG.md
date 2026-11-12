@@ -4,6 +4,27 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.14.0] - 2026-11-12
+
+### Added
+
+- **Metronome: Silences**, to work on the inner tempo. The click stops, you keep going alone, and when it comes back you hear whether you drifted. Four modes on the new Silences page:
+  - **Off**;
+  - **Whole bars**: X bars with click, Y without (1 to 8 each);
+  - **Random**: 10 to 90 % of the pulses silenced at random (a silenced pulse takes its subdivisions with it);
+  - **Growing**: random silences going from one share to another (0 % to 70 %…) over 1 to 30 minutes, then staying there.
+    The lights go on in grey during the silence.
+- **Metronome: Tempo ramp** (speed trainer), on the new Ramp page: from the tempo of the main page to a target, by steps (+4 every 4 bars…), going up or down. At the end: stay at the target, start again, or stop. During the ramp, the big number and the mini-bar show the tempo playing, with a progress bar on the main page. Setting the tempo by hand starts the ramp again from there.
+- Silences and ramp can be combined.
+
+### Changed
+
+- "Every other bar" leaves the Jazz page: "once per bar" plus Silences 1 + 1 does the same. Settings saved with it are converted.
+
+### Technical
+
+- The engine still loops one pre-rendered cycle when it can (whole-bar silences included). With a ramp or random silences, every bar differs: it plans the bars (`planBar`) and renders them by chunks of about 4 s, scheduled at exact audio times, 12 s ahead while the page is visible and 80 s once hidden (Chrome may then run timers only once a minute). A change drops what comes after the next bar line and plans again from there.
+
 ## [2.13.0] - 2026-11-11
 
 ### Changed

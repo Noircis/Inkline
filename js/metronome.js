@@ -1,7 +1,7 @@
 /**
  * @module metronome
  * @description
- * **Metronome** (2.11, free time signatures 2.12): settings, validation and
+ * **Metronome** (2.11, free time signatures 2.12, silences and tempo ramp 2.14): settings, validation and
  * the sounds of one cycle. Pure functions, tested under Node. The audio
  * engine is {@link module:metro-engine|metro-engine}, the interface
  * {@link module:ui/metronome|ui/metronome}.
@@ -25,19 +25,27 @@
  * The tempo counts pulses (♪ = 280 in 7/8), or groups when all groups have
  * the same length and that length is a note value (♩. = 80 in 6/8).
  *
- * ## One cycle
+ * ## One cycle, or a stream of bars
  *
- * The engine plays one pre-rendered **cycle** in a loop: one bar, or two in
- * the "every other bar" jazz mode (the second bar is silent).
- * {@link cycleEvents} lists its sounds with their times and levels, and the
- * pulse starts used by the lights.
+ * Usually the engine plays one pre-rendered **cycle** in a loop: one bar, or
+ * `on + off` bars when whole bars are silenced ({@link cycleEvents}). When
+ * every bar may differ (tempo ramp, random or growing silences), it renders
+ * the bars a little ahead, chunk after chunk, from {@link planBar}.
  *
  * ## Jazz modes
  *
  * They replace the pulse levels while they are on:
  * - **2 and 4**: only pulses 2 and 4 click (even number of beats, /2 or /4);
- * - **once per bar**: a single pulse clicks (the first by default),
- *   optionally every other bar only.
+ * - **once per bar**: a single pulse clicks (the first by default). For
+ *   "every other bar", combine it with the silences (1 bar with, 1 without).
+ *
+ * ## Silences and tempo ramp (2.14)
+ *
+ * - **Silences**, to work on the inner tempo: whole bars (2 with click, 2
+ *   without…), pulses silenced at random (10 to 90 %), or random silences
+ *   that grow over the session. The lights go on during the silence.
+ * - **Tempo ramp**: from the tempo of the main page to a target, by steps
+ *   (+4 every 4 bars…); at the end, stay, start again or stop.
  */
 
 /** Tempo bounds (beats per minute). */
@@ -109,7 +117,8 @@ export const SHORTCUTS = Object.freeze([
  * @property {string} sound One of {@link SOUNDS}.
  * @property {string} jazz One of {@link JAZZ}.
  * @property {number} onceBeat Pulse that clicks in "once per bar" mode (from 0).
- * @property {boolean} twoBars "Once per bar" mode: every other bar only.
+ * @property {GapSettings} gap Silences (2.14).
+ * @property {RampSettings} ramp Tempo ramp (2.14).
  * @property {boolean} vibrate Vibrate on each audible pulse.
  * @property {boolean} flash Full-screen flash on each audible pulse.
  * @property {boolean} wake Keep the screen on while playing.
@@ -375,37 +384,26 @@ export function audible(v) {
 }
 
 /**
- * Effective level of each pulse of bar `bar`, jazz modes applied.
+ * Effective level of each pulse, jazz modes applied (silences are not).
  * @param {MetroSettings} s
- * @param {number} [bar=0] 0, or 1 for the second bar of a two-bar cycle.
  * @returns {Array.<number>} 0 to 4.
  */
-export function pulseLevels(s, bar = 0) {
+export function pulseLevels(s) {
   if (s.jazz === '24' && canTwoFour(s)) return Array.from({ length: s.num }, (_, i) => (i % 2 ? 4 : 0));
-  if (s.jazz === 'once') {
-    if (s.twoBars && bar === 1) return Array(s.num).fill(0);
+  if (s.jazz === 'once')
     return Array.from({ length: s.num }, (_, i) => (i === Math.min(s.onceBeat, s.num - 1) ? 4 : 0));
-  }
   return s.levels.map(audible);
 }
 
 /**
- * Number of bars in a cycle: 2 in "once per bar, every other bar" mode.
+ * Duration of a pulse (s) at a tempo.
  * @param {MetroSettings} s
+ * @param {number} [tempo=s.tempo]
  * @returns {number}
  */
-export function cycleBars(s) {
-  return s.jazz === 'once' && s.twoBars ? 2 : 1;
-}
-
-/**
- * Duration of a pulse (s).
- * @param {MetroSettings} s
- * @returns {number}
- */
-export function pulseSeconds(s) {
+export function pulseSeconds(s, tempo = s.tempo) {
   const per = s.unit === 'group' && canCountGroups(s) ? s.groups[0] : 1;
-  return 60 / s.tempo / per;
+  return 60 / tempo / per;
 }
 
 /**
@@ -429,9 +427,9 @@ function subOffsets(s) {
 }
 
 /**
- * A sound of the cycle.
+ * A sound.
  * @typedef {Object} MetroEvent
- * @property {number} t Time (s) from the start of the cycle.
+ * @property {number} t Time (s) from the start of the cycle (or chunk).
  * @property {'pulse'|'sub'} kind
  * @property {number} level 1 to 4.
  */
@@ -439,14 +437,202 @@ function subOffsets(s) {
 /**
  * Start of a pulse, for the lights.
  * @typedef {Object} MetroMark
- * @property {number} t Time (s) from the start of the cycle.
+ * @property {number} t Time (s) from the start of the cycle (or chunk).
  * @property {number} beat Pulse in the bar (from 0).
- * @property {number} bar Bar in the cycle (0 or 1).
- * @property {number} level Effective level (0 = silent).
+ * @property {number} bar Bar index (in the cycle, or since the start).
+ * @property {number} level Effective level (0 = silent by setting).
+ * @property {boolean} silent Silenced by the silence modes (2.14).
+ * @property {number} tempo Tempo of the bar (changes during a tempo ramp).
  */
 
 /**
- * Sounds and pulse starts of one cycle.
+ * What one bar plays: its tempo and which pulses are silenced.
+ * @typedef {Object} BarPlan
+ * @property {number} tempo
+ * @property {?Array.<boolean>} mute Silenced pulses (`null`: none).
+ */
+
+/**
+ * Sounds and pulse starts of one bar.
+ * @param {MetroSettings} s
+ * @param {BarPlan} plan
+ * @param {number} t0 Start time (s) of the bar.
+ * @param {number} bar Bar index stored in the marks.
+ * @param {Array.<MetroEvent>} events Filled.
+ * @param {Array.<MetroMark>} marks Filled.
+ * @returns {number} Duration of the bar (s).
+ */
+function barEvents(s, plan, t0, bar, events, marks) {
+  const p = pulseSeconds(s, plan.tempo);
+  const offs = subOffsets(s);
+  const levels = pulseLevels(s);
+  for (let i = 0; i < s.num; i++) {
+    const at = t0 + i * p;
+    const silent = !!(plan.mute && plan.mute[i]);
+    marks.push({ t: at, beat: i, bar, level: levels[i], silent, tempo: plan.tempo });
+    if (silent) continue; // a silenced pulse takes its subdivisions with it
+    if (levels[i]) events.push({ t: at, kind: 'pulse', level: levels[i] });
+    offs.forEach((f, k) => {
+      const lv = audible(s.subLevels[i * offs.length + k]);
+      if (lv) events.push({ t: at + f * p, kind: 'sub', level: lv });
+    });
+  }
+  return s.num * p;
+}
+
+// ---------- Silences and tempo ramp (2.14) ----------
+
+/**
+ * Silence modes: none; bars with and without click; pulses silenced at
+ * random; random silences growing over the session.
+ */
+export const GAP_MODES = Object.freeze(['off', 'bars', 'random', 'grow']);
+/** Ends of a tempo ramp: stay at the target, start again, stop. */
+export const RAMP_ENDS = Object.freeze(['stay', 'loop', 'stop']);
+/** Durations offered for growing silences (minutes). */
+export const GROW_MINUTES = Object.freeze([1, 2, 3, 5, 10, 15, 20, 30]);
+
+/**
+ * Silence settings.
+ * @typedef {Object} GapSettings
+ * @property {string} mode One of {@link GAP_MODES}.
+ * @property {number} on Bars with click (1 to 8), `bars` mode.
+ * @property {number} off Bars without click (1 to 8), `bars` mode.
+ * @property {number} pct Silenced pulses (%), 10 to 90, `random` mode.
+ * @property {number} from Silenced pulses at the start (%), 0 to 80, `grow` mode.
+ * @property {number} to Silenced pulses at the end (%), 10 to 90, `grow` mode.
+ * @property {number} minutes Time to go from `from` to `to`, `grow` mode.
+ */
+
+/**
+ * Tempo ramp settings. The ramp starts from the tempo of the main page.
+ * @typedef {Object} RampSettings
+ * @property {boolean} on
+ * @property {number} to Target tempo.
+ * @property {number} step BPM per step (1 to 20).
+ * @property {number} every Bars per step (1 to 16).
+ * @property {string} end One of {@link RAMP_ENDS}.
+ */
+
+/**
+ * Does the engine have to stream bars one by one (ramp, random silences),
+ * rather than loop one pre-rendered cycle?
+ * @param {MetroSettings} s
+ * @returns {boolean}
+ */
+export function streams(s) {
+  return s.ramp.on || s.gap.mode === 'random' || s.gap.mode === 'grow';
+}
+
+/**
+ * Number of tempo steps of the ramp (0 if it is off or already at the target).
+ * @param {MetroSettings} s
+ * @returns {number}
+ */
+export function rampSteps(s) {
+  if (!s.ramp.on) return 0;
+  return Math.ceil(Math.abs(s.ramp.to - s.tempo) / s.ramp.step);
+}
+
+/**
+ * Length of the ramp in bars, the last step (at the target) included.
+ * @example
+ * // 80 → 140, +4 every 4 bars: 15 steps, 64 bars
+ * @param {MetroSettings} s
+ * @returns {number}
+ */
+export function rampBars(s) {
+  return (rampSteps(s) + 1) * s.ramp.every;
+}
+
+/**
+ * Tempo of bar `i` (from 0) of a ramp; it goes down if the target is slower.
+ * @param {MetroSettings} s
+ * @param {number} i
+ * @returns {?number} `null` once the ramp has ended with "stop".
+ */
+export function rampTempo(s, i) {
+  if (!s.ramp.on) return s.tempo;
+  const total = rampBars(s);
+  if (i >= total) {
+    if (s.ramp.end === 'stop') return null;
+    if (s.ramp.end === 'loop') i %= total;
+    else return s.ramp.to;
+  }
+  const k = Math.min(rampSteps(s), Math.floor(i / s.ramp.every));
+  const dir = Math.sign(s.ramp.to - s.tempo);
+  const v = s.tempo + dir * k * s.ramp.step;
+  return dir > 0 ? Math.min(v, s.ramp.to) : Math.max(v, s.ramp.to);
+}
+
+/**
+ * Silenced share of the pulses (0 to 1) after `elapsed` seconds.
+ * @param {MetroSettings} s
+ * @param {number} elapsed
+ * @returns {number}
+ */
+export function gapShare(s, elapsed) {
+  const g = s.gap;
+  if (g.mode === 'random') return g.pct / 100;
+  if (g.mode !== 'grow') return 0;
+  const f = Math.min(1, elapsed / (g.minutes * 60));
+  return (g.from + (g.to - g.from) * f) / 100;
+}
+
+/**
+ * Small deterministic generator (mulberry32): the same seed gives the same
+ * silences, so a bar can be planned again identically.
+ * @param {number} seed
+ * @returns {function(): number}
+ */
+function rng(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let x = Math.imul(a ^ (a >>> 15), 1 | a);
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Plan of bar `i` of a session: tempo (ramp) and silenced pulses.
+ *
+ * - `bars`: the whole bar is silent when `i mod (on + off) >= on`;
+ * - `random` and `grow`: each pulse is silenced with the probability given
+ *   by {@link gapShare}, drawn from `seed` and `i` (reproducible).
+ *
+ * @param {MetroSettings} s
+ * @param {number} i Bar index since the start.
+ * @param {number} elapsed Seconds since the start, at the start of the bar.
+ * @param {number} seed
+ * @returns {?BarPlan} `null` when the session is over (ramp ending with "stop").
+ */
+export function planBar(s, i, elapsed, seed) {
+  const tempo = rampTempo(s, i);
+  if (tempo === null) return null;
+  const g = s.gap;
+  if (g.mode === 'bars') {
+    const silent = i % (g.on + g.off) >= g.on;
+    return { tempo, mute: silent ? Array(s.num).fill(true) : null };
+  }
+  const share = gapShare(s, elapsed);
+  if (!share) return { tempo, mute: null };
+  const next = rng(seed ^ Math.imul(i + 1, 0x9e3779b1));
+  return { tempo, mute: Array.from({ length: s.num }, () => next() < share) };
+}
+
+/**
+ * Number of bars in a looping cycle: on + off in `bars` silence mode, 1 otherwise.
+ * @param {MetroSettings} s
+ * @returns {number}
+ */
+export function cycleBars(s) {
+  return s.gap.mode === 'bars' ? s.gap.on + s.gap.off : 1;
+}
+
+/**
+ * Sounds and pulse starts of one looping cycle (no ramp, no random silences).
  *
  * @example
  * cycleEvents(sanitizeMetro({ tempo: 120 }))
@@ -455,26 +641,26 @@ function subOffsets(s) {
  * @returns {{duration: number, events: Array.<MetroEvent>, marks: Array.<MetroMark>}}
  */
 export function cycleEvents(s) {
-  const p = pulseSeconds(s);
-  const bars = cycleBars(s);
-  const offs = subOffsets(s);
+  return chunkEvents(
+    s,
+    Array.from({ length: cycleBars(s) }, (_, i) => planBar(s, i, 0, 0)),
+  );
+}
+
+/**
+ * Sounds and pulse starts of a series of planned bars, one after another.
+ * @param {MetroSettings} s
+ * @param {Array.<BarPlan>} plans
+ * @param {number} [firstBar=0] Index of the first bar (stored in the marks).
+ * @returns {{duration: number, events: Array.<MetroEvent>, marks: Array.<MetroMark>}}
+ */
+export function chunkEvents(s, plans, firstBar = 0) {
   const events = [];
   const marks = [];
-  for (let bar = 0; bar < bars; bar++) {
-    const levels = pulseLevels(s, bar);
-    for (let i = 0; i < s.num; i++) {
-      const at = (bar * s.num + i) * p;
-      marks.push({ t: at, beat: i, bar, level: levels[i] });
-      if (levels[i]) events.push({ t: at, kind: 'pulse', level: levels[i] });
-      if (bar === 1) continue; // the silent bar is fully silent
-      offs.forEach((f, k) => {
-        const lv = audible(s.subLevels[i * offs.length + k]);
-        if (lv) events.push({ t: at + f * p, kind: 'sub', level: lv });
-      });
-    }
-  }
+  let t0 = 0;
+  plans.forEach((plan, k) => (t0 += barEvents(s, plan, t0, firstBar + k, events, marks)));
   events.sort((a, b) => a.t - b.t);
-  return { duration: bars * s.num * p, events, marks };
+  return { duration: t0, events, marks };
 }
 
 // ---------- Validation ----------
@@ -493,7 +679,8 @@ export const METRO_DEFAULTS = Object.freeze({
   sound: 'click',
   jazz: 'off',
   onceBeat: 0,
-  twoBars: false,
+  gap: Object.freeze({ mode: 'off', on: 2, off: 2, pct: 30, from: 0, to: 70, minutes: 5 }),
+  ramp: Object.freeze({ on: false, to: 140, step: 4, every: 4, end: 'stay' }),
   vibrate: false,
   flash: false,
   wake: true,
@@ -526,6 +713,56 @@ function fromLegacy(o) {
   // 2.11 tempo counted dotted quarters in 6/8, 9/8, 12/8 and 3/8.
   const unit = d === 8 && groups.length && groups.every((g) => g === 3) ? 'group' : 'pulse';
   return { ...o, num: n, den: d, groups, levels, unit, subLevels: Array(n * subCount(o.subdiv)).fill(sub) };
+}
+
+/**
+ * Integer in bounds, or a default.
+ * @param {*} v
+ * @param {number} lo
+ * @param {number} hi
+ * @param {number} d
+ * @returns {number}
+ */
+const int = (v, lo, hi, d) => (Number.isInteger(v) && v >= lo && v <= hi ? v : d);
+
+/**
+ * Validates the silence settings.
+ * @param {*} r
+ * @param {boolean} twoBars 2.13 "once per bar, every other bar": becomes 1 bar with click, 1 without.
+ * @returns {GapSettings}
+ */
+function sanitizeGap(r, twoBars) {
+  const d = METRO_DEFAULTS.gap;
+  const o = r && typeof r === 'object' ? r : {};
+  if (twoBars && !r) return { ...d, mode: 'bars', on: 1, off: 1 };
+  const pct = (v, lo, hi, def) => (Number.isInteger(v) && v >= lo && v <= hi && v % 10 === 0 ? v : def);
+  const from = pct(o.from, 0, 80, d.from);
+  return {
+    mode: GAP_MODES.includes(o.mode) ? o.mode : 'off',
+    on: int(o.on, 1, 8, d.on),
+    off: int(o.off, 1, 8, d.off),
+    pct: pct(o.pct, 10, 90, d.pct),
+    from,
+    to: Math.max(from + 10, pct(o.to, 10, 90, d.to)),
+    minutes: GROW_MINUTES.includes(o.minutes) ? o.minutes : d.minutes,
+  };
+}
+
+/**
+ * Validates the tempo ramp settings.
+ * @param {*} r
+ * @returns {RampSettings}
+ */
+function sanitizeRamp(r) {
+  const d = METRO_DEFAULTS.ramp;
+  const o = r && typeof r === 'object' ? r : {};
+  return {
+    on: bool(o.on, d.on),
+    to: num(o.to) ? clampTempo(o.to) : d.to,
+    step: int(o.step, 1, 20, d.step),
+    every: int(o.every, 1, 16, d.every),
+    end: RAMP_ENDS.includes(o.end) ? o.end : d.end,
+  };
 }
 
 /**
@@ -569,7 +806,8 @@ export function sanitizeMetro(r) {
     sound: SOUNDS.includes(o.sound) ? o.sound : d.sound,
     jazz: JAZZ.includes(o.jazz) ? o.jazz : 'off',
     onceBeat: Number.isInteger(o.onceBeat) && o.onceBeat >= 0 && o.onceBeat < n ? o.onceBeat : 0,
-    twoBars: bool(o.twoBars, d.twoBars),
+    gap: sanitizeGap(o.gap, o.jazz === 'once' && o.twoBars === true),
+    ramp: sanitizeRamp(o.ramp),
     vibrate: bool(o.vibrate, d.vibrate),
     flash: bool(o.flash, d.flash),
     wake: bool(o.wake, d.wake),
@@ -696,7 +934,8 @@ const PRESET_FIELDS = [
   'sound',
   'jazz',
   'onceBeat',
-  'twoBars',
+  'gap',
+  'ramp',
 ];
 
 /**
@@ -706,7 +945,10 @@ const PRESET_FIELDS = [
  */
 export function presetPart(s) {
   const o = {};
-  PRESET_FIELDS.forEach((k) => (o[k] = Array.isArray(s[k]) ? s[k].slice() : s[k]));
+  PRESET_FIELDS.forEach(
+    (k) =>
+      (o[k] = Array.isArray(s[k]) ? s[k].slice() : s[k] && typeof s[k] === 'object' ? { ...s[k] } : s[k]),
+  );
   return o;
 }
 

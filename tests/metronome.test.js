@@ -32,6 +32,13 @@ import {
   applyPreset,
   presetPart,
   cleanPresetName,
+  planBar,
+  rampTempo,
+  rampBars,
+  rampSteps,
+  gapShare,
+  streams,
+  chunkEvents,
 } from '../js/metronome.js';
 
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} != ${b}`);
@@ -165,13 +172,22 @@ test('jazz 2 and 4: even number of beats in /2 or /4 only', () => {
   assert.deepEqual(pulseLevels({ ...s, jazz: 'off' }), [4, 3, 0, 3]);
 });
 
-test('jazz once per bar, and every other bar', () => {
+test('jazz once per bar; every other bar is now a silence of 1 + 1', () => {
   assert.deepEqual(pulseLevels(S({ jazz: 'once', onceBeat: 3 })), [0, 0, 0, 4]);
-  const two = cycleEvents(withSubdiv(S({ jazz: 'once', twoBars: true }), '8'));
+  const two = cycleEvents(withSubdiv(S({ jazz: 'once', gap: { mode: 'bars', on: 1, off: 1 } }), '8'));
   close(two.duration, 4);
   assert.equal(two.marks.length, 8);
   assert.ok(two.events.every((e) => e.t < 2)); // the silent bar is fully silent
-  close(cycleEvents(S({ twoBars: true })).duration, 2);
+  assert.ok(two.marks.slice(4).every((m) => m.silent));
+  // 2.13 "every other bar" becomes 1 bar with click, 1 without.
+  assert.deepEqual(
+    [
+      sanitizeMetro({ jazz: 'once', twoBars: true }).gap.mode,
+      sanitizeMetro({ jazz: 'once', twoBars: true }).gap.on,
+    ],
+    ['bars', 1],
+  );
+  assert.equal(sanitizeMetro({ twoBars: true }).gap.mode, 'off');
 });
 
 test('shortcuts fill the time signature and the groups', () => {
@@ -257,4 +273,89 @@ test('presets: validation, loading keeps the display options', () => {
   assert.equal(sanitizePresets('nope'), undefined);
   assert.equal(cleanPresetName('x'.repeat(80)).length, 40);
   assert.ok(!('vibrate' in presetPart(S())));
+});
+
+// ---------- 2.14: silences and tempo ramp ----------
+
+test('silences by whole bars: a cycle of on + off bars', () => {
+  const s = S({ gap: { mode: 'bars', on: 2, off: 2 } });
+  const c = cycleEvents(s);
+  close(c.duration, 8);
+  assert.equal(c.marks.length, 16);
+  assert.ok(c.events.every((e) => e.t < 4));
+  assert.deepEqual(
+    c.marks.map((m) => m.silent),
+    [...Array(8).fill(false), ...Array(8).fill(true)],
+  );
+  assert.ok(!streams(s)); // a plain loop, playable screen locked without any script
+});
+
+test('random silences: the share asked for, reproducible from the seed', () => {
+  const s = S({ gap: { mode: 'random', pct: 30 } });
+  assert.ok(streams(s));
+  let muted = 0;
+  for (let i = 0; i < 2000; i++) muted += planBar(s, i, 0, 7).mute.filter(Boolean).length;
+  const share = muted / 8000;
+  assert.ok(share > 0.27 && share < 0.33, String(share));
+  assert.deepEqual(planBar(s, 12, 0, 7), planBar(s, 12, 0, 7));
+  assert.notDeepEqual(
+    Array.from({ length: 20 }, (_, i) => planBar(s, i, 0, 7).mute),
+    Array.from({ length: 20 }, (_, i) => planBar(s, i, 0, 8).mute),
+  );
+});
+
+test('growing silences: from one share to another over the minutes chosen', () => {
+  const s = S({ gap: { mode: 'grow', from: 0, to: 80, minutes: 5 } });
+  close(gapShare(s, 0), 0);
+  close(gapShare(s, 150), 0.4);
+  close(gapShare(s, 300), 0.8);
+  close(gapShare(s, 9999), 0.8);
+  assert.equal(planBar(s, 0, 0, 1).mute, null);
+});
+
+test('a silenced pulse takes its subdivisions with it', () => {
+  const s = withSubdiv(S({ tempo: 60 }), '16');
+  const c = chunkEvents(s, [{ tempo: 60, mute: [false, true, false, true] }]);
+  assert.ok(c.events.every((e) => !(e.t >= 1 && e.t < 2) && !(e.t >= 3 && e.t < 4)));
+  assert.equal(c.events.length, 8); // 2 pulses × (1 + 3 subdivisions)
+});
+
+test('tempo ramp: steps, target, end', () => {
+  const s = S({ tempo: 80, ramp: { on: true, to: 140, step: 4, every: 4, end: 'stay' } });
+  assert.equal(rampSteps(s), 15);
+  assert.equal(rampBars(s), 64);
+  assert.deepEqual(
+    [0, 3, 4, 8, 59, 60, 63, 64, 500].map((i) => rampTempo(s, i)),
+    [80, 80, 84, 88, 136, 140, 140, 140, 140],
+  );
+  assert.equal(rampTempo({ ...s, ramp: { ...s.ramp, end: 'stop' } }, 64), null);
+  assert.equal(planBar({ ...s, ramp: { ...s.ramp, end: 'stop' } }, 64, 0, 0), null);
+  assert.equal(rampTempo({ ...s, ramp: { ...s.ramp, end: 'loop' } }, 68), 84);
+  // The last step never goes past the target; a slower target ramps down.
+  const odd = S({ tempo: 100, ramp: { on: true, to: 110, step: 4, every: 1 } });
+  assert.deepEqual(
+    [0, 1, 2, 3, 4].map((i) => rampTempo(odd, i)),
+    [100, 104, 108, 110, 110],
+  );
+  const down = S({ tempo: 120, ramp: { on: true, to: 100, step: 10, every: 2 } });
+  assert.deepEqual(
+    [0, 2, 4, 6].map((i) => rampTempo(down, i)),
+    [120, 110, 100, 100],
+  );
+  // Bars of a ramp get shorter as the tempo goes up.
+  const ch = chunkEvents(s, [planBar(s, 0, 0, 0), planBar(s, 60, 0, 0)]);
+  close(ch.duration, 4 * (60 / 80) + 4 * (60 / 140));
+  assert.equal(ch.marks[4].tempo, 140);
+});
+
+test('silences and ramp: validation and presets', () => {
+  const s = sanitizeMetro({
+    gap: { mode: 'grow', from: 60, to: 30, minutes: 7, on: 0, pct: 33 },
+    ramp: { on: 'yes', to: 999, step: 50, every: 0, end: 'later' },
+  });
+  assert.deepEqual(s.gap, { mode: 'grow', on: 2, off: 2, pct: 30, from: 60, to: 70, minutes: 5 });
+  assert.deepEqual(s.ramp, { on: false, to: 400, step: 4, every: 4, end: 'stay' });
+  const p = presetPart(S({ gap: { mode: 'bars', on: 1, off: 3 }, ramp: { on: true, to: 160 } }));
+  assert.equal(p.gap.off, 3);
+  assert.equal(p.ramp.to, 160);
 });
