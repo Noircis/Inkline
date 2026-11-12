@@ -28,7 +28,14 @@ import { toIRealLink, parseIRealAll } from '../ireal.js';
 import { pushSnapshot } from '../history.js';
 import { sanitizeBlock } from '../sanitize.js';
 import * as audio from '../audio.js';
-import { toolsHtml, syncPaletteSpace, updatePlayBtn, playCallbacks, readFile } from './common.js';
+import {
+  toolsHtml,
+  syncPaletteSpace,
+  updatePlayBtn,
+  playCallbacks,
+  readFile,
+  metroBlockButton,
+} from './common.js';
 import { setActive, undo, registerBlockKind } from './blocks.js';
 import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from './fold.js';
 import { renderScreen } from './nav.js';
@@ -133,7 +140,7 @@ function gridBlockHtml(b) {
     <select data-f="style" aria-label="Style">${styles.map((st) => `<option>${esc(st)}</option>`).join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" aria-label="Tempo"></label>
     <button type="button" class="chip" data-f="ireal" aria-expanded="false">iReal</button>
-    <button type="button" class="playbtn" data-play="${id}">&#9654; ${esc(t('play.listen'))}</button></div>
+    ${metroBlockButton(b.id)}<button type="button" class="playbtn" data-play="${id}">&#9654; ${esc(t('play.listen'))}</button></div>
     <div class="irealbox" hidden>
       <div class="ir-actions"><a class="btn" data-ir="open" href="#">${esc(t('ireal.open'))}</a><button class="btn" type="button" data-ir="copy">${esc(t('ireal.copy'))}</button></div>
       <label class="ir-lbl" for="ir_${id}">${esc(t('ireal.import1'))} <code>irealb://</code> ${esc(t('ireal.import2'))}</label>

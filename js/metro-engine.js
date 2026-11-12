@@ -37,6 +37,13 @@
  * delay, the clicks come out uneven) and a WAV file in an `<audio loop>`
  * element (Chrome does not loop media gaplessly: a hiccup at every loop point).
  *
+ * ## Lock screen (2.15)
+ *
+ * Web Audio alone does not give the phone a media player on the lock screen.
+ * While playing, a looping `<audio>` element plays a near-silent file (a blob
+ * URL, built once): Chrome then shows the Inkline player, with play/pause and
+ * ⏮ ⏭ (tempo −5 / +5). The clicks themselves still come from Web Audio.
+ *
  * Only one tempo at a time: starting the metronome stops a staff, chart or
  * practice playback, and starting one of them stops the metronome. The audio
  * context is shared with {@link module:audio|audio}.
@@ -66,6 +73,8 @@ const live = new Set();
 let tl = null;
 /** Beat starts of the playing cycle (beat, bar, level). */
 let marks = [];
+/** Polyrhythm hits of the playing cycle (2.15). */
+let polys = [];
 /** Audio time of the last scheduled swap (a new swap may not come before it). */
 let lastSwap = -Infinity;
 /** Audio time at which the first beat sounds. */
@@ -103,6 +112,8 @@ export function init(h) {
   on('pause', () => stop());
   on('stop', () => stop());
   on('previoustrack', () => hooks.nudge(-5));
+  on('seekbackward', () => hooks.nudge(-5));
+  on('seekforward', () => hooks.nudge(5));
   on('nexttrack', () => hooks.nudge(5));
 }
 
@@ -208,7 +219,7 @@ function noiseHit(c, out, noise, f, at, peak, decay) {
  * @param {AudioNode} out
  * @param {AudioBuffer} noise
  * @param {string} sound
- * @param {'pulse'|'sub'} type
+ * @param {'pulse'|'sub'|'poly'} type A polyrhythm hit sounds like a pulse.
  * @param {number} level 1 to 4.
  * @param {number} at
  */
@@ -270,7 +281,16 @@ function renderEvents(sr, events, s, length) {
   out.gain.value = MASTER;
   out.connect(oc.destination);
   const noise = noiseBuffer(oc);
-  for (const e of events) hit(oc, out, noise, s.sound, e.kind, e.level, Math.round(e.t * sr) / sr);
+  for (const e of events)
+    hit(
+      oc,
+      out,
+      noise,
+      e.kind === 'poly' ? s.poly.sound : s.sound,
+      e.kind,
+      e.level,
+      Math.round(e.t * sr) / sr,
+    );
   return oc.startRendering();
 }
 
@@ -279,7 +299,7 @@ function renderEvents(sr, events, s, length) {
  * tails folded back onto the start.
  * @param {number} sr
  * @param {module:metronome~MetroSettings} s
- * @returns {Promise.<{buf: AudioBuffer, len: number, marks: Array.<module:metronome~MetroMark>, samples: Array.<number>}>}
+ * @returns {Promise.<{buf: AudioBuffer, len: number, marks: Array.<module:metronome~MetroMark>, samples: Array.<number>, polys: Array.<module:metronome~PolyMark>}>}
  */
 async function renderCycle(sr, s) {
   const cyc = cycleEvents(s);
@@ -292,7 +312,7 @@ async function renderCycle(sr, s) {
   const buf = new AudioBuffer({ length: len, sampleRate: sr, numberOfChannels: 1 });
   buf.copyToChannel(data, 0);
   const samples = cyc.marks.map((m) => Math.round(m.t * sr));
-  return { buf, len, marks: cyc.marks, samples };
+  return { buf, len, marks: cyc.marks, samples, polys: cyc.polys };
 }
 
 // ---------- Playback ----------
@@ -307,6 +327,7 @@ export function start() {
   const c = getAudioContext();
   if (!c) return;
   running = true;
+  holdLockScreen(true);
   updateSession();
   hooks.onChange();
   apply(false);
@@ -326,6 +347,7 @@ function teardown() {
   src = null;
   tl = null;
   marks = [];
+  polys = [];
   lastSwap = -Infinity;
   if (stream) clearInterval(stream.timer);
   stream = null;
@@ -340,6 +362,7 @@ export function stop() {
   running = false;
   gen++;
   teardown();
+  holdLockScreen(false);
   updateSession();
   hooks.onChange();
 }
@@ -367,6 +390,7 @@ async function apply(restart) {
   if (!src) startLoop(c, r);
   else swapLoop(c, r);
   marks = r.marks;
+  polys = r.polys;
 }
 
 /**
@@ -445,6 +469,7 @@ const TOP_UP = 3000;
  * @property {number} elapsed Seconds of the session at `nextT`.
  * @property {Array.<{src: AudioBufferSourceNode, t0: number, t1: number}>} chunks Scheduled chunks.
  * @property {Array.<Object>} marks Pulse starts, absolute audio times, with a counter `k`.
+ * @property {Array.<Object>} polys Polyrhythm hits, absolute audio times, with a counter `k`.
  * @property {Array.<{t: number, bar: number, elapsed: number}>} bars Bar starts.
  * @property {?number} endAt Audio time of the end (ramp ending with "stop").
  * @property {number} count Pulse counter (for `k`).
@@ -471,9 +496,11 @@ function startStream(c) {
     elapsed: 0,
     chunks: [],
     marks: [],
+    polys: [],
     bars: [],
     endAt: null,
     count: 0,
+    polyCount: 0,
     busy: -1,
     timer: setInterval(() => topUp(gen), TOP_UP),
   };
@@ -495,6 +522,7 @@ function replan(c, restart) {
   }
   stream.chunks = stream.chunks.filter((ch) => ch.t0 < cut);
   stream.marks = stream.marks.filter((m) => m.t < cut);
+  stream.polys = stream.polys.filter((m) => m.t < cut);
   stream.bars = stream.bars.filter((b) => b.t < cut);
   stream.nextT = cut;
   stream.nextBar = restart ? 0 : next ? next.bar : stream.nextBar;
@@ -545,6 +573,7 @@ async function topUp(g) {
     else node.start(c.currentTime, c.currentTime - t0);
     stream.chunks.push({ src: node, t0, t1: t0 + ch.duration });
     for (const m of ch.marks) stream.marks.push({ ...m, t: t0 + m.t, k: stream.count++ });
+    for (const m of ch.polys) stream.polys.push({ ...m, t: t0 + m.t, k: stream.polyCount++ });
     stream.bars.push(...bars);
     stream.nextT = t0 + ch.duration;
     stream.nextBar = bar;
@@ -582,6 +611,7 @@ function prune(c) {
     return i > 1 ? arr.slice(i - 1) : arr;
   };
   stream.marks = keep(stream.marks);
+  stream.polys = keep(stream.polys);
   stream.bars = keep(stream.bars);
 }
 
@@ -591,11 +621,30 @@ document.addEventListener('visibilitychange', () => {
 });
 
 /**
+ * Last item of a list sorted by time whose time is not after `now`.
+ * @param {Array.<{t: number}>} arr
+ * @param {number} now
+ * @returns {number} Index, -1 if none.
+ */
+function lastBefore(arr, now) {
+  let lo = 0;
+  let hi = arr.length - 1;
+  if (!arr.length || arr[0].t > now) return -1;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (arr[mid].t <= now) lo = mid;
+    else hi = mid - 1;
+  }
+  return lo;
+}
+
+/**
  * Pulse sounding now, for the lights (read from the audio clock, output
  * latency included).
- * @returns {?{k: number, beat: number, bar: number, level: number, silent: boolean, tempo: number}}
+ * @returns {?{k: number, beat: number, bar: number, level: number, silent: boolean, tempo: number, poly: ?{k: number, hit: number, silent: boolean}}}
  *   `k`: pulse counter (changes on every pulse); `bar`: bar index (in the
- *   cycle, or since the start of a stream); `null` when nothing sounds yet.
+ *   cycle, or since the start of a stream); `poly`: the last polyrhythm hit
+ *   (2.15), its own counter `k`; `null` when nothing sounds yet.
  */
 export function position() {
   if (!running) return null;
@@ -604,24 +653,91 @@ export function position() {
   const now = c.currentTime - (c.outputLatency || 0);
   if (now < startAt) return null;
   if (mode === 'stream') {
-    if (!stream || !stream.marks.length) return null;
-    const ms = stream.marks;
-    let lo = 0;
-    let hi = ms.length - 1;
-    if (ms[0].t > now) return null;
-    while (lo < hi) {
-      const mid = (lo + hi + 1) >> 1;
-      if (ms[mid].t <= now) lo = mid;
-      else hi = mid - 1;
-    }
-    const m = ms[lo];
-    return { k: m.k, beat: m.beat, bar: m.bar, level: m.level, silent: m.silent, tempo: m.tempo };
+    if (!stream) return null;
+    const i = lastBefore(stream.marks, now);
+    if (i < 0) return null;
+    const m = stream.marks[i];
+    const j = lastBefore(stream.polys, now);
+    const pm = j < 0 ? null : stream.polys[j];
+    const poly = pm ? { k: pm.k, hit: pm.hit, silent: pm.silent } : null;
+    return { k: m.k, beat: m.beat, bar: m.bar, level: m.level, silent: m.silent, tempo: m.tempo, poly };
   }
   if (!tl || !marks.length) return null;
   const k = beatAt(tl, now);
   const n = tl.marks.length;
   const m = marks[((k % n) + n) % n];
-  return m ? { k, beat: m.beat, bar: m.bar, level: m.level, silent: m.silent, tempo: m.tempo } : null;
+  return m
+    ? { k, beat: m.beat, bar: m.bar, level: m.level, silent: m.silent, tempo: m.tempo, poly: loopPoly(now) }
+    : null;
+}
+
+/**
+ * Last polyrhythm hit of the looping cycle at `now`.
+ * @param {number} now
+ * @returns {?{k: number, hit: number, silent: boolean}}
+ */
+function loopPoly(now) {
+  if (!polys.length) return null;
+  const pos = (now - tl.t0) * tl.sr;
+  const pass = Math.floor(pos / tl.len);
+  const inCycle = (pos - pass * tl.len) / tl.sr;
+  const j = lastBefore(polys, inCycle);
+  // Before the first hit of the cycle: the last hit of the previous pass.
+  const i = j < 0 ? polys.length - 1 : j;
+  const p = polys[i];
+  return { k: (j < 0 ? pass - 1 : pass) * polys.length + i, hit: p.hit, silent: p.silent };
+}
+
+// ---------- Lock screen (2.15) ----------
+
+/** Looping near-silent `<audio>` that gives the lock screen a player. */
+let keeper = null;
+
+/**
+ * A 10 s WAV, 8 kHz, 16 bit, mono, at the lowest level above silence (±1):
+ * Chrome needs a media longer than 5 s to show its player.
+ * @returns {string} Blob URL.
+ */
+function silentWav() {
+  const sr = 8000;
+  const n = sr * 10;
+  const buf = new ArrayBuffer(44 + n * 2);
+  const v = new DataView(buf);
+  const str = (o, x) => [...x].forEach((ch, i) => v.setUint8(o + i, ch.charCodeAt(0)));
+  str(0, 'RIFF');
+  v.setUint32(4, 36 + n * 2, true);
+  str(8, 'WAVEfmt ');
+  v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); // PCM
+  v.setUint16(22, 1, true); // mono
+  v.setUint32(24, sr, true);
+  v.setUint32(28, sr * 2, true);
+  v.setUint16(32, 2, true);
+  v.setUint16(34, 16, true);
+  str(36, 'data');
+  v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, i & 1 ? 1 : -1, true);
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+}
+
+/**
+ * Plays or pauses the near-silent loop. `play()` must come from a tap (or a
+ * lock-screen button): {@link start} is always called from one.
+ * @param {boolean} on
+ */
+function holdLockScreen(on) {
+  try {
+    if (on) {
+      if (!keeper) {
+        keeper = new Audio(silentWav());
+        keeper.loop = true;
+        keeper.volume = 0.01;
+      }
+      keeper.play().catch(() => {});
+    } else if (keeper) keeper.pause();
+  } catch (e) {
+    /* no media element support: the clicks still play */
+  }
 }
 
 /** Media Session: lock-screen texts and playing state. */

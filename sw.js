@@ -27,7 +27,7 @@
  *   - revalidation with cache: 'no-cache' (the server confirms or resends).
  */
 
-const CACHE = 'inkline-2.14.0';
+const CACHE = 'inkline-2.15.0';
 
 /** Files preloaded on install: everything needed to start offline. */
 const CORE = [

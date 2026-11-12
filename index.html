@@ -17,11 +17,13 @@
   - style-src 'unsafe-inline': needed for style="…" attributes and
     element.style (does not allow running code).
   - img-src data: blob:: images generated for export; font-src data:: embedded fonts.
+  - media-src blob:: the near-silent loop that gives the lock screen a
+    metronome player (generated in memory, 2.15).
   - No other origin: the app contacts no third-party server.
 -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'"
     />
     <title>Inkline</title>
     <link rel="manifest" href="manifest.webmanifest" />

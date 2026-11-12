@@ -13,7 +13,7 @@ import * as audio from '../audio.js';
 import { METRONOME } from './icons.js';
 
 /** Version shown in Settings (keep it in line with CHANGELOG.md). */
-export const APP_VERSION = '2.14.0';
+export const APP_VERSION = '2.15.0';
 
 /** HTML of an active block's tools. */
 export function toolsHtml() {
@@ -82,6 +82,16 @@ export function confirmTap(btn, armedLabel, action, delay = 3500) {
  */
 export function metroButton() {
   return `<button class="btn icon-btn" type="button" data-metro-open aria-label="${esc(t('metro.open'))}">${METRONOME}</button>`;
+}
+
+/**
+ * Metronome button of a staff or chart block header (2.15): opens the
+ * metronome set to the block's tempo, time signature and swing.
+ * @param {string} id Block id.
+ * @returns {string}
+ */
+export function metroBlockButton(id) {
+  return `<button type="button" class="chip metro-chip" data-metro-block="${esc(id)}" aria-label="${esc(t('metro.blockOpen'))}">${METRONOME}</button>`;
 }
 
 /**

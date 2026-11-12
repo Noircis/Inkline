@@ -133,3 +133,19 @@ test('sanitize: integer key signature from -7 to 7, ignored on a rhythm line', (
   assert.ok(!('ks' in blk({ ks: 0 })));
   assert.ok(!('ks' in blk({ ks: 2, clef: 'rhythm' })));
 });
+
+test('note metronome (2.15): validated, display options dropped, kept on a received note', () => {
+  const raw = {
+    id: 'a1',
+    title: 'x',
+    blocks: [],
+    metro: { tempo: 9999, num: 7, den: 8, flash: true, x: '<b>' },
+  };
+  const n = sanitizeNote(raw);
+  assert.equal(n.metro.tempo, 400);
+  assert.equal(n.metro.num, 7);
+  assert.equal('flash' in n.metro, false);
+  assert.equal('x' in n.metro, false);
+  assert.equal(sanitizeNote(raw, { freshIds: true }).metro.num, 7);
+  assert.equal('metro' in sanitizeNote({ id: 'a2', blocks: [], metro: 'fast' }), false);
+});

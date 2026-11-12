@@ -113,6 +113,22 @@
   color: var(--accent);
   font-weight: 600;
 }
+/* Metronome of the block (2.15): pushed right, next to Listen. */
+.metro-chip {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  color: var(--muted);
+}
+.metro-chip svg {
+  width: 18px;
+  height: 18px;
+}
+.metro-chip + .playbtn {
+  margin-left: 0;
+}
 .playbtn {
   margin-left: auto;
   border: 0;

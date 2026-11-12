@@ -1,7 +1,7 @@
 // Metronome (2.11, sub-pages 2.13): sheet from any screen, mini-bar, level bars, time
-// signatures, subdivisions, jazz modes, tap, presets.
+// signatures, subdivisions, jazz modes, tap, presets; notes, blocks, polyrhythm (2.15).
 import { test, expect } from '@playwright/test';
-import { openApp, newNoteWith, collectErrors } from './helpers.js';
+import { openApp, newNoteWith, collectErrors, storedNotes } from './helpers.js';
 
 test.beforeEach(async ({ context }) => {
   // Spy: length (s) of each cycle rendered offline.
@@ -11,6 +11,13 @@ test.beforeEach(async ({ context }) => {
     OfflineAudioContext.prototype.startRendering = function () {
       window.__renders.push(this.length / this.sampleRate);
       return render.call(this);
+    };
+    // Spy: media elements played (the lock-screen loop).
+    window.__mediaPlays = 0;
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function () {
+      window.__mediaPlays++;
+      return play.call(this);
     };
   });
 });
@@ -355,4 +362,96 @@ test('tempo ramp: the number follows, then the metronome stops at the end', asyn
   // Three bars of 2/4 (about 1.2 s), then it stops; the tempo is back at the start.
   await expect(page.locator('.metro-play')).not.toHaveClass(/on/, { timeout: 5000 });
   await expect(page.locator('#mTempoVal')).toHaveText('300');
+});
+
+test('block button: tempo, time signature and swing of the block; Undo', async ({ page }) => {
+  const errors = collectErrors(page);
+  await openApp(page);
+  await newNoteWith(page, 'staff');
+  await page.selectOption('.block.active [data-f="time"]', '6/8');
+  await page.fill('.block.active [data-f="tempo"]', '90');
+  await page.locator('.block.active [data-f="tempo"]').blur();
+  await page.click('.block.active [data-metro-block]');
+  await expect(sheet(page)).toBeVisible();
+  await expect(page.locator('.mbanner span')).toHaveText('Réglé d’après le bloc');
+  // 6/8 at ♩ = 90: ♩. = 60.
+  await expect(page.locator('#mTempoVal')).toHaveText('60');
+  await expect(row(page, 'meter')).toHaveText('6/8');
+  await page.click('[data-m="undo"]');
+  await expect(page.locator('.mbanner')).toHaveCount(0);
+  await expect(page.locator('#mTempoVal')).toHaveText('120');
+  await expect(row(page, 'meter')).toHaveText('4/4');
+  await page.click('[data-m="close"]');
+
+  // A Medium Swing chart: eighths at 67 %.
+  await page.click('[data-add=grid]');
+  await page.locator('.block.active [data-metro-block]').click();
+  await expect(page.locator('#mTempoVal')).toHaveText('120');
+  await expect(row(page, 'subdiv')).toHaveText('Croches · Swing ternaire');
+  expect(errors).toEqual([]);
+});
+
+test('save to the note, loaded when opened from that note again', async ({ page }) => {
+  await openApp(page);
+  await newNoteWith(page, 'text');
+  await page.fill('#titleIn', 'Gammes');
+  await page.click('[data-metro-open]');
+  await expect(page.locator('[data-m="noteSave"]')).toHaveText('Enregistrer dans la note');
+  await steps(page, 1, 5); // 125
+  await page.click('[data-m="noteSave"]');
+  await expect(page.locator('.mnote-ok')).toHaveText('✓ Enregistré dans la note');
+  await steps(page, 1, 1);
+  await expect(page.locator('[data-m="noteSave"]')).toHaveText('Mettre à jour la note');
+  await steps(page, -1, 1);
+  await expect(page.locator('.mnote-ok')).toBeVisible();
+  await page.click('[data-m="close"]');
+  await page.goBack(); // home
+  await page.locator('#newNote').waitFor();
+  // Elsewhere, another tempo; no note, no save button.
+  await page.click('[data-metro-open]');
+  await expect(page.locator('.mnote')).toHaveCount(0);
+  await steps(page, -1, 35); // 90
+  await page.click('[data-m="close"]');
+  // Back in the note: its settings come back.
+  await page.locator('.card', { hasText: 'Gammes' }).click();
+  await page.click('[data-metro-open]');
+  await expect(page.locator('.mbanner span')).toHaveText('Réglé d’après la note');
+  await expect(page.locator('#mTempoVal')).toHaveText('125');
+  await page.click('[data-m="undo"]');
+  await expect(page.locator('#mTempoVal')).toHaveText('90');
+  await expect
+    .poll(async () => (await storedNotes(page)).notes.find((n) => n.title === 'Gammes').metro.tempo)
+    .toBe(125);
+  // Remove it from the note.
+  await page.click('[data-m="noteForget"]');
+  await page.click('[data-m="noteForget"]'); // confirm
+  await expect(page.locator('[data-m="noteSave"]')).toHaveText('Enregistrer dans la note');
+});
+
+test('polyrhythm: 3 over 2 bars, its lights, a longer cycle; lock-screen loop', async ({ page }) => {
+  const errors = collectErrors(page);
+  await openApp(page);
+  await page.click('[data-metro-open]');
+  await expect(row(page, 'poly')).toHaveText('Aucun');
+  await goPage(page, 'poly');
+  await page.check('[data-k="polyOn"]');
+  await page.selectOption('[data-k="poly.bars"]', '2');
+  await expect(page.locator('[data-mpolybar]')).toHaveCount(3);
+  await page.selectOption('[data-k="poly.n"]', '5');
+  await expect(page.locator('[data-mpolybar]')).toHaveCount(5);
+  await page.click('[data-mpolybar="1"]');
+  await expect(page.locator('[data-mpolybar="1"]')).toHaveClass(/off/);
+  await expect(page.locator('.mhint').last()).toContainText('5:8');
+  await page.click('[data-m="back"]');
+  await expect(row(page, 'poly')).toHaveText('5:8');
+  await expect(page.locator('#mPoly .mpoly-dot')).toHaveCount(5);
+  await page.click('.metro-play');
+  await expect(page.locator('#mPoly .mpoly-dot.on')).toHaveCount(1, { timeout: 3000 });
+  // Two bars of 4/4 at 120 (4 s), plus the tail.
+  await expect
+    .poll(() => page.evaluate(() => window.__renders.some((d) => Math.abs(d - 4.4) < 0.01)))
+    .toBe(true);
+  expect(await page.evaluate(() => window.__mediaPlays)).toBeGreaterThan(0);
+  await page.click('.metro-play');
+  expect(errors).toEqual([]);
 });

@@ -147,6 +147,9 @@ import { uid } from './util.js';
  * @property {string} [folder] Folder (2.0), see {@link module:folders|folders}.
  * @property {Array.<string>} [cats] Categories of its folder (2.8.6), one or more.
  * @property {boolean} [pinned] Pinned at the top of the list (2.0).
+ * @property {Object} [metro] Metronome settings of the note (2.15): the preset
+ *   part of {@link module:metronome~MetroSettings|MetroSettings}, loaded when the
+ *   metronome is opened from the note.
  */
 
 /**

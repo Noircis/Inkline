@@ -4,6 +4,20 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.15.0] - 2026-11-12
+
+### Added
+
+- **Metronome from a block.** Staff and chart headers get a metronome button, next to Listen. It opens the metronome on the block's time signature and tempo (6/8 at ♩ = 90 becomes ♩. = 60) and its swing (eighths at 67 %; a chart swings when its style does). A banner says so, with **Undo** to get the previous settings back.
+- **Metronome settings in a note.** Opened from a note, the main page has a **Save to the note** button. Open the metronome from that note later and its settings come back, with the same banner and Undo. The button turns into "Saved in the note" when nothing changed, "Update the note" otherwise; ✕ removes the settings from the note. They travel with a shared note.
+- **Polyrhythm**, on a new page: a second voice plays 2 to 16 even hits over 1 to 4 bars, on top of the pulses (3 over one bar of 4/4 is 3:4, 5 over two bars is 5:8). Its own sound, a level bar per hit (tap to mute, slide to set). On the main page, a row of small lights under the bars follows the hits. A hit on a silenced pulse is silent too.
+- **Lock-screen player** (experimental): while the metronome plays, a looping near-silent audio file gives Android its media player on the lock screen, with play/pause and ⏮ ⏭ for tempo −5 / +5.
+
+### Technical
+
+- `fromBlock`, `polyHits`, `withPoly`, `sameAsStored` in `metronome.js`; a looping cycle lasts a common multiple of the silence cycle and the polyrhythm bars. `note.metro` is validated field by field in `sanitize.js`.
+- CSP: `media-src 'self' blob:` for the in-memory silent WAV.
+
 ## [2.14.0] - 2026-11-12
 
 ### Added

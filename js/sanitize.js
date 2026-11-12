@@ -26,6 +26,7 @@
 import { uid, clamp } from './util.js';
 import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX, INSTRUMENTS } from './model.js';
 import { COLOR_KEYS, cleanFolderName, CAT_NAME_MAX, MAX_CATS } from './folders.js';
+import { sanitizeMetro, presetPart } from './metronome.js';
 
 /** Accepted format for an id: lowercase alphanumeric, 1 to 32 characters. */
 const ID_RE = /^[a-z0-9]{1,32}$/;
@@ -174,6 +175,8 @@ export function sanitizeNote(r, opt = {}) {
     updated: isNum(r.updated) ? r.updated : Date.now(),
     blocks: blocks.length ? blocks : [{ id: uid(), type: 'text', text: '' }],
   };
+  // Metronome of the note (2.15): musical settings, shared with the note.
+  if (r.metro && typeof r.metro === 'object') note.metro = presetPart(sanitizeMetro(r.metro));
   // Filing (2.0). A received note (freshIds) arrives unfiled and not
   // pinned: its filing belongs to whoever receives it.
   if (!opt.freshIds) {

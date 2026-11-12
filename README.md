@@ -78,9 +78,9 @@ js/
   folding.js          collapsed display rule for long blocks
   placements.js       rhythm practice: time signatures, writing placements, series
   exercise.js         random rhythm exercises (reproducible draw by number)
-  metronome.js        metronome: any time signature, groups, levels, jazz modes, subdivisions, silences, tempo ramp, presets
+  metronome.js        metronome: any time signature, groups, levels, jazz modes, subdivisions, silences, tempo ramp, polyrhythm, presets, settings from a block or a note
   metro-clock.js      metronome timing: beats of a looping cycle, seamless swaps
-  metro-engine.js     metronome audio: pre-rendered looping cycle, or bars rendered ahead (plays with the screen locked)
+  metro-engine.js     metronome audio: pre-rendered looping cycle, or bars rendered ahead (plays with the screen locked, lock-screen player)
   transpose.js        transposing instruments: rewriting a staff for another instrument
   chord-keys.js       chord keyboard: effect of each key
   i18n.js             interface language: t('key'), plurals, detection
@@ -140,7 +140,7 @@ The app has no server and no account: the only untrusted input is **imported fil
 
 1. **Validation** (`sanitize`): all imported or loaded data is rebuilt field by field from an allowlist (types, enumerations, bounds, lengths); invalid ids are regenerated.
 2. **Escaping**: every value inserted into HTML or SVG goes through `esc()`; CSS selectors through `CSS.escape()`.
-3. **Content Security Policy** (`index.html`): only the app's `.js` files can run; no third-party origin is contacted.
+3. **Content Security Policy** (`index.html`): only the app's `.js` files can run; no third-party origin is contacted. `media-src blob:` only lets the metronome play the near-silent loop it builds in memory (lock-screen player).
 
 `tests/security-export.test.js` checks that a booby-trapped file is neutralized.
 
@@ -155,7 +155,7 @@ See the `model` module for the details of the types. In short:
 
 The format is backward compatible: a note created in 1.0 opens in the latest version. Each note carries a creation date (`created`) and a modification date (`updated`); for notes from before 1.7.0, the creation date was initialized with the modification date.
 
-The metronome settings and presets (2.11) are also metadata (`metro`, `metroPresets`).
+The metronome settings and presets (2.11) are also metadata (`metro`, `metroPresets`). Since 2.15, a note may keep its own metronome settings (`metro`: tempo, time signature, levels, subdivision, jazz, silences, ramp, polyrhythm); they travel with a shared note.
 
 Since 2.0, a note can carry `folder` (folder id) and `pinned`; since 2.8.6, `cats` (ids of categories of its folder). Folders `{ id, name, color, created, cats }` are stored separately; a note without a folder, or whose folder disappeared, is "unfiled".
 

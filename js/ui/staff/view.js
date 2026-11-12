@@ -17,7 +17,7 @@ import { staffSvg } from '../../render-staff.js';
 import { layout } from '../../layout.js';
 import { pushSnapshot } from '../../history.js';
 import * as audio from '../../audio.js';
-import { toolsHtml, updatePlayBtn, playCallbacks } from '../common.js';
+import { toolsHtml, updatePlayBtn, playCallbacks, metroBlockButton } from '../common.js';
 import { setActive } from '../blocks.js';
 import { isFolded, applyFold, guardFoldedTaps, FOLD_PREVIEW_LINES } from '../fold.js';
 import { hooks, staffUi, clampCursor, refit, flash } from './shared.js';
@@ -73,7 +73,7 @@ function headerHtml(b) {
     <select data-f="time" id="m_${id}" aria-label="${esc(t('staff.time'))}">${TIME_SIGNATURES.map((ts) => `<option>${ts}</option>`).join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${id}"></label>
     <button type="button" class="chip" data-f="swing" aria-pressed="${!!b.swing}">Swing</button>
-    <button type="button" class="playbtn" data-play="${id}">&#9654; ${esc(t('play.listen'))}</button></div>`;
+    ${metroBlockButton(b.id)}<button type="button" class="playbtn" data-play="${id}">&#9654; ${esc(t('play.listen'))}</button></div>`;
 }
 
 /**

@@ -38,6 +38,14 @@
  * (`meta.metroPresets`). What to play is computed by
  * {@link module:metronome|metronome}, played by {@link module:metro-engine|metro-engine}.
  *
+ * ## Notes and blocks (2.15)
+ *
+ * - The metronome button of a staff or chart block sets the tempo, time
+ *   signature and swing of that block ({@link module:metronome.fromBlock|fromBlock}).
+ * - Opened from a note, the main page offers to save the settings in the
+ *   note (`note.metro`); opened again from that note later, they are loaded.
+ * - Either way a banner says so, with Undo (the settings from before).
+ *
  * While playing and visible, the lights follow the audio clock; the
  * vibration and flash options fire on audible beats; the "keep the screen on"
  * option holds a Wake Lock.
@@ -90,16 +98,24 @@ import {
   TEMPO_MIN,
   TEMPO_MAX,
   rampBars,
+  withPoly,
+  polyRatio,
+  POLY_N_MIN,
+  POLY_N_MAX,
+  POLY_BARS_MAX,
+  fromBlock,
+  sameAsStored,
 } from '../metronome.js';
 import * as engine from '../metro-engine.js';
 import { openOverlay, closeOverlay } from './nav.js';
 import { confirmTap } from './common.js';
+import { state, curNote, blockById, touch } from './state.js';
 
 /** Subdivision → dictionary key suffix (keys cannot hold dots). */
 const SUB_KEYS = { none: 'none', 8: 's8', 3: 's3', 16: 's16', 8.16: 's816' };
 
 /** Sub-pages of the sheet, in the order of the rows. */
-const PAGES = ['meter', 'subdiv', 'sound', 'jazz', 'gap', 'ramp', 'options'];
+const PAGES = ['meter', 'subdiv', 'sound', 'jazz', 'poly', 'gap', 'ramp', 'options'];
 
 /** Tempo drag: pixels per BPM. */
 const DRAG_PX = 6;
@@ -126,6 +142,18 @@ let lastK = null;
 /** @type {?WakeLockSentinel} */
 let wake = null;
 let configTimer = 0;
+/**
+ * Banner of the main page after settings were loaded from a block or a note:
+ * its text and the settings to go back to.
+ * @type {?{text: string, prev: module:metronome~MetroSettings}}
+ */
+let banner = null;
+/**
+ * Visit of a note (its `state.view` object, new on every navigation) whose
+ * settings were already loaded or saved: they are loaded once per visit.
+ * @type {?Object}
+ */
+let loadedFor = null;
 
 const sheet = document.createElement('section');
 sheet.id = 'metroSheet';
@@ -184,6 +212,8 @@ function setTempo(bpm, persist = true) {
   if (mark) mark.textContent = tempoMarking(v);
   const mt = mini.querySelector('.mm-tempo');
   if (mt) mt.textContent = `${s.ramp.on ? '\u2934 ' : ''}${unitGlyph(s)} ${v}`;
+  const note = sheet.querySelector('.mnote');
+  if (note) note.outerHTML = noteHtml(); // saved / to update
   // During a ramp, a tempo set by hand starts the ramp again from there.
   scheduleConfigure(s.ramp.on);
   if (persist) setMeta({ metro: s });
@@ -208,9 +238,14 @@ function scheduleConfigure(restart = false) {
 
 // ---------- Sheet and pages ----------
 
-/** Opens the sheet over the current screen, on its main page. */
-function openSheet() {
+/**
+ * Opens the sheet over the current screen, on its main page.
+ * @param {boolean} [fromHeader=false] Opened from the header button: a note's
+ *   own settings are loaded (unless already playing).
+ */
+function openSheet(fromHeader = false) {
   if (sheetOpen) return;
+  if (fromHeader) loadNoteSettings();
   sheetOpen = true;
   view = 'main';
   editing = null;
@@ -224,6 +259,7 @@ function openSheet() {
 function hideSheet() {
   sheetOpen = false;
   view = 'main';
+  banner = null;
   sheet.hidden = true;
   sheet.innerHTML = '';
   document.documentElement.classList.remove('metro-open');
@@ -361,6 +397,8 @@ function rowValue(page) {
       return t('metro.gapModes.off');
     case 'ramp':
       return s.ramp.on ? `${s.tempo} → ${s.ramp.to}` : t('metro.optionsNone');
+    case 'poly':
+      return s.poly.on ? polyRatio(s) : t('metro.polyOff');
     default: {
       const on = ['vibrate', 'flash', 'wake'].filter((k) => s[k]).map((k) => t('metro.' + k));
       return on.length ? on.join(', ') : t('metro.optionsNone');
@@ -382,7 +420,9 @@ function mainHtml() {
   ).join('');
   return `<div class="metro-wrap">
 <header class="metro-head"><button type="button" class="btn icon-btn" data-m="close" aria-label="${esc(t('metro.collapse'))}">&#x2304;</button><h2>${esc(t('metro.title'))}</h2><span class="grow"></span><button type="button" class="btn icon-btn" data-m="presets" aria-label="${esc(t('metro.presets'))}">&#9733;</button></header>
+${banner ? `<div class="mbanner" role="status"><span>${esc(banner.text)}</span><button type="button" class="btn ghost" data-m="undo">${esc(t('metro.undo'))}</button></div>` : ''}
 ${barsHtml()}
+${polyLightsHtml()}
 <div class="metro-tempo-row">
 <button type="button" class="mtap" data-m="tap">${esc(t('metro.tap'))}</button>
 <div class="metro-tempo" id="mTempo" role="button" tabindex="0" aria-label="${esc(t('metro.tempoZone'))}"><span class="mt-unit">${unitGlyph(s)} =</span> <span id="mTempoVal" class="mt-val">${s.tempo}</span><div id="mMark" class="mt-mark">${esc(tempoMarking(s.tempo))}</div></div>
@@ -390,8 +430,79 @@ ${barsHtml()}
 </div>
 ${s.ramp.on ? `<div class="mramp" aria-hidden="true"><span>&#10548; <span class="mglyph">${unitGlyph(s)}</span> ${s.tempo} → ${s.ramp.to}</span><span class="mramp-bar"><span id="mRampFill"></span></span></div>` : ''}
 <ul class="mlist">${rows}</ul>
+${noteHtml()}
 <button type="button" class="btn primary metro-play${on ? ' on' : ''}" data-m="play">${on ? '&#9632; ' + esc(t('metro.stop')) : '&#9654; ' + esc(t('metro.start'))}</button>
 </div>`;
+}
+
+/**
+ * Lights of the polyrhythm hits, under the bars (when it is on).
+ * @returns {string}
+ */
+function polyLightsHtml() {
+  if (!s.poly.on) return '';
+  const dots = s.poly.levels
+    .map(
+      (v) => `<span class="mpoly-dot${v > 0 ? '' : ' off'}" style="--lv:${audible(v) / LEVEL_MAX}"></span>`,
+    )
+    .join('');
+  return `<div class="mpoly" id="mPoly" role="img" aria-label="${esc(t('metro.polyLights') + ' ' + polyRatio(s))}"><span class="mpoly-ratio">${esc(polyRatio(s))}</span>${dots}</div>`;
+}
+
+/**
+ * The note open under the sheet (note screen only).
+ * @returns {?module:model~Note}
+ */
+function noteHere() {
+  return (state.view.name === 'note' && curNote()) || null;
+}
+
+/**
+ * Save to the note button (main page, note screen only): "saved" when the
+ * note already holds these settings, with a button to remove them.
+ * @returns {string}
+ */
+function noteHtml() {
+  const n = noteHere();
+  if (!n) return '';
+  const forget = n.metro
+    ? `<button type="button" class="btn icon-btn" data-m="noteForget" aria-label="${esc(t('metro.noteForget'))}">&#x2715;</button>`
+    : '';
+  if (sameAsStored(s, n.metro))
+    return `<div class="mnote"><span class="mnote-ok">&#10003; ${esc(t('metro.noteSaved'))}</span>${forget}</div>`;
+  return `<div class="mnote"><button type="button" class="btn" data-m="noteSave">${esc(t(n.metro ? 'metro.noteUpdate' : 'metro.noteSave'))}</button>${forget}</div>`;
+}
+
+/**
+ * Opened from the header of a note that holds settings: they are loaded,
+ * with the banner to undo. Not while playing (the sound would change under
+ * the player), once per visit of the note.
+ */
+function loadNoteSettings() {
+  const n = noteHere();
+  if (!n || !n.metro || engine.isRunning() || loadedFor === state.view) return;
+  loadedFor = state.view;
+  if (sameAsStored(s, n.metro)) return;
+  const prev = s;
+  s = applyPreset(s, { s: n.metro });
+  save();
+  banner = { text: t('metro.fromNote'), prev };
+}
+
+/**
+ * Metronome button of a block: its settings, the banner to undo, the sheet.
+ * @param {string} id Block id.
+ */
+function openFromBlock(id) {
+  const b = blockById(id);
+  if (!b || (b.type !== 'staff' && b.type !== 'grid')) return;
+  const prev = s;
+  s = fromBlock(s, /** @type {any} */ (b));
+  save();
+  if (sheetOpen) closeOverlay(); // reopened below on the main page
+  openSheet();
+  banner = { text: t('metro.fromBlock'), prev };
+  render();
 }
 
 /**
@@ -594,12 +705,35 @@ ${numberMenu('ramp.every', t('metro.rampEvery'), range(1, 16), r.every, (n) => t
   );
 }
 
+/**
+ * Polyrhythm page: switch, hits, bars, sound, a level bar per hit, summary.
+ * @returns {string}
+ */
+function polyBody() {
+  const p = s.poly;
+  const bars = p.levels
+    .map((v, k) => barHtml(`data-mpolybar="${k}"`, v, t('metro.polyHitN', { n: k + 1, l: audible(v) })))
+    .join('');
+  const w = p.n <= 4 ? 44 : p.n <= 8 ? 32 : 20;
+  return `<ul class="mlist mchoices"><li><label class="mitem"><span class="mitem-lbl">${esc(t('metro.polyOn'))}<small>${esc(t('metro.polyOnHint'))}</small></span><input type="checkbox" class="switch" data-k="polyOn"${p.on ? ' checked' : ''}></label></li></ul>
+<div class="metro-rows${p.on ? '' : ' dim'}">
+${numberMenu('poly.n', t('metro.polyN'), range(POLY_N_MIN, POLY_N_MAX), p.n)}
+${numberMenu('poly.bars', t('metro.polyBars'), range(1, POLY_BARS_MAX), p.bars, (n) => t('metro.barsN', { n }))}
+<label class="mrow mrow-inline"><span class="mlbl">${esc(t('metro.polySound'))}</span><select data-k="poly.sound">${SOUNDS.map(
+    (k) => `<option value="${k}"${k === p.sound ? ' selected' : ''}>${esc(t('metro.sounds.' + k))}</option>`,
+  ).join('')}</select></label>
+</div>
+<div class="mbars mpolybars${p.on ? '' : ' dim'}" style="--cw:${w}px">${bars}</div>
+<p class="mhint">${esc(t('metro.polySummary', { n: p.n, bars: t('metro.barsN', { n: p.bars }), p: s.num * p.bars, r: polyRatio(s) }))}</p>`;
+}
+
 /** Content of each sub-page. */
 const PAGE_BODIES = {
   meter: meterBody,
   subdiv: subdivBody,
   sound: soundBody,
   jazz: jazzBody,
+  poly: polyBody,
   gap: gapBody,
   ramp: rampBody,
   options: optionsBody,
@@ -690,6 +824,12 @@ function paintLights(p) {
   }
   const count = mini.querySelector('#mmCount');
   if (count && p) count.textContent = `${p.beat + 1}/${s.num}`;
+  const pb = sheet.querySelector('#mPoly');
+  if (pb) {
+    const hit = p && p.poly ? p.poly.hit : -1;
+    pb.querySelectorAll('.mpoly-dot').forEach((el, i) => el.classList.toggle('on', i === hit));
+    pb.classList.toggle('silent-bar', !!(p && p.poly && p.poly.silent));
+  }
   if (p && s.ramp.on) showRamp(p);
 }
 
@@ -711,11 +851,17 @@ function showRamp(p) {
   }
 }
 
+/** Last polyrhythm hit lit (its counter). */
+let lastPolyK = null;
+
 /** Animation loop: lights, and vibration / flash on each new audible pulse. */
 function loop() {
   raf = 0;
   if (!engine.isRunning() || document.hidden) return;
   const p = engine.position();
+  const pk = p && p.poly ? p.poly.k : null;
+  if (p && p.k === lastK && pk !== lastPolyK) paintLights(p);
+  lastPolyK = pk;
   if (p && p.k !== lastK) {
     const first = lastK === null;
     lastK = p.k;
@@ -777,16 +923,40 @@ function editableLevels() {
 }
 
 /**
- * Sets the level of a pulse or subdivision bar.
- * @param {'levels'|'subLevels'} field
+ * Sets the level of a pulse, subdivision or polyrhythm bar.
+ * @param {'levels'|'subLevels'|'poly'} field
  * @param {number} i
  * @param {function(number): number} fn New level from the current one.
  * @returns {Object} Patch for {@link update}.
  */
 function levelPatch(field, i, fn) {
-  const arr = field === 'levels' ? editableLevels() : s.subLevels.slice();
+  const arr =
+    field === 'levels' ? editableLevels() : field === 'poly' ? s.poly.levels.slice() : s.subLevels.slice();
   arr[i] = fn(arr[i]);
+  if (field === 'poly') return { poly: { ...s.poly, levels: arr } };
   return field === 'levels' ? { levels: arr, jazz: 'off' } : { subLevels: arr };
+}
+
+/**
+ * Which levels a bar sets, and its index.
+ * @param {HTMLElement} bar
+ * @returns {{field: ('levels'|'subLevels'|'poly'), i: number}}
+ */
+function barTarget(bar) {
+  const d = bar.dataset;
+  if (d.mbar !== undefined) return { field: 'levels', i: Number(d.mbar) };
+  if (d.mpolybar !== undefined) return { field: 'poly', i: Number(d.mpolybar) };
+  return { field: 'subLevels', i: Number(d.msubbar) };
+}
+
+/**
+ * Current level of a bar.
+ * @param {{field: ('levels'|'subLevels'|'poly'), i: number}} tg
+ * @returns {number}
+ */
+function barLevel(tg) {
+  if (tg.field === 'levels') return editableLevels()[tg.i];
+  return tg.field === 'poly' ? s.poly.levels[tg.i] : s.subLevels[tg.i];
 }
 
 /**
@@ -794,9 +964,8 @@ function levelPatch(field, i, fn) {
  * @param {HTMLElement} bar
  */
 function toggleBar(bar) {
-  const pulse = bar.dataset.mbar !== undefined;
-  const i = Number(pulse ? bar.dataset.mbar : bar.dataset.msubbar);
-  update(levelPatch(pulse ? 'levels' : 'subLevels', i, toggleLevel));
+  const tg = barTarget(bar);
+  update(levelPatch(tg.field, tg.i, toggleLevel));
 }
 
 /** Adds a tap to the tap tempo series. */
@@ -823,13 +992,29 @@ function onClick(e) {
   // detail 0 comes from the keyboard.
   if (d.step) return e.detail === 0 && setTempo(s.tempo + Number(d.step));
   if (d.m === 'tap') return e.detail === 0 && tap();
-  if (d.mbar !== undefined || d.msubbar !== undefined) return e.detail === 0 && toggleBar(el);
+  if (d.mbar !== undefined || d.msubbar !== undefined || d.mpolybar !== undefined)
+    return e.detail === 0 && toggleBar(el);
   if (d.m === 'close' || d.m === 'back') return closeOverlay();
   if (d.m === 'open') return openSheet();
   if (d.m === 'play' || d.m === 'stop') return togglePlay();
   if (d.m === 'minus') return setTempo(s.tempo - 1);
   if (d.m === 'plus') return setTempo(s.tempo + 1);
   if (d.m === 'presets') return openPage('presets');
+  if (d.m === 'undo' && banner) {
+    s = banner.prev;
+    banner = null;
+    save();
+    return render();
+  }
+  if (d.m === 'noteSave') return saveToNote();
+  if (d.m === 'noteForget')
+    return confirmTap(/** @type {HTMLButtonElement} */ (el), t('metro.noteForgetConfirm'), () => {
+      const n = noteHere();
+      if (!n) return;
+      delete n.metro;
+      touch(n);
+      render();
+    });
   if (d.page) return openPage(d.page);
   if (d.mcut) return replace(withGroups(s, cutOrJoin(s.groups, Number(d.mcut))));
   if (d.msub) return replace(withSubdiv(s, d.msub));
@@ -854,6 +1039,17 @@ function onClick(e) {
       savePresets();
       render();
     });
+}
+
+/** Stores the musical settings in the note open under the sheet. */
+function saveToNote() {
+  const n = noteHere();
+  if (!n) return;
+  n.metro = presetPart(s);
+  loadedFor = state.view;
+  banner = null;
+  touch(n);
+  render();
 }
 
 /**
@@ -902,6 +1098,9 @@ function onChange(e) {
   if (k === 'onceBeat') return update({ onceBeat: Number(el.value) });
   if (k === 'gapMode') return update({ gap: { ...s.gap, mode: el.value } });
   if (k && k.startsWith('gap.')) return update({ gap: { ...s.gap, [k.slice(4)]: Number(el.value) } });
+  if (k === 'polyOn') return replace(withPoly(s, { on: el.checked }));
+  if (k === 'poly.sound') return replace(withPoly(s, { sound: el.value }));
+  if (k === 'poly.n' || k === 'poly.bars') return replace(withPoly(s, { [k.slice(5)]: Number(el.value) }));
   if (k === 'rampOn') return update({ ramp: { ...s.ramp, on: el.checked } });
   if (k === 'ramp.end') return update({ ramp: { ...s.ramp, end: el.value } });
   if (k && k.startsWith('ramp.')) return update({ ramp: { ...s.ramp, [k.slice(5)]: Number(el.value) } });
@@ -930,7 +1129,7 @@ function onPointerDown(e) {
   if (tgt.closest('[data-m="tap"]')) return tap();
   const st = /** @type {HTMLElement} */ (tgt.closest('[data-step]'));
   if (st) return holdStep(Math.sign(Number(st.dataset.step)));
-  const bar = /** @type {HTMLElement} */ (tgt.closest('[data-mbar], [data-msubbar]'));
+  const bar = /** @type {HTMLElement} */ (tgt.closest('[data-mbar], [data-msubbar], [data-mpolybar]'));
   if (bar) return dragBar(bar, e);
   const zone = /** @type {HTMLElement} */ (tgt.closest('#mTempo'));
   if (zone) dragTempo(zone, e);
@@ -964,11 +1163,9 @@ function holdStep(dir) {
  * @param {PointerEvent} e
  */
 function dragBar(bar, e) {
-  const pulse = bar.dataset.mbar !== undefined;
-  const field = pulse ? 'levels' : 'subLevels';
-  const i = Number(pulse ? bar.dataset.mbar : bar.dataset.msubbar);
+  const { field, i } = barTarget(bar);
   const y0 = e.clientY;
-  const start = audible(pulse ? editableLevels()[i] : s.subLevels[i]);
+  const start = audible(barLevel({ field, i }));
   let moved = false;
   bar.setPointerCapture(e.pointerId);
   const move = (ev) => {
@@ -1046,7 +1243,10 @@ sheet.addEventListener('keydown', (e) => {
 
 // The ♩ button of every screen header (headers are redrawn often).
 document.addEventListener('click', (e) => {
-  if (/** @type {HTMLElement} */ (e.target).closest('[data-metro-open]')) openSheet();
+  const tgt = /** @type {HTMLElement} */ (e.target);
+  if (tgt.closest('[data-metro-open]')) return openSheet(true);
+  const blk = /** @type {HTMLElement} */ (tgt.closest('[data-metro-block]'));
+  if (blk) openFromBlock(blk.dataset.metroBlock);
 });
 
 document.addEventListener('visibilitychange', () => {

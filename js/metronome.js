@@ -46,6 +46,18 @@
  *   that grow over the session. The lights go on during the silence.
  * - **Tempo ramp**: from the tempo of the main page to a target, by steps
  *   (+4 every 4 bars…); at the end, stay, start again or stop.
+ *
+ * ## Polyrhythm (2.15)
+ *
+ * A second voice plays `n` evenly spaced hits over `bars` bars, on top of
+ * the pulses: 3 over one bar of 4/4 is 3:4, 5 over 2 bars is 5:8. Each hit
+ * has its own level. A hit falling on a silenced pulse is silenced too.
+ *
+ * ## Notes (2.15)
+ *
+ * A note may keep its own metronome settings (`note.metro`, the preset part),
+ * and a staff or chart block gives its tempo, time signature and swing
+ * ({@link fromBlock}).
  */
 
 /** Tempo bounds (beats per minute). */
@@ -119,6 +131,7 @@ export const SHORTCUTS = Object.freeze([
  * @property {number} onceBeat Pulse that clicks in "once per bar" mode (from 0).
  * @property {GapSettings} gap Silences (2.14).
  * @property {RampSettings} ramp Tempo ramp (2.14).
+ * @property {PolySettings} poly Polyrhythm (2.15).
  * @property {boolean} vibrate Vibrate on each audible pulse.
  * @property {boolean} flash Full-screen flash on each audible pulse.
  * @property {boolean} wake Keep the screen on while playing.
@@ -430,7 +443,7 @@ function subOffsets(s) {
  * A sound.
  * @typedef {Object} MetroEvent
  * @property {number} t Time (s) from the start of the cycle (or chunk).
- * @property {'pulse'|'sub'} kind
+ * @property {'pulse'|'sub'|'poly'} kind
  * @property {number} level 1 to 4.
  */
 
@@ -443,6 +456,14 @@ function subOffsets(s) {
  * @property {number} level Effective level (0 = silent by setting).
  * @property {boolean} silent Silenced by the silence modes (2.14).
  * @property {number} tempo Tempo of the bar (changes during a tempo ramp).
+ */
+
+/**
+ * A polyrhythm hit, for its lights.
+ * @typedef {Object} PolyMark
+ * @property {number} t Time (s) from the start of the cycle (or chunk).
+ * @property {number} hit Hit index (from 0 to `n - 1`).
+ * @property {boolean} silent Falls on a silenced pulse.
  */
 
 /**
@@ -460,9 +481,10 @@ function subOffsets(s) {
  * @param {number} bar Bar index stored in the marks.
  * @param {Array.<MetroEvent>} events Filled.
  * @param {Array.<MetroMark>} marks Filled.
+ * @param {Array.<PolyMark>} polys Filled.
  * @returns {number} Duration of the bar (s).
  */
-function barEvents(s, plan, t0, bar, events, marks) {
+function barEvents(s, plan, t0, bar, events, marks, polys) {
   const p = pulseSeconds(s, plan.tempo);
   const offs = subOffsets(s);
   const levels = pulseLevels(s);
@@ -477,7 +499,72 @@ function barEvents(s, plan, t0, bar, events, marks) {
       if (lv) events.push({ t: at + f * p, kind: 'sub', level: lv });
     });
   }
+  for (const h of polyHits(s, bar)) {
+    const at = t0 + h.f * s.num * p;
+    const i = Math.min(s.num - 1, Math.floor(h.f * s.num + 1e-9));
+    const silent = !!(plan.mute && plan.mute[i]);
+    polys.push({ t: at, hit: h.hit, silent });
+    const lv = audible(s.poly.levels[h.hit]);
+    if (lv && !silent) events.push({ t: at, kind: 'poly', level: lv });
+  }
   return s.num * p;
+}
+
+// ---------- Polyrhythm (2.15) ----------
+
+/** Polyrhythm bounds: hits, and bars they spread over. */
+export const POLY_N_MIN = 2;
+export const POLY_N_MAX = 16;
+export const POLY_BARS_MAX = 4;
+
+/**
+ * Polyrhythm settings.
+ * @typedef {Object} PolySettings
+ * @property {boolean} on
+ * @property {number} n Hits ({@link POLY_N_MIN} to {@link POLY_N_MAX}).
+ * @property {number} bars Bars they spread over (1 to {@link POLY_BARS_MAX}).
+ * @property {string} sound One of {@link SOUNDS}.
+ * @property {Array.<number>} levels Level of each hit, -4 to 4 (≤ 0: silent).
+ */
+
+/**
+ * Default levels of the hits: the first one strong.
+ * @param {number} n
+ * @returns {Array.<number>}
+ */
+export function defaultPolyLevels(n) {
+  return Array.from({ length: n }, (_, k) => (k ? 3 : 4));
+}
+
+/**
+ * Polyrhythm hits that fall in bar `bar` (from the start of the session):
+ * hit `k` sits at `k × bars / n` bars, so bar `bar` holds the hits whose
+ * position falls in `[g, g + 1)`, `g = bar mod bars`.
+ *
+ * @example
+ * // 3 over 2 bars: bar 0 → hits 0 (at 0) and 1 (at 2/3); bar 1 → hit 2 (at 1/3)
+ * @param {MetroSettings} s
+ * @param {number} bar
+ * @returns {Array.<{hit: number, f: number}>} `f`: position in the bar (0 to 1).
+ */
+export function polyHits(s, bar) {
+  const p = s.poly;
+  if (!p || !p.on) return [];
+  const g = bar % p.bars;
+  const out = [];
+  // k × bars / n in [g, g + 1)  ⇔  k × bars in [g × n, (g + 1) × n): integers only.
+  for (let k = Math.ceil((g * p.n) / p.bars); k * p.bars < (g + 1) * p.n; k++)
+    out.push({ hit: k, f: (k * p.bars - g * p.n) / p.n });
+  return out;
+}
+
+/**
+ * Ratio shown for a polyrhythm: hits against pulses (3:4, 5:8).
+ * @param {MetroSettings} s
+ * @returns {string}
+ */
+export function polyRatio(s) {
+  return `${s.poly.n}:${s.num * s.poly.bars}`;
 }
 
 // ---------- Silences and tempo ramp (2.14) ----------
@@ -623,12 +710,27 @@ export function planBar(s, i, elapsed, seed) {
 }
 
 /**
- * Number of bars in a looping cycle: on + off in `bars` silence mode, 1 otherwise.
+ * Number of bars in a looping cycle: on + off in `bars` silence mode, 1
+ * otherwise; with a polyrhythm, a common multiple with its bars.
  * @param {MetroSettings} s
  * @returns {number}
  */
 export function cycleBars(s) {
-  return s.gap.mode === 'bars' ? s.gap.on + s.gap.off : 1;
+  const gap = s.gap.mode === 'bars' ? s.gap.on + s.gap.off : 1;
+  return s.poly && s.poly.on ? lcm(gap, s.poly.bars) : gap;
+}
+
+/**
+ * Least common multiple of two positive integers.
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+function lcm(a, b) {
+  let x = a;
+  let y = b;
+  while (y) [x, y] = [y, x % y];
+  return (a / x) * b;
 }
 
 /**
@@ -638,7 +740,7 @@ export function cycleBars(s) {
  * cycleEvents(sanitizeMetro({ tempo: 120 }))
  * // 4/4: duration 2 s; pulses at 0 (level 4), 0.5, 1, 1.5 (level 3)
  * @param {MetroSettings} s
- * @returns {{duration: number, events: Array.<MetroEvent>, marks: Array.<MetroMark>}}
+ * @returns {{duration: number, events: Array.<MetroEvent>, marks: Array.<MetroMark>, polys: Array.<PolyMark>}}
  */
 export function cycleEvents(s) {
   return chunkEvents(
@@ -652,15 +754,16 @@ export function cycleEvents(s) {
  * @param {MetroSettings} s
  * @param {Array.<BarPlan>} plans
  * @param {number} [firstBar=0] Index of the first bar (stored in the marks).
- * @returns {{duration: number, events: Array.<MetroEvent>, marks: Array.<MetroMark>}}
+ * @returns {{duration: number, events: Array.<MetroEvent>, marks: Array.<MetroMark>, polys: Array.<PolyMark>}}
  */
 export function chunkEvents(s, plans, firstBar = 0) {
   const events = [];
   const marks = [];
+  const polys = [];
   let t0 = 0;
-  plans.forEach((plan, k) => (t0 += barEvents(s, plan, t0, firstBar + k, events, marks)));
+  plans.forEach((plan, k) => (t0 += barEvents(s, plan, t0, firstBar + k, events, marks, polys)));
   events.sort((a, b) => a.t - b.t);
-  return { duration: t0, events, marks };
+  return { duration: t0, events, marks, polys };
 }
 
 // ---------- Validation ----------
@@ -681,6 +784,7 @@ export const METRO_DEFAULTS = Object.freeze({
   onceBeat: 0,
   gap: Object.freeze({ mode: 'off', on: 2, off: 2, pct: 30, from: 0, to: 70, minutes: 5 }),
   ramp: Object.freeze({ on: false, to: 140, step: 4, every: 4, end: 'stay' }),
+  poly: Object.freeze({ on: false, n: 3, bars: 1, sound: 'wood', levels: Object.freeze([4, 3, 3]) }),
   vibrate: false,
   flash: false,
   wake: true,
@@ -766,6 +870,28 @@ function sanitizeRamp(r) {
 }
 
 /**
+ * Validates the polyrhythm settings; levels are reset when their number does
+ * not match the hits.
+ * @param {*} r
+ * @returns {PolySettings}
+ */
+function sanitizePoly(r) {
+  const d = METRO_DEFAULTS.poly;
+  const o = r && typeof r === 'object' ? r : {};
+  const n = int(o.n, POLY_N_MIN, POLY_N_MAX, d.n);
+  return {
+    on: bool(o.on, d.on),
+    n,
+    bars: int(o.bars, 1, POLY_BARS_MAX, d.bars),
+    sound: SOUNDS.includes(o.sound) ? o.sound : d.sound,
+    levels:
+      Array.isArray(o.levels) && o.levels.length === n && o.levels.every(isLevel)
+        ? o.levels.slice()
+        : defaultPolyLevels(n),
+  };
+}
+
+/**
  * Validates stored or imported settings: unknown values fall back to the
  * defaults; groups, levels and subdivision levels are reset when they do not
  * match the time signature.
@@ -808,6 +934,7 @@ export function sanitizeMetro(r) {
     onceBeat: Number.isInteger(o.onceBeat) && o.onceBeat >= 0 && o.onceBeat < n ? o.onceBeat : 0,
     gap: sanitizeGap(o.gap, o.jazz === 'once' && o.twoBars === true),
     ramp: sanitizeRamp(o.ramp),
+    poly: sanitizePoly(o.poly),
     vibrate: bool(o.vibrate, d.vibrate),
     flash: bool(o.flash, d.flash),
     wake: bool(o.wake, d.wake),
@@ -936,6 +1063,7 @@ const PRESET_FIELDS = [
   'onceBeat',
   'gap',
   'ramp',
+  'poly',
 ];
 
 /**
@@ -961,6 +1089,69 @@ export function presetPart(s) {
  */
 export function applyPreset(current, p) {
   return sanitizeMetro({ ...current, ...presetPart(sanitizeMetro(p.s)) });
+}
+
+/**
+ * Settings after a polyrhythm change; the hit levels go back to the default
+ * when the number of hits changes.
+ * @param {MetroSettings} s
+ * @param {Object} patch Polyrhythm fields to change.
+ * @returns {MetroSettings}
+ */
+export function withPoly(s, patch) {
+  const poly = { ...s.poly, ...patch };
+  if (patch.n !== undefined && patch.n !== s.poly.n) poly.levels = null;
+  return sanitizeMetro({ ...s, poly });
+}
+
+// ---------- Blocks and notes (2.15) ----------
+
+/** Chart styles played with swing (same rule as {@link module:audio|audio}). */
+const SWING_STYLE = /swing|waltz|blues|gospel|ballad/i;
+
+/**
+ * Settings from a staff or chart block: its time signature, its tempo
+ * (quarter notes per minute, converted to what the metronome counts) and its
+ * swing. The rest of the settings is kept.
+ *
+ * - Compound /8 (6/8, 12/8): the tempo counts dotted quarters (× 2/3).
+ * - Otherwise it counts pulses: × 2 in /8, × 1/2 in /2.
+ * - Swing: eighth subdivision at 67 % (triplet feel); no swing: straight.
+ *
+ * @example
+ * fromBlock(s, { type: 'staff', time: '6/8', tempo: 90, swing: false })
+ * // 6/8, groups 3+3, ♩. = 60
+ * @param {MetroSettings} s
+ * @param {{type: string, time: string, tempo: number, swing: (boolean|undefined), style: (string|undefined)}} b
+ * @returns {MetroSettings}
+ */
+export function fromBlock(s, b) {
+  const [n, den] = String(b.time || '4/4')
+    .split('/')
+    .map(Number);
+  const next = withMeter(s, Number.isInteger(n) ? n : 4, den);
+  const compound = next.den === 8 && next.groups.every((g) => g === 3);
+  const q = num(b.tempo) ? b.tempo : 120;
+  const swing = b.type === 'grid' ? SWING_STYLE.test(b.style || '') && next.den <= 4 : !!b.swing;
+  const out = sanitizeMetro({
+    ...next,
+    unit: compound ? 'group' : 'pulse',
+    tempo: Math.round(compound ? (q * 2) / 3 : (q * next.den) / 4),
+    swing: swing ? 67 : SWING_MIN,
+  });
+  return swing && out.subdiv === 'none' ? withSubdiv(out, '8') : out;
+}
+
+/**
+ * Settings stored in a note are the same as the current ones (no need to
+ * load them, the save button shows "saved")?
+ * @param {MetroSettings} s
+ * @param {*} stored `note.metro`.
+ * @returns {boolean}
+ */
+export function sameAsStored(s, stored) {
+  if (!stored) return false;
+  return JSON.stringify(presetPart(s)) === JSON.stringify(presetPart(sanitizeMetro(stored)));
 }
 
 /**

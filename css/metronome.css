@@ -613,3 +613,81 @@
   background: var(--accent);
   transition: width 0.3s;
 }
+
+/* Polyrhythm (2.15): hit lights on the main page, level bars on its page */
+.mpoly {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: -4px;
+}
+.mpoly-ratio {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-right: 4px;
+}
+.mpoly-dot {
+  width: 14px;
+  height: 8px;
+  border-radius: 4px;
+  border: 1.5px solid var(--line);
+  background: color-mix(in srgb, var(--ink) calc(var(--lv, 0) * 100%), var(--surface));
+}
+.mpoly-dot.off {
+  border-style: dashed;
+  background: var(--surface);
+}
+.mpoly-dot.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.mpoly.silent-bar .mpoly-dot.on {
+  background: var(--muted);
+  border-color: var(--muted);
+}
+.mpolybars .mbar {
+  flex: 0 0 var(--cw, 36px);
+}
+.mpolybars.dim {
+  opacity: 0.5;
+}
+
+/* Settings loaded from a block or a note (2.15) */
+.mbanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+.mbanner span {
+  flex: 1;
+}
+.mbanner .btn {
+  color: var(--accent);
+  min-height: 32px;
+}
+
+/* Save to the note (2.15) */
+.mnote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.mnote .btn:not(.icon-btn) {
+  flex: 1;
+}
+.mnote-ok {
+  flex: 1;
+  text-align: center;
+  color: var(--muted);
+}

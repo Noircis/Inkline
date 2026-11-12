@@ -1,5 +1,5 @@
 // Tests for the metronome (2.11, free time signatures 2.12): settings, groups, levels,
-// cycle sounds, jazz modes, tap tempo, presets.
+// cycle sounds, jazz modes, tap tempo, presets; polyrhythm, blocks and notes (2.15).
 // Run: npm test
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -39,6 +39,12 @@ import {
   gapShare,
   streams,
   chunkEvents,
+  cycleBars,
+  polyHits,
+  polyRatio,
+  withPoly,
+  fromBlock,
+  sameAsStored,
 } from '../js/metronome.js';
 
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} != ${b}`);
@@ -358,4 +364,93 @@ test('silences and ramp: validation and presets', () => {
   const p = presetPart(S({ gap: { mode: 'bars', on: 1, off: 3 }, ramp: { on: true, to: 160 } }));
   assert.equal(p.gap.off, 3);
   assert.equal(p.ramp.to, 160);
+});
+
+// ---------- Polyrhythm (2.15) ----------
+
+test('polyrhythm: hits spread evenly over the bars', () => {
+  const s = withPoly(S(), { on: true, n: 3, bars: 2 });
+  assert.deepEqual(
+    polyHits(s, 0).map((h) => h.hit),
+    [0, 1],
+  );
+  close(polyHits(s, 0)[1].f, 2 / 3);
+  assert.deepEqual(polyHits(s, 1), [{ hit: 2, f: 1 / 3 }]);
+  assert.deepEqual(polyHits(s, 2), polyHits(s, 0)); // next group of two bars
+  assert.deepEqual(polyHits(S(), 0), []); // off
+  assert.equal(polyRatio(s), '3:8');
+  assert.equal(polyRatio(withPoly(S(), { n: 3 })), '3:4');
+});
+
+test('polyrhythm: cycle length, sounds, a hit on a silenced pulse is silent', () => {
+  const s = withPoly(S({ tempo: 60 }), { on: true, n: 3 });
+  assert.equal(cycleBars(s), 1);
+  const c = cycleEvents(s);
+  assert.equal(c.duration, 4);
+  const poly = c.events.filter((e) => e.kind === 'poly');
+  assert.deepEqual(
+    poly.map((e) => e.level),
+    [4, 3, 3],
+  );
+  poly.forEach((e, k) => close(e.t, (4 * k) / 3));
+  assert.equal(c.polys.length, 3);
+  // Two bars over a cycle of 2 + 1 silence bars: 6 bars.
+  assert.equal(cycleBars(withPoly(S({ gap: { mode: 'bars', on: 2, off: 1 } }), { on: true, bars: 2 })), 6);
+  // Bar silenced by the silences: the hits are silent too, but still marked.
+  const g = withPoly(S({ gap: { mode: 'bars', on: 1, off: 1 } }), { on: true, n: 3 });
+  const cg = cycleEvents(g);
+  assert.equal(cg.events.filter((e) => e.kind === 'poly').length, 3);
+  assert.deepEqual(
+    cg.polys.map((m) => m.silent),
+    [false, false, false, true, true, true],
+  );
+  // A muted hit keeps its level for later.
+  const m = withPoly(s, { levels: [4, -3, 3] });
+  assert.equal(cycleEvents(m).events.filter((e) => e.kind === 'poly').length, 2);
+});
+
+test('polyrhythm: validation, levels reset when the hits change, kept in presets', () => {
+  const s = sanitizeMetro({ poly: { on: true, n: 99, bars: 0, sound: 'gong', levels: [1] } });
+  assert.deepEqual(s.poly, { on: true, n: 3, bars: 1, sound: 'wood', levels: [4, 3, 3] });
+  const p = withPoly(withPoly(S(), { levels: [4, -2, 1] }), { n: 4 });
+  assert.deepEqual(p.poly.levels, [4, 3, 3, 3]);
+  assert.deepEqual(withPoly(p, { sound: 'rim' }).poly.levels, [4, 3, 3, 3]);
+  const part = presetPart(withPoly(S(), { on: true, n: 5 }));
+  assert.equal(part.poly.n, 5);
+  assert.equal(applyPreset(S(), { s: part }).poly.on, true);
+});
+
+// ---------- Blocks and notes (2.15) ----------
+
+test('fromBlock: time signature, tempo converted, swing', () => {
+  const st = fromBlock(S(), { type: 'staff', time: '4/4', tempo: 100, swing: false });
+  assert.equal(st.tempo, 100);
+  assert.equal(st.subdiv, 'none');
+  const six = fromBlock(S(), { type: 'staff', time: '6/8', tempo: 90, swing: false });
+  assert.equal(meterLabel(six), '6/8');
+  assert.equal(six.unit, 'group');
+  assert.equal(six.tempo, 60);
+  const sw = fromBlock(S(), { type: 'staff', time: '3/4', tempo: 150, swing: true });
+  assert.equal(sw.num, 3);
+  assert.equal(sw.subdiv, '8');
+  assert.equal(sw.swing, 67);
+  const chart = fromBlock(S(), { type: 'grid', time: '4/4', tempo: 200, style: 'Up Tempo Swing' });
+  assert.equal(chart.subdiv, '8');
+  const bossa = fromBlock(S({ subdiv: '8', swing: 67 }), {
+    type: 'grid',
+    time: '4/4',
+    tempo: 140,
+    style: 'Bossa Nova',
+  });
+  assert.equal(bossa.swing, 50);
+  // The rest of the settings stays.
+  assert.equal(fromBlock(S({ sound: 'rim' }), { type: 'staff', time: '2/4', tempo: 80 }).sound, 'rim');
+});
+
+test('sameAsStored: compares the musical part only', () => {
+  const s = S({ tempo: 90 });
+  assert.equal(sameAsStored(s, presetPart(s)), true);
+  assert.equal(sameAsStored({ ...s, flash: true }, presetPart(s)), true);
+  assert.equal(sameAsStored(S({ tempo: 91 }), presetPart(s)), false);
+  assert.equal(sameAsStored(s, undefined), false);
 });
