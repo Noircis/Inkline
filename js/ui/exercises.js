@@ -6,7 +6,8 @@
  * 1. `gen`: the settings (time signature, length, notes per measure, allowed
  *    positions for the first note, subdivision), then "Generate";
  * 2. `genPlay`: the exercise in large print, its number (↻ for another one),
- *    and a playback bar at the bottom (tempo, swing, loop, metronome).
+ *    and a playback bar at the bottom (tempo, swing, loop, metronome); "Add
+ *    to…" puts it in a note or a practice program (2.16).
  *
  * The draw is done by the pure module {@link module:exercise|exercise}; the
  * writing of the measures by {@link module:placements|placements}. Settings
@@ -39,6 +40,7 @@ import {
   updatePlay,
   highlight,
 } from './drill-kit.js';
+import { openAddTo } from './practice/add-to.js';
 
 /** Playback id of the exercise. */
 const PLAY_ID = 'gen';
@@ -229,7 +231,7 @@ function renderGenPlay() {
       ${toggle('loop', t('play.loop'), s.loop)}
       <button type="button" class="btn icon-btn" id="metroBtn" aria-expanded="false" aria-controls="metroPanel" aria-label="${esc(t('train.metronome'))}">&#9881;</button>
     </div>
-    <button type="button" class="playbtn big" data-play="${PLAY_ID}">&#9654; ${esc(t('play.listen'))}</button>
+    <div class="transport-go"><button type="button" class="playbtn big" data-play="${PLAY_ID}">&#9654; ${esc(t('play.listen'))}</button><button type="button" class="btn addto" id="addTo">+ ${esc(t('practice.add'))}</button></div>
   </div>`;
 
   app.querySelector('#back').addEventListener('click', backToList);
@@ -257,6 +259,11 @@ function renderGenPlay() {
     metroBtn.setAttribute('aria-expanded', String(!panel.hidden));
   });
   app.querySelector(`[data-play="${PLAY_ID}"]`).addEventListener('click', () => play());
+  app
+    .querySelector('#addTo')
+    .addEventListener('click', () =>
+      openAddTo({ block, title: `${t('ex.number', { n: g.seed })} · ${m.label}` }),
+    );
   // Long press: "Play from here" or loop over measures of the exercise (2.8.4).
   const st = /** @type {HTMLElement} */ (app.querySelector('#genStaff'));
   bindMeasureSelect(

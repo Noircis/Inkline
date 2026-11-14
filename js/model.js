@@ -90,7 +90,7 @@ import { uid } from './util.js';
  * @property {StaffItem[]} items Items in order.
  * @property {string} [tr] Transposing instrument (2.8.3, key of {@link module:model.INSTRUMENTS|INSTRUMENTS}): notes are written as the musician reads them, playback plays the concert pitch. Absent: in C.
  * @property {number} [ks] Key signature (2.5): number of sharps (> 0) or flats (< 0), from -7 to 7. Absent: no key signature.
- * @property {Array.<number>} [groups] Grouping of eighth notes in the measure (2.8), e.g. `[2, 2, 3]` for a "2+2+3" 7/8. Decides beams and metronome clicks. Absent: {@link module:model.defaultGroups|defaultGroups}. For now only on generated practice blocks.
+ * @property {Array.<number>} [groups] Grouping of eighth notes in the measure (2.8), e.g. `[2, 2, 3]` for a "2+2+3" 7/8. Decides beams and metronome clicks. Absent: {@link module:model.defaultGroups|defaultGroups}. Set on practice blocks, and kept when one is added to a note (2.16).
  * @property {boolean} [justify] Stretch the last line to the edge (generated practice blocks; never saved).
  * @property {'open'|'closed'} [fold] Manual display choice for a long block (2.2): expanded or collapsed. Absent: the "Collapse automatically" option decides.
  */
@@ -160,6 +160,13 @@ export const DUR = Object.freeze({ w: 4, h: 2, q: 1, 8: 0.5, 16: 0.25 });
 
 /** Time signatures offered in the interface. */
 export const TIME_SIGNATURES = ['4/4', '3/4', '2/4', '5/4', '6/8', '12/8'];
+
+/**
+ * Time signatures a staff block may also have (2.16): those of the practice
+ * screens, kept when an exercise is added to a note. The menu of the block
+ * shows them only on a block that has one.
+ */
+export const STAFF_TIMES = [...TIME_SIGNATURES, '9/8', '3/8', '5/8', '7/8'];
 
 /**
  * **Actual** duration of a staff item, in quarter notes.

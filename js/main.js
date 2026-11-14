@@ -60,6 +60,11 @@ import './ui/note.js';
 import './ui/options.js';
 import './ui/training.js';
 import './ui/exercises.js';
+// Practice notebook (2.16).
+import './ui/practice/hub.js';
+import './ui/practice/program.js';
+import './ui/practice/session.js';
+import './ui/practice/log.js';
 // Metronome (2.11): sheet and mini-bar, reachable from every screen.
 import './ui/metronome.js';
 
@@ -70,6 +75,8 @@ import './ui/metronome.js';
 const loaded = await loadAll();
 state.notes = loaded.notes;
 state.folders = loaded.folders;
+state.programs = loaded.programs;
+state.sessions = loaded.sessions;
 // A note referencing a folder that no longer exists becomes unfiled again.
 Object.values(state.notes).forEach((n) => {
   if (n.folder && !state.folders[n.folder]) delete n.folder;

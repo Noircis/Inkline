@@ -32,10 +32,11 @@ npm run docs                     # regenerate JSDoc into docs/
 
 Two layers:
 
-- **Pure modules** (`js/*.js` except `audio`, `storage`, `db`, `export`, `pdf`, `main`): no DOM, no side
+- **Pure modules** (`js/*.js` except `audio`, `metro-engine`, `storage`, `db`, `export`, `pdf`, `main`): no DOM, no side
   effects, tested under Node. All musical/organizational logic lives here — `model` (types/factories),
   `pitch`, `rhythm`, `layout`, `render-staff` (SVG as string), `chords`, `grid`, `ireal`, `measure-fit`,
-  `transpose`, `folders`, `search`, `folding`, `placements`, `exercise`, `chord-keys`, `i18n`, `sanitize`.
+  `transpose`, `folders`, `search`, `folding`, `placements`, `exercise`, `chord-keys`, `i18n`, `sanitize`,
+  `metronome`, `metro-clock`, `practice`.
 - **Interface / browser glue**: `js/ui/**`, `audio` (Web Audio synth), `storage` + `db` (IndexedDB with
   localStorage fallback), `export` + `pdf`, `main`.
 
@@ -64,7 +65,9 @@ Main files by size/importance: `render-staff.js`, `storage.js`, `ui/grid-ui.js`,
 - Format is backward compatible back to 1.0 — never break loading of old notes; migrations go in `storage.js`
   / `sanitize.js`.
 - Notes may carry `folder`, `pinned`, `cats`; shared `.inkline` files strip those. Backups are
-  `{ app, version: 2, exported, notes, folders }` (v1 still importable).
+  `{ app, version: 3, exported, notes, folders, programs, sessions }` (v1 and v2 still importable).
+- Practice notebook (2.16): programs and sessions live in their own IndexedDB stores, validated by
+  `practice.js`. Screens in `js/ui/practice/`. A screen can register a `leave` hook with `registerScreen`.
 
 ## Code conventions
 

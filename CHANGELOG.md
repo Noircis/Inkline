@@ -4,6 +4,34 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.16.0] - 2026-11-14
+
+### Added
+
+- **Practice notebook.** The Practice screen ("Travail" in French) lists your **programs**: as many as you like, each a list of things to practise in your order.
+  - An item is a free text ("Scales in 12 keys"), a note, one block of a note, or an exercise. Drag ≡ to reorder; tap an item for its duration, metronome, move or delete.
+  - A **duration is optional**. Without one, a quiet stopwatch runs; with one, a ring counts down, a soft chime plays at zero, then the session waits for you.
+- **Sessions.** ▶ plays a program one item at a time: the item fills the screen (staves and charts with their own Listen button), the metronome sits at the bottom with − + and play. ‹ › and "2 / 5" go anywhere, in any order; ✕ leaves at any time, nothing lost. The screen stays on.
+  - The metronome takes the item's settings, or its note's. In the metronome sheet, **Save for this item** keeps the current ones in the program.
+  - The **tempo is noted by itself**: the metronome tempo when you leave an item, if it played. No typing.
+- **History**: sessions by day, time and tempo of each item. Tap a tempo to correct it, ✕ to remove a session. Tap an item for its **tempo curve**, session after session.
+- **Add to…** on random exercises and on each Placements series: one tap puts the line into a new note, an existing note (with a caption "Exercise 482 · 7/8 · ♩ = 90") or a program.
+
+### Changed
+
+- Staff blocks keep the practice time signatures (9/8, 3/8, 5/8, 7/8) and odd groupings (7/8 as 2+2+3) when an exercise lands in a note; the block's time menu shows its own time signature.
+- Backups are format v3: they include programs and sessions. v1 and v2 backups still import.
+
+### Fixed
+
+- Opening the notebook while another tab still holds the older database now waits for it, instead of falling back to the old `localStorage` copy (matters with this version's schema change).
+
+### Technical
+
+- New pure module `practice.js` (validation, sessions, tempo history, curve geometry), screens in `js/ui/practice/`. IndexedDB schema version 2 with `programs` and `sessions` stores; `localStorage` fallback.
+- `registerScreen` takes an optional `leave` hook; `goChild` takes an id.
+- The metronome sheet saves into a "target" each screen declares (`registerMetroTarget`): the note, or the session item.
+
 ## [2.15.1] - 2026-11-12
 
 ### Added

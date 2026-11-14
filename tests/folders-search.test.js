@@ -123,11 +123,11 @@ test('sanitizeFolders: name required, color validated, id regenerated, trapped c
   assert.equal(z.name, '<b>Cours</b>'); // stored as is, escaped on display
 });
 
-test('v2 backup: notes + folders round trip', () => {
+test('backup: notes + folders round trip (format v3 since 2.16)', () => {
   const folders = { f1: { id: 'f1', name: 'Jazz', color: 'teal', created: 7 } };
   const notes = { a: note('a', { folder: 'f1', pinned: true, updated: 50 }) };
   const json = backupJson(notes, folders);
-  assert.equal(JSON.parse(json).version, 2);
+  assert.equal(JSON.parse(json).version, 3);
 
   const n2 = {};
   const f2 = {};

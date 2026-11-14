@@ -1,7 +1,8 @@
 /**
  * @module storage
  * @description
- * Persistence of the notebook (notes and folders), and backup/restore as a
+ * Persistence of the notebook (notes and folders, and since 2.16 the
+ * programs and sessions of the practice notebook), and backup/restore as a
  * JSON file.
  *
  * ## Where is the data? (since 2.1)
@@ -61,6 +62,7 @@ import { SORT_KEYS } from './search.js';
 import { openDb, getAll, write, STORES } from './db.js';
 import { METERS, meterOf, slotsOf } from './placements.js';
 import { sanitizeMetro, sanitizePresets } from './metronome.js';
+import { sanitizePrograms, sanitizeSessions, putSession } from './practice.js';
 
 /** `localStorage` key of the notebook up to 2.0 (historical: do not change). */
 const STORAGE_KEY = 'carnet-portees-v1';
@@ -71,8 +73,15 @@ const BACKUP_APP = 'carnet-portees';
 /** `localStorage` key of the folders in 2.0. */
 const FOLDERS_KEY = 'inkline-folders';
 
-/** Backup format version: 2 since folders arrived. v1 backups stay readable. */
-const BACKUP_VERSION = 2;
+/**
+ * Backup format version: 2 since folders arrived, 3 with the practice
+ * notebook (2.16). Older backups stay readable.
+ */
+const BACKUP_VERSION = 3;
+
+/** `localStorage` keys of the practice notebook, without IndexedDB (2.16). */
+const PROGRAMS_KEY = 'inkline-programs';
+const SESSIONS_KEY = 'inkline-sessions';
 
 /** `localStorage` key of the metadata (first use date, last backup date). */
 const META_KEY = 'inkline-meta';
@@ -115,6 +124,8 @@ let timer = null;
  * @typedef {Object} LoadResult
  * @property {Object.<string, module:model~Note>} notes
  * @property {Object.<string, module:folders~Folder>} folders
+ * @property {Object.<string, module:practice~Program>} programs Practice programs (2.16).
+ * @property {Object.<string, module:practice~Session>} sessions Practice sessions (2.16).
  * @property {'idb'|'local'} backend Where the notebook is stored.
  * @property {boolean} migrated The migration from `localStorage` just happened.
  */
@@ -133,12 +144,14 @@ function readLocal(key) {
 }
 
 /**
- * Reads both stores.
+ * Reads every store.
  * @param {IDBDatabase} database
- * @returns {Promise<Array.<Array.<Object>>>} Raw `[notes, folders]`.
+ * @returns {Promise<Array.<Array.<Object>>>} Raw `[notes, folders, programs, sessions]`.
  */
 function readDb(database) {
-  return Promise.all([getAll(database, STORES.notes), getAll(database, STORES.folders)]);
+  return Promise.all(
+    [STORES.notes, STORES.folders, STORES.programs, STORES.sessions].map((s) => getAll(database, s)),
+  );
 }
 
 /**
@@ -156,7 +169,7 @@ export async function loadAll() {
   dirty.clear();
   try {
     db = await openDb();
-    let [rawNotes, rawFolders] = await readDb(db);
+    let [rawNotes, rawFolders, rawPrograms, rawSessions] = await readDb(db);
     let migrated = false;
     if (getMeta().storage !== 'idb') {
       // Only migrate to an EMPTY database: if it already holds data
@@ -165,7 +178,7 @@ export async function loadAll() {
       if (!rawNotes.length && !rawFolders.length) {
         await migrateFromLocal(db);
         migrated = true;
-        [rawNotes, rawFolders] = await readDb(db);
+        [rawNotes, rawFolders, rawPrograms, rawSessions] = await readDb(db);
       }
       setMeta({ storage: 'idb' });
     }
@@ -176,7 +189,14 @@ export async function loadAll() {
       if (r && typeof r.id === 'string') saved.set(r.id, JSON.stringify(r));
     });
     backend = 'idb';
-    return { notes: sanitizeNotes(rawNotes), folders: sanitizeFolders(rawFolders), backend, migrated };
+    return {
+      notes: sanitizeNotes(rawNotes),
+      folders: sanitizeFolders(rawFolders),
+      programs: sanitizePrograms(rawPrograms),
+      sessions: sanitizeSessions(rawSessions),
+      backend,
+      migrated,
+    };
   } catch (e) {
     // IndexedDB unavailable: stay on localStorage, as before 2.1.
     db = null;
@@ -189,6 +209,8 @@ export async function loadAll() {
     return {
       notes: sanitizeNotes(readLocal(STORAGE_KEY)),
       folders: sanitizeFolders(readLocal(FOLDERS_KEY)),
+      programs: sanitizePrograms(readLocal(PROGRAMS_KEY)),
+      sessions: sanitizeSessions(readLocal(SESSIONS_KEY)),
       backend,
       migrated: false,
     };
@@ -328,14 +350,88 @@ export async function saveFolders(folders) {
 }
 
 /**
- * Content of a backup file (v2 format: notes and folders).
+ * Saves the practice programs (the whole store: a few small records).
+ * @param {Object.<string, module:practice~Program>} programs
+ * @returns {Promise<void>}
+ */
+export async function savePrograms(programs) {
+  if (backend === 'local') return writeLocal(PROGRAMS_KEY, programs);
+  try {
+    await write(db, { [STORES.programs]: { clear: true, put: Object.values(programs) } });
+  } catch (e) {
+    /* retried on the next change */
+  }
+}
+
+/**
+ * Saves one practice session, or deletes it when it is no longer in
+ * `sessions` (sessions add up: only the changed one is written).
+ * @param {Object.<string, module:practice~Session>} sessions
+ * @param {string} id
+ * @returns {Promise<void>}
+ */
+export async function saveSession(sessions, id) {
+  if (backend === 'local') return writeLocal(SESSIONS_KEY, sessions);
+  const s = sessions[id];
+  try {
+    await write(db, { [STORES.sessions]: s ? { put: [s] } : { del: [id] } });
+  } catch (e) {
+    /* kept in memory; written again with the next change */
+  }
+}
+
+/**
+ * Saves every practice session (after an import).
+ * @param {Object.<string, module:practice~Session>} sessions
+ * @returns {Promise<void>}
+ */
+export async function saveSessions(sessions) {
+  if (backend === 'local') return writeLocal(SESSIONS_KEY, sessions);
+  try {
+    await write(db, { [STORES.sessions]: { clear: true, put: Object.values(sessions) } });
+  } catch (e) {
+    /* kept in memory */
+  }
+}
+
+/**
+ * Writes a value as JSON in `localStorage` (no IndexedDB).
+ * @param {string} key
+ * @param {*} value
+ */
+function writeLocal(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    /* storage unavailable: the user can export */
+  }
+}
+
+/**
+ * The practice notebook, as saved and restored with the notes (2.16).
+ * @typedef {Object} PracticeData
+ * @property {Object.<string, module:practice~Program>} programs
+ * @property {Object.<string, module:practice~Session>} sessions
+ */
+
+/**
+ * Content of a backup file (v3 format: notes, folders, practice notebook).
  * @param {Object.<string, module:model~Note>} notes
  * @param {Object.<string, module:folders~Folder>} [folders={}]
+ * @param {PracticeData} [practice]
  * @returns {string} Indented JSON (readable and diffable).
  */
-export function backupJson(notes, folders = {}) {
+export function backupJson(notes, folders = {}, practice = { programs: {}, sessions: {} }) {
   return JSON.stringify(
-    { app: BACKUP_APP, version: BACKUP_VERSION, exported: Date.now(), notes, folders },
+    {
+      app: BACKUP_APP,
+      version: BACKUP_VERSION,
+      exported: Date.now(),
+      notes,
+      folders,
+      programs: practice.programs,
+      sessions: practice.sessions,
+    },
     null,
     1,
   );
@@ -376,17 +472,20 @@ export function noteFileJson(note) {
  * - **Backup**: merged by id, the most recent version (`updated`) wins.
  *   Importing the same backup twice has no effect. Folders of a v2 backup
  *   missing from the notebook are added; those already there (same id) are
- *   kept as they are. A v1 backup (no folders) stays readable.
+ *   kept as they are. A v1 backup (no folders) stays readable. Programs of a
+ *   v3 backup are merged the same way (most recent wins), sessions are added
+ *   when missing.
  *
  * In both cases, everything goes through {@link module:sanitize|sanitize}.
  *
  * @param {Object.<string, module:model~Note>} notes Notebook (modified in place).
  * @param {string} text File content.
  * @param {Object.<string, module:folders~Folder>} [folders={}] Folders (modified in place).
+ * @param {PracticeData} [practice] Practice notebook (modified in place).
  * @returns {ImportResult}
  * @throws {Error} If the file is neither JSON nor an Inkline format.
  */
-export function importFile(notes, text, folders = {}) {
+export function importFile(notes, text, folders = {}, practice = { programs: {}, sessions: {} }) {
   const d = JSON.parse(text);
   if (d && d.kind === 'note' && d.note) {
     const n = sanitizeNote(d.note, { freshIds: true });
@@ -411,6 +510,8 @@ export function importFile(notes, text, folders = {}) {
       if (!here) folders[f.id] = f;
     });
   }
+  const hasPractice = !!(d && (d.programs || d.sessions));
+  if (hasPractice) mergePractice(practice, d);
   let count = 0;
   let firstId = null;
   Object.values(incoming).forEach((n) => {
@@ -421,8 +522,27 @@ export function importFile(notes, text, folders = {}) {
       firstId = firstId || n.id;
     }
   });
-  if (!count && !Object.keys(incoming).length) throw new Error('aucune note');
+  if (!count && !Object.keys(incoming).length && !hasPractice) throw new Error('aucune note');
   return { kind: 'backup', count, firstId };
+}
+
+/**
+ * Merges the practice notebook of a backup: a program replaces ours when it
+ * is newer, a session is added when we do not have it.
+ * @param {PracticeData} practice Modified in place.
+ * @param {Object} d Parsed backup.
+ */
+function mergePractice(practice, d) {
+  Object.values(sanitizePrograms(d.programs)).forEach((p) => {
+    const cur = practice.programs[p.id];
+    if (!cur || p.updated > cur.updated) {
+      practice.programs[p.id] = p;
+    }
+  });
+  Object.values(sanitizeSessions(d.sessions)).forEach((s) => {
+    if (practice.sessions[s.id]) return;
+    putSession(practice.sessions, s);
+  });
 }
 
 /**

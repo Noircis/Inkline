@@ -24,7 +24,7 @@
  */
 
 import { uid, clamp } from './util.js';
-import { DUR, TIME_SIGNATURES, STEP_MIN, STEP_MAX, INSTRUMENTS } from './model.js';
+import { DUR, TIME_SIGNATURES, STAFF_TIMES, STEP_MIN, STEP_MAX, INSTRUMENTS, meterGroups } from './model.js';
 import { COLOR_KEYS, cleanFolderName, CAT_NAME_MAX, MAX_CATS } from './folders.js';
 import { sanitizeMetro, presetPart } from './metronome.js';
 
@@ -115,6 +115,7 @@ export function sanitizeBlock(r) {
   const tempo = isNum(r.tempo) ? clamp(Math.round(r.tempo), 30, 300) : 100;
   if (r.type === 'text') return { id: id(r.id), type: 'text', text: str(r.text, LIMITS.text) };
   if (r.type === 'staff') {
+    const time = STAFF_TIMES.includes(r.time) ? r.time : '4/4';
     const clef = ['treble', 'bass', 'rhythm'].includes(r.clef) ? r.clef : 'treble';
     const items = Array.isArray(r.items)
       ? r.items
@@ -126,6 +127,9 @@ export function sanitizeBlock(r) {
     if (clef !== 'rhythm' && Number.isInteger(r.ks) && r.ks !== 0 && Math.abs(r.ks) <= 7) st.ks = r.ks;
     if (clef !== 'rhythm' && r.tr !== 'C' && INSTRUMENTS.some((x) => x.key === r.tr)) st.tr = r.tr;
     if (FOLDS.includes(r.fold)) st.fold = r.fold;
+    // Grouping of an odd meter (2.16): kept only if it fills the measure.
+    if (Array.isArray(r.groups) && meterGroups({ time, groups: r.groups }) === r.groups)
+      st.groups = r.groups.slice();
     return st;
   }
   if (r.type === 'grid') {

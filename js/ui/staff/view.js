@@ -59,6 +59,16 @@ const KEY_SIGS = (() => {
 })();
 
 /**
+ * Time signatures of the menu: the usual ones, plus the block's own when it
+ * comes from a practice screen (7/8, 9/8…).
+ * @param {string} time
+ * @returns {Array.<string>}
+ */
+function timeChoices(time) {
+  return TIME_SIGNATURES.includes(time) ? TIME_SIGNATURES : [...TIME_SIGNATURES, time];
+}
+
+/**
  * HTML of the block header.
  * @param {module:model~StaffBlock} b
  * @returns {string}
@@ -70,7 +80,9 @@ function headerHtml(b) {
     ${rh ? '' : `<select data-f="clef" id="c_${id}" aria-label="${esc(t('staff.clef'))}"><option value="treble">${esc(t('staff.treble'))}</option><option value="bass">${esc(t('staff.bass'))}</option></select>`}
     ${rh ? '' : `<select data-f="ks" id="k_${id}" aria-label="${esc(t('staff.keySig'))}">${KEY_SIGS.map((k) => `<option value="${k.v}">${esc(k.label)}</option>`).join('')}</select>`}
     ${rh ? '' : `<select data-f="tr" id="i_${id}" aria-label="${esc(t('staff.instrument'))}">${INSTRUMENTS.map((x) => `<option value="${x.key}">${esc(t('instr.' + x.key))}</option>`).join('')}</select>`}
-    <select data-f="time" id="m_${id}" aria-label="${esc(t('staff.time'))}">${TIME_SIGNATURES.map((ts) => `<option>${ts}</option>`).join('')}</select>
+    <select data-f="time" id="m_${id}" aria-label="${esc(t('staff.time'))}">${timeChoices(b.time)
+      .map((ts) => `<option>${ts}</option>`)
+      .join('')}</select>
     <label class="tempo"><span class="mus">&#x1D15F;</span>=<input type="number" inputmode="numeric" min="30" max="300" data-f="tempo" id="tp_${id}"></label>
     <button type="button" class="chip" data-f="swing" aria-pressed="${!!b.swing}">Swing</button>
     ${metroBlockButton(b.id)}<button type="button" class="playbtn" data-play="${id}">&#9654; ${esc(t('play.listen'))}</button></div>`;
@@ -166,6 +178,7 @@ export function staffBlockEl(n, b, el) {
   });
   bindSelect(n, b, q('[data-f=time]'), b.time, (v) => {
     b.time = v;
+    delete b.groups; // the grouping of the old time signature
     refit(b); // everything is re-split for the new time signature
   });
 

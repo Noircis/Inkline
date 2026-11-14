@@ -401,12 +401,12 @@ test('save to the note, loaded when opened from that note again', async ({ page 
   await newNoteWith(page, 'text');
   await page.fill('#titleIn', 'Gammes');
   await page.click('[data-metro-open]');
-  await expect(page.locator('[data-m="noteSave"]')).toHaveText('Enregistrer dans la note');
+  await expect(page.locator('[data-m="targetSave"]')).toHaveText('Enregistrer dans la note');
   await steps(page, 1, 5); // 125
-  await page.click('[data-m="noteSave"]');
+  await page.click('[data-m="targetSave"]');
   await expect(page.locator('.mnote-ok')).toHaveText('✓ Enregistré dans la note');
   await steps(page, 1, 1);
-  await expect(page.locator('[data-m="noteSave"]')).toHaveText('Mettre à jour la note');
+  await expect(page.locator('[data-m="targetSave"]')).toHaveText('Mettre à jour la note');
   await steps(page, -1, 1);
   await expect(page.locator('.mnote-ok')).toBeVisible();
   await page.click('[data-m="close"]');
@@ -428,9 +428,9 @@ test('save to the note, loaded when opened from that note again', async ({ page 
     .poll(async () => (await storedNotes(page)).notes.find((n) => n.title === 'Gammes').metro.tempo)
     .toBe(125);
   // Remove it from the note.
-  await page.click('[data-m="noteForget"]');
-  await page.click('[data-m="noteForget"]'); // confirm
-  await expect(page.locator('[data-m="noteSave"]')).toHaveText('Enregistrer dans la note');
+  await page.click('[data-m="targetForget"]');
+  await page.click('[data-m="targetForget"]'); // confirm
+  await expect(page.locator('[data-m="targetSave"]')).toHaveText('Enregistrer dans la note');
 });
 
 test('polyrhythm: 3 over 2 bars, its lights, a longer cycle; lock-screen loop', async ({ page }) => {

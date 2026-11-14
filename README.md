@@ -71,6 +71,7 @@ js/
   ireal.js            iReal Pro import/export (irealb://)
   audio.js            Web Audio synth and sequencer
   storage.js          notebook saving, migration, backup/restore, .inkline files
+  practice.js         practice notebook: programs, items, sessions, tempo history
   db.js               thin layer over IndexedDB (open, read, write in a transaction)
   sanitize.js         validation of imported data (allowlist)
   folders.js          folders and categories: model, selection, counters, deletion
@@ -101,7 +102,10 @@ js/
     note.js           note screen: title, filing, pin, blocks, sharing
     folder-sheet.js   folder editor, categories panel, File note panel
     fold.js           collapsed long blocks: button, fade, tap
-    training.js       Practice and Placements screens
+    training.js       Placements screen
+    practice/         practice notebook (2.16): hub (practice home), program (editor),
+                      session, log (history, tempo curve), item-view (read-only item),
+                      add-to ("Add to…" a note or a program), shared
     exercises.js      random exercise screens (settings, playback)
     drill-kit.js      shared practice pieces (settings, metronome, playback)
     metronome.js      metronome sheet (any screen) with its sub-pages, mini-bar, presets, lights, vibration, flash
@@ -161,11 +165,11 @@ Since 2.0, a note can carry `folder` (folder id) and `pinned`; since 2.8.6, `cat
 
 A shared note is an `.inkline` file: JSON `{ app: 'inkline', kind: 'note', version: 1, note }`, **without** `folder`, `cats` or `pinned` (filing stays at home).
 
-A backup is JSON `{ app, version: 2, exported, notes, folders }`; `version: 1` backups (no folders) can still be imported.
+A backup is JSON `{ app, version: 3, exported, notes, folders, programs, sessions }` (programs and sessions of the practice notebook since 2.16); `version: 2` (no practice notebook) and `version: 1` (no folders) backups can still be imported. On import, a program replaces ours only when it is newer; a session is added when missing.
 
 ## Storage
 
-Since 2.1, the notebook is stored in **IndexedDB** (database `inkline`, stores `notes` and `folders`, one entry per note and per folder). The metadata (display, selected folder, sorts, language, last backup date) stay in `localStorage` (key `inkline-meta`).
+Since 2.1, the notebook is stored in **IndexedDB** (database `inkline`, stores `notes` and `folders`, one entry per note and per folder; since 2.16 also `programs` and `sessions`, schema version 2). The metadata (display, selected folder, sorts, language, last backup date) stay in `localStorage` (key `inkline-meta`).
 
 - **Migration**: on the first launch of 2.1, the `localStorage` notebook (keys `carnet-portees-v1` and `inkline-folders`) is copied in one transaction, only if the database is empty. The old copy is kept, frozen at the migration date.
 - **Writes**: only the changed note is written; after a bulk operation, a comparison with the last written version (JSON) detects every change and deletion.

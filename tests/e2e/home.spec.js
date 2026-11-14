@@ -93,7 +93,8 @@ test('backup: export then reimport (notes and folders)', async ({ page }) => {
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('#optExport')]);
   const file = await download.path();
   const backup = JSON.parse(await (await import('node:fs/promises')).readFile(file, 'utf8'));
-  expect(backup.version).toBe(2);
+  expect(backup.version).toBe(3);
+  expect(backup.programs).toEqual({});
   expect(Object.keys(backup.notes)).toHaveLength(2);
   expect(Object.values(backup.folders).map((f) => f.name)).toEqual(['Cours']);
 

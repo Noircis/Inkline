@@ -27,7 +27,7 @@
  *   - revalidation with cache: 'no-cache' (the server confirms or resends).
  */
 
-const CACHE = 'inkline-2.15.1';
+const CACHE = 'inkline-2.16.0';
 
 /** Files preloaded on install: everything needed to start offline. */
 const CORE = [
@@ -48,6 +48,7 @@ const CORE = [
   './css/staff-modes.css',
   './css/chord-keys.css',
   './css/metronome.css',
+  './css/practice.css',
   './css/fonts.css',
   './fonts/bricolage-grotesque-latin-600-normal.woff2',
   './fonts/bricolage-grotesque-latin-700-normal.woff2',
@@ -108,6 +109,14 @@ const CORE = [
   './js/ui/chord-keyboard.js',
   './js/ui/measure-select.js',
   './js/ui/drill-kit.js',
+  './js/practice.js',
+  './js/ui/practice/shared.js',
+  './js/ui/practice/hub.js',
+  './js/ui/practice/program.js',
+  './js/ui/practice/session.js',
+  './js/ui/practice/log.js',
+  './js/ui/practice/add-to.js',
+  './js/ui/practice/item-view.js',
   './js/ui/staff/index.js',
   './js/ui/staff/shared.js',
   './js/ui/staff/view.js',

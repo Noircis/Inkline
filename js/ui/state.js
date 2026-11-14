@@ -31,6 +31,8 @@ import { scheduleSave } from '../storage.js';
  * @typedef {Object} UiState
  * @property {Object.<string, module:model~Note>} notes The notebook.
  * @property {Object.<string, module:folders~Folder>} folders The folders.
+ * @property {Object.<string, module:practice~Program>} programs Practice programs (2.16).
+ * @property {Object.<string, module:practice~Session>} sessions Practice sessions (2.16).
  * @property {{name: 'list'|'note'|'options', id: string|null}} view Screen shown.
  * @property {string} query Current search on the home screen (not remembered).
  * @property {string|null} activeId Block being edited (a palette is open).
@@ -51,6 +53,8 @@ import { scheduleSave } from '../storage.js';
 export const state = {
   notes: {},
   folders: {},
+  programs: {},
+  sessions: {},
   query: '',
   view: { name: 'list', id: null },
   activeId: null,

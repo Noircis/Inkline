@@ -140,3 +140,26 @@ export function collectErrors(page) {
   page.on('pageerror', (e) => errors.push(String(e)));
   return errors;
 }
+
+/**
+ * Practice programs and sessions as written to IndexedDB (2.16).
+ * @param {import('@playwright/test').Page} page
+ */
+export async function storedPractice(page) {
+  return page.evaluate(
+    () =>
+      new Promise((resolve) => {
+        const q = indexedDB.open('inkline');
+        q.onsuccess = () => {
+          const db = q.result;
+          const t = db.transaction(['programs', 'sessions']);
+          const p = t.objectStore('programs').getAll();
+          const s = t.objectStore('sessions').getAll();
+          t.oncomplete = () => {
+            db.close();
+            resolve({ programs: p.result, sessions: s.result });
+          };
+        };
+      }),
+  );
+}

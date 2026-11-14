@@ -1,0 +1,642 @@
+/* Inkline · Practice notebook (2.16): home, program, session, history, "Add to…". */
+
+/* Practice home: program rows (open the program, or ▶ to practise) */
+.prog-row {
+  padding: 0 10px 0 0;
+}
+.prog-open {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.prog-open span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.prog-row .playbtn:disabled {
+  opacity: 0.35;
+}
+.prog-empty {
+  border-top: 0;
+}
+.opt-row.danger {
+  color: var(--danger);
+}
+
+/* Program editor */
+.prog-name {
+  margin: 6px 16px 10px;
+  width: calc(100% - 32px);
+}
+.pitems {
+  list-style: none;
+  margin: 0 12px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.pitem {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+}
+.pitem + .pitem {
+  border-top: 1px solid var(--rule);
+}
+.pitem.dragging {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+}
+.pdrag {
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 14px;
+  font-size: 20px;
+  color: var(--line);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.pitem-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px 10px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.pitem-name {
+  font-size: 15px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.pitem-main small,
+.pitems-empty {
+  font-size: 12px;
+  color: var(--muted);
+}
+.pitems-empty {
+  margin: 8px 16px;
+  font-size: 14px;
+}
+.pactions {
+  display: flex;
+  gap: 8px;
+  margin: 14px 12px;
+}
+.pactions .btn {
+  flex: 1;
+  min-height: 46px;
+  justify-content: center;
+}
+
+/* Bottom sheets of the practice screens */
+.psheet {
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+.psheet-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.psheet-head h2 {
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.psheet-body {
+  overflow-y: auto;
+  margin-top: 10px;
+  padding-bottom: 4px;
+}
+.psheet-body .eyebrow {
+  margin: 14px 0 6px 2px;
+}
+.psheet-body .opt-row.current {
+  background: var(--accent-soft);
+}
+.psheet-search,
+.psheet-body textarea {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+}
+.psheet-body textarea {
+  resize: vertical;
+}
+.psheet-hint,
+.psheet-empty {
+  margin: 6px 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.psheet-empty {
+  padding: 10px 12px;
+}
+.ptext {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.pchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pchips .chip {
+  min-width: 44px;
+  justify-content: center;
+}
+.pmetro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  font-weight: 600;
+}
+
+/* Short message at the bottom ("Added to…") */
+.ptoast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + var(--metro-h, 0px) + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+  padding: 8px 8px 8px 16px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 14px;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+  animation: sheet-fade 0.15s ease-out;
+}
+.ptoast .btn {
+  color: var(--surface);
+  min-height: 34px;
+  text-decoration: underline;
+}
+
+/* "+ Add" next to Listen (exercises) and on each placements series */
+.transport-go {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.transport-go .playbtn.big {
+  flex: 1;
+}
+.transport-go .addto {
+  margin-top: 8px;
+  min-height: 46px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+.drill-add {
+  margin-left: auto;
+  font-size: 22px;
+  color: var(--muted);
+}
+.drill-add + .playbtn {
+  margin-left: 0;
+}
+
+/* Session */
+.session-top .s-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.s-item {
+  margin: 4px 12px 0;
+}
+.s-kind {
+  margin: 4px 2px 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.s-label {
+  margin: 2px 2px 10px;
+  font-family: var(--f-display);
+  font-size: 22px;
+  line-height: 1.2;
+}
+.pv-free {
+  margin: 18px 4px;
+  font-family: var(--f-display);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: pre-wrap;
+}
+.pv-title {
+  display: none; /* the item name already says it */
+}
+.pv-text {
+  margin: 8px 2px 12px;
+  font-size: 17px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+.pv-block {
+  margin: 0 0 12px;
+  padding: 8px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.pv-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 2px 4px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pv-draw svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pv-missing {
+  margin: 20px 2px;
+  color: var(--muted);
+}
+/* Chart drawn as SVG (the note screen draws it as HTML) */
+.pv-grid svg .chg {
+  fill: var(--ink);
+  font-family: var(--f-display);
+  font-weight: 600;
+}
+.pv-grid svg .chm {
+  fill: var(--line);
+  font-family: var(--f-display);
+}
+.pv-grid svg .secl {
+  fill: var(--surface);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 11px;
+}
+.pv-grid svg .volt {
+  fill: var(--ink);
+  font-family: var(--f-body);
+  font-weight: 600;
+  font-size: 10px;
+}
+.s-item {
+  padding-bottom: 170px; /* room for the dock */
+}
+.s-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 4;
+  width: 100%;
+  max-width: 720px;
+  transform: translateX(-50%);
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--rule);
+  background: var(--bg);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'clock metro'
+    'nav nav';
+  align-items: center;
+  gap: 10px 12px;
+}
+.s-clock {
+  grid-area: clock;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.s-clock.watch span {
+  font-size: 15px;
+  color: var(--muted);
+}
+.s-clock.timer {
+  width: 78px;
+  height: 78px;
+}
+.s-clock.timer svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.s-clock .ring-bg,
+.s-clock .ring {
+  fill: none;
+  stroke-width: 7;
+}
+.s-clock .ring-bg {
+  stroke: var(--rule);
+}
+.s-clock .ring {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s linear;
+}
+.s-clock.timer span {
+  position: relative;
+  font-size: 17px;
+  font-weight: 700;
+}
+.s-clock.timer small {
+  position: relative;
+  font-size: 10px;
+  color: var(--muted);
+}
+.s-clock.done .ring {
+  stroke: var(--line);
+}
+.s-metro {
+  grid-area: metro;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.s-metro .btn:not(.s-mopen) {
+  width: 38px;
+  min-height: 38px;
+  padding: 0;
+  justify-content: center;
+  font-size: 18px;
+}
+.s-mopen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 38px;
+  padding: 2px 10px;
+  line-height: 1.1;
+}
+.s-mopen span {
+  font-weight: 700;
+  font-size: 16px;
+}
+.s-mopen .mus {
+  font-family: var(--f-music);
+  font-weight: 400;
+  font-size: 18px;
+  margin-right: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.s-mopen small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.s-nav {
+  grid-area: nav;
+  display: flex;
+  gap: 8px;
+}
+.s-nav .btn {
+  min-height: 46px;
+  justify-content: center;
+}
+.s-nav .btn:first-child {
+  width: 56px;
+  font-size: 22px;
+}
+.s-nav .btn.primary {
+  flex: 1;
+}
+.s-done {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* End of a session */
+.s-summary {
+  margin: 12px 16px;
+}
+.s-summary h2 {
+  margin: 8px 0 2px;
+  font-family: var(--f-display);
+  font-size: 22px;
+}
+.sum-total {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+.sum-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.sum-list li {
+  display: grid;
+  grid-template-columns: 1fr auto 64px;
+  gap: 10px;
+  padding: 10px 14px;
+  font-variant-numeric: tabular-nums;
+}
+.sum-list li + li {
+  border-top: 1px solid var(--rule);
+}
+.sum-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sum-time,
+.sum-tempo {
+  color: var(--muted);
+  text-align: right;
+}
+
+/* History */
+.h-list {
+  margin: 4px 12px 24px;
+}
+.h-day {
+  margin: 18px 2px 6px;
+}
+.h-empty {
+  margin: 16px 4px;
+  color: var(--muted);
+}
+.hcard {
+  margin-bottom: 8px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.h-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.h-prog {
+  flex: 1;
+  font-weight: 600;
+}
+.h-total {
+  font-size: 13px;
+  color: var(--muted);
+}
+.h-del {
+  color: var(--line);
+}
+.h-items {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0;
+}
+.h-items li {
+  display: grid;
+  grid-template-columns: 1fr auto 72px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+.h-name,
+.h-tempo {
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.h-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0;
+}
+.h-time {
+  font-size: 13px;
+  color: var(--muted);
+}
+.h-tempo {
+  text-align: right;
+  font-weight: 600;
+}
+.h-tempo.none {
+  color: var(--line);
+  font-weight: 400;
+}
+.h-tempo-in {
+  width: 72px;
+  min-height: 36px;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+}
+
+/* Tempo curve of an item */
+.c-title {
+  margin: 4px 16px 10px;
+  font-family: var(--f-display);
+  font-size: 20px;
+}
+.c-box {
+  margin: 0 12px 24px;
+  padding: 12px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.c-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.c-axis {
+  stroke: var(--rule);
+  stroke-dasharray: 3 4;
+}
+.c-lbl {
+  fill: var(--muted);
+  font-family: var(--f-body);
+  font-size: 10px;
+}
+.c-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.c-dot {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.c-one {
+  margin: 8px 0;
+  font-family: var(--f-display);
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+}
+.c-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.c-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 2px;
+  border-top: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums;
+}

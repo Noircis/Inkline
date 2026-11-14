@@ -149,3 +149,22 @@ test('note metronome (2.15): validated, display options dropped, kept on a recei
   assert.equal(sanitizeNote(raw, { freshIds: true }).metro.num, 7);
   assert.equal('metro' in sanitizeNote({ id: 'a2', blocks: [], metro: 'fast' }), false);
 });
+
+test('staff blocks (2.16): practice time signatures and odd groupings kept, charts unchanged', () => {
+  const n = sanitizeNote({
+    id: 'a3',
+    blocks: [
+      { id: 'b1', type: 'staff', clef: 'rhythm', time: '7/8', groups: [3, 2, 2], items: [] },
+      { id: 'b2', type: 'staff', clef: 'rhythm', time: '9/8', groups: [2, 2], items: [] },
+      { id: 'b3', type: 'staff', time: '11/8', items: [] },
+      { id: 'b4', type: 'grid', time: '7/8', measures: [] },
+    ],
+  });
+  const [a, b, c, d] = n.blocks;
+  assert.equal(a.time, '7/8');
+  assert.deepEqual(a.groups, [3, 2, 2]);
+  assert.equal(b.time, '9/8');
+  assert.equal('groups' in b, false); // does not fill the measure
+  assert.equal(c.time, '4/4');
+  assert.equal(d.time, '4/4');
+});

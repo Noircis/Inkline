@@ -29,6 +29,8 @@ import { esc, uid } from '../util.js';
 import {
   flushSave,
   saveFolders,
+  savePrograms,
+  saveSessions,
   backupJson,
   importFile,
   getMeta,
@@ -263,9 +265,11 @@ function importChosenFile(text) {
   const msg = app.querySelector('#optMsg');
   try {
     const nf = Object.keys(state.folders).length;
-    const r = importFile(state.notes, text, state.folders);
+    const r = importFile(state.notes, text, state.folders, state);
     flushSave(state.notes);
     saveFolders(state.folders);
+    savePrograms(state.programs);
+    saveSessions(state.sessions);
     if (r.kind === 'note') {
       openNote(r.firstId);
       return;
@@ -283,7 +287,7 @@ function importChosenFile(text) {
 function bindNotebook() {
   app.querySelector('#optExport').onclick = () => {
     download(
-      new Blob([backupJson(state.notes, state.folders)], { type: 'application/json' }),
+      new Blob([backupJson(state.notes, state.folders, state)], { type: 'application/json' }),
       t('opt.backupFile') + '-' + new Date().toISOString().slice(0, 10) + '.json',
     );
     setMeta({ lastExport: Date.now() });

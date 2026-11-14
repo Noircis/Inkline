@@ -25,6 +25,12 @@
  *   sub-screen to another **replaces** the entry (`replaceState`).
  * - {@link module:ui/nav.goChild|goChild} opens a **child** screen (Rhythm in
  *   Practice): new entry, back returns to the parent.
+ *
+ * ## Leaving a screen (2.16)
+ *
+ * A screen may register a `leave` function, called whenever another screen
+ * replaces it (button, Android back): the practice session uses it to record
+ * the time spent on the current item.
  */
 
 import { state } from './state.js';
@@ -45,18 +51,34 @@ import { state } from './state.js';
 /** @type {Object.<string, ScreenRenderer>} */
 const screens = {};
 
+/** @type {Object.<string, function()>} */
+const leaves = {};
+
 /**
  * Screen names.
- * @typedef {'list'|'note'|'options'|'training'|'rhythm'|'gen'|'genPlay'} ScreenName
+ * @typedef {'list'|'note'|'options'|'training'|'rhythm'|'gen'|'genPlay'|'program'|'session'|'history'|'curve'} ScreenName
  */
 
 /**
  * Registers a screen.
  * @param {ScreenName} name
  * @param {ScreenRenderer} fn
+ * @param {function()} [leave] Called when another screen replaces this one.
  */
-export function registerScreen(name, fn) {
+export function registerScreen(name, fn, leave) {
   screens[name] = fn;
+  if (leave) leaves[name] = leave;
+}
+
+/**
+ * Sets the screen shown, telling the previous one it is left.
+ * @param {ScreenName} name
+ * @param {string|null} id
+ */
+function setView(name, id) {
+  const prev = state.view.name;
+  if (prev !== name && leaves[prev]) leaves[prev]();
+  state.view = { name, id };
 }
 
 /**
@@ -88,7 +110,7 @@ function enterSubView(name, id) {
  * @param {RenderOptions} opts
  */
 function show(name, id, opts) {
-  state.view = { name, id };
+  setView(name, id);
   state.activeId = null;
   state.sel = null;
   renderScreen(opts);
@@ -109,10 +131,11 @@ export function go(name, id = null, opts = {}) {
 /**
  * Opens a child screen of the current sub-screen: back will return to the parent.
  * @param {ScreenName} name
+ * @param {string|null} [id=null] What the screen shows (a program, an item…).
  */
-export function goChild(name) {
-  history.pushState({ inkline: 1, view: name, id: null }, '');
-  show(name, null, {});
+export function goChild(name, id = null) {
+  history.pushState({ inkline: 1, view: name, id }, '');
+  show(name, id, {});
 }
 
 /** Close functions of the open overlays (metronome sheet), newest last. */
@@ -164,7 +187,7 @@ export function openNote(id, focusTitle) {
  * Shows home (without touching history).
  */
 function showList() {
-  state.view = { name: 'list', id: null };
+  setView('list', null);
   renderScreen();
   window.scrollTo(0, 0);
 }

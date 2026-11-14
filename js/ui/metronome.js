@@ -38,13 +38,15 @@
  * (`meta.metroPresets`). What to play is computed by
  * {@link module:metronome|metronome}, played by {@link module:metro-engine|metro-engine}.
  *
- * ## Notes and blocks (2.15)
+ * ## Notes, blocks and practice items (2.15, 2.16)
  *
  * - The metronome button of a staff or chart block sets the tempo, time
  *   signature and swing of that block ({@link module:metronome.fromBlock|fromBlock}).
- * - Opened from a note, the main page offers to save the settings in the
- *   note (`note.metro`); opened again from that note later, they are loaded.
- * - Either way a banner says so, with Undo (the settings from before).
+ * - The main page offers to save the settings in what the screen under the
+ *   sheet shows: the note (`note.metro`), or the item of a practice session.
+ *   Screens declare it with {@link registerMetroTarget}. Opened again from
+ *   that note later, the settings are loaded; a session loads each item's.
+ * - A banner says so, with Undo (the settings from before).
  *
  * While playing and visible, the lights follow the audio clock; the
  * vibration and flash options fire on audible beats; the "keep the screen on"
@@ -155,6 +157,17 @@ let banner = null;
  * @type {?Object}
  */
 let loadedFor = null;
+/** When the metronome last stopped (ms), and its tempo then (2.16). */
+let stoppedAt = 0;
+let stoppedTempo = 0;
+/** Tempo heard last while playing (follows a ramp). */
+let liveTempo = 0;
+/** Was it playing at the last engine change? */
+let wasRunning = false;
+/** The mini-bar may show (a session screen has its own controls). */
+let miniAllowed = true;
+/** @type {Array.<function()>} */
+const listeners = [];
 
 const sheet = document.createElement('section');
 sheet.id = 'metroSheet';
@@ -207,14 +220,16 @@ function setTempo(bpm, persist = true) {
   const v = clampTempo(bpm);
   if (v === s.tempo && !persist) return;
   s = { ...s, tempo: v };
+  if (engine.isRunning() && !s.ramp.on) liveTempo = v;
   const val = sheet.querySelector('#mTempoVal');
   if (val) val.textContent = String(v);
   const mark = sheet.querySelector('#mMark');
   if (mark) mark.textContent = tempoMarking(v);
   const mt = mini.querySelector('.mm-tempo');
   if (mt) mt.textContent = `${s.ramp.on ? '\u2934 ' : ''}${unitGlyph(s)} ${v}`;
-  const note = sheet.querySelector('.mnote');
-  if (note) note.outerHTML = noteHtml(); // saved / to update
+  const here = sheet.querySelector('.mnote');
+  if (here) here.outerHTML = targetHtml(); // saved / to update
+  notify();
   // During a ramp, a tempo set by hand starts the ramp again from there.
   scheduleConfigure(s.ramp.on);
   if (persist) setMeta({ metro: s });
@@ -246,7 +261,7 @@ function scheduleConfigure(restart = false) {
  */
 function openSheet(fromHeader = false) {
   if (sheetOpen) return;
-  if (fromHeader) loadNoteSettings();
+  if (fromHeader) loadTargetSettings();
   sheetOpen = true;
   view = 'main';
   editing = null;
@@ -294,6 +309,12 @@ function render() {
     paintLights(engine.position());
   }
   renderMini();
+  notify();
+}
+
+/** Tells the screens that follow the metronome (practice session) that it changed. */
+function notify() {
+  listeners.forEach((fn) => fn());
 }
 
 /**
@@ -433,7 +454,7 @@ ${polyLightsHtml()}
 </div>
 ${s.ramp.on ? `<div class="mramp" aria-hidden="true"><span>&#10548; <span class="mglyph">${unitGlyph(s)}</span> ${s.tempo} → ${s.ramp.to}</span><span class="mramp-bar"><span id="mRampFill"></span></span></div>` : ''}
 <ul class="mlist">${rows}</ul>
-${noteHtml()}
+${targetHtml()}
 <button type="button" class="btn primary metro-play${on ? ' on' : ''}" data-m="play">${on ? '&#9632; ' + esc(t('metro.stop')) : '&#9654; ' + esc(t('metro.start'))}</button>
 </div>`;
 }
@@ -453,27 +474,79 @@ function polyLightsHtml() {
 }
 
 /**
- * The note open under the sheet (note screen only).
- * @returns {?module:model~Note}
+ * Where the main page can keep its settings: what the screen under the sheet
+ * shows (2.16).
+ * @typedef {Object} MetroTarget
+ * @property {?Object} stored Settings it holds (preset part), if any.
+ * @property {Object} visit Identity of this visit: settings load once per visit.
+ * @property {boolean} autoload Load its settings when the sheet opens from the header.
+ * @property {{save: string, update: string, saved: string, forget: string, loaded: string}} labels
+ *   i18n keys of the button, its states, the remove button and the banner.
+ * @property {function(Object)} save Stores settings (preset part).
+ * @property {function()} forget Removes them.
  */
-function noteHere() {
-  return (state.view.name === 'note' && curNote()) || null;
+
+/** @type {Object.<string, function(): ?MetroTarget>} */
+const targets = {};
+
+/**
+ * Declares what a screen offers to keep the metronome settings in.
+ * @param {string} view Screen name.
+ * @param {function(): ?MetroTarget} fn Called when the sheet is drawn.
+ */
+export function registerMetroTarget(view, fn) {
+  targets[view] = fn;
 }
 
 /**
- * Save to the note button (main page, note screen only): "saved" when the
- * note already holds these settings, with a button to remove them.
+ * Target of the screen under the sheet, if any.
+ * @returns {?MetroTarget}
+ */
+function target() {
+  const fn = targets[state.view.name];
+  return fn ? fn() : null;
+}
+
+// The note screen keeps its settings in the note (2.15).
+registerMetroTarget('note', () => {
+  const n = curNote();
+  if (!n) return null;
+  return {
+    stored: n.metro || null,
+    visit: state.view,
+    autoload: true,
+    labels: {
+      save: 'metro.noteSave',
+      update: 'metro.noteUpdate',
+      saved: 'metro.noteSaved',
+      forget: 'metro.noteForget',
+      loaded: 'metro.fromNote',
+    },
+    save: (part) => {
+      n.metro = part;
+      touch(n);
+    },
+    forget: () => {
+      delete n.metro;
+      touch(n);
+    },
+  };
+});
+
+/**
+ * Save button of the main page (when the screen offers a target): "saved"
+ * when it already holds these settings, with a button to remove them.
  * @returns {string}
  */
-function noteHtml() {
-  const n = noteHere();
-  if (!n) return '';
-  const forget = n.metro
-    ? `<button type="button" class="btn icon-btn" data-m="noteForget" aria-label="${esc(t('metro.noteForget'))}">&#x2715;</button>`
+function targetHtml() {
+  const tg = target();
+  if (!tg) return '';
+  const forget = tg.stored
+    ? `<button type="button" class="btn icon-btn" data-m="targetForget" aria-label="${esc(t(tg.labels.forget))}">&#x2715;</button>`
     : '';
-  if (sameAsStored(s, n.metro))
-    return `<div class="mnote"><span class="mnote-ok">&#10003; ${esc(t('metro.noteSaved'))}</span>${forget}</div>`;
-  return `<div class="mnote"><button type="button" class="btn" data-m="noteSave">${esc(t(n.metro ? 'metro.noteUpdate' : 'metro.noteSave'))}</button>${forget}</div>`;
+  if (sameAsStored(s, tg.stored))
+    return `<div class="mnote"><span class="mnote-ok">&#10003; ${esc(t(tg.labels.saved))}</span>${forget}</div>`;
+  return `<div class="mnote"><button type="button" class="btn" data-m="targetSave">${esc(t(tg.stored ? tg.labels.update : tg.labels.save))}</button>${forget}</div>`;
 }
 
 /**
@@ -481,15 +554,15 @@ function noteHtml() {
  * with the banner to undo. Not while playing (the sound would change under
  * the player), once per visit of the note.
  */
-function loadNoteSettings() {
-  const n = noteHere();
-  if (!n || !n.metro || engine.isRunning() || loadedFor === state.view) return;
-  loadedFor = state.view;
-  if (sameAsStored(s, n.metro)) return;
+function loadTargetSettings() {
+  const tg = target();
+  if (!tg || !tg.autoload || !tg.stored || engine.isRunning() || loadedFor === tg.visit) return;
+  loadedFor = tg.visit;
+  if (sameAsStored(s, tg.stored)) return;
   const prev = s;
-  s = applyPreset(s, { s: n.metro });
+  s = applyPreset(s, { s: tg.stored });
   save();
-  banner = { text: t('metro.fromNote'), prev };
+  banner = { text: t(tg.labels.loaded), prev };
 }
 
 /**
@@ -796,7 +869,7 @@ function savePresets() {
 
 /** Shows the mini-bar while playing with the sheet closed; reserves its height. */
 function renderMini() {
-  const show = engine.isRunning() && !sheetOpen;
+  const show = engine.isRunning() && !sheetOpen && miniAllowed;
   mini.hidden = !show;
   if (show) {
     const lv = pulseLevels(s);
@@ -863,6 +936,7 @@ function loop() {
   raf = 0;
   if (!engine.isRunning() || document.hidden) return;
   const p = engine.position();
+  if (p && p.tempo) liveTempo = p.tempo;
   const pk = p && p.poly ? p.poly.k : null;
   if (p && p.k === lastK && pk !== lastPolyK) paintLights(p);
   lastPolyK = pk;
@@ -1010,13 +1084,12 @@ function onClick(e) {
     save();
     return render();
   }
-  if (d.m === 'noteSave') return saveToNote();
-  if (d.m === 'noteForget')
+  if (d.m === 'targetSave') return saveToTarget();
+  if (d.m === 'targetForget')
     return confirmTap(/** @type {HTMLButtonElement} */ (el), t('metro.noteForgetConfirm'), () => {
-      const n = noteHere();
-      if (!n) return;
-      delete n.metro;
-      touch(n);
+      const tg = target();
+      if (!tg) return;
+      tg.forget();
       render();
     });
   if (d.page) return openPage(d.page);
@@ -1045,14 +1118,13 @@ function onClick(e) {
     });
 }
 
-/** Stores the musical settings in the note open under the sheet. */
-function saveToNote() {
-  const n = noteHere();
-  if (!n) return;
-  n.metro = presetPart(s);
-  loadedFor = state.view;
+/** Stores the musical settings in the note (or item) under the sheet. */
+function saveToTarget() {
+  const tg = target();
+  if (!tg) return;
+  tg.save(presetPart(s));
+  loadedFor = tg.visit;
   banner = null;
-  touch(n);
   render();
 }
 
@@ -1258,8 +1330,94 @@ document.addEventListener('visibilitychange', () => {
   syncWake();
 });
 
+/** Notes when the metronome stops, and at which tempo (practice history). */
+function trackUse() {
+  const running = engine.isRunning();
+  if (wasRunning && !running) {
+    stoppedAt = Date.now();
+    stoppedTempo = liveTempo || s.tempo;
+  }
+  if (running && !wasRunning) liveTempo = s.tempo;
+  wasRunning = running;
+}
+
+// ---------- For the practice session (2.16) ----------
+
+/**
+ * Did the metronome play since `since`, and at which tempo (the one heard
+ * last)?
+ * @param {number} since Timestamp (ms).
+ * @returns {{played: boolean, tempo: number}}
+ */
+export function metroUsage(since) {
+  if (engine.isRunning()) return { played: true, tempo: liveTempo || s.tempo };
+  return { played: stoppedAt >= since, tempo: stoppedTempo };
+}
+
+/**
+ * Current settings and state.
+ * @returns {{settings: module:metronome~MetroSettings, running: boolean}}
+ */
+export function metroNow() {
+  return { settings: s, running: engine.isRunning() };
+}
+
+/**
+ * Loads settings (preset part) without asking: a practice item's. While
+ * playing, the metronome goes on with them.
+ * @param {Object} part
+ */
+export function applyMetro(part) {
+  if (sameAsStored(s, part)) return;
+  s = applyPreset(s, { s: part });
+  save();
+  render();
+}
+
+/** Starts or stops the metronome. */
+export function toggleMetro() {
+  togglePlay();
+}
+
+/**
+ * Changes the tempo by a step.
+ * @param {number} d
+ */
+export function nudgeMetro(d) {
+  setTempo(s.tempo + d);
+}
+
+/** Opens the sheet on its main page. */
+export function openMetro() {
+  openSheet(false);
+}
+
+/**
+ * Lets the mini-bar show while playing, or not (a screen with its own
+ * metronome controls).
+ * @param {boolean} on
+ */
+export function setMiniAllowed(on) {
+  miniAllowed = on;
+  renderMini();
+}
+
+/**
+ * Calls `fn` whenever the metronome changes (settings, start, stop).
+ * @param {function()} fn
+ * @returns {function()} Removes the listener.
+ */
+export function onMetroChange(fn) {
+  listeners.push(fn);
+  return () => {
+    const i = listeners.indexOf(fn);
+    if (i >= 0) listeners.splice(i, 1);
+  };
+}
+
 engine.init({
   onChange: () => {
+    trackUse();
     render();
     kick();
     syncWake();

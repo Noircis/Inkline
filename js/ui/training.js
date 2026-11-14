@@ -1,8 +1,8 @@
 /**
  * @module ui/training
  * @description
- * **Practice** (since 2.3): a home screen listing the exercises
- * (`training`), then one screen per exercise.
+ * **Practice** exercises (since 2.3), opened from the practice home
+ * ({@link module:ui/practice/hub|ui/practice/hub}).
  *
  * - **Rhythm › Placements** (`rhythm`): every way to place n eighth notes in
  *   a measure (every time signature since 2.8), in collapsible sections by
@@ -23,7 +23,7 @@ import { esc } from '../util.js';
 import { staffSvg } from '../render-staff.js';
 import { placementSeries, seriesBlock, meterOf, slotsOf, startGlyphs, startLabel } from '../placements.js';
 import * as audio from '../audio.js';
-import { registerScreen, goChild, backToList } from './nav.js';
+import { registerScreen, backToList } from './nav.js';
 import { hideAllPalettes } from './blocks.js';
 import { layout } from '../layout.js';
 import {
@@ -46,32 +46,12 @@ import {
   updatePlay,
   highlight,
 } from './drill-kit.js';
-
-/**
- * Practice home screen: the list of exercises.
- */
-function renderTraining() {
-  audio.stop();
-  hideAllPalettes();
-  app.innerHTML = `${header(t('note.back'), t('home.training'))}
-  <section class="opt">
-    <h2 class="eyebrow">${esc(t('staff.rhythm'))}</h2>
-    <div class="opt-group">
-      <button class="opt-row" type="button" id="goPlacements"><span>${esc(t('train.placements'))}<small>${esc(t('train.placementsHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
-      <button class="opt-row" type="button" id="goExercises"><span>${esc(t('train.exercises'))}<small>${esc(t('train.exercisesHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
-    </div>
-  </section>`;
-  app.querySelector('#back').addEventListener('click', backToList);
-  app.querySelector('#goPlacements').addEventListener('click', () => goChild('rhythm'));
-  app.querySelector('#goExercises').addEventListener('click', () => goChild('gen'));
-}
-
-registerScreen('training', renderTraining);
+import { openAddTo } from './practice/add-to.js';
 
 /**
  * Sections shown: id → rhythm line block, and expanded state. Recreated on
  * each generation.
- * @type {Map<string, {block: module:model~StaffBlock, open: boolean, drawn: boolean}>}
+ * @type {Map<string, {block: module:model~StaffBlock, open: boolean, drawn: boolean, name: string}>}
  */
 let sections = new Map();
 
@@ -163,12 +143,13 @@ function renderSections() {
   list.innerHTML = series
     .map((sr, i) => {
       const id = 'drill' + i;
-      sections.set(id, { block: seriesBlock(sr, s, id, m), open: i === 0, drawn: false });
       const p = sr[0][0];
+      const name = `${t('train.placements')} · ${m.label} · ${single ? t('train.allPositions') : startLabel(p, m)}`;
+      sections.set(id, { block: seriesBlock(sr, s, id, m), open: i === 0, drawn: false, name });
       const title = single
         ? `<span class="drill-all">${esc(t('train.allPositions'))}</span>`
         : `<span class="drill-start mus" aria-hidden="true">${startGlyphs(p, m)}</span><span class="sr">${esc(t('train.startOn', { pos: startLabel(p, m) }))}</span>`;
-      return `<div class="drill" data-sec="${id}"><div class="drill-head"><button type="button" class="drill-tog" data-tog="${id}" aria-expanded="false" aria-controls="ds_${id}"><span class="drill-chev" aria-hidden="true"></span>${title}<span class="drill-sub">${esc(t('train.bars', { n: sr.length }))}</span></button><button type="button" class="playbtn round" data-play="${id}" aria-label="${esc(t('play.listen'))}">&#9654;</button></div><div class="drill-staff" id="ds_${id}" data-drill="${id}" hidden></div></div>`;
+      return `<div class="drill" data-sec="${id}"><div class="drill-head"><button type="button" class="drill-tog" data-tog="${id}" aria-expanded="false" aria-controls="ds_${id}"><span class="drill-chev" aria-hidden="true"></span>${title}<span class="drill-sub">${esc(t('train.bars', { n: sr.length }))}</span></button><button type="button" class="btn icon-btn drill-add" data-add-to="${id}" aria-label="${esc(t('practice.addTo'))}">+</button><button type="button" class="playbtn round" data-play="${id}" aria-label="${esc(t('play.listen'))}">&#9654;</button></div><div class="drill-staff" id="ds_${id}" data-drill="${id}" hidden></div></div>`;
     })
     .join('');
   sections.forEach((sec, id) => {
@@ -177,6 +158,9 @@ function renderSections() {
       updateFoldAll();
     });
     list.querySelector(`[data-play="${id}"]`).addEventListener('click', () => play(id));
+    list
+      .querySelector(`[data-add-to="${id}"]`)
+      .addEventListener('click', () => openAddTo({ block: sec.block, title: sec.name }));
     // Long press: "Play from here" or loop over measures of the series (2.8.4).
     const el = /** @type {HTMLElement} */ (list.querySelector(`[data-drill="${id}"]`));
     bindMeasureSelect(

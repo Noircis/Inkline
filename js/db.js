@@ -12,7 +12,7 @@
  * object after writing it does not change what is stored).
  *
  * - A **database** (`inkline`) contains **object stores**, the equivalent of
- *   tables: `notes` and `folders`. Each object is stored under its key, here
+ *   tables: `notes`, `folders`, and since 2.16 `programs` and `sessions`. Each object is stored under its key, here
  *   its `id` field (`keyPath: 'id'`).
  * - Every read or write happens in a **transaction**: either all its
  *   operations succeed, or none do (atomicity, as in SQL). This is what makes
@@ -31,11 +31,14 @@
 /** Database name. */
 const DB_NAME = 'inkline';
 
-/** Schema (stores) version. Increase it for any structural change. */
-const DB_VERSION = 1;
+/**
+ * Schema (stores) version. Increase it for any structural change.
+ * 2 (2.16): `programs` and `sessions` of the practice notebook.
+ */
+const DB_VERSION = 2;
 
 /** Stores of the database. */
-export const STORES = { notes: 'notes', folders: 'folders' };
+export const STORES = { notes: 'notes', folders: 'folders', programs: 'programs', sessions: 'sessions' };
 
 /**
  * Wraps an IndexedDB request in a `Promise`.
@@ -77,7 +80,10 @@ export function openDb(name = DB_NAME) {
       resolve(db);
     };
     req.onerror = () => reject(req.error);
-    req.onblocked = () => reject(new Error('IndexedDB bloquée par un autre onglet'));
+    // Another tab still holds the old schema version: it closes its connection
+    // on `versionchange` (see below), then this request goes on. Rejecting
+    // here would fall back to the old localStorage copy: never do that.
+    req.onblocked = () => {};
   });
 }
 
