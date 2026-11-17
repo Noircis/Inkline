@@ -28,6 +28,7 @@ import { staffSvg } from '../render-staff.js';
 import { chordParts } from '../chords.js';
 import { folderOf, catsOf } from '../folders.js';
 import { PIN_ICON } from './icons.js';
+import { partsOf } from '../parts.js';
 
 /**
  * List display options.
@@ -95,7 +96,7 @@ export function noteSummary(n) {
 const firstText = (n) => ((n.blocks.find((b) => b.type === 'text' && b.text.trim()) || {}).text || '').trim();
 
 /** First non-empty staff of a note. */
-const firstStaff = (n) => n.blocks.find((b) => b.type === 'staff' && b.items.length);
+const firstStaff = (n) => n.blocks.find((b) => b.type === 'staff' && partsOf(b).some((p) => p.items.length));
 
 /**
  * First chords of a note (charts first, otherwise chord symbols of staves),
@@ -119,7 +120,7 @@ function chordsPreview(n, max) {
   });
   if (!out.length)
     n.blocks.forEach((b) => {
-      if (b.type === 'staff') b.items.forEach((it) => push(it.c));
+      if (b.type === 'staff') partsOf(b).forEach((p) => p.items.forEach((it) => push(it.c)));
     });
   return out.join(' ');
 }

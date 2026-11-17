@@ -1,6 +1,6 @@
 # Inkline
 
-Music notebook for Android phones: text, staves, rhythm lines and chord charts in a single note, entered with a finger and playable.
+Music notebook for Android phones: text, staves (with chords, and up to four staves joined by a brace), rhythm lines and chord charts in a single note, entered with a finger and playable.
 
 Progressive web app (PWA) with **no framework and no build step**: native ES modules served as is, installable and usable offline. The interface is in English or French (2.9).
 
@@ -36,7 +36,7 @@ The project is set up for **Visual Studio Code** (`.vscode/` folder, shared in t
 ## Tests and continuous integration
 
 - **Unit tests** (`tests/*.test.js`, `npm test`): the pure modules (rhythm, layout, fitting into measures, chords, iReal, storage, translations…), including a randomized test of measure fitting.
-- **Interface tests** (`tests/e2e/*.spec.js`, `npm run test:e2e`): Playwright drives a real Chromium in phone format and replays the important flows (staff input, modes, measure fitting, folders, categories, search, backup, collapsed blocks, sharing, practice, measure selection, chord keyboard, English interface, offline). Tap coordinates are computed by the app's layout engine: the tests do not depend on pixels. The server starts on its own (`scripts/dev.mjs --static`).
+- **Interface tests** (`tests/e2e/*.spec.js`, `npm run test:e2e`): Playwright drives a real Chromium in phone format and replays the important flows (staff input, modes, measure fitting, folders, categories, search, backup, collapsed blocks, sharing, practice, measure selection, chord keyboard, chords and several staves, English interface, offline). Tap coordinates are computed by the app's layout engine: the tests do not depend on pixels. The server starts on its own (`scripts/dev.mjs --static`).
 - **Continuous integration** (`.github/workflows/check.yml`): on every push, GitHub runs `npm run check` then the interface tests. Results are in the repository's **Actions** tab, and as a green check or red cross next to each commit. On failure, screenshots and traces are attached to the report.
 
 ## Code conventions
@@ -63,8 +63,11 @@ js/
   util.js             helpers (uid, mod, escaping…)
   model.js            data types (@typedef) and factories
   pitch.js            staff position ↔ MIDI pitch, accidentals, ties
-  rhythm.js           measures, triplets, beams, repeats, swing, sound events
-  layout.js           staff layout (line breaking, justification)
+  rhythm.js           measures, triplets, beams, repeats, swing
+  score.js            several staves: merged measures, sound events (chords, staves), segments
+  parts.js            staves of a block: list, view of one staff as a block, add, move, remove
+  noteheads.js        chords: notes of an item, seconds beside the stem, accidental columns
+  layout.js           staff layout (columns aligned across staves, line breaking, justification)
   render-staff.js     SVG rendering of a staff
   chords.js           chord symbol parsing, voicings
   grid.js             chord charts: input, durations, playback order, HTML rendering
@@ -112,7 +115,8 @@ js/
     measure-select.js measure selection by long press (play from here, loop)
     chord-keyboard.js on-screen chord keyboard (chart, note chord)
     staff/            staff block: index (registration), view (header, drawing),
-                      input (taps, modes), palette, bars, chord, shared (common base)
+                      input (taps, modes, chord mode), palette, bars, chord,
+                      part-menu (staff menu), shared (common base)
     grid-ui.js        chart block: input, palette, iReal panel
     options.js        Settings screen: language, display, folders, backup, import, iReal, about
     list-view.js      list displays: Cards, Mosaic, List
@@ -125,7 +129,7 @@ docs/                 generated documentation (npm run docs)
 
 The code is split into two layers:
 
-- **Pure modules** (`model`, `pitch`, `rhythm`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `chord-keys`, `measure-fit`, `i18n`, `metronome`, `metro-clock`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
+- **Pure modules** (`model`, `pitch`, `rhythm`, `score`, `parts`, `noteheads`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `chord-keys`, `measure-fit`, `i18n`, `metronome`, `metro-clock`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`): wires the logic to the browser.
 
 Screens (`ui/home`, `ui/note`, `ui/options`…) and musical blocks (`ui/staff`, `ui/grid-ui`) **register** at load time with two registries, `ui/nav` and `ui/blocks`, which then call them by name. These registries import no screen: the import graph has no cycle (see the `main` module).
@@ -154,6 +158,8 @@ See the `model` module for the details of the types. In short:
 
 - a note = a list of blocks (text, staff, chart);
 - a pitch is stored as a **position on the staff** (what you touch), converted to MIDI on demand;
+- a chord (2.17) is one item with its own note (`s`, `a`) and the stacked ones in `x` (`[{ s, a }]`);
+- a staff block (2.17) is its own first staff (`clef`, `items`, `tr`, `ks`); the other staves are in `more`, with the same four fields. Time signature, tempo and swing are shared;
 - durations are in **quarter notes** (dot ×1.5, triplet ×2/3);
 - optional fields are absent rather than `false`.
 

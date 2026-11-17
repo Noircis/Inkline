@@ -4,6 +4,27 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.17.0] - 2026-11-17
+
+### Added
+
+- **Chords on a staff.** The new **+♪** button of the palette stacks notes: while it is on, a tap on the staff adds a note to the note before the cursor (Write) or to the selected note (Edit), at the tapped pitch; a tap on a note already there removes it. A tap on another note makes it the target. Up to six notes, with their own accidentals (♭ ♮ ♯ chosen before the tap).
+  - Engraved as expected: one stem for the chord, a note a second away on the other side of the stem, accidentals in columns so they never overlap.
+  - Ties, dots, beams, barline splits, dragging (the whole chord moves), transposing instruments and playback all take every note.
+- **Several staves in one block**, up to four, joined by a brace: a piano on two staves, a sax over a piano. **+ Staff** in the block's tools adds one under the staff being edited (a bass staff under a treble one).
+  - Each staff has its own clef (treble, bass or rhythm line), instrument and notes; time signature, tempo and swing are shared. The key signature is the same concert key on every staff (a B♭ part gets two more sharps).
+  - Notes that start together are **aligned** across the staves, whatever their rhythm. A staff that stops earlier gets a narrow blue zone where its next note goes.
+  - A tap on a staff makes it the one being edited; the header menus show and change that staff ("Staff 2/3"). A tap on a **clef** opens the staff menu: clef, move up or down, add a staff below, remove (a staff with notes asks for a second tap).
+  - Barlines run through every staff; a barline or a repeat set on one staff goes to all. **Listen** plays every staff together, each one highlighted; measure selection and loops cover the whole block.
+
+### Technical
+
+- New pure modules: `noteheads.js` (chord notes, engraving of seconds and accidentals), `parts.js` (staves of a block, `partView` to edit a staff as if it were a block), `score.js` (measures merged across staves, sound events with chords and staves, measure segments).
+- `staffEvents` and `staffSegment` (`rhythm.js`) became `scoreEvents` and `scoreSegment` (`score.js`). `resolvePitches` gives every pitch of a chord; `resolveMidis` stays for the item's own note.
+- The layout works in **columns**: every start time on any staff is one column, as wide as its widest item. One staff gives the same result as before. `geom` takes the staff index; `bandAt` finds the staff under a y.
+- Data: an item may carry `x` (stacked notes `{ s, a }`), a staff block `more` (other staves `{ clef, items, tr, ks }`). Both are validated by `sanitize.js`; older notes load unchanged.
+- A unit test checks that every module of `js/` is in the service worker's offline list.
+
 ## [2.16.0] - 2026-11-14
 
 ### Added

@@ -19,6 +19,8 @@
  * **pinned** notes come first.
  */
 
+import { partsOf } from './parts.js';
+
 /**
  * Sort orders offered on the home screen.
  * Labels: `sort.*` keys in the dictionaries ({@link module:i18n|i18n}).
@@ -54,7 +56,7 @@ function searchableText(note) {
   note.blocks.forEach((b) => {
     if (b.type === 'text') parts.push(b.text);
     else if (b.type === 'grid') b.measures.forEach((m) => parts.push(m.ch.join(' ')));
-    else if (b.type === 'staff') b.items.forEach((it) => it.c && parts.push(it.c));
+    else if (b.type === 'staff') partsOf(b).forEach((p) => p.items.forEach((it) => it.c && parts.push(it.c)));
   });
   return normalize(parts.join('\n'));
 }

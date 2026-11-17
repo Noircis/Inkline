@@ -27,8 +27,9 @@
  * created (or resumed) on the first call.
  */
 
-import { staffEvents, staffSegment } from './rhythm.js';
-import { resolveMidis } from './pitch.js';
+import { scoreEvents, scoreSegment } from './score.js';
+import { resolvePitches } from './pitch.js';
+import { partsOf } from './parts.js';
 import { mlen, groupStarts } from './model.js';
 import { gridPlayOrder, slotDurations } from './grid.js';
 import { chordTones } from './chords.js';
@@ -92,8 +93,9 @@ const freq = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
  * @param {number} dur Duration (s).
  * @param {number|null} midi
  * @param {AudioScheduledSourceNode[]} [nodes] Collector, to be able to cut.
+ * @param {number} [level=1] Volume factor (the notes of a chord share the volume).
  */
-function tone(t, dur, midi, nodes) {
+function tone(t, dur, midi, nodes, level = 1) {
   const c = audioContext();
   if (!c || midi == null) return;
   const f = freq(midi);
@@ -112,7 +114,7 @@ function tone(t, dur, midi, nodes) {
   lp.frequency.setValueAtTime(f * 1.5, t);
   lp.frequency.linearRampToValueAtTime(f * 4, t + 0.05);
   lp.frequency.setTargetAtTime(f * 2.2, t + 0.06, 0.15);
-  const v = 0.16;
+  const v = 0.16 * level;
   const end = t + Math.max(0.06, dur * 0.94); // slight detached gap between notes
   g.gain.setValueAtTime(0, t);
   g.gain.linearRampToValueAtTime(v, t + 0.025);
@@ -267,8 +269,31 @@ function click(t, accent, nodes) {
 }
 
 /**
- * Plays a single staff item (audio feedback while typing).
- * @param {module:model~StaffBlock} b
+ * Volume of each note of a chord of `n` notes: the sum grows like √n
+ * rather than n, so that a chord is fuller without being louder than a
+ * melody by as much.
+ * @param {number} n
+ * @returns {number}
+ */
+const chordLevel = (n) => (n > 1 ? 1 / Math.sqrt(n) : 1);
+
+/**
+ * Plays every note of a chord (or a single note).
+ * @param {number} t
+ * @param {number} dur
+ * @param {Array.<number>} midis
+ * @param {AudioScheduledSourceNode[]} [nodes]
+ */
+function tones(t, dur, midis, nodes) {
+  const level = chordLevel(midis.length);
+  midis.forEach((m) => tone(t, dur, m, nodes, level));
+}
+
+/**
+ * Plays a single staff item (audio feedback while typing): every note of a
+ * chord.
+ * @param {module:model~StaffBlock} b A block, or the view of one of its staves
+ *   ({@link module:parts.partView|partView}).
  * @param {number} i
  */
 export function previewItem(b, i) {
@@ -277,7 +302,7 @@ export function previewItem(b, i) {
   const c = audioContext();
   if (!c) return;
   if (b.clef === 'rhythm') perc(c.currentTime + 0.01, false);
-  else tone(c.currentTime + 0.01, 0.38, resolveMidis(b)[i]);
+  else tones(c.currentTime + 0.01, 0.38, resolvePitches(b)[i]);
 }
 
 /**
@@ -310,7 +335,7 @@ export function stop() {
 /**
  * Playback callbacks.
  * @typedef {Object} PlayCallbacks
- * @property {function(number)} onStep Item (or measure) starting.
+ * @property {function(number, number=)} onStep Item (or measure) starting; for a staff, also its staff index.
  * @property {function()} onEnd End or stop.
  */
 
@@ -354,7 +379,7 @@ function at(p, c, t, fn) {
  * @property {boolean} [loop] Replay in a loop until stopped (2.8), with no
  *   new count-in. Each pass lasts a whole number of measures.
  * @property {number} [from] Play from this measure (2.8.4, written index).
- *   See {@link module:rhythm.staffSegment|staffSegment}.
+ *   See {@link module:score.scoreSegment|scoreSegment}.
  * @property {number} [to] … up to this measure (included). Missing: to the end.
  */
 
@@ -386,9 +411,11 @@ function metronome(p, t0, measures, b, spq, beats, accent) {
 /**
  * Plays a staff (play/stop toggle).
  *
- * Events come from {@link module:rhythm.staffEvents|staffEvents} (repeats,
- * ties, triplets and swing already resolved); all that is left is converting
- * quarter notes to seconds: `seconds = quarters × 60 / tempo`.
+ * Events come from {@link module:score.scoreEvents|scoreEvents} (every
+ * staff of the block, chords, repeats, ties, triplets and swing already
+ * resolved); all that is left is converting quarter notes to seconds:
+ * `seconds = quarters × 60 / tempo`. `cb.onStep` receives the item and its
+ * staff.
  *
  * With {@link PlayOptions} (practice): count-in measure, metronome on the
  * chosen beats, muted rhythm.
@@ -398,7 +425,8 @@ function metronome(p, t0, measures, b, spq, beats, accent) {
  * @param {PlayOptions} [opt={}]
  */
 export function playStaff(b, cb, opt = {}) {
-  if (!b.items.length) {
+  const parts = partsOf(b);
+  if (!parts.some((p) => p.items.length)) {
     stop();
     return;
   }
@@ -413,11 +441,11 @@ export function playStaff(b, cb, opt = {}) {
   let total;
   let measures;
   if (opt.from != null) {
-    const seg = staffSegment(b, opt.from, opt.to ?? Infinity);
+    const seg = scoreSegment(b, opt.from, opt.to ?? Infinity);
     if (!seg) return stop();
     ({ events, total, measures } = seg);
   } else {
-    ({ events, total } = staffEvents(b));
+    ({ events, total } = scoreEvents(b));
     measures = Math.ceil(total / mlen(b.time) - 1e-9);
   }
   let mark = 0; // audio nodes of the previous pass (see below)
@@ -430,10 +458,10 @@ export function playStaff(b, cb, opt = {}) {
     events.forEach((ev) => {
       const ts = t0 + ev.start * spq;
       if (!ev.rest && !ev.held && !opt.mute) {
-        if (b.clef === 'rhythm') perc(ts, ev.downbeat, p.nodes);
-        else tone(ts, (ev.end - ev.start) * spq, ev.midi, p.nodes);
+        if (parts[ev.k].clef === 'rhythm') perc(ts, ev.downbeat, p.nodes);
+        else tones(ts, (ev.end - ev.start) * spq, ev.midis, p.nodes);
       }
-      at(p, c, ts, () => cb.onStep(ev.i));
+      at(p, c, ts, () => cb.onStep(ev.i, ev.k));
     });
     p.nodes.splice(0, old);
     mark -= old;
@@ -455,7 +483,7 @@ export function playStaff(b, cb, opt = {}) {
  * An empty measure continues the last chord, `%` replays the previous measure.
  *
  * Options (2.8.4): `from` / `to` to play only a part (same rule as
- * {@link module:rhythm.staffSegment|staffSegment}: first pass through `from`,
+ * {@link module:score.scoreSegment|scoreSegment}: first pass through `from`,
  * up to the following pass through `to`), `loop`, `countIn`. The chord
  * sounding on an empty slot or a `%` does not depend on the starting point:
  * the start of the chart is walked through silently to find it.

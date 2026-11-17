@@ -31,7 +31,8 @@
  */
 
 import { instrumentOf, STEP_MIN, STEP_MAX } from './model.js';
-import { resolveMidis, midiOf } from './pitch.js';
+import { resolvePitches, midiOf } from './pitch.js';
+import { isChord, copyHeads } from './noteheads.js';
 import { transposeChord } from './chords.js';
 import { mod } from './util.js';
 
@@ -48,7 +49,19 @@ export function fifthsOf(semis) {
 }
 
 /**
- * Changes the instrument of a staff (modifies the block).
+ * Notes of an item as the objects that hold them: the item itself for its own
+ * note, then its stacked notes (2.17). Each has `s` and maybe `a`.
+ * @param {module:model~StaffItem} it
+ * @returns {Array.<{s: number, a: (number|undefined)}>}
+ */
+function headRefs(it) {
+  return [it, ...(isChord(it) ? it.x : [])];
+}
+
+/**
+ * Changes the instrument of a staff (modifies the block). Works on one staff
+ * of a block with several staves through its view
+ * ({@link module:parts.partView|partView}).
  *
  * @param {module:model~StaffBlock} b
  * @param {string} to Key of the target instrument.
@@ -69,7 +82,7 @@ export function changeInstrument(b, to, opt = {}) {
   }
 
   // Concert pitch of each note, to recover after rewriting.
-  const target = resolveMidis(b);
+  const target = resolvePitches(b);
   let steps = dest.steps - from.steps;
   const semis = dest.semis - from.semis;
 
@@ -87,50 +100,55 @@ export function changeInstrument(b, to, opt = {}) {
   else delete b.ks;
   setTr();
 
-  // Positions: everything moves up (or down) by the same number of degrees.
+  // Positions: every note moves up (or down) by the same number of degrees.
+  // A chord moves as a whole.
   let octaves = 0;
   b.items.forEach((it, i) => {
     if (it.c) it.c = transposeChord(it.c, steps, semis);
     if (it.r) return;
-    delete it.a;
-    it.s += steps;
+    const heads = headRefs(it);
+    heads.forEach((h) => {
+      delete h.a;
+      h.s += steps;
+    });
     // Too high or too low for the staff: one octave closer (the sound
     // changes by an octave, the user is warned).
-    while (it.s > STEP_MAX) {
-      it.s -= 7;
-      if (target[i] != null) target[i] -= 12;
+    const fold = (d) => {
+      heads.forEach((h) => (h.s += 7 * d));
+      target[i] = target[i].map((m) => m + 12 * d);
       octaves++;
-    }
-    while (it.s < STEP_MIN) {
-      it.s += 7;
-      if (target[i] != null) target[i] += 12;
-      octaves++;
-    }
+    };
+    while (Math.max(...heads.map((h) => h.s)) > STEP_MAX) fold(-1);
+    while (Math.min(...heads.map((h) => h.s)) < STEP_MIN) fold(1);
   });
 
   // Accidentals: in writing order, one is written only if the note
   // would sound wrong without it (key signature and earlier accidentals of the
   // measure included).
   b.items.forEach((it, i) => {
-    if (it.r || target[i] == null) return;
+    if (it.r || !target[i].length) return;
     const prev = b.items[i - 1];
     if (prev && prev.tie && !prev.r) {
-      it.s = prev.s; // tied note: same pitch, same writing
+      copyHeads(prev, it); // tied note: same pitches, same writing
       return;
     }
-    if (resolveMidis(b)[i] === target[i]) return;
-    const written = target[i] + dest.semis;
-    let alter = written - midiOf(b.clef, it.s, 0);
-    if (Math.abs(alter) > 1) {
-      // Double accidental: take the neighboring degree (F𝄪 → G).
-      it.s += Math.sign(alter);
-      alter = written - midiOf(b.clef, it.s, 0);
-    }
-    it.a = Math.max(-1, Math.min(1, alter));
-    // A useless natural (the note sounds right without it) is removed.
-    const a = it.a;
-    delete it.a;
-    if (resolveMidis(b)[i] !== target[i]) it.a = a;
+    headRefs(it).forEach((h, k) => {
+      if (resolvePitches(b)[i][k] === target[i][k]) return;
+      const written = target[i][k] + dest.semis;
+      let alter = written - midiOf(b.clef, h.s, 0);
+      if (Math.abs(alter) > 1) {
+        // Double accidental: take the neighboring degree (F𝄪 → G).
+        h.s += Math.sign(alter);
+        alter = written - midiOf(b.clef, h.s, 0);
+      }
+      h.a = Math.max(-1, Math.min(1, alter));
+      // A useless natural (the note sounds right without it) is removed.
+      const a = h.a;
+      delete h.a;
+      if (resolvePitches(b)[i][k] !== target[i][k]) h.a = a;
+    });
+    if (isChord(it)) it.x = it.x.filter((h) => h.s !== it.s).sort((p, q) => p.s - q.s);
+    if (it.x && !it.x.length) delete it.x;
   });
   return { octaves };
 }

@@ -75,6 +75,7 @@ export function setActive(id) {
   state.activeId = id;
   state.sel = null;
   state.cursor = null; // a block being opened is continued at the end
+  state.part = 0;
   if (prev) redrawBlock(prev);
   if (id) redrawBlock(id);
   updateActive();

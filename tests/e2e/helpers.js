@@ -32,10 +32,12 @@ export async function newNoteWith(page, kind) {
 }
 
 /**
- * Screen coordinates of a target on the active staff, computed by the app's
- * layout engine.
+ * Screen coordinates of a target on the active staff (the staff being edited,
+ * in a block with several staves), computed by the app's layout engine.
+ * `clef`: the clef of staff `k` (opens the staff menu); `staff`: a point on
+ * staff `k` (makes it the one being edited).
  * @param {import('@playwright/test').Page} page
- * @param {{t: 'append'|'insert'|'item', s?: number, i?: number}} what
+ * @param {{t: 'append'|'insert'|'item'|'clef'|'staff', s?: number, i?: number, k?: number}} what
  */
 export async function staffPoint(page, what) {
   return page.evaluate(async (w) => {
@@ -44,9 +46,12 @@ export async function staffPoint(page, what) {
     const b = blockById(state.activeId);
     const wrap = document.querySelector(`[data-staff="${b.id}"]`);
     const r = wrap.getBoundingClientRect();
-    const L = layout(b, wrap._W, true, state.mode === 'write' ? state.cursor : null);
-    const at = (sys, x) => ({ x: r.left + x, y: r.top + yOfStep(L, geom(L, sys), w.s ?? 4) });
-    if (w.t === 'append') return at(L.appendSys, L.appendX + 10);
+    const L = layout(b, wrap._W, true, state.mode === 'write' ? state.cursor : null, state.part);
+    const at = (sys, x, k = L.part) => ({ x: r.left + x, y: r.top + yOfStep(L, geom(L, sys, k), w.s ?? 4) });
+    if (w.t === 'clef') return at(0, L.left + 12, w.k ?? L.part);
+    if (w.t === 'staff') return at(0, L.systems[0].start + 4, w.k);
+    // The add zone is narrow when other staves go further: aim at its middle.
+    if (w.t === 'append') return at(L.appendSys, L.appendX + (L.appendGap ? 0 : 10));
     if (w.t === 'insert') return at(L.insertSys, L.insertX);
     return at(L.pos[w.i].sys, L.pos[w.i].x);
   }, what);
@@ -91,7 +96,8 @@ export async function staffState(page) {
   return page.evaluate(async () => {
     const { state, blockById } = await import('/js/ui/state.js');
     const { qlen } = await import('/js/model.js');
-    const b = blockById(state.activeId);
+    const { partView } = await import('/js/parts.js');
+    const b = partView(blockById(state.activeId), state.part);
     return {
       items: b.items
         .map(
@@ -109,6 +115,8 @@ export async function staffState(page) {
       cursor: state.cursor,
       sel: state.sel,
       steps: b.items.map((i) => (i.r ? null : (i.s ?? null))),
+      chords: b.items.map((i) => (i.x ? [i.s, ...i.x.map((h) => h.s)].sort((p, q) => p - q) : null)),
+      part: state.part,
       info: document.getElementById('palInfo').textContent,
     };
   });

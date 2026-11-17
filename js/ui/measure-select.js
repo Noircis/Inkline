@@ -341,11 +341,14 @@ export function staffTarget(wrap, getLayout, rest) {
         if (last && last.sys === m.sys) last.x1 = m.x1;
         else out.push({ sys: m.sys, x0: m.x0, x1: m.x1 });
       }
+      // From the top of the first staff to the bottom of the last one (2.17).
+      const last = L.parts ? L.parts.length - 1 : 0;
       return out.map(({ sys, x0, x1 }) => {
-        const g = geom(L, sys);
+        const g = geom(L, sys, 0);
+        const gz = geom(L, sys, last);
         const top = g.staffTop - 12;
-        const h = Math.max(32, g.staffBottom - g.staffTop + 24);
-        const y0 = g.staffTop === g.staffBottom ? g.staffTop - h / 2 : top;
+        const h = Math.max(32, gz.staffBottom - g.staffTop + 24);
+        const y0 = g.staffTop === gz.staffBottom ? g.staffTop - h / 2 : top;
         return { x: ox + (x0 - 2) * f.k, y: oy + y0 * f.k, w: (x1 - x0 + 4) * f.k, h: h * f.k };
       });
     },

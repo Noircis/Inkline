@@ -7,8 +7,10 @@
  * - grouping triplets ({@link module:rhythm.tupletGroups|tupletGroups}),
  * - grouping beams ({@link module:rhythm.beamGroups|beamGroups}),
  * - playback order with repeats ({@link module:rhythm.staffPlayOrder|staffPlayOrder}),
- * - swing ({@link module:rhythm.swingWarp|swingWarp}),
- * - computing the list of sound events ({@link module:rhythm.staffEvents|staffEvents}).
+ * - swing ({@link module:rhythm.swingWarp|swingWarp}).
+ *
+ * The sound events of a block (several staves, chords) are computed by
+ * {@link module:score|score}, from these.
  *
  * These functions are **pure** (no DOM, no side effects): the layout engine,
  * the SVG renderer and the audio player all rely on them, which guarantees
@@ -17,7 +19,6 @@
 
 import { EPS, snap } from './util.js';
 import { qlen, writtenLen, mlen, groupStarts } from './model.js';
-import { resolveMidis } from './pitch.js';
 
 /**
  * A measure produced by the split.
@@ -280,173 +281,4 @@ export function swingWarp(q) {
   const f = Math.floor(q + 1e-9);
   const r = q - f;
   return f + (r < 0.5 ? (r * 4) / 3 : 2 / 3 + ((r - 0.5) * 2) / 3);
-}
-
-/**
- * Beats to play **straight** despite swing: those where a note (outside a
- * triplet) starts or ends somewhere other than on the beat or on the
- * offbeat eighth.
- *
- * Why: {@link swingWarp} is meant for eighth notes. Applied to sixteenths,
- * it made them uneven (1/3, 1/3, 1/6, 1/6 of the beat instead of four equal
- * quarters). In jazz, a sixteenth-note passage in a swing tune is played
- * straight (as in "double time"): only beats written in eighths are swung.
- *
- * @param {module:model~StaffItem[]} items
- * @param {number[]} order Playback order ({@link staffPlayOrder}).
- * @returns {Set.<number>} Indices of the beats (in quarter notes from the start of playback).
- */
-function straightBeats(items, order) {
-  const out = new Set();
-  const onGrid = (t) => {
-    const r = t - Math.floor(t + 1e-9);
-    return Math.abs(r) < 1e-6 || Math.abs(r - 0.5) < 1e-6 || Math.abs(r - 1) < 1e-6;
-  };
-  let q = 0;
-  order.forEach((i) => {
-    const it = items[i];
-    const start = q;
-    q = snap(q + qlen(it));
-    if (it.tup) return;
-    if (!onGrid(start)) out.add(Math.floor(start + 1e-9));
-    if (!onGrid(q)) out.add(Math.floor(q + 1e-9));
-  });
-  return out;
-}
-
-/**
- * A sound event of a staff, ready to be scheduled by audio.
- * Times are in **quarter notes** from the start; audio converts them to
- * seconds with the tempo.
- *
- * @typedef {Object} StaffEvent
- * @property {number} i Item index (for highlighting during playback).
- * @property {number} start Start in quarter notes (swing applied).
- * @property {number} end End in quarter notes (swing applied; extended by ties).
- * @property {number|null} midi Pitch, `null` for a rest or a rhythm line.
- * @property {boolean} rest Rest.
- * @property {boolean} held Note tied to the previous one: it is **not**
- *   replayed (the previous one is extended), but the event is used for highlighting.
- * @property {boolean} downbeat First beat of the measure (accent on the rhythm line).
- */
-
-/**
- * Builds the list of sound events of a staff.
- *
- * Steps:
- * 1. playback order with repeats ({@link staffPlayOrder});
- * 2. positions in quarter notes by summing the actual durations (triplets
- *    included);
- * 3. ties: if the previous item in playback order is the note right before
- *    in the score and it is tied, its end is extended instead of triggering
- *    a new note;
- * 4. swing: {@link swingWarp} is applied beat by beat, **only to beats
- *    written in eighths** ({@link straightBeats}): a beat containing
- *    sixteenths (or a dot falling on a quarter of a beat) is played
- *    straight. Triplet notes are never warped (already ternary). Swing is
- *    not applied in compound time (x/8).
- *
- * @param {module:model~StaffBlock} b
- * @returns {{events: StaffEvent[], total: number}} Events and total duration in quarter notes.
- */
-export function staffEvents(b) {
-  const items = b.items;
-  const midis = resolveMidis(b);
-  const order = staffPlayOrder(items);
-  const ML = mlen(b.time);
-  const swing = b.swing && !b.time.endsWith('/8');
-  const straight = swing ? straightBeats(items, order) : new Set();
-  const warp = (t, tup) => (swing && !tup && !straight.has(Math.floor(t + 1e-9)) ? swingWarp(t) : t);
-  /** @type {StaffEvent[]} */
-  const events = [];
-  let q = 0;
-  let mpos = 0;
-  let lastSounding = null; // last event actually played (for ties)
-  order.forEach((i, k) => {
-    const it = items[i];
-    if (it.rs) mpos = 0;
-    const start = q;
-    q = snap(q + qlen(it));
-    const ev = {
-      i,
-      start: warp(start, it.tup),
-      end: warp(q, it.tup),
-      midi: midis[i],
-      rest: !!it.r,
-      held: false,
-      downbeat: mpos < EPS,
-    };
-    const prevIdx = order[k - 1];
-    const prev = items[i - 1];
-    if (!it.r && prevIdx === i - 1 && prev && prev.tie && !prev.r && lastSounding) {
-      ev.held = true;
-      lastSounding.end = ev.end; // extends the previous note
-    } else if (!it.r) {
-      lastSounding = ev;
-    }
-    events.push(ev);
-    mpos = snap(mpos + qlen(it));
-    if (it.bar || mpos >= ML - EPS) mpos = 0;
-  });
-  return { events, total: warp(q, false) };
-}
-
-/**
- * A part of a staff's playback (2.8.4): from measure `from` to measure `to`
- * (written index, from 0).
- *
- * Unrolled playback (repeats included) goes through a sequence of measures,
- * some of them several times. The segment starts at the **first pass**
- * through `from` and stops at the first pass through `to` that follows (a
- * repeat contained in the segment is therefore played unrolled). Times are
- * shifted to the start of the segment.
- *
- * A tied note arriving from before the segment is attacked (otherwise the
- * segment would start with silence).
- *
- * @param {module:model~StaffBlock} b
- * @param {number} from
- * @param {number} to
- * @returns {?{events: StaffEvent[], total: number, measures: number}} `null`
- *   if `from` is never played. `measures`: number of measures in the segment.
- */
-export function staffSegment(b, from, to) {
-  const { events, total } = staffEvents(b);
-  /** Written measure of each item. */
-  const mOf = [];
-  segmentMeasures(b.items, b.time).forEach((m, mi) => m.idx.forEach((i) => (mOf[i] = mi)));
-  // Successive passes through the measures: a new pass starts when the
-  // measure changes or playback jumps (repeat).
-  const occOf = [];
-  const occStart = [];
-  const occMeasure = [];
-  events.forEach((ev, k) => {
-    const prev = events[k - 1];
-    if (!prev || mOf[ev.i] !== mOf[prev.i] || ev.i !== prev.i + 1) {
-      occMeasure.push(mOf[ev.i]);
-      occStart.push(ev.start);
-    }
-    occOf[k] = occMeasure.length - 1;
-  });
-  const k1 = occMeasure.indexOf(from);
-  if (k1 < 0) return null;
-  let k2 = occMeasure.findIndex((m, k) => k >= k1 && m === to);
-  if (k2 < 0) k2 = occMeasure.length - 1;
-  const t0 = occStart[k1];
-  const t1 = k2 + 1 < occStart.length ? occStart[k2 + 1] : total;
-  /** @type {StaffEvent[]} */
-  const out = [];
-  let head = null; // sounding note (to extend ties)
-  events.forEach((e, k) => {
-    if (occOf[k] < k1 || occOf[k] > k2) return;
-    const ev = { ...e, start: e.start - t0, end: Math.min(e.end, t1) - t0 };
-    if (ev.held) {
-      if (head) head.end = Math.max(head.end, ev.end);
-      else ev.held = false; // incoming tie: attack the note
-    }
-    if (!ev.rest && !ev.held) head = ev;
-    if (ev.rest) head = null;
-    out.push(ev);
-  });
-  return { events: out, total: t1 - t0, measures: k2 - k1 + 1 };
 }

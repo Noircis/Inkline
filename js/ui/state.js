@@ -25,6 +25,8 @@ import { scheduleSave } from '../storage.js';
  * @property {boolean} rs The next note opens a repeat (consumed).
  * @property {boolean} tie The next note is tied to the previous one (consumed).
  * @property {boolean} tup Triplet mode (persistent).
+ * @property {boolean} stack Chord mode (2.17, persistent): a tap on the staff
+ *   adds a note to the target note, or removes it, instead of writing a new one.
  */
 
 /**
@@ -45,7 +47,11 @@ import { scheduleSave } from '../storage.js';
  *   selected note).
  * @property {number|null} cursor Write mode: index of the item before which
  *   the next note will be inserted; `null` = at the end of the staff.
+ * @property {number} part Staff being edited in the active block (2.17), 0 for
+ *   the first. `sel` and `cursor` are indices in that staff.
  * @property {number|null} playIdx Item or measure being played.
+ * @property {Array.<?number>} playAt Item being played on each staff of the
+ *   block being played (2.17).
  * @property {InputSettings} input
  */
 
@@ -61,8 +67,10 @@ export const state = {
   sel: null,
   mode: 'write',
   cursor: null,
+  part: 0,
   playIdx: null,
-  input: { d: 'q', dot: false, rest: false, acc: null, rs: false, tie: false, tup: false },
+  playAt: [],
+  input: { d: 'q', dot: false, rest: false, acc: null, rs: false, tie: false, tup: false, stack: false },
 };
 
 /**

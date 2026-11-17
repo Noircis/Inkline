@@ -4,12 +4,16 @@
  * **Barline submenu** of the palette: single, double, final, end repeat,
  * start repeat, none. The barline goes after the target note (the end of the
  * logical note if it is split); a start repeat goes before it.
+ *
+ * With several staves (2.17), the barline is the system's: it is copied to
+ * the same measure of every staff ({@link module:score.shareBarline|shareBarline}).
  */
 
 import { state, touch } from '../state.js';
 import { chainEnd } from '../../measure-fit.js';
 import { pushSnapshot } from '../../history.js';
-import { hooks, activeStaff, refit, targetIndex } from './shared.js';
+import { hooks, activeStaff, refit, refitAll, targetIndex } from './shared.js';
+import { shareBarline } from '../../score.js';
 
 /** Submenu bar (in index.html). */
 export const barBar = /** @type {HTMLElement} */ (document.getElementById('barBar'));
@@ -21,7 +25,13 @@ export const barBar = /** @type {HTMLElement} */ (document.getElementById('barBa
 export function applyBar(type) {
   const a = activeStaff();
   if (!a) return;
-  const { n, b } = a;
+  const { n, b, block, k } = a;
+  /** Copies the barline of the measure of item `i` to every staff, and refits them. */
+  const share = (i) => {
+    if (i < 0 || !b.items[i]) return;
+    shareBarline(block, k, i);
+    refitAll(block);
+  };
   if (type === 'rs') {
     // A start repeat goes BEFORE a note: on the selection, or on the next note.
     if (state.mode === 'edit' && state.sel != null) {
@@ -30,6 +40,7 @@ export function applyBar(type) {
       if (it.rs) delete it.rs;
       else it.rs = true;
       refit(b);
+      share(state.sel ?? -1);
       touch(n);
     } else state.input.rs = !state.input.rs;
   } else {
@@ -43,6 +54,7 @@ export function applyBar(type) {
     } else if (it.bar === type) delete it.bar;
     else it.bar = /** @type {any} */ (type);
     refit(b);
+    share(chainEnd(b.items, targetIndex(b)));
     touch(n);
   }
   barBar.hidden = true;

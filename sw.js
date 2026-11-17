@@ -27,7 +27,7 @@
  *   - revalidation with cache: 'no-cache' (the server confirms or resends).
  */
 
-const CACHE = 'inkline-2.16.0';
+const CACHE = 'inkline-2.17.0';
 
 /** Files preloaded on install: everything needed to start offline. */
 const CORE = [
@@ -92,6 +92,9 @@ const CORE = [
   './js/chord-keys.js',
   './js/exercise.js',
   './js/measure-fit.js',
+  './js/noteheads.js',
+  './js/parts.js',
+  './js/score.js',
   './js/metronome.js',
   './js/metro-clock.js',
   './js/metro-engine.js',
@@ -124,6 +127,7 @@ const CORE = [
   './js/ui/staff/palette.js',
   './js/ui/staff/bars.js',
   './js/ui/staff/chord.js',
+  './js/ui/staff/part-menu.js',
   './js/ui/grid-ui.js',
   './js/ui/options.js',
   './js/ui/list-view.js',

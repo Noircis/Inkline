@@ -27,6 +27,8 @@ import { uid, clamp } from './util.js';
 import { DUR, TIME_SIGNATURES, STAFF_TIMES, STEP_MIN, STEP_MAX, INSTRUMENTS, meterGroups } from './model.js';
 import { COLOR_KEYS, cleanFolderName, CAT_NAME_MAX, MAX_CATS } from './folders.js';
 import { sanitizeMetro, presetPart } from './metronome.js';
+import { HEADS_MAX } from './noteheads.js';
+import { PARTS_MAX } from './parts.js';
 
 /** Accepted format for an id: lowercase alphanumeric, 1 to 32 characters. */
 const ID_RE = /^[a-z0-9]{1,32}$/;
@@ -72,6 +74,10 @@ function item(r, rhythm) {
   if (r.r === true) it.r = true;
   else if (!rhythm) it.s = isNum(r.s) ? clamp(Math.round(r.s), STEP_MIN, STEP_MAX) : 4;
   if (!it.r && (r.a === -1 || r.a === 0 || r.a === 1)) it.a = r.a;
+  if (!it.r && !rhythm && Array.isArray(r.x)) {
+    const x = extraHeads(r.x, it.s);
+    if (x.length) it.x = x;
+  }
   if (isStr(r.c) && r.c.trim()) it.c = str(r.c, LIMITS.chord);
   if (['single', 'double', 'final', 'rep'].includes(r.bar)) it.bar = r.bar;
   if (r.rs === true) it.rs = true;
@@ -79,6 +85,49 @@ function item(r, rhythm) {
   if (r.tup === 3) it.tup = 3;
   if (r.auto === true && !it.tup) it.auto = true; // piece of a note split at the barline (2.6)
   return it;
+}
+
+/**
+ * Validates the notes stacked on an item (2.17): positions in range, no duplicate, not at the
+ * item's own position, sorted, at most {@link module:noteheads.HEADS_MAX|HEADS_MAX} notes in all.
+ * @param {Array.<*>} r
+ * @param {number} own Position of the item's own note.
+ * @returns {Array.<module:model~ExtraHead>}
+ */
+function extraHeads(r, own) {
+  const seen = new Set([own]);
+  const out = [];
+  r.slice(0, HEADS_MAX * 2).forEach((h) => {
+    if (!h || !isNum(h.s) || out.length >= HEADS_MAX - 1) return;
+    const s = clamp(Math.round(h.s), STEP_MIN, STEP_MAX);
+    if (seen.has(s)) return;
+    seen.add(s);
+    /** @type {module:model~ExtraHead} */
+    const head = { s };
+    if (h.a === -1 || h.a === 0 || h.a === 1) head.a = h.a;
+    out.push(head);
+  });
+  return out.sort((p, q) => p.s - q.s);
+}
+
+/**
+ * Validates the fields of one staff (2.17): clef, items, instrument, key signature.
+ * @param {*} r Raw block or raw extra staff.
+ * @returns {module:model~StaffPart}
+ */
+function staffPart(r) {
+  const clef = ['treble', 'bass', 'rhythm'].includes(r.clef) ? r.clef : 'treble';
+  const items = Array.isArray(r.items)
+    ? r.items
+        .slice(0, LIMITS.items)
+        .map((x) => item(x, clef === 'rhythm'))
+        .filter(Boolean)
+    : [];
+  /** @type {module:model~StaffPart} */
+  const p = { clef, items };
+  if (clef !== 'rhythm' && r.tr !== 'C' && INSTRUMENTS.some((x) => x.key === r.tr)) p.tr = r.tr;
+  if (clef !== 'rhythm' && Number.isInteger(r.ks) && r.ks !== 0 && Math.abs(r.ks) <= 7) p.ks = r.ks;
+  return p;
 }
 
 /**
@@ -116,16 +165,26 @@ export function sanitizeBlock(r) {
   if (r.type === 'text') return { id: id(r.id), type: 'text', text: str(r.text, LIMITS.text) };
   if (r.type === 'staff') {
     const time = STAFF_TIMES.includes(r.time) ? r.time : '4/4';
-    const clef = ['treble', 'bass', 'rhythm'].includes(r.clef) ? r.clef : 'treble';
-    const items = Array.isArray(r.items)
-      ? r.items
-          .slice(0, LIMITS.items)
-          .map((x) => item(x, clef === 'rhythm'))
-          .filter(Boolean)
-      : [];
-    const st = { id: id(r.id), type: 'staff', clef, time, tempo, swing: r.swing === true, items };
-    if (clef !== 'rhythm' && Number.isInteger(r.ks) && r.ks !== 0 && Math.abs(r.ks) <= 7) st.ks = r.ks;
-    if (clef !== 'rhythm' && r.tr !== 'C' && INSTRUMENTS.some((x) => x.key === r.tr)) st.tr = r.tr;
+    const first = staffPart(r);
+    const st = {
+      id: id(r.id),
+      type: 'staff',
+      clef: first.clef,
+      time,
+      tempo,
+      swing: r.swing === true,
+      items: first.items,
+    };
+    if (first.ks) st.ks = first.ks;
+    if (first.tr) st.tr = first.tr;
+    // Other staves (2.17).
+    if (Array.isArray(r.more)) {
+      const more = r.more
+        .filter((p) => p && typeof p === 'object')
+        .slice(0, PARTS_MAX - 1)
+        .map(staffPart);
+      if (more.length) st.more = more;
+    }
     if (FOLDS.includes(r.fold)) st.fold = r.fold;
     // Grouping of an odd meter (2.16): kept only if it fills the measure.
     if (Array.isArray(r.groups) && meterGroups({ time, groups: r.groups }) === r.groups)

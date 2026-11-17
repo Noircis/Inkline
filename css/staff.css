@@ -165,6 +165,12 @@ svg .tup {
 .pal-row button.accb {
   font-size: 22px;
 }
+/* Chord mode "+♪" (2.17). */
+.pal-row button.stackb {
+  font-family: var(--f-music);
+  font-size: 20px;
+  white-space: nowrap;
+}
 .pal-row button.tupb {
   font-family: var(--f-body);
   font-style: italic;

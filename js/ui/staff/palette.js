@@ -2,8 +2,8 @@
  * @module ui/staff/palette
  * @description
  * Staff **palette**, fixed at the bottom of the screen: mode (Write / Edit),
- * durations, dot, triplet, rest, tie, accidentals, barlines, chord symbol,
- * navigation, undo, erase.
+ * durations, dot, triplet, rest, tie, accidentals, chord mode "+♪" (2.17),
+ * barlines, chord symbol, navigation, undo, erase.
  *
  * Each button acts according to the mode:
  * - **Write**: it sets the **next** note
@@ -28,6 +28,8 @@ import { hooks, staffUi, flash, activeStaff, refit, insertIndex, logicalValue, w
 import { setMode } from './input.js';
 import { barBar, applyBar, syncBarMenu } from './bars.js';
 import { openChord, closeChord } from './chord.js';
+import { closePartMenu } from './part-menu.js';
+import { headsOf, copyHeads } from '../../noteheads.js';
 
 const pal = /** @type {HTMLElement} */ (document.getElementById('palette'));
 
@@ -50,6 +52,7 @@ const LABELS = {
 export function showStaffPalette(on) {
   if (!on) {
     closeChord();
+    closePartMenu();
     barBar.hidden = true;
   }
   pal.hidden = !on;
@@ -92,10 +95,12 @@ function helpText(b, v) {
   const inp = state.input;
   const rh = b.clef === 'rhythm';
   const last = b.items[b.items.length - 1];
+  if (inp.stack && !rh) return t(state.mode === 'edit' ? 'hint.stackEdit' : 'hint.stack');
   if (v.sel) {
     if (v.sel.r) return t('hint.restSelected');
     if (rh) return t('hint.noteSelected');
-    return pitchName(b.clef, v.sel.s, v.sel.a, b.ks) + ' · ' + t('hint.moveNote');
+    const names = headsOf(v.sel).map((h) => pitchName(b.clef, h.s, h.a, b.ks));
+    return names.join(' ') + ' · ' + t('hint.moveNote');
   }
   if (state.mode === 'edit') return t('hint.editMode');
   if (state.cursor != null) return t('hint.insertBefore', { n: state.cursor + 1 });
@@ -137,6 +142,8 @@ function updateStaffPalette() {
   press('[data-act=rest]', v.rest);
   press('[data-act=tup]', v.tup);
   press('[data-act=tie]', v.tie);
+  press('[data-act=stack]', state.input.stack);
+  /** @type {HTMLElement} */ (pal.querySelector('[data-act=stack]')).hidden = b.clef === 'rhythm';
   press('[data-act=bar]', !barBar.hidden);
   pal.querySelectorAll('[data-acc]').forEach((x) => {
     /** @type {HTMLElement} */ (x).hidden = b.clef === 'rhythm';
@@ -203,10 +210,7 @@ function toggleTie(b) {
     }
     it.tie = true;
     const next = blk.items[chainEnd(blk.items, state.sel) + 1];
-    if (next && !next.r) {
-      next.s = it.s;
-      delete next.a;
-    }
+    if (next && !next.r) copyHeads(it, next);
   });
   if (done) audio.previewItem(b, state.sel);
   else {
@@ -232,6 +236,7 @@ function toggleRestOf(it, blk) {
       p.r = true;
       delete p.tie;
       delete p.a;
+      delete p.x;
     }
   }
 }
@@ -316,6 +321,10 @@ const ACTIONS = {
   undo: () => undo(),
   del: (n, b) => erase(n, b),
   chord: (n, b) => b.items.length && openChord(b),
+  stack: (n, b) => {
+    setInput((inp) => (inp.stack = !inp.stack));
+    hooks.redraw(b.id); // the drag zones depend on it
+  },
 };
 
 /**

@@ -5,7 +5,8 @@ format, storage, security); this file is the short version plus the rules that a
 
 ## What Inkline is
 
-A music notebook PWA for Android phones: a note is a list of blocks (text, staff, rhythm line, chord chart),
+A music notebook PWA for Android phones: a note is a list of blocks (text, staff, rhythm line, chord chart; a
+staff block may hold up to four staves, and chords),
 entered with a finger and playable. **No framework, no build step, no runtime dependencies**: native ES
 modules served as is (`index.html` → `js/main.js`), offline via `sw.js`, data in IndexedDB. `node_modules`
 holds dev tools only (ESLint, Prettier, JSDoc, Playwright, fake-indexeddb).
@@ -36,7 +37,7 @@ Two layers:
   effects, tested under Node. All musical/organizational logic lives here — `model` (types/factories),
   `pitch`, `rhythm`, `layout`, `render-staff` (SVG as string), `chords`, `grid`, `ireal`, `measure-fit`,
   `transpose`, `folders`, `search`, `folding`, `placements`, `exercise`, `chord-keys`, `i18n`, `sanitize`,
-  `metronome`, `metro-clock`, `practice`.
+  `metronome`, `metro-clock`, `practice`, `noteheads`, `parts`, `score`.
 - **Interface / browser glue**: `js/ui/**`, `audio` (Web Audio synth), `storage` + `db` (IndexedDB with
   localStorage fallback), `export` + `pdf`, `main`.
 
@@ -49,17 +50,23 @@ Key patterns:
   `main.js`.
 - **Immediate-mode rendering.** Mutate `state` (`ui/state.js`), then regenerate the affected part (template
   strings → `innerHTML`, SVG strings). No virtual DOM, no reactivity.
+- **Several staves (2.17).** `partsOf(b)` lists the staves (the first is the block itself, the others in
+  `b.more`). UI code edits one staff through `partView(b, k)`, a Proxy that routes `clef`/`items`/`tr`/`ks` to
+  that staff: `activeStaff()` returns it as `b` (the whole block as `block`, the index as `k`, also
+  `state.part`). Layout, drawing, playback and the measure selection take the **whole block** (plus the staff
+  index). Barlines are the system's (`shareBarline`).
 - **One layout engine for drawing and hit testing.** `layout.js` computes positions used both by
   `render-staff` and by tap handling (`ui/staff/input.js`); e2e tests also compute tap coordinates from it.
   Never duplicate geometry.
 - `lang-init.js` must stay the **first** import of `main.js` (language set before labels are built).
 
-Main files by size/importance: `render-staff.js`, `storage.js`, `ui/grid-ui.js`, `audio.js`, `rhythm.js`,
+Main files by size/importance: `render-staff.js`, `layout.js`, `score.js`, `storage.js`, `ui/grid-ui.js`, `audio.js`, `rhythm.js`,
 `ireal.js`, `measure-fit.js`, `model.js`, `ui/staff/*` (index, view, input, palette, bars, chord, shared).
 
 ## Data model essentials
 
-- Pitch stored as **staff position**, converted to MIDI on demand (`pitch.js`).
+- Pitch stored as **staff position**, converted to MIDI on demand (`pitch.js`). A chord is one item: own note
+  `s`/`a` plus stacked notes `x: [{ s, a }]` (`noteheads.js`); `resolvePitches` gives them all.
 - Durations in **quarter notes** (dot ×1.5, triplet ×2/3).
 - Optional fields are **absent** rather than `false`.
 - Format is backward compatible back to 1.0 — never break loading of old notes; migrations go in `storage.js`
@@ -99,4 +106,5 @@ Main files by size/importance: `render-staff.js`, `storage.js`, `ui/grid-ui.js`,
    `CACHE` in `sw.js`.
 2. Add a `CHANGELOG.md` entry (Keep a Changelog format, English).
 3. `npm run check`, `npm run test:e2e`, `npm run docs` (`docs/` is generated but committed).
-4. Push to the GitHub Pages branch. Users get the new version on the second launch (stale-while-revalidate).
+4. A new module goes into `CORE` in `sw.js` (a unit test checks it).
+5. Push to the GitHub Pages branch. Users get the new version on the second launch (stale-while-revalidate).

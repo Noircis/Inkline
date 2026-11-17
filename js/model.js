@@ -67,6 +67,16 @@ import { uid } from './util.js';
  * @property {3} [tup] Belongs to a triplet (3 notes in the time of 2:
  *   actual duration = written duration × 2/3).
  * @property {boolean} [auto] Piece created by fitting into measures (2.6): continues into the next item (note split at the barline). See the `measure-fit` module.
+ * @property {Array.<ExtraHead>} [x] Other notes of a chord stacked on this one (2.17), sorted by
+ *   position, never at the position `s`. The item's own `s` and `a` stay its first note. See the
+ *   `noteheads` module.
+ */
+
+/**
+ * A note stacked on a staff item to make a chord (2.17).
+ * @typedef {Object} ExtraHead
+ * @property {number} s Position on the staff, as {@link StaffItem}.`s`.
+ * @property {number} [a] Written accidental.
  */
 
 /**
@@ -93,6 +103,20 @@ import { uid } from './util.js';
  * @property {Array.<number>} [groups] Grouping of eighth notes in the measure (2.8), e.g. `[2, 2, 3]` for a "2+2+3" 7/8. Decides beams and metronome clicks. Absent: {@link module:model.defaultGroups|defaultGroups}. Set on practice blocks, and kept when one is added to a note (2.16).
  * @property {boolean} [justify] Stretch the last line to the edge (generated practice blocks; never saved).
  * @property {'open'|'closed'} [fold] Manual display choice for a long block (2.2): expanded or collapsed. Absent: the "Collapse automatically" option decides.
+ * @property {Array.<StaffPart>} [more] Other staves of the block (2.17), drawn under the first one
+ *   and joined by a brace (a piano, a sax and piano score…). The block's own `clef`, `items`, `tr`
+ *   and `ks` are the first staff; time signature, tempo and swing are shared. At most
+ *   {@link module:parts.PARTS_MAX|PARTS_MAX} staves in all. See the `parts` module.
+ */
+
+/**
+ * One more staff of a staff block (2.17): the fields of a {@link StaffBlock} that belong to a
+ * single staff.
+ * @typedef {Object} StaffPart
+ * @property {'treble'|'bass'|'rhythm'} clef
+ * @property {StaffItem[]} items
+ * @property {string} [tr] Transposing instrument.
+ * @property {number} [ks] Key signature.
  */
 
 /**

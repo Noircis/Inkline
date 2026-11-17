@@ -135,43 +135,52 @@ export function pitchName(clef, s, a, ks = 0) {
 }
 
 /**
- * Computes the MIDI pitch of each item of a staff, applying the rules for
+ * Computes the MIDI pitches of each item of a staff, applying the rules for
  * accidentals and ties.
  *
  * Walks the items in written order (not playback order with repeats:
  * accidentals are a property of the written score).
  *
- * @param {module:model~StaffBlock} b
  * For a transposing instrument (2.8.3), this is the **concert pitch**: the
  * written note, minus the instrument's interval.
  *
- * @returns {Array.<?number>} One MIDI number per item, `null` for rests and
+ * A chord (2.17) gives one pitch per note: its own note first, then the
+ * stacked ones in their order (`x`). Each written accidental holds for the
+ * rest of the measure, chord notes included. A tied item sounds the pitches
+ * of the item it is tied from.
+ *
+ * @param {module:model~StaffBlock} b
+ * @returns {Array.<Array.<number>>} One list per item, empty for rests and
  *   for the whole rhythm line.
  */
-export function resolveMidis(b) {
+export function resolvePitches(b) {
   const ML = mlen(b.time);
   const shift = instrumentOf(b.tr).semis;
   let pos = 0;
   // current accidental by position, for the current measure
   /** @type {Object.<number, number>} */
   let carry = {};
-  /** @type {Array.<?number>} */
+  /** @type {Array.<Array.<number>>} */
   const out = [];
+  /** Concert pitch of a head, recording its accidental for the measure. */
+  const head = (s, a) => {
+    if (a != null) carry[s] = a;
+    return midiOf(b.clef, s, carry[s] ?? keyAcc(b.clef, s, b.ks)) - shift;
+  };
   b.items.forEach((it, i) => {
     // A start repeat opens a new measure: reset everything.
     if (it.rs && pos > 0) {
       pos = 0;
       carry = {};
     }
-    let m = null;
+    let m = [];
     if (!it.r && b.clef !== 'rhythm') {
       const prev = b.items[i - 1];
-      if (prev && prev.tie && !prev.r && out[i - 1] != null) {
-        // Tied note: same pitch as the previous one, whatever the measure.
-        m = out[i - 1];
+      if (prev && prev.tie && !prev.r && out[i - 1].length) {
+        // Tied note: same pitches as the previous one, whatever the measure.
+        m = out[i - 1].slice();
       } else {
-        if (it.a != null) carry[it.s] = it.a;
-        m = midiOf(b.clef, it.s, carry[it.s] ?? keyAcc(b.clef, it.s, b.ks)) - shift;
+        m = [head(it.s, it.a), ...(Array.isArray(it.x) ? it.x.map((h) => head(h.s, h.a)) : [])];
       }
     }
     out.push(m);
@@ -183,4 +192,13 @@ export function resolveMidis(b) {
     }
   });
   return out;
+}
+
+/**
+ * MIDI pitch of each item's own note ({@link resolvePitches}, first note).
+ * @param {module:model~StaffBlock} b
+ * @returns {Array.<?number>} `null` for rests and for the whole rhythm line.
+ */
+export function resolveMidis(b) {
+  return resolvePitches(b).map((m) => (m.length ? m[0] : null));
 }

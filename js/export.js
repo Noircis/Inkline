@@ -30,6 +30,7 @@ import { staffSvg } from './render-staff.js';
 import { gridSvg, keyLabel } from './grid.js';
 import { noteFileJson } from './storage.js';
 import { buildPdf, A4 } from './pdf.js';
+import { partsOf } from './parts.js';
 
 /** Logical width of the image (px); the final image is twice as wide. */
 const W = 720;
@@ -150,12 +151,15 @@ function wrap(ctx, text, maxW) {
 function caption(b) {
   if (b.type === 'grid')
     return `${t('grid.kind').toUpperCase()} · ${keyLabel(b.key).toUpperCase()} · ${b.time} · ${b.style.toUpperCase()} · TEMPO ${b.tempo}`;
+  const count = partsOf(b).length;
   const kind = (
-    b.clef === 'rhythm'
-      ? t('staff.rhythm')
-      : b.clef === 'bass'
-        ? t('export.bassClef')
-        : t('export.trebleClef')
+    count > 1
+      ? t('export.staves', { n: count })
+      : b.clef === 'rhythm'
+        ? t('staff.rhythm')
+        : b.clef === 'bass'
+          ? t('export.bassClef')
+          : t('export.trebleClef')
   ).toUpperCase();
   return `${kind} · ${b.time} · TEMPO ${b.tempo}${b.swing ? ' · SWING' : ''}`;
 }

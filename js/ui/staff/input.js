@@ -18,18 +18,41 @@
  * After any insertion, the staff is fitted back into measures
  * ({@link module:ui/staff/shared.refit|refit}): a note that overflows is
  * split at the barline and tied.
+ *
+ * **Chords** (2.17): with the palette's "+♪" on, a tap adds a note to the
+ * target note (the one before the cursor, or the selected one) at the tapped
+ * pitch, or removes the note already there.
+ *
+ * **Several staves** (2.17): a tap on another staff of the block makes it the
+ * staff being edited; a tap on a clef opens the staff menu
+ * ({@link module:ui/staff/part-menu|ui/staff/part-menu}).
  */
 
 import { t } from '../../i18n.js';
-import { state, blockById, touch } from '../state.js';
+import { state, touch } from '../state.js';
 import { chainStart, chainEnd } from '../../measure-fit.js';
-import { layout, geom, stepFromY, INSERT_GAP } from '../../layout.js';
+import { layout, geom, stepFromY, bandAt, INSERT_GAP } from '../../layout.js';
 import { pushSnapshot, discardSnapshot } from '../../history.js';
 import { pitchName } from '../../pitch.js';
 import * as audio from '../../audio.js';
 import { setActive } from '../blocks.js';
-import { hooks, clampCursor, refit, flash, insertIndex } from './shared.js';
+import {
+  hooks,
+  clampCursor,
+  refit,
+  flash,
+  insertIndex,
+  activePart,
+  activeStaff,
+  targetIndex,
+} from './shared.js';
 import { closeChord } from './chord.js';
+import { openPartMenu } from './part-menu.js';
+import { partView } from '../../parts.js';
+import { toggleHead, moveHeads, copyHeads } from '../../noteheads.js';
+
+/** Width (px) of the clef zone, at the start of each line: a tap there opens the staff menu. */
+const CLEF_ZONE = 30;
 
 /**
  * Item to insert, built from the input settings.
@@ -53,9 +76,9 @@ function newItem(b, L, g, y, at) {
   if (inp.rest) {
     it.r = true;
   } else if (inp.tie && prev && !prev.r) {
-    // Tied note: same pitch as the previous one, the tapped position is ignored.
+    // Tied note: same pitch(es) as the previous one, the tapped position is ignored.
     prev.tie = true;
-    if (!L.rh) it.s = prev.s;
+    if (!L.rh) copyHeads(prev, it);
   } else if (!L.rh) {
     it.s = stepFromY(g, y);
     if (inp.acc != null) it.a = inp.acc;
@@ -105,40 +128,90 @@ function insertNote(n, b, L, g, y, at) {
 
 /**
  * Puts note `h` (and the notes tied to it) at position `s`, without undo or
- * save. A tie joins two notes of the same pitch: moving a note breaks the
- * tie coming into it, and drags along the notes tied to it.
+ * save. A chord moves as a whole. A tie joins two notes of the same pitch:
+ * moving a note breaks the tie coming into it, and drags along the notes tied
+ * to it.
  * @param {module:model~StaffBlock} b
  * @param {number} h Index of the note.
- * @param {number} s New position.
+ * @param {number} s New position of its own note.
  */
 function setStep(b, h, s) {
-  b.items[h].s = s;
+  moveHeads(b.items[h], s);
   const prev = b.items[h - 1];
   if (prev && prev.tie) delete prev.tie;
   for (let k = h; b.items[k] && b.items[k].tie && b.items[k + 1] && !b.items[k + 1].r; k++)
-    b.items[k + 1].s = s;
+    copyHeads(b.items[k], b.items[k + 1]);
 }
 
 /**
- * Where a tap lands: line, item touched, insertion zones. Redoes the layout
- * with the same width and cursor as the render.
- * @param {module:model~StaffBlock} b
+ * Where a tap lands: line, staff, item touched, insertion zones. Redoes the
+ * layout with the same width, staff and cursor as the render.
+ * @param {module:model~StaffBlock} block The whole block.
  * @param {HTMLElement} wrap
  * @param {number} cx X in the window.
  * @param {number} cy Y in the window.
  */
-function hitTest(b, wrap, cx, cy) {
+function hitTest(block, wrap, cx, cy) {
   const r = wrap.getBoundingClientRect();
   const x = cx - r.left;
   const y = cy - r.top;
   const write = state.mode === 'write';
-  const L = layout(b, wrap._W || wrap.clientWidth, true, write ? state.cursor : null);
-  const si = Math.max(0, Math.min(L.systems.length - 1, Math.floor(y / L.SH)));
+  const ka = activePart(block);
+  const b = partView(block, ka);
+  const L = layout(block, wrap._W || wrap.clientWidth, true, write ? state.cursor : null, ka);
+  const { sys: si, k } = bandAt(L, y);
   const g = geom(L, si);
-  const hit = b.items.findIndex((it, i) => L.pos[i].sys === si && x >= L.pos[i].x0 && x < L.pos[i].x1);
-  const inAppend = L.appendX != null && si === L.appendSys && x >= L.appendX - 14;
-  const inInsert = L.insertX != null && si === L.insertSys && Math.abs(x - L.insertX) <= INSERT_GAP / 2 + 2;
-  return { x, y, top: r.top, L, g, hit, inAppend, inInsert };
+  const mine = k === ka;
+  const hit = mine
+    ? b.items.findIndex((it, i) => L.pos[i].sys === si && x >= L.pos[i].x0 && x < L.pos[i].x1)
+    : -1;
+  const half = INSERT_GAP / 2 + 2;
+  const inAppend =
+    mine &&
+    L.appendX != null &&
+    si === L.appendSys &&
+    (L.appendGap ? Math.abs(x - L.appendX) <= half : x >= L.appendX - 14);
+  const inInsert = mine && L.insertX != null && si === L.insertSys && Math.abs(x - L.insertX) <= half;
+  const onClef = x < L.left + CLEF_ZONE;
+  return { x, y, top: r.top, L, g, k, mine, onClef, hit, inAppend, inInsert };
+}
+
+/**
+ * Chord mode (2.17): a tap adds a note at the tapped pitch to the target note
+ * (every piece of it, when it is split at a barline), or removes the note
+ * already there. A tap on another note makes it the target.
+ * @param {module:model~Note} n
+ * @param {module:model~StaffBlock} b The staff being edited.
+ * @param {ReturnType<hitTest>} ht
+ */
+function stackTap(n, b, ht) {
+  const target = targetIndex(b);
+  if (ht.hit >= 0 && chainStart(b.items, ht.hit) !== target) {
+    const h = chainStart(b.items, ht.hit);
+    if (state.mode === 'edit') state.sel = h;
+    else state.cursor = chainEnd(b.items, h) + 1 < b.items.length ? chainEnd(b.items, h) + 1 : null;
+    audio.previewItem(b, h);
+    return;
+  }
+  if (target < 0) return;
+  const first = b.items[target];
+  if (ht.L.rh || first.r) {
+    flash(t(ht.L.rh ? 'hint.stackRhythm' : 'hint.stackRest'));
+    return;
+  }
+  const s = stepFromY(ht.g, ht.y);
+  pushSnapshot(n);
+  const acc = state.input.acc;
+  let done = null;
+  for (let i = target; i <= chainEnd(b.items, target); i++) done = toggleHead(b.items[i], s, acc) ?? done;
+  if (done === 'added' || done === 'removed') {
+    state.input.acc = null;
+    touch(n);
+    audio.previewItem(b, target);
+  } else {
+    discardSnapshot(n);
+    flash(t(done === 'full' ? 'hint.stackFull' : 'hint.stackLast'));
+  }
 }
 
 /**
@@ -167,17 +240,30 @@ function hitTest(b, wrap, cx, cy) {
  * @param {module:model~StaffBlock} b
  * @param {MouseEvent} e
  */
-function staffTap(n, b, e) {
-  if (state.activeId !== b.id) {
-    setActive(b.id);
+function staffTap(n, block, e) {
+  const wasActive = state.activeId === block.id;
+  if (!wasActive) {
+    setActive(block.id);
     const ae = /** @type {HTMLElement} */ (document.activeElement);
     if (ae && ae.blur && ae !== document.body) ae.blur();
   }
-  clampCursor(b);
   const wrap = /** @type {HTMLElement} */ (e.currentTarget);
-  const { y, L, g, hit, inAppend, inInsert } = hitTest(b, wrap, e.clientX, e.clientY);
+  const ht = hitTest(block, wrap, e.clientX, e.clientY);
+  const { y, L, g, hit, inAppend, inInsert } = ht;
 
-  if (state.mode === 'write') {
+  // Another staff of the block, or a clef: change the staff being edited.
+  if (!ht.mine || (ht.onClef && wasActive)) {
+    if (!ht.mine) selectPart(block, ht.k);
+    if (ht.onClef && wasActive) openPartMenu(block, ht.k);
+    hooks.redraw(block.id);
+    return;
+  }
+  const b = partView(block, ht.k);
+  clampCursor(b);
+
+  if (state.input.stack) {
+    stackTap(n, b, ht);
+  } else if (state.mode === 'write') {
     if (inInsert) {
       insertNote(n, b, L, g, y, state.cursor);
     } else if (hit >= 0) {
@@ -200,7 +286,21 @@ function staffTap(n, b, e) {
   } else {
     state.sel = null;
   }
-  hooks.redraw(b.id);
+  hooks.redraw(block.id);
+}
+
+/**
+ * Makes staff `k` the one being edited: the cursor goes to its end, nothing
+ * is selected.
+ * @param {module:model~StaffBlock} block
+ * @param {number} k
+ */
+export function selectPart(block, k) {
+  if (state.part === k) return;
+  closeChord();
+  state.part = k;
+  state.cursor = null;
+  state.sel = null;
 }
 
 /**
@@ -213,20 +313,30 @@ function staffTap(n, b, e) {
  * Same zones as {@link hitTest}: the insertion zone and the add zone (Write),
  * the selected note (Edit), over the full height of the line.
  *
- * @param {module:model~StaffBlock} b
+ * Only on the staff being edited, and not in chord mode (a tap there adds a
+ * note to the chord).
+ *
+ * @param {module:model~StaffBlock} block The whole block.
  * @param {number} W Render width.
  * @returns {string} HTML of the overlays (empty if none).
  */
-export function dragZonesHtml(b, W) {
-  if (state.activeId !== b.id || b.clef === 'rhythm') return '';
+export function dragZonesHtml(block, W) {
+  if (state.activeId !== block.id || state.input.stack) return '';
+  const ka = activePart(block);
+  const b = partView(block, ka);
+  if (b.clef === 'rhythm') return '';
   const write = state.mode === 'write';
-  const L = layout(b, W, true, write ? state.cursor : null);
+  const L = layout(block, W, true, write ? state.cursor : null, ka);
+  const band = L.parts[ka];
   const zone = (sys, x0, x1) =>
-    `<div class="drag-zone" style="left:${Math.max(0, x0)}px;top:${sys * L.SH}px;width:${Math.max(0, Math.min(W, x1) - Math.max(0, x0))}px;height:${L.SH}px"></div>`;
+    `<div class="drag-zone" style="left:${Math.max(0, x0)}px;top:${sys * L.SH + band.off}px;width:${Math.max(0, Math.min(W, x1) - Math.max(0, x0))}px;height:${band.H}px"></div>`;
+  const half = INSERT_GAP / 2 + 2;
   if (write) {
-    if (L.insertX != null)
-      return zone(L.insertSys, L.insertX - INSERT_GAP / 2 - 2, L.insertX + INSERT_GAP / 2 + 2);
-    if (L.appendX != null && state.cursor == null) return zone(L.appendSys, L.appendX - 14, W);
+    if (L.insertX != null) return zone(L.insertSys, L.insertX - half, L.insertX + half);
+    if (L.appendX != null && state.cursor == null)
+      return L.appendGap
+        ? zone(L.appendSys, L.appendX - half, L.appendX + half)
+        : zone(L.appendSys, L.appendX - 14, W);
     return '';
   }
   const h = state.sel;
@@ -281,10 +391,12 @@ function showTip(text, cx = 0, cy = 0) {
  * place the cursor, select, deselect.
  *
  * @param {module:model~Note} n
- * @param {module:model~StaffBlock} b
+ * @param {module:model~StaffBlock} block The whole block.
  * @param {HTMLElement} wrap
  */
-export function bindStaffInput(n, b, wrap) {
+export function bindStaffInput(n, block, wrap) {
+  /** The staff being edited, seen as a block (it may change between gestures). */
+  let b = block;
   /** Gesture in progress. */
   let drag = null;
   /** The `click` following a gesture must not be handled a second time. */
@@ -294,9 +406,14 @@ export function bindStaffInput(n, b, wrap) {
     consumed = false;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     // Inactive or collapsed block: the first tap activates it (see staffTap / fold).
-    if (state.activeId !== b.id || wrap.closest('.folded')) return;
+    if (state.activeId !== block.id || wrap.closest('.folded')) return;
+    // Chord mode: taps only (see staffTap).
+    if (state.input.stack) return;
+    b = partView(block, activePart(block));
     clampCursor(b);
-    const ht = hitTest(b, wrap, e.clientX, e.clientY);
+    const ht = hitTest(block, wrap, e.clientX, e.clientY);
+    // Another staff, or a clef: handled by the tap (see staffTap).
+    if (!ht.mine || ht.onClef) return;
     let h;
     let movable;
     if (state.mode === 'write') {
@@ -309,7 +426,7 @@ export function bindStaffInput(n, b, wrap) {
       const tie = state.input.tie && !state.input.rest;
       h = insertNote(n, b, ht.L, ht.g, ht.y, at);
       consumed = true;
-      hooks.redraw(b.id);
+      hooks.redraw(block.id);
       if (h < 0) return;
       // Rest, tied note (pitch imposed), rhythm line: nothing to drag.
       movable = !b.items[h].r && !ht.L.rh && !tie;
@@ -346,7 +463,8 @@ export function bindStaffInput(n, b, wrap) {
     if (s === drag.s) return false;
     drag.s = s;
     setStep(b, drag.h, s);
-    hooks.redraw(b.id);
+    drag.s = b.items[drag.h].s; // a chord may stop at the edge of the staff
+    hooks.redraw(block.id);
     return true;
   }
 
@@ -378,7 +496,7 @@ export function bindStaffInput(n, b, wrap) {
       consumed = false;
       return;
     }
-    staffTap(n, b, /** @type {MouseEvent} */ (e));
+    staffTap(n, block, /** @type {MouseEvent} */ (e));
   });
 }
 
@@ -389,8 +507,9 @@ export function bindStaffInput(n, b, wrap) {
  * @param {'write'|'edit'} mode
  */
 export function setMode(mode) {
-  const b = /** @type {module:model~StaffBlock} */ (blockById(state.activeId));
-  if (!b || state.mode === mode) return;
+  const a = activeStaff();
+  if (!a || state.mode === mode) return;
+  const { b } = a;
   closeChord();
   if (mode === 'edit') {
     const i = insertIndex(b) - 1;

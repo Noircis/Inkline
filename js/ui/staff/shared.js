@@ -25,11 +25,20 @@
  * registered in {@link module:ui/staff/shared.hooks|hooks} when their module
  * loads, and called through it: dependency inversion, the equivalent of a
  * function pointer set at initialization in C++.
+ *
+ * ## Several staves (2.17)
+ *
+ * A block may hold several staves ({@link module:parts|parts}); one of them
+ * is being edited (`state.part`). {@link activeStaff} gives it **seen as a
+ * block** ({@link module:parts.partView|partView}): the palette and the input
+ * code work on `b.items`, `b.clef`… without knowing which staff it is. The
+ * layout and the drawing take the whole block and the staff index.
  */
 
 import { state, curNote, blockById, touch } from '../state.js';
 import { qlen } from '../../model.js';
 import { normalizeStaff, chainStart, chainEnd, singleValue } from '../../measure-fit.js';
+import { partsOf, partView } from '../../parts.js';
 import { pushSnapshot } from '../../history.js';
 
 /**
@@ -67,13 +76,45 @@ export function flash(text) {
 }
 
 /**
- * Active staff block and its note (or `null`).
- * @returns {?{n: module:model~Note, b: module:model~StaffBlock}}
+ * Staff being edited in a block: `state.part` if the block is active, its
+ * first staff otherwise. Brought back in range if a staff was removed.
+ * @param {module:model~StaffBlock} block
+ * @returns {number}
+ */
+export function activePart(block) {
+  if (state.activeId !== block.id) return 0;
+  const count = partsOf(block).length;
+  if (state.part >= count) state.part = count - 1;
+  return state.part;
+}
+
+/**
+ * Active staff block, its note, and the staff being edited seen as a block
+ * (or `null`).
+ * @returns {?{n: module:model~Note, b: module:model~StaffBlock, block: module:model~StaffBlock, k: number}}
+ *   `b`: the staff being edited ({@link module:parts.partView|partView}); `block`: the whole block;
+ *   `k`: the staff index.
  */
 export function activeStaff() {
   const n = curNote();
-  const b = /** @type {module:model~StaffBlock} */ (blockById(state.activeId));
-  return n && b && b.type === 'staff' ? { n, b } : null;
+  const block = /** @type {module:model~StaffBlock} */ (blockById(state.activeId));
+  if (!n || !block || block.type !== 'staff') return null;
+  const k = activePart(block);
+  return { n, b: partView(block, k), block, k };
+}
+
+/**
+ * Fits every staff of a block back into measures (after a time signature
+ * change, a barline shared by every staff…). The cursor and the selection
+ * follow on the staff being edited.
+ * @param {module:model~StaffBlock} block
+ */
+export function refitAll(block) {
+  const ka = activePart(block);
+  partsOf(block).forEach((p, k) => {
+    if (k === ka) refit(partView(block, k));
+    else p.items = normalizeStaff(p.items, block.time).items;
+  });
 }
 
 /**

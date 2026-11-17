@@ -13,11 +13,16 @@ import * as audio from '../audio.js';
 import { METRONOME } from './icons.js';
 
 /** Version shown in Settings (keep it in line with CHANGELOG.md). */
-export const APP_VERSION = '2.16.0';
+export const APP_VERSION = '2.17.0';
 
-/** HTML of an active block's tools. */
-export function toolsHtml() {
-  return `<div class="tools"><button type="button" data-tool="up" aria-label="${esc(t('common.moveUp'))}">&#8593;</button><button type="button" data-tool="down" aria-label="${esc(t('common.moveDown'))}">&#8595;</button><button type="button" data-tool="del">${esc(t('common.delete'))}</button></div>`;
+/**
+ * HTML of an active block's tools.
+ * @param {string} [extra] HTML of the block's own buttons, placed first. They
+ *   must not use `data-tool`, which the note screen wires for every block.
+ * @returns {string}
+ */
+export function toolsHtml(extra = '') {
+  return `<div class="tools">${extra}<button type="button" data-tool="up" aria-label="${esc(t('common.moveUp'))}">&#8593;</button><button type="button" data-tool="down" aria-label="${esc(t('common.moveDown'))}">&#8595;</button><button type="button" data-tool="del">${esc(t('common.delete'))}</button></div>`;
 }
 
 /**
@@ -119,19 +124,21 @@ export function updatePlayBtn(id) {
 
 /**
  * Playback callbacks shared by staves and charts: highlight of the item
- * being played, then reset at the end.
+ * being played (on each staff of a block, 2.17), then reset at the end.
  * @param {string} id Block being played.
  * @param {function(string)} redraw Block redraw function.
  * @returns {module:audio~PlayCallbacks}
  */
 export function playCallbacks(id, redraw) {
   return {
-    onStep: (i) => {
+    onStep: (i, k = 0) => {
       state.playIdx = i;
+      state.playAt[k] = i;
       redraw(id);
     },
     onEnd: () => {
       state.playIdx = null;
+      state.playAt = [];
       redraw(id);
       updatePlayBtn(id);
     },
