@@ -545,6 +545,7 @@ export default {
     sessionsN: { one: '{n} séance', other: '{n} séances' },
     showMore: 'Afficher plus',
     start: 'Commencer',
+    startAt: 'Commencer la séance sur {name}',
     startNamed: 'Commencer « {name} »',
     textPlaceholder: 'Gammes majeures, 12 tons…',
     timeUp: 'Temps écoulé',

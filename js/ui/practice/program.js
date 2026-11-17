@@ -18,7 +18,7 @@ import { t } from '../../i18n.js';
 import { esc } from '../../util.js';
 import { state, app } from '../state.js';
 import * as audio from '../../audio.js';
-import { registerScreen, goChild, backToList } from '../nav.js';
+import { registerScreen, backToList } from '../nav.js';
 import { hideAllPalettes } from '../blocks.js';
 import { confirmTap } from '../common.js';
 import { header } from '../drill-kit.js';
@@ -43,6 +43,7 @@ import {
   noteTitle,
   blockName,
   toast,
+  startSession,
 } from './shared.js';
 
 /** Program shown. */
@@ -81,7 +82,7 @@ function itemsHtml() {
   return `<ol class="pitems" id="pItems">${prog.items
     .map(
       (it) =>
-        `<li class="pitem" data-id="${esc(it.id)}"><span class="pdrag" data-drag aria-hidden="true">&#8801;</span><button type="button" class="pitem-main" data-item="${esc(it.id)}"><span class="pitem-name">${esc(itemLabel(it))}</span><small>${esc(itemInfo(it))}</small></button></li>`,
+        `<li class="pitem" data-id="${esc(it.id)}"><span class="pdrag" data-drag aria-hidden="true">&#8801;</span><button type="button" class="pitem-main" data-item="${esc(it.id)}"><span class="pitem-name">${esc(itemLabel(it))}</span><small>${esc(itemInfo(it))}</small></button><button type="button" class="pitem-play" data-play-item="${esc(it.id)}" aria-label="${esc(t('practice.startAt', { name: itemLabel(it) }))}">&#9654;</button></li>`,
     )
     .join('')}</ol>`;
 }
@@ -113,10 +114,18 @@ function renderProgram() {
   app.querySelector('#back').addEventListener('click', backToList);
   app.querySelector('#pMenu').addEventListener('click', openMenu);
   app.querySelector('#pAdd').addEventListener('click', openAdd);
-  app.querySelector('#pStart').addEventListener('click', () => goChild('session', prog.id));
+  app.querySelector('#pStart').addEventListener('click', () => startSession(prog.id));
   app
     .querySelectorAll('[data-item]')
     .forEach((b) => b.addEventListener('click', () => openItem(/** @type {HTMLElement} */ (b).dataset.item)));
+  // ▶ on an item: the session starts right there (2.17.1).
+  app
+    .querySelectorAll('[data-play-item]')
+    .forEach((b) =>
+      b.addEventListener('click', () =>
+        startSession(prog.id, /** @type {HTMLElement} */ (b).dataset.playItem),
+      ),
+    );
   app
     .querySelectorAll('[data-drag]')
     .forEach((h) => h.addEventListener('pointerdown', (e) => dragItem(/** @type {PointerEvent} */ (e))));

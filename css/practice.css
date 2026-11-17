@@ -82,6 +82,16 @@
   font: inherit;
   cursor: pointer;
 }
+/* ▶ of an item (2.17.1): starts the session on it. */
+.pitem-play {
+  flex: none;
+  width: 48px;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: transparent;
+  color: var(--accent);
+  font-size: 16px;
+}
 .pitem-name {
   font-size: 15px;
   font-weight: 500;

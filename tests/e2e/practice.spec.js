@@ -158,3 +158,24 @@ test('add a generated exercise to a new note, to a program; 7/8 kept in the note
   await expect(page.locator('.block [data-f="time"]').first()).toHaveValue('7/8');
   expect(errors).toEqual([]);
 });
+
+test('▶ on an item starts the session right there (2.17.1)', async ({ page }) => {
+  const errors = collectErrors(page);
+  await openApp(page);
+  await page.click('#trainBtn');
+  await newProgram(page, 'Sax', 'Gammes');
+  for (const text of ['Arpèges', 'Impro libre']) {
+    await page.click('#pAdd');
+    await page.click('[data-a=text]');
+    await page.fill('[data-text]', text);
+    await page.click('.ptext button');
+  }
+  await page.locator('[data-play-item]').nth(2).click();
+  await expect(page.locator('.pv-free')).toHaveText('Impro libre');
+  await expect(page.locator('#sList')).toHaveText('3 / 3');
+  // Back to the program: its own ▶ still starts at the first item.
+  await page.goBack();
+  await page.click('#pStart');
+  await expect(page.locator('#sList')).toHaveText('1 / 3');
+  expect(errors).toEqual([]);
+});

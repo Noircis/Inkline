@@ -2,7 +2,8 @@
  * @module ui/practice/shared
  * @description
  * Pieces shared by the practice notebook screens (2.16): item names, saving
- * programs and sessions, relative dates, a bottom sheet with Android back.
+ * programs and sessions, relative dates, a bottom sheet with Android back,
+ * starting a session.
  */
 
 import { t, locale } from '../../i18n.js';
@@ -10,7 +11,30 @@ import { esc } from '../../util.js';
 import { state } from '../state.js';
 import { savePrograms, saveSession } from '../../storage.js';
 import { putSession, minutesOf } from '../../practice.js';
-import { openOverlay, closeOverlay } from '../nav.js';
+import { openOverlay, closeOverlay, goChild } from '../nav.js';
+
+/** Item a session asked for by {@link startSession} starts on, until the session screen takes it. */
+let startItem = null;
+
+/**
+ * Starts a session of a program (2.17.1: on any of its items).
+ * @param {string} progId
+ * @param {?string} [itemId=null] Item to start on; the first one by default.
+ */
+export function startSession(progId, itemId = null) {
+  startItem = itemId;
+  goChild('session', progId);
+}
+
+/**
+ * Item the next session starts on, read once (the session screen calls it).
+ * @returns {?string}
+ */
+export function takeSessionStart() {
+  const id = startItem;
+  startItem = null;
+  return id;
+}
 
 /**
  * The note an item points to, if it still exists.

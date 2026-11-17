@@ -13,7 +13,7 @@ import * as audio from '../audio.js';
 import { METRONOME } from './icons.js';
 
 /** Version shown in Settings (keep it in line with CHANGELOG.md). */
-export const APP_VERSION = '2.17.0';
+export const APP_VERSION = '2.17.1';
 
 /**
  * HTML of an active block's tools.
@@ -27,11 +27,19 @@ export function toolsHtml(extra = '') {
 
 /**
  * Fits a `<textarea>` height to its content (no inner scrollbar).
+ *
+ * The height is first reset to `auto` to measure the content: for a moment
+ * the page is shorter, and the browser pulls the scroll position back up to
+ * fit it (on a phone, to the top of the note while typing in the middle of a
+ * long text). The scroll position is put back right after, before anything
+ * is drawn.
  * @param {HTMLTextAreaElement} el
  */
 export function autosize(el) {
+  const y = window.scrollY;
   el.style.height = 'auto';
   el.style.height = el.scrollHeight + 'px';
+  if (window.scrollY !== y) window.scrollTo(0, y);
 }
 
 /**

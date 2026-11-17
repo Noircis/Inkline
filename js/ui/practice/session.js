@@ -10,7 +10,9 @@
  * - The metronome takes the item's settings (the item's own, else its
  *   note's) and has its controls at the bottom; "Save for this item" in the
  *   metronome sheet stores them in the program.
- * - ‹ › and the "2 / 5" list go anywhere, in any order. ✕ leaves at any time.
+ * - It starts on the first item, or on the one chosen with ▶ in the program
+ *   (2.17.1). ‹ › and the "2 / 5" list go anywhere, in any order. ✕ leaves
+ *   at any time.
  *
  * Every visit is recorded when the item is left (time, and the metronome
  * tempo if it played): the session is saved as it goes, so leaving the app
@@ -47,6 +49,7 @@ import {
   noteOf,
   openSheet,
   minutesLabel,
+  takeSessionStart,
 } from './shared.js';
 import { itemHtml, drawItem, playShown } from './item-view.js';
 
@@ -152,6 +155,7 @@ function finish() {
 function renderSession() {
   const prog = programById(state.view.id);
   if (!prog || !prog.items.length) return false;
+  const startId = takeSessionStart();
   if (!run || run.prog !== prog) {
     run = {
       prog,
@@ -163,7 +167,12 @@ function renderSession() {
       chimed: false,
       finished: false,
     };
-    enter(0);
+    enter(
+      Math.max(
+        0,
+        prog.items.findIndex((it) => it.id === startId),
+      ),
+    );
     setMiniAllowed(false);
     unlisten = onMetroChange(paintMetro);
     clearInterval(tick);

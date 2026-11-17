@@ -4,6 +4,16 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.17.1] - 2026-11-17
+
+### Added
+
+- **Practice: start on any item.** Each item of a program has its own ▶: the session starts right on it, without going through the ones before. Tapping the name still opens its settings; **Start** still begins with the first item.
+
+### Fixed
+
+- Typing in a text block no longer makes the page jump to the top of the note. On a phone, each key resized the field, the page got shorter for an instant and the browser pulled the scroll position up; it is now kept.
+
 ## [2.17.0] - 2026-11-17
 
 ### Added

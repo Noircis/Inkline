@@ -1,4 +1,4 @@
-// Collapsed long blocks, PNG / PDF / .inkline sharing.
+// Collapsed long blocks, PNG / PDF / .inkline sharing, text blocks.
 import { test, expect } from '@playwright/test';
 import { seedStorage, openApp, storedNotes } from './helpers.js';
 
@@ -54,4 +54,19 @@ test('share: non-empty Inkline, PNG and PDF files', async ({ page }) => {
     const size = (await (await import('node:fs/promises')).stat(await download.path())).size;
     expect(size).toBeGreaterThan(500);
   }
+});
+
+test.describe('phone', () => {
+  test.use({ isMobile: true, hasTouch: true });
+
+  test('typing in the middle of a long text does not jump to the top of the note', async ({ page }) => {
+    await openApp(page);
+    await page.click('#newNote');
+    const ta = page.locator('.block.text textarea').first();
+    await ta.fill(Array.from({ length: 80 }, (_, i) => 'Line ' + i).join('\n'));
+    await ta.evaluate((el) => el.setSelectionRange(400, 400));
+    await page.evaluate(() => window.scrollTo(0, 900));
+    await page.keyboard.type('x');
+    expect(await page.evaluate(() => window.scrollY)).toBe(900);
+  });
 });

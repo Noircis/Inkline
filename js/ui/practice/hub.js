@@ -16,7 +16,7 @@ import { registerScreen, goChild, backToList } from '../nav.js';
 import { hideAllPalettes } from '../blocks.js';
 import { header } from '../drill-kit.js';
 import { sortedPrograms, lastPlayed, newProgram } from '../../practice.js';
-import { saveProgram, relDay } from './shared.js';
+import { saveProgram, relDay, startSession } from './shared.js';
 
 /**
  * Second line of a program row: its items, when it was last played.
@@ -86,7 +86,7 @@ function renderHub() {
   app
     .querySelectorAll('[data-start]')
     .forEach((b) =>
-      b.addEventListener('click', () => goChild('session', /** @type {HTMLElement} */ (b).dataset.start)),
+      b.addEventListener('click', () => startSession(/** @type {HTMLElement} */ (b).dataset.start)),
     );
 }
 

@@ -535,6 +535,7 @@ export default {
     sessionsN: { one: '{n} session', other: '{n} sessions' },
     showMore: 'Show more',
     start: 'Start',
+    startAt: 'Start the session on {name}',
     startNamed: 'Start “{name}”',
     textPlaceholder: 'Major scales, 12 keys…',
     timeUp: 'Time’s up',
