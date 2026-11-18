@@ -27,7 +27,7 @@ let shown = [];
  * @returns {?Array.<module:model~Block>} `null` when its note is gone.
  */
 function blocksOf(it) {
-  if (it.kind === 'exercise') return [it.staff];
+  if (it.kind === 'exercise') return [it.staff || it.grid];
   if (it.kind === 'note') {
     const n = noteOf(it);
     return n ? n.blocks : null;

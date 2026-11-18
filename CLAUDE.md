@@ -37,7 +37,7 @@ Two layers:
   effects, tested under Node. All musical/organizational logic lives here — `model` (types/factories),
   `pitch`, `rhythm`, `layout`, `render-staff` (SVG as string), `chords`, `grid`, `ireal`, `measure-fit`,
   `transpose`, `folders`, `search`, `folding`, `placements`, `exercise`, `chord-keys`, `i18n`, `sanitize`,
-  `metronome`, `metro-clock`, `practice`, `noteheads`, `parts`, `score`.
+  `metronome`, `metro-clock`, `practice`, `noteheads`, `parts`, `score`, `random-grid`.
 - **Interface / browser glue**: `js/ui/**`, `audio` (Web Audio synth), `storage` + `db` (IndexedDB with
   localStorage fallback), `export` + `pdf`, `main`.
 

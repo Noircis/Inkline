@@ -4,6 +4,24 @@ All notable changes to Inkline are listed here.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versions follow [SemVer](https://semver.org/).
 Entries are written in English since 2.9.1; earlier entries are kept in French, as they were published.
 
+## [2.18.0] - 2026-11-18
+
+### Added
+
+- **Random chord charts** (Practice › Exercises): a chart of 1 to 64 bars where every chord is drawn at random, with no rule between chords. Every root, and every quality: triads, sixths and 6/9, every kind of seventh (major, minor, minor-major, dominant, half-diminished, diminished), extensions (9, 11, 13), altered dominants (♭9, ♯9, ♯11, ♭13, ♯5, alt), sus2, sus4 and add9. No inversions.
+  - Settings: 4/4 or 3/4, number of bars, one or two chords per bar (or either at random), flats, sharps or both. They are kept for next time.
+  - The chart has a number: ↻ draws another one. **Listen** plays it (tempo, swing, loop as in the other exercises), highlighting each bar.
+  - **+ Add** puts it into a note (new or existing) and/or a program. In a program the chart stays the same at every session.
+
+### Fixed
+
+- Playback of three chord qualities: add9 no longer adds a seventh, sus2 is no longer played as sus4, and a minor 11 now has its 11th.
+
+### Technical
+
+- New pure module `random-grid.js` (qualities, seeded draw, settings), screens in `ui/random-grid.js`. Settings in `meta.rgrid`.
+- A practice "exercise" item holds either a rhythm line (`staff`) or a chord chart (`grid`).
+
 ## [2.17.1] - 2026-11-17
 
 ### Added

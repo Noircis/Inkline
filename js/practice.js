@@ -47,7 +47,9 @@ export const ITEM_KINDS = Object.freeze(['text', 'note', 'block', 'exercise']);
  * @property {string} [note] Note id (`note` and `block` kinds).
  * @property {string} [block] Block id in that note (`block` kind).
  * @property {module:model~StaffBlock} [staff] Copy of a generated rhythm line (`exercise` kind).
- * @property {string} [title] Title of an exercise ("Exercise 482 · 7/8").
+ * @property {module:model~GridBlock} [grid] Copy of a random chord chart (`exercise` kind, 2.18),
+ *   instead of `staff`.
+ * @property {string} [title] Title of an exercise ("Exercise 482 · 7/8", "Chart 4821 · 8 bars").
  * @property {number} [minutes] Duration: a countdown during the session. Absent: none.
  * @property {Object} [metro] Metronome settings of the item (preset part of
  *   {@link module:metronome~MetroSettings|MetroSettings}).
@@ -122,9 +124,11 @@ function sanitizeItem(r) {
     it.block = r.block;
   }
   if (r.kind === 'exercise') {
-    const b = sanitizeBlock(r.staff);
-    if (!b || b.type !== 'staff') return null;
-    it.staff = /** @type {module:model~StaffBlock} */ (b);
+    // A rhythm line, or a chord chart (2.18).
+    const b = sanitizeBlock(r.staff || r.grid);
+    if (!b || (b.type !== 'staff' && b.type !== 'grid')) return null;
+    if (b.type === 'staff') it.staff = /** @type {module:model~StaffBlock} */ (b);
+    else it.grid = /** @type {module:model~GridBlock} */ (b);
     it.title = line(r.title, PROGRAM_NAME_MAX);
   }
   if (Number.isInteger(r.minutes) && r.minutes >= 1 && r.minutes <= MINUTES_MAX) it.minutes = r.minutes;

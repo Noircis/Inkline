@@ -56,7 +56,7 @@ const leaves = {};
 
 /**
  * Screen names.
- * @typedef {'list'|'note'|'options'|'training'|'rhythm'|'gen'|'genPlay'|'program'|'session'|'history'|'curve'} ScreenName
+ * @typedef {'list'|'note'|'options'|'training'|'rhythm'|'gen'|'genPlay'|'rgrid'|'rgridPlay'|'program'|'session'|'history'|'curve'} ScreenName
  */
 
 /**

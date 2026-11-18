@@ -81,6 +81,7 @@ js/
   search.js           search (titles, texts, chords) and sort
   folding.js          collapsed display rule for long blocks
   placements.js       rhythm practice: time signatures, writing placements, series
+  random-grid.js      random chord charts: qualities, seeded draw, settings
   exercise.js         random rhythm exercises (reproducible draw by number)
   metronome.js        metronome: any time signature, groups, levels, jazz modes, subdivisions, silences, tempo ramp, polyrhythm, presets, settings from a block or a note
   metro-clock.js      metronome timing: beats of a looping cycle, seamless swaps
@@ -110,6 +111,7 @@ js/
                       session, log (history, tempo curve), item-view (read-only item),
                       add-to ("Add to…" a note or a program), shared
     exercises.js      random exercise screens (settings, playback)
+    random-grid.js    random chord chart screens (settings, chart, playback)
     drill-kit.js      shared practice pieces (settings, metronome, playback)
     metronome.js      metronome sheet (any screen) with its sub-pages, mini-bar, presets, lights, vibration, flash
     measure-select.js measure selection by long press (play from here, loop)
@@ -129,7 +131,7 @@ docs/                 generated documentation (npm run docs)
 
 The code is split into two layers:
 
-- **Pure modules** (`model`, `pitch`, `rhythm`, `score`, `parts`, `noteheads`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `transpose`, `chord-keys`, `measure-fit`, `i18n`, `metronome`, `metro-clock`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
+- **Pure modules** (`model`, `pitch`, `rhythm`, `score`, `parts`, `noteheads`, `layout`, `render-staff`, `chords`, `grid`, `ireal`, `folders`, `search`, `folding`, `placements`, `exercise`, `random-grid`, `transpose`, `chord-keys`, `measure-fit`, `i18n`, `metronome`, `metro-clock`): no DOM, no side effects, tested under Node. They hold all the musical and organizational logic.
 - **Interface** (`ui/*`, `audio`, `storage`, `main`): wires the logic to the browser.
 
 Screens (`ui/home`, `ui/note`, `ui/options`…) and musical blocks (`ui/staff`, `ui/grid-ui`) **register** at load time with two registries, `ui/nav` and `ui/blocks`, which then call them by name. These registries import no screen: the import graph has no cycle (see the `main` module).

@@ -2,14 +2,16 @@
  * @module ui/practice/add-to
  * @description
  * **Add to…** (2.16): a generated rhythm line (random exercise, placements
- * series) goes into a note or a practice program in one tap.
+ * series) or a random chord chart (2.18) goes into a note or a practice
+ * program in one tap.
  *
  * The sheet offers, from top to bottom: a new note, the programs, then the
  * notes (most recently changed first, a search field for the others).
  *
  * - Into a **note**: a short caption ("Exercise 482 · 7/8 · ♩ = 90") and a
- *   copy of the line are added at the end of the note.
- * - Into a **program**: a new "exercise" item holding the copy.
+ *   copy of the block are added at the end of the note.
+ * - Into a **program**: a new "exercise" item holding the copy (frozen: the
+ *   same chart at every session).
  */
 
 import { t } from '../../i18n.js';
@@ -25,17 +27,17 @@ import { openSheet, noteRows, noteTitle, saveProgram, toast } from './shared.js'
 /**
  * What to add.
  * @typedef {Object} AddPayload
- * @property {module:model~StaffBlock} block The rhythm line (copied).
+ * @property {module:model~StaffBlock|module:model~GridBlock} block The rhythm line or the chart (copied).
  * @property {string} title Its name ("Exercise 482 · 7/8").
  */
 
 /**
- * Copy of the line, with a fresh id, as stored in a note.
- * @param {module:model~StaffBlock} b
- * @returns {module:model~StaffBlock}
+ * Copy of the block, with a fresh id, as stored in a note.
+ * @param {module:model~StaffBlock|module:model~GridBlock} b
+ * @returns {module:model~StaffBlock|module:model~GridBlock}
  */
 function copyBlock(b) {
-  return /** @type {module:model~StaffBlock} */ (sanitizeBlock({ ...b, id: uid() }));
+  return /** @type {any} */ (sanitizeBlock({ ...b, id: uid() }));
 }
 
 /**
@@ -48,7 +50,7 @@ function caption(what) {
 }
 
 /**
- * Adds the line at the end of a note.
+ * Adds the block at the end of a note.
  * @param {module:model~Note} n
  * @param {AddPayload} what
  */
@@ -62,13 +64,14 @@ function addToNote(n, what) {
 }
 
 /**
- * Adds the line to a program, as an exercise item.
+ * Adds the block to a program, as an exercise item.
  * @param {module:practice~Program} p
  * @param {AddPayload} what
  * @returns {boolean} Done (a program holds at most {@link module:practice.ITEMS_MAX|ITEMS_MAX} items).
  */
 function addToProgram(p, what) {
-  const it = newItem({ kind: 'exercise', staff: what.block, title: what.title });
+  const field = what.block.type === 'grid' ? 'grid' : 'staff';
+  const it = newItem({ kind: 'exercise', [field]: what.block, title: what.title });
   if (!it || p.items.length >= ITEMS_MAX) return false;
   p.items.push(it);
   saveProgram(p);

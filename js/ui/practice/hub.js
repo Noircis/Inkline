@@ -62,6 +62,7 @@ function renderHub() {
     <div class="opt-group">
       <button class="opt-row" type="button" id="goPlacements"><span>${esc(t('train.placements'))}<small>${esc(t('train.placementsHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
       <button class="opt-row" type="button" id="goExercises"><span>${esc(t('train.exercises'))}<small>${esc(t('train.exercisesHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
+      <button class="opt-row" type="button" id="goRgrid"><span>${esc(t('rgrid.title'))}<small>${esc(t('rgrid.rowHint'))}</small></span><span class="opt-chev" aria-hidden="true">&#8250;</span></button>
     </div>
   </section>
   <section class="opt">
@@ -72,6 +73,7 @@ function renderHub() {
   app.querySelector('#back').addEventListener('click', backToList);
   app.querySelector('#goPlacements').addEventListener('click', () => goChild('rhythm'));
   app.querySelector('#goExercises').addEventListener('click', () => goChild('gen'));
+  app.querySelector('#goRgrid').addEventListener('click', () => goChild('rgrid'));
   app.querySelector('#goHistory').addEventListener('click', () => goChild('history'));
   app.querySelector('#newProgram').addEventListener('click', () => {
     const p = newProgram(t('practice.defaultName'));

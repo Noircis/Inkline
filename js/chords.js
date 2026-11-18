@@ -222,13 +222,15 @@ export function chordTones(c) {
     sev = /7/.test(body) ? 9 : null; // diminished seventh = 9 semitones
   else if (hasExt) sev = 10;
   if (/(^|[^1b#])6/.test(body) && !/7/.test(body)) sev = 9;
-  if (/sus/.test(body)) third = 5;
+  if (/add/.test(body) && !/7/.test(body)) sev = null; // add9: no seventh
+  if (/sus/.test(body)) third = /sus2/.test(body) ? 2 : 5;
   if (isHalf || isDim || /b5/.test(body)) fifth = 6;
   if (/\+|aug|#5/.test(q)) fifth = 8;
   if (/b9/.test(body)) ext.push(13);
   else if (/#9/.test(body)) ext.push(15);
   else if (/9/.test(body)) ext.push(14);
   if (/#11/.test(body)) ext.push(18);
+  else if (/(^|[^0-9b#])11/.test(body)) ext.push(17);
   if (/13/.test(body)) ext.push(/b13/.test(body) ? 20 : 21);
   if (/alt/.test(body)) {
     ext.push(13, 15);

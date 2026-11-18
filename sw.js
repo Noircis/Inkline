@@ -27,7 +27,7 @@
  *   - revalidation with cache: 'no-cache' (the server confirms or resends).
  */
 
-const CACHE = 'inkline-2.17.1';
+const CACHE = 'inkline-2.18.0';
 
 /** Files preloaded on install: everything needed to start offline. */
 const CORE = [
@@ -88,6 +88,7 @@ const CORE = [
   './js/search.js',
   './js/folding.js',
   './js/placements.js',
+  './js/random-grid.js',
   './js/transpose.js',
   './js/chord-keys.js',
   './js/exercise.js',
@@ -109,6 +110,7 @@ const CORE = [
   './js/ui/fold.js',
   './js/ui/training.js',
   './js/ui/exercises.js',
+  './js/ui/random-grid.js',
   './js/ui/chord-keyboard.js',
   './js/ui/measure-select.js',
   './js/ui/drill-kit.js',

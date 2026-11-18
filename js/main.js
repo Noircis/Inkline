@@ -60,6 +60,7 @@ import './ui/note.js';
 import './ui/options.js';
 import './ui/training.js';
 import './ui/exercises.js';
+import './ui/random-grid.js';
 // Practice notebook (2.16).
 import './ui/practice/hub.js';
 import './ui/practice/program.js';
